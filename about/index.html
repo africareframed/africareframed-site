@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About · Africa Reframed</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+<script>
+/* Bridge: if we arrived from the archive (?in=1) remember it; ?in=0 forgets. Applied before paint to avoid a flash. */
+(function(){
+  var q = new URLSearchParams(location.search);
+  if (q.has('in')) {
+    var on = q.get('in') === '1';
+    document.cookie = 'ar_in=' + (on ? '1' : '') + '; path=/; max-age=' + (on ? 60*60*24*30 : 0) + '; SameSite=Lax';
+    q.delete('in');
+    var rest = q.toString();
+    history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+  }
+  if (/(^|; )ar_in=1/.test(document.cookie)) document.documentElement.classList.add('in');
+})();
+</script>
+</head>
+<body class="page-about">
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="../" aria-label="Africa Reframed, home">
+      <img src="../assets/logo.png" alt="" class="brand-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+      <span class="brand-word" style="display:none">Africa<br>Reframed</span>
+    </a>
+    <nav class="primary" aria-label="Main">
+      <a href="../themes/" >Themes</a>
+      <a href="../partners/" >Partners</a>
+      <a href="../about/" aria-current="page">About</a>
+    </nav>
+    <div class="tools tools-public">
+      <a class="quiet" href="https://archive.africareframed.com/client?src=main">Log in</a>
+      <a class="button" href="../request-access/">Request access</a>
+    </div>
+    <div class="tools tools-in">
+      <a class="button" href="https://archive.africareframed.com/-/galleries/archive?src=main">Images <span aria-hidden="true">&rarr;</span></a>
+      <form class="search" action="https://archive.africareframed.com/-/galleries/archive" method="get" role="search">
+        <label for="q" class="visually-hidden">Search the archive</label>
+        <input id="q" type="search" name="search" placeholder="Search the archive" autocomplete="off">
+        <input type="hidden" name="src" value="main">
+        <button type="submit" aria-label="Search">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+        </button>
+      </form>
+      <a class="quiet" href="https://archive.africareframed.com/lightbox?src=main">My selection</a>
+      <a class="quiet" href="https://archive.africareframed.com/client?src=main">Your account</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>About</h1>
+  <p class="placeholder">Who is behind Africa Reframed and how the images are made.</p>
+  <p class="note">Skeleton page: the menu and the link between the two sites are being tested. Content follows.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>The Africa Reframed archive is open to partners: organisations working with Africa in education, skills, business and climate.</p>
+    <p class="links">
+      <a href="../request-access/">Request access</a> ·
+      <a href="https://archive.africareframed.com/terms">Terms</a> ·
+      <a href="../about/">Contact</a> ·
+      <a href="../?in=0" class="quiet" title="Forget that I came from the archive">Reset view</a> ·
+      <span>&copy; Africa Reframed</span>
+    </p>
+  </div>
+</footer>
+</body>
+</html>

@@ -11,28 +11,29 @@ a{color:inherit;text-decoration:none}
 
 /* Header */
 .site-header{background:var(--ground);color:var(--text-on-dark)}
-.bar{display:flex;align-items:center;gap:40px;min-height:88px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+.bar{display:flex;align-items:center;gap:32px;min-height:88px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
 .brand{display:inline-flex;align-items:center;color:#fff}
-.brand-logo{height:48px;width:auto;display:block}
+.brand-logo{height:40px;width:auto;display:block}
 .brand-word{font-weight:600;font-size:20px;line-height:1;letter-spacing:.06em;text-transform:uppercase}
-nav.primary{display:flex;gap:32px;font-size:16px}
+nav.primary{display:flex;gap:28px;font-size:16px}
 nav.primary a{padding:8px 0;border-bottom:2px solid transparent;color:var(--text-on-dark)}
 nav.primary a:hover{color:#fff}
 nav.primary a[aria-current="page"]{color:#fff;border-bottom-color:var(--accent)}
-.tools{display:flex;align-items:center;gap:24px;margin-left:auto}
+.tools{display:flex;align-items:center;gap:16px;margin-left:auto;flex-wrap:wrap}
 .tools .quiet{color:var(--text-on-dark);font-size:15px}
 .tools .quiet:hover{color:#fff}
-.button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;background:var(--accent);color:var(--ink);font-weight:500;font-size:15px;border-radius:3px}
+.button{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;background:var(--accent);color:var(--ink);font-weight:500;font-size:15px;border-radius:3px}
 .button:hover{filter:brightness(1.05)}
-.search{display:flex;align-items:center;height:40px;border:1px solid rgba(227,227,227,.35);border-radius:3px;background:rgba(227,227,227,.06);padding:0 6px 0 12px;width:260px}
+.search{display:flex;align-items:center;height:40px;border:1px solid rgba(227,227,227,.35);border-radius:3px;background:rgba(227,227,227,.06);padding:0 6px 0 12px;width:200px}
 .search input{flex:1;min-width:0;border:0;background:transparent;color:#fff;font:inherit;font-size:14px;outline:none}
 .search input::placeholder{color:rgba(227,227,227,.6)}
 .search button{border:0;background:transparent;color:var(--text-on-dark);display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;cursor:pointer}
 
-/* State: public by default, tools once the archive has marked us */
-.tools-in{display:none}
-html.in .tools-public{display:none}
-html.in .tools-in{display:flex}
+/* One menu on both sites. The marker from the archive only moves the emphasis: Request access for newcomers, Images for those who came from the archive. */
+.button.btn-images{background:transparent;color:var(--text-on-dark);border:1px solid rgba(227,227,227,.35)}
+html.in .button.btn-images{background:var(--accent);color:var(--ink);border-color:var(--accent)}
+html.in .button.btn-request{background:transparent;color:var(--text-on-dark);border:1px solid rgba(227,227,227,.35)}
+.button{border:1px solid var(--accent)}
 
 /* Body */
 main{padding:56px 24px 96px;min-height:50vh}

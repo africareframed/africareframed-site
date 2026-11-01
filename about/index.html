@@ -9,47 +9,26 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
 <link rel="stylesheet" href="../assets/site.css">
-<script>
-/* Bridge: if we arrived from the archive (?in=1) remember it; ?in=0 forgets. Applied before paint to avoid a flash. */
-(function(){
-  var q = new URLSearchParams(location.search);
-  if (q.has('in')) {
-    var on = q.get('in') === '1';
-    document.cookie = 'ar_in=' + (on ? '1' : '') + '; path=/; max-age=' + (on ? 60*60*24*30 : 0) + '; SameSite=Lax';
-    q.delete('in');
-    var rest = q.toString();
-    history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
-  }
-  if (/(^|; )ar_in=1/.test(document.cookie)) document.documentElement.classList.add('in');
-})();
-</script>
 </head>
 <body class="page-about">
 <header class="site-header">
   <div class="wrap bar">
     <a class="brand" href="../" aria-label="Africa Reframed, home">
-      <img src="../assets/logo.png" alt="" class="brand-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-      <span class="brand-word" style="display:none">Africa<br>Reframed</span>
+      <img src="../assets/logo.png" alt="Africa Reframed" class="brand-logo">
     </a>
-    <nav class="primary" aria-label="Main">
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="menu" id="menu" aria-label="Main">
       <a href="../themes/" >Themes</a>
       <a href="../partners/" >Partners</a>
       <a href="../about/" aria-current="page">About</a>
+      <a href="../request-access/" >Request access</a>
+      <span class="divider" aria-hidden="true"></span>
+      <a href="https://archive.africareframed.com/-/galleries/archive?src=main">Images</a>
+      <a href="https://archive.africareframed.com/lightbox?src=main">Lightbox</a>
+      <a href="https://archive.africareframed.com/client?src=main">Log in</a>
     </nav>
-    <div class="tools">
-      <a class="button btn-request" href="../request-access/">Request access</a>
-      <a class="button btn-images" href="https://archive.africareframed.com/-/galleries/archive?src=main">Images <span aria-hidden="true">&rarr;</span></a>
-      <form class="search" action="https://archive.africareframed.com/-/galleries/archive" method="get" role="search">
-        <label for="q" class="visually-hidden">Search the archive</label>
-        <input id="q" type="search" name="search" placeholder="Search the archive" autocomplete="off">
-        <input type="hidden" name="src" value="main">
-        <button type="submit" aria-label="Search">
-          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
-        </button>
-      </form>
-      <a class="quiet" href="https://archive.africareframed.com/lightbox?src=main">My selection</a>
-      <a class="quiet" href="https://archive.africareframed.com/client?src=main">Your account</a>
-    </div>
   </div>
 </header>
 
@@ -66,10 +45,19 @@
       <a href="../request-access/">Request access</a> ·
       <a href="https://archive.africareframed.com/terms">Terms</a> ·
       <a href="../about/">Contact</a> ·
-      <a href="../?in=0" class="quiet" title="Forget that I came from the archive">Reset view</a> ·
       <span>&copy; Africa Reframed</span>
     </p>
   </div>
 </footer>
+<script>
+(function(){
+  var t = document.querySelector('.menu-toggle'), m = document.getElementById('menu');
+  t.addEventListener('click', function(){
+    var open = t.getAttribute('aria-expanded') === 'true';
+    t.setAttribute('aria-expanded', String(!open));
+    m.classList.toggle('open', !open);
+  });
+})();
+</script>
 </body>
 </html>

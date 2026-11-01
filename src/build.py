@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Generate the Africa Reframed skeleton site: one header, identical to the archive's menu, five pages."""
-import pathlib
+import pathlib, time
 
 ROOT = pathlib.Path(__file__).parent.parent
 ARCHIVE = "https://archive.africareframed.com"
@@ -23,7 +23,7 @@ TEMPLATE = """<!doctype html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="{base}assets/site.css">
+<link rel="stylesheet" href="{base}assets/site.css?v={stamp}">
 </head>
 <body class="page-{slug}">
 <header class="site-header">
@@ -126,6 +126,8 @@ main h1{font-weight:500;font-size:40px;line-height:1.1;margin:0 0 16px;letter-sp
 }
 """
 
+STAMP = time.strftime("%Y%m%d%H%M")
+
 def build():
     (ROOT / "assets").mkdir(parents=True, exist_ok=True)
     (ROOT / "assets" / "site.css").write_text(CSS)
@@ -134,7 +136,7 @@ def build():
         base = "../" * depth if depth else "./"
         cur = lambda s: 'aria-current="page"' if slug == s else ""
         html = TEMPLATE.format(
-            title=title, slug=slug, placeholder=placeholder, base=base, archive=ARCHIVE,
+            title=title, slug=slug, placeholder=placeholder, base=base, archive=ARCHIVE, stamp=STAMP,
             cur_themes=cur("themes"), cur_partners=cur("partners"), cur_about=cur("about"), cur_request=cur("request"),
         )
         out = ROOT / path

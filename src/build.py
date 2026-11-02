@@ -41,7 +41,7 @@ TEMPLATE = """<!doctype html>
       <a href="{base}partners/" {cur_partners}>Partners</a>
       <a href="{base}about/" {cur_about}>About</a>
       <span class="divider" aria-hidden="true"></span>
-      <a href="{archive}/-/galleries/archive?src=main">Images</a>
+      <a href="{archive}/-/galleries/archive?src=main">Browse images</a>
       <a href="{archive}/lightbox?src=main">Lightbox</a>
       <a href="{archive}/client?src=main">Log in</a>
     </nav>

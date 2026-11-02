@@ -7,10 +7,11 @@ ARCHIVE = "https://archive.africareframed.com"
 
 PAGES = {
     "index.html":                 ("Africa Reframed", "home", "Home: the window onto the archive. Statement, three numbers, theme grid, how it works, partners, request access."),
-    "themes/index.html":          ("Themes", "themes", "The full theme index: eight themes with a sample strip and a count each; collections at the foot."),
+    "themes/index.html":          ("Themes", "themes", "The full theme index: eight themes with a sample strip and a count each. What is in the images."),
+    "collections/index.html":     ("Collections", "collections", "The funded collections: one entrance per sponsored collection, each leading into the archive. Who funded what."),
     "partners/index.html":        ("Partners", "partners", "Two doors: Use the images, Fund a theme."),
     "about/index.html":           ("About", "about", "Who is behind Africa Reframed and how the images are made."),
-    "request-access/index.html":  ("Request access", "request", "The request form: organisation, role, intended use, email."),
+    "request-access/index.html":  ("Request access", "request", "The request form: organisation, role, intended use, email. Not in the menu: reached from the call-to-action on Home and Partners, the footer and the login wall."),
 }
 
 TEMPLATE = """<!doctype html>
@@ -36,9 +37,9 @@ TEMPLATE = """<!doctype html>
     </button>
     <nav class="menu" id="menu" aria-label="Main">
       <a href="{base}themes/" {cur_themes}>Themes</a>
+      <a href="{base}collections/" {cur_collections}>Collections</a>
       <a href="{base}partners/" {cur_partners}>Partners</a>
       <a href="{base}about/" {cur_about}>About</a>
-      <a href="{base}request-access/" {cur_request}>Request access</a>
       <span class="divider" aria-hidden="true"></span>
       <a href="{archive}/-/galleries/archive?src=main">Images</a>
       <a href="{archive}/lightbox?src=main">Lightbox</a>
@@ -137,7 +138,7 @@ def build():
         cur = lambda s: 'aria-current="page"' if slug == s else ""
         html = TEMPLATE.format(
             title=title, slug=slug, placeholder=placeholder, base=base, archive=ARCHIVE, stamp=STAMP,
-            cur_themes=cur("themes"), cur_partners=cur("partners"), cur_about=cur("about"), cur_request=cur("request"),
+            cur_themes=cur("themes"), cur_collections=cur("collections"), cur_partners=cur("partners"), cur_about=cur("about"),
         )
         out = ROOT / path
         out.parent.mkdir(parents=True, exist_ok=True)

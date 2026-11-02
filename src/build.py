@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the Africa Reframed skeleton site: one header, identical to the archive's menu, five pages."""
+"""Generate the Africa Reframed skeleton site. Header: the public half identical to the archive's (Themes, Collections, Partners), then Log in; the archive adds its own tools (Browse images, Lightbox) on its side only."""
 import pathlib, time
 
 ROOT = pathlib.Path(__file__).parent.parent
@@ -11,6 +11,7 @@ PAGES = {
     "collections/index.html":     ("Collections", "collections", "The funded collections: one entrance per sponsored collection, each leading into the archive. Who funded what."),
     "partners/index.html":        ("Partners", "partners", "Two doors: Use the images, Fund a theme."),
     "about/index.html":           ("About", "about", "Who is behind Africa Reframed and how the images are made. Not in the menu: the essentials appear on Home, the full page is linked from the footer."),
+    "partner-portal/index.html":  ("Partner portal", "portal", "Who the archive is for, then two doors side by side: Partner log in \u2192 (straight to the image wall on the archive; a signed-in partner lands on the images, a stranger meets the login wall) and Request access. Below: news for partners, the licence in plain words, report a use, what are you working on. Where Log in leads on both sites."),
     "request-access/index.html":  ("Request access", "request", "The request form: organisation, role, intended use, email. Not in the menu: reached from the call-to-action on Home and Partners, the footer and the login wall."),
 }
 
@@ -40,9 +41,7 @@ TEMPLATE = """<!doctype html>
       <a href="{base}collections/" {cur_collections}>Collections</a>
       <a href="{base}partners/" {cur_partners}>Partners</a>
       <span class="divider" aria-hidden="true"></span>
-      <a href="{archive}/-/galleries/archive?src=main">Browse images</a>
-      <a href="{archive}/lightbox?src=main">Lightbox</a>
-      <a href="{archive}/client?src=main">Log in</a>
+      <a href="{base}partner-portal/" {cur_portal}>Log in</a>
     </nav>
   </div>
 </header>
@@ -50,6 +49,7 @@ TEMPLATE = """<!doctype html>
 <main class="wrap">
   <h1>{title}</h1>
   <p class="placeholder">{placeholder}</p>
+  {doors}
   <p class="note">Skeleton page: the menu and the link between the two sites are being tested. Content follows.</p>
 </main>
 
@@ -108,6 +108,11 @@ main h1{font-weight:500;font-size:40px;line-height:1.1;margin:0 0 16px;letter-sp
 .placeholder{color:var(--ink-soft);max-width:60ch;margin:0 0 8px}
 .note{color:var(--ink-soft);font-size:14px;margin:0}
 
+/* Partner portal doors */
+.doors{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0 8px}
+.button{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;background:var(--accent);color:var(--ink);font-weight:500;font-size:15px;border-radius:3px}
+.button.quiet{background:transparent;border:1px solid var(--line);color:var(--ink)}
+
 /* Footer */
 .site-footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--ink-soft);font-size:14px}
 .site-footer p{margin:0 0 8px}
@@ -136,9 +141,13 @@ def build():
         depth = path.count("/")
         base = "../" * depth if depth else "./"
         cur = lambda s: 'aria-current="page"' if slug == s else ""
+        doors = ""
+        if slug == "portal":
+            doors = ('<p class="doors"><a class="button" href="%s/-/galleries/archive?src=main">Partner log in &rarr;</a> '
+                     '<a class="button quiet" href="%srequest-access/">Request access</a></p>') % (ARCHIVE, base)
         html = TEMPLATE.format(
-            title=title, slug=slug, placeholder=placeholder, base=base, archive=ARCHIVE, stamp=STAMP,
-            cur_themes=cur("themes"), cur_collections=cur("collections"), cur_partners=cur("partners"), cur_about=cur("about"),
+            doors=doors, title=title, slug=slug, placeholder=placeholder, base=base, archive=ARCHIVE, stamp=STAMP,
+            cur_themes=cur("themes"), cur_collections=cur("collections"), cur_partners=cur("partners"), cur_portal=cur("portal"),
         )
         out = ROOT / path
         out.parent.mkdir(parents=True, exist_ok=True)

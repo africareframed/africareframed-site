@@ -27,6 +27,11 @@ main h1{font-weight:500;font-size:40px;line-height:1.1;margin:0 0 16px;letter-sp
 .placeholder{color:var(--ink-soft);max-width:60ch;margin:0 0 8px}
 .note{color:var(--ink-soft);font-size:14px;margin:0}
 
+/* Partner portal doors */
+.doors{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0 8px}
+.button{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;background:var(--accent);color:var(--ink);font-weight:500;font-size:15px;border-radius:3px}
+.button.quiet{background:transparent;border:1px solid var(--line);color:var(--ink)}
+
 /* Footer */
 .site-footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--ink-soft);font-size:14px}
 .site-footer p{margin:0 0 8px}

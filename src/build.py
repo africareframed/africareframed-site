@@ -10,7 +10,7 @@ PAGES = {
     "themes/index.html":          ("Themes", "themes", "The full theme index: eight themes with a sample strip and a count each. What is in the images."),
     "collections/index.html":     ("Collections", "collections", "The funded collections: one entrance per sponsored collection, each leading into the archive. Who funded what."),
     "partners/index.html":        ("Partners", "partners", "Two doors: Use the images, Fund a theme."),
-    "about/index.html":           ("About", "about", "Who is behind Africa Reframed and how the images are made."),
+    "about/index.html":           ("About", "about", "Who is behind Africa Reframed and how the images are made. Not in the menu: the essentials appear on Home, the full page is linked from the footer."),
     "request-access/index.html":  ("Request access", "request", "The request form: organisation, role, intended use, email. Not in the menu: reached from the call-to-action on Home and Partners, the footer and the login wall."),
 }
 
@@ -39,7 +39,6 @@ TEMPLATE = """<!doctype html>
       <a href="{base}themes/" {cur_themes}>Themes</a>
       <a href="{base}collections/" {cur_collections}>Collections</a>
       <a href="{base}partners/" {cur_partners}>Partners</a>
-      <a href="{base}about/" {cur_about}>About</a>
       <span class="divider" aria-hidden="true"></span>
       <a href="{archive}/-/galleries/archive?src=main">Browse images</a>
       <a href="{archive}/lightbox?src=main">Lightbox</a>
@@ -60,7 +59,8 @@ TEMPLATE = """<!doctype html>
     <p class="links">
       <a href="{base}request-access/">Request access</a> ·
       <a href="{archive}/terms">Terms</a> ·
-      <a href="{base}about/">Contact</a> ·
+      <a href="{base}about/">About</a> ·
+      <a href="{base}about/#contact">Contact</a> ·
       <span>&copy; Africa Reframed</span>
     </p>
   </div>

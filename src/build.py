@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the Africa Reframed main site as a live wireframe (version 3, 6 November 2026).
+"""Generate the Africa Reframed main site as a live wireframe (version 4, 6 November 2026: arranged by the page priorities).
 
 Structure from "Website – Site map and user flows" (05 Website on the Drive): 16 pages from 9 templates.
 Header: Themes · Collections · Partners | Log in (Log in opens the Partner portal); the archive adds its own
@@ -174,29 +174,39 @@ def rules_list():
 # ---------------------------------------------------------------------------------------------
 # The nine templates (each returns the inside of <main>)
 # ---------------------------------------------------------------------------------------------
+# Section order on the five key pages follows the page priorities: Website – Site map and user flows, section 6 (6 Nov 2026).
+# Engine brief, "For design": the principles a company needs before it puts its name on the work.
+PRINCIPLES_HOME = ["Real images", "Consent", "Credited, fairly paid photographers", "Editorial independence"]
+
+
 def tpl_home(p, base):
+    # 1 What this is: the core line over one real image
     hero = (f'<section class="hero-full">{img("Opening image · one real image at full width · released, no minors", None, dark=True, cls="hero-img")}'
             f'<div class="hero-text"><div class="wrap"><h1>{e(CORE_LINE)}</h1></div></div></section>')
-    intro = sec(f'<div class="grid-2"><div>'
-                + note("Two or three sentences: what Africa Reframed is, who it is for and who is behind it. A funder checking us gets it here, in the first screen.")
+    # 2 Who it is for and who is behind it; the ways on (7) sit with it, and Request access stays quiet (6 Nov decision)
+    intro = sec('<div class="narrow">'
+                + note("Two or three sentences: what Africa Reframed is, who it is for and who is behind it (Commerce & Culture). A funder checking us gets it here, in the first screen.")
                 + lines(3)
-                + doors(button(base + "themes/", "Explore the themes"), button(base + "request-access/", "Request access", quiet=True))
-                + f'</div><div class="intro-num">{numbers()}</div></div>', "intro")
+                + doors(button(base + "themes/", "Explore the themes"), button(base + "partners/", "How partners use the archive", quiet=True))
+                + "</div>", "intro")
+    # 3 That it is in use: partners by name, one example of use, the three numbers
+    inuse = sec(head("In use")
+                + note("The organisations using the archive, by name and with their consent, and one published example of use. They come from the closed preview; until there are any, this section is left out.")
+                + numbers() + logos()
+                + f'<div class="split">{img("Example of use: a report, an exhibition or an article", "3/2")}<div>'
+                + lines(3) + ph_text("Partner · where it appeared · when") + "</div></div>")
+    # 4 The five themes in story order
     cards = "".join(theme_card(t, base, i) for i, t in enumerate(THEMES, 1))
     themes = sec(head("Five themes", THEMES_LEAD) + f'<div class="theme-row">{cards}</div>')
-    coll = sec(head("Collections") + house_split(base))
-    partners = sec(head("Partners")
-                   + note("The organisations using the archive, by name, with their consent; one published example of use. The first partners are on board before launch.")
-                   + logos()
-                   + f'<div class="split">{img("Example of use: a report, an exhibition or an article", "3/2")}<div>'
-                   + lines(3) + ph_text("Partner · where it appeared · when")
-                   + doors(button(base + "partners/", "How partners use the archive", quiet=True)) + "</div></div>")
-    how = sec(head("How it works") + steps([
-        ("Request access", "Free for selected non-profit and public partners."),
-        ("Log in", "We approve each organisation by name; then you log in to the archive."),
-        ("Collect and download", "Gather images in the Lightbox. Each download is a free licence for the use you state.")])
-        + doors(button(base + "request-access/", "Request access")))
-    return hero + intro + themes + coll + how + partners
+    # 5 The collections
+    coll = sec(head("Collections") + house_split(base)
+               + note("A sponsored collection appears here once it is signed, shown as in production; never as a plan."))
+    # 6 The principles, one line each, linked to About
+    pr = "".join(f'<li><strong>{e(x)}</strong>{lines(1)}</li>' for x in PRINCIPLES_HOME)
+    principles = sec(head("Principles") + note("One line each, in plain words; the full story is on About.")
+                     + f'<ul class="principles">{pr}</ul>'
+                     + doors(button(base + "about/", "About Africa Reframed", quiet=True)), "band")
+    return hero + intro + inuse + themes + coll + principles
 
 
 def tpl_index_themes(p, base):
@@ -233,7 +243,10 @@ def tpl_theme(p, base):
               f'<a href="{base}themes/{prv["slug"]}/">{img("Theme image", "5/2")}<span class="dir">← Previous theme</span><strong>{e(prv["name"])}</strong></a>'
               f'<a href="{base}themes/{nxt["slug"]}/">{img("Theme image", "5/2")}<span class="dir">Next theme →</span><strong>{e(nxt["name"])}</strong></a></div>')
     shows = sec(head("What it shows") + note("A short text on what the theme shows and why it matters to partners.") + lines(4))
-    return top + lead_img + shows + samples + action + nav
+    credit = sec(note("The sponsor credit, “made possible by …”, linked to the collection page, once a sponsor has funded the theme. "
+                      "Until then nothing is shown here."), "tight")
+    # Page priorities: name and statement, the evidence, Open in the archive, the text, the sponsor credit, previous and next
+    return top + lead_img + samples + action + shows + credit + nav
 
 
 def tpl_collection(p, base):
@@ -243,8 +256,11 @@ def tpl_collection(p, base):
     story = sec('<div class="grid-2"><div>' + head("The story")
                 + note("How the collection was made, where and with whom. Written as history and proof, in the present tense of the archive.")
                 + lines(6) + '</div><aside class="facts-box">'
-                + f'<dl class="facts">{facts}</dl>'
-                + note("Photographers and workshop partners, credited as they agree.") + lines(2) + "</aside></div>")
+                + f'<dl class="facts">{facts}</dl></aside></div>')
+    people_cards = "".join(f'<div class="person">{img("Portrait", "1/1")}{ph_text("Name · role")}{lines(1)}</div>' for _ in range(3))
+    people = sec(head("The people")
+                 + note("Photographers and workshop partners, credited as each agrees. For a sponsored collection, the sponsor’s credit and its own statement sit here, after the work.")
+                 + f'<div class="cards-3">{people_cards}</div>')
     places = []
     for country in ("Mali", "Kenya", "The Gambia"):
         series = ('<ul class="list">' + "".join(f"<li>{e(s)}</li>" for s in GAMBIA_SERIES) + "</ul>") if country == "The Gambia" else ""
@@ -259,12 +275,24 @@ def tpl_collection(p, base):
                 + f'<div class="chips">{ghosts}</div></div></div>')
     action = sec(f'<div class="action"><div class="num"><b>1,122</b><span>images in the House Collection</span></div>'
                  + doors(button(archive("/-/galleries/archive", "collection-house"), "Open in the archive →"),
-                         button(base + "partners/", "How partners use the archive", quiet=True)) + "</div>", "band")
-    return top + hero + story + places_sec + samples + feeds + action
+                         button(base + "partners/", "How partners use the archive", quiet=True)) + "</div>"
+                 + f'<p class="small">Sponsoring a collection? Write to <a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a>.</p>', "band")
+    uses = "".join(f'<div class="example">{img("Example of use", "3/2")}{lines(2)}{ph_text("Partner · where it appeared · when")}</div>' for _ in range(3))
+    inuse = sec(head("In use") + note("Images from this collection in use, with consent. Shown once there are any.")
+                + f'<div class="cards-3">{uses}</div>')
+    # Page priorities: name and image, story, people, evidence, places, themes and goals, Open in the archive, in use.
+    # The same template holds a collection in production and, where it applies, the rights note (editorial use only).
+    return top + hero + story + people + samples + places_sec + feeds + action + inuse
 
 
 def tpl_partners(p, base):
-    top = sec(head(p["title"], "How organisations use the archive, who already does, and how to work with us.", level=1), "page-head")
+    # Brief, Partners: one page, two doors on the first screen, nothing else above them.
+    panels = (f'<div class="door-panels">'
+              f'<a class="panel dark" href="#use"><span class="kicker">Organisations</span>'
+              f'<strong>Use the images</strong><span>Free for selected non-profit and public partners.</span></a>'
+              f'<a class="panel" href="#sponsor"><span class="kicker">Companies</span>'
+              f'<strong>Sponsor a collection</strong><span>Companies get access through a collection sponsorship.</span></a></div>')
+    top = sec(head(p["title"], level=1) + panels, "page-head")
     use = sec(head("Use the images") + f"<p>{e(ACCESS_WHO)}</p>"
               + steps([("Request access", "Tell us who you are and how you will use the images."),
                        ("Approved by name", "We approve each organisation by name."),
@@ -277,11 +305,12 @@ def tpl_partners(p, base):
     examples = "".join(f'<div class="example">{img("Example of use", "3/2")}{lines(2)}{ph_text("Partner · where it appeared · when")}</div>' for _ in range(3))
     inuse = sec(head("Partners using the archive") + note("Organisations by name and published uses, with their consent.")
                 + logos(10) + f'<div class="cards-3">{examples}</div>', sid="partners")
-    work = sec('<div class="grid-2"><div>' + head("Work with us") + f"<p>{e(ACCESS_COMPANIES)}</p>"
-               + note("In general terms: we make new collections with sponsors, opening new themes or deepening existing ones, each with its own collection page and credit. The specific offers belong in conversation, not on the site.")
-               + lines(2) + f'</div><div class="contact-box"><p class="kicker">Partnerships</p>'
-               f'<p class="h-big"><a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p></div></div>', sid="work-with-us")
-    return top + use + rules + inuse + work
+    sponsor = sec('<div class="grid-2"><div>' + head("Sponsor a collection") + f"<p>{e(ACCESS_COMPANIES)}</p>"
+                  + note("In general terms: we make new collections with companies as sponsors, theme-led and never about the sponsor’s own activities, opening new themes or deepening existing ones, each with its own collection page and credit on the theme page. The specific offers and prices belong in conversation, not on the site.")
+                  + lines(2) + f'</div><div class="contact-box"><p class="kicker">Partnerships</p>'
+                  f'<p class="h-big"><a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p></div></div>', sid="sponsor")
+    # Page priorities: the two doors, how access works, using the images, sponsor a collection, who already uses it
+    return top + use + rules + sponsor + inuse
 
 
 def tpl_portal(p, base):
@@ -294,12 +323,14 @@ def tpl_portal(p, base):
               + f'<p class="lead">The archive is for partners: {e(ACCESS_WHO.split(": ", 1)[1])}</p>' + panels, "page-head")
     desk = sec(head("The partner’s desk", "The one place to tell us how the images are used and what you need next.")
                + note("Every answer lands in the partner database; the forms ask for organisation and email. The welcome email, the download email and a three-month check-in point here.")
-               + '<div class="cards-4">'
+               + '<div class="cards-3">'
                + f'<div class="card" id="report"><h3>Report a use</h3>{mini_form([("Where it appeared", False), ("Link", False), ("Date", False), ("What you need next", True)], "Send")}</div>'
-               + f'<div class="card" id="request-imagery"><h3>Request imagery</h3>{mini_form([("What you are looking for", True), ("For what", False), ("By when", False)], "Send")}</div>'
+               + f'<div class="card" id="request-imagery"><h3>Request imagery</h3><p class="small">Can’t find what you need?</p>{mini_form([("What you are looking for", True), ("For what", False), ("By when", False)], "Send")}</div>'
                + f'<div class="card" id="working-on"><h3>What are you working on?</h3>{mini_form([("Your project", True), ("Link", False)], "Send")}</div>'
-               + f'<div class="card" id="call"><h3>Talk to us</h3>{lines(3)}{note("Optional, never required: a short call about what is missing and what you are working on.")}{dead_button("Book a feedback call", quiet=True)}</div>'
                + "</div>", sid="desk")
+    call = sec('<div class="card call-card" id="call"><div><h3>Talk to us</h3>'
+               + note("Optional, never required: a short call about what is missing and what you are working on.")
+               + lines(2) + f'</div>{dead_button("Book a feedback call", quiet=True)}</div>', "tight")
     news_cards = "".join(f'<div class="example">{img("News image", "3/2")}{ph_text("Date")}{lines(2)}</div>' for _ in range(3))
     news = sec(head("Partner news")
                + note("News for partners and the numbers as they grow; aggregates and consented examples only. Shown once there is something to show.")
@@ -309,7 +340,8 @@ def tpl_portal(p, base):
                 + f'<p>One download is one licence, for the use you state. Credit every use, never change what an image shows, and tell us where the images appear.</p>'
                 + doors(button(base + "partners/#using-the-images", "All the rules", quiet=True),
                         button(archive("/client", "portal-history"), "Your download history", quiet=True)), "band", sid="rules")
-    return top + desk + news + rules
+    # Page priorities: the gate, report a use, request imagery and what you are working on, news, the rules, a feedback call
+    return top + desk + news + rules + call
 
 
 def tpl_form(p, base):
@@ -420,7 +452,7 @@ PAGES = [
     dict(path="collections/house-collection/", title="House Collection", slug="house-collection", tpl="collection", nav="collections",
          desc=HOUSE_LINE),
     dict(path="partners/", title="Partners", slug="partners", tpl="partners", nav="partners",
-         desc="How organisations use the Africa Reframed archive, the rules for using the images, and how to work with us."),
+         desc="How organisations use the Africa Reframed archive, the rules for using the images, and how companies sponsor a collection."),
     dict(path="partner-portal/", title="Partner portal", slug="portal", tpl="portal", nav="portal",
          desc="Log in to the Africa Reframed archive, report a use, request imagery and see what is new for partners."),
     dict(path="request-access/", title="Request access", slug="request", tpl="form", nav=None,
@@ -446,12 +478,13 @@ TEMPLATE_NAMES = {"home": "Home", "themes": "Index", "collections": "Index", "th
                   "form": "Form", "press": "Press room", "text": "Text page"}
 ORDER_OF_WORK = [("Brief", "done", "Website – Brief and build plan"),
                  ("Site map and user flows", "done", "Website – Site map and user flows, and the two maps"),
-                 ("Live wireframe", "done", "This site, version 3; refined once the page priorities exist"),
-                 ("Page priorities", "next", "For the five key pages: a ranked list of what each must say and do"),
-                 ("Visual design", "later", "Brand and design project: Rune Høgsberg's design system, key templates first"),
+                 ("Page priorities", "done", "Site map and user flows, section 6: what the five key pages must say and do, ranked"),
+                 ("Live wireframe", "done", "This site, version 4: the five key pages arranged by the page priorities"),
+                 ("Visual design", "next", "Brand and design project: Rune Høgsberg's design system, key templates first"),
                  ("Content and images", "later", "Copy for every note; the public images (released, no minors)"),
-                 ("Build and test", "later", "Forms, the real domain, partner tests with three to five contacts"),
-                 ("Launch", "later", "The checklist below")]
+                 ("Build and test", "later", "Forms, the real domain on Cloudflare behind a lock, phones and LinkedIn's browser"),
+                 ("Closed preview", "later", "Invited partners and sponsors, in waves; their feedback shapes the site"),
+                 ("Public launch", "later", "The lock comes off once partners are on board; the checklist below")]
 MASTERS = [
     ("Website – Brief and build plan", "https://docs.google.com/document/d/1a5HFS7CtiNdi1dcYHTFwV089de4adyE8Lp5rNHstD0c/edit",
      "Drive, 05 Website", "What the site is for and how it is built; the master for decisions about the site"),
@@ -471,7 +504,7 @@ MASTERS = [
      "GitHub", "Every change to this site, with what changed and when"),
 ]
 CHECKLIST = [
-    ("Page priorities for the five key pages", "Website – Site map and user flows"),
+    ("Page priorities for the five key pages", "Website – Site map and user flows, section 6", "done"),
     ("Visual design applied to every template", "Brand and design project"),
     ("Copy written for every note", "{notes} notes open"),
     ("Public images chosen: released, no minors (the public column in the AR Metadata sheet)", "{images} image boxes open"),
@@ -522,8 +555,8 @@ def tpl_dev(rows, links, base):
                       for name, url, where, what in MASTERS)
     deep = "".join(f'<tr><td>{e(label)}</td><td>{e(", ".join(pages))}</td><td class="mono"><a href="{e(url)}">{e(url.replace(ARCHIVE, ""))}</a></td></tr>'
                    for url, (label, pages) in links.items())
-    checks = "".join(f'<li><span class="tag open">Open</span><strong>{e(item)}</strong><span>{e(where.format(**tot))}</span></li>'
-                     for item, where in CHECKLIST)
+    checks = "".join(f'<li><span class="tag {st}">{ {"done": "Done", "open": "Open"}[st] }</span><strong>{e(item)}</strong>'
+                     f'<span>{e(where.format(**tot))}</span></li>' for item, where, *rest in CHECKLIST for st in [(rest or ["open"])[0]])
     commits = git_log()
     changes = "".join(f'<li><span class="mono">{e(h)}</span> <span class="where">{e(d)}</span><span>{e(subj)}</span></li>' for h, d, subj in commits)
     changes = (f'<ul class="dev-list">{changes}</ul>' if changes else '<p class="small">No history available in this build.</p>')
@@ -782,6 +815,12 @@ main{padding-bottom:96px}
 .chip:hover{border-color:var(--ink)}
 .chip.ghost{display:inline-block;width:120px;height:38px;padding:0;background:var(--bar);border-color:transparent}
 .thanks{max-width:560px}
+.person .img{margin-bottom:10px;max-width:260px}
+.narrow{max-width:62ch}
+.principles{list-style:none;padding:0;margin:8px 0 20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.principles li{border-top:2px solid var(--ink);padding-top:12px}
+.principles strong{display:block;font-weight:500;font-size:18px;line-height:1.3;margin-bottom:6px}
+.principles .lines{margin:6px 0 0}
 
 /* Partners */
 .steps{list-style:none;padding:0;margin:24px 0 16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
@@ -807,6 +846,8 @@ main{padding-bottom:96px}
 .field{display:block;height:38px;border:1px solid #d6d3cc;border-radius:3px;background:#fff}
 .field.tall{height:76px}
 .mini-form .button,.card .button{align-self:flex-start;margin-top:14px}
+.call-card{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 32px}
+.call-card .button{margin-top:0;align-self:center}
 .logo-tile{background:var(--ground);aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;border-radius:2px;margin-bottom:10px}
 .logo-tile img{width:62%}
 
@@ -856,7 +897,7 @@ main{padding-bottom:96px}
   .site-header{position:relative}
   .wrap{padding:0 24px}
   .theme-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(220px,40%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
-  .cards-4,.cards-5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards-4,.cards-5,.principles{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sample-grid{columns:3}
   .hero-text h1{font-size:44px}
 }
@@ -878,13 +919,14 @@ main{padding-bottom:96px}
   .sample-grid{columns:2;column-gap:10px}
   .sample-grid .img{margin-bottom:10px}
   .contact-box{margin-top:0}
+  .panel{min-height:132px;padding:22px}
   .dev-list li,.dev-list li:has(.tag),.dev-list li:has(.where){grid-template-columns:1fr}
   .strip-tools{gap:10px}
   .theme-row{grid-auto-columns:78%}
 }
 @media (max-width:480px){
   .wrap{padding:0 16px}
-  .cards-4,.cards-5{grid-template-columns:1fr}
+  .cards-4,.cards-5,.principles{grid-template-columns:1fr}
   .wire-strip .wrap{align-items:flex-start}
   .panel strong{font-size:26px}
 }

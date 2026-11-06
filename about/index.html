@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../assets/site.css?v=202611060645">
+<link rel="stylesheet" href="../assets/site.css?v=202611060711">
 </head>
 <body class="page-about tpl-text">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,9 +40,12 @@
     </nav>
   </div>
 </header>
-<div class="skeleton-strip"><div class="wrap">Skeleton · structure only · boxes marked “To write” hold what each section will say at launch</div></div>
-<main id="main" class="wrap">
-<h1>About</h1><p class="lead">Spotlighting African innovation and African–European collaboration. An independent initiative established by Commerce &amp; Culture.</p><section class="block"><h2>Who is behind it</h2><div class="ph"><span class="ph-tag">To write</span><strong>Commerce &amp; Culture and Thomas Damgaard</strong><p>Who runs the initiative and why; named people, by example.</p></div></section><section class="block"><h2>Principles</h2><div class="ph"><span class="ph-tag">To write</span><strong>How the images are made and used</strong><p>Real images, never AI-generated; consent and releases; photographers credited; fair terms; editorial independence.</p></div></section><section class="block"><h2>Legacy</h2><div class="ph"><span class="ph-tag">To write</span><strong>History, as proof behind the present</strong><p>Africa Reframed at Øksnehallen (2016), Afghan Tales (2014–2017), the artist collaborations and the work since 2010.</p></div></section><section class="block"><h2>How it is run</h2><div class="ph"><span class="ph-tag">To write</span><strong>A non-commercial initiative</strong><p>Administered through KKArt; no licensing sales; surplus funds new collections.</p></div></section>
+<div class="wire-strip"><div class="wrap">
+  <span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span>
+  <button class="notes-toggle" type="button" aria-pressed="false">Clean view</button>
+</div></div>
+<main id="main">
+<section class="sec page-head"><div class="wrap"><h1>About</h1><p class="lead">Spotlighting African innovation and African–European collaboration. An independent initiative established by Commerce &amp; Culture.</p></div></section><section class="sec tight"><div class="wrap"><div class="split"><div class="img" style="aspect-ratio:4/5" role="img" aria-label="Image to choose: Portrait: Thomas Damgaard"><span>Portrait: Thomas Damgaard</span></div><div><h2>Who is behind it</h2><p class="note">Commerce &amp; Culture and Thomas Damgaard: who runs the initiative and why.</p><div class="lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div></div></div></section><section class="sec "><div class="wrap"><h2>Principles</h2><p class="note">How the images are made and used.</p><div class="cards-5"><div class="card"><h3>Real images, never AI-generated</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Consent and releases</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Photographers credited</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Fair terms</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Editorial independence</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div></div></div></section><section class="sec "><div class="wrap"><h2>Legacy</h2><p class="note">History, as proof behind the present.</p><div class="cards-4"><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker">Since 2010</p><h3>Exhibitions and collaborations</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker">2014–2017</p><h3>Afghan Tales</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker">2016</p><h3>Africa Reframed at Øksnehallen</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker"></p><h3>Artist collaborations</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div></div></div></section><section class="sec band"><div class="wrap"><h2>How it is run</h2><p class="note">A non-commercial initiative, administered through KKArt; no licensing sales; surplus funds new collections.</p><div class="lines" aria-hidden="true"><i></i><i></i></div></div></section>
 </main>
 <footer class="site-footer">
   <div class="wrap">
@@ -65,6 +68,18 @@
     var open = t.getAttribute('aria-expanded') === 'true';
     t.setAttribute('aria-expanded', String(!open));
     m.classList.toggle('open', !open);
+  });
+  var b = document.querySelector('.notes-toggle');
+  function setClean(on){
+    document.body.classList.toggle('clean', on);
+    b.setAttribute('aria-pressed', String(on));
+    b.textContent = on ? 'Show notes' : 'Clean view';
+  }
+  try { setClean(localStorage.getItem('ar-clean') === '1'); } catch (err) {}
+  b.addEventListener('click', function(){
+    var on = !document.body.classList.contains('clean');
+    setClean(on);
+    try { localStorage.setItem('ar-clean', on ? '1' : '0'); } catch (err) {}
   });
 })();
 </script>

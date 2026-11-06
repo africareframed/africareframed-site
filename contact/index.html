@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../assets/site.css?v=202611060645">
+<link rel="stylesheet" href="../assets/site.css?v=202611060711">
 </head>
 <body class="page-contact tpl-text">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,9 +40,12 @@
     </nav>
   </div>
 </header>
-<div class="skeleton-strip"><div class="wrap">Skeleton · structure only · boxes marked “To write” hold what each section will say at launch</div></div>
-<main id="main" class="wrap">
-<h1>Contact</h1><p class="lead">Write to <a href="mailto:hello@africareframed.com">hello@africareframed.com</a>.</p><div class="ph"><span class="ph-tag">To write</span><strong>LinkedIn</strong><p>A link to Africa Reframed on LinkedIn.</p></div><p class="small">Press: <a href="mailto:press@africareframed.com">press@africareframed.com</a> · Partnerships: <a href="mailto:partnerships@africareframed.com">partnerships@africareframed.com</a></p>
+<div class="wire-strip"><div class="wrap">
+  <span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span>
+  <button class="notes-toggle" type="button" aria-pressed="false">Clean view</button>
+</div></div>
+<main id="main">
+<section class="sec page-head"><div class="wrap"><h1>Contact</h1><p class="h-big"><a href="mailto:hello@africareframed.com">hello@africareframed.com</a></p><p class="note">A link to Africa Reframed on LinkedIn.</p><p class="small">Press: <a href="mailto:press@africareframed.com">press@africareframed.com</a> · Partnerships: <a href="mailto:partnerships@africareframed.com">partnerships@africareframed.com</a></p></div></section>
 </main>
 <footer class="site-footer">
   <div class="wrap">
@@ -65,6 +68,18 @@
     var open = t.getAttribute('aria-expanded') === 'true';
     t.setAttribute('aria-expanded', String(!open));
     m.classList.toggle('open', !open);
+  });
+  var b = document.querySelector('.notes-toggle');
+  function setClean(on){
+    document.body.classList.toggle('clean', on);
+    b.setAttribute('aria-pressed', String(on));
+    b.textContent = on ? 'Show notes' : 'Clean view';
+  }
+  try { setClean(localStorage.getItem('ar-clean') === '1'); } catch (err) {}
+  b.addEventListener('click', function(){
+    var on = !document.body.classList.contains('clean');
+    setClean(on);
+    try { localStorage.setItem('ar-clean', on ? '1' : '0'); } catch (err) {}
   });
 })();
 </script>

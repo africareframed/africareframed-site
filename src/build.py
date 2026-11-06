@@ -185,7 +185,12 @@ def tpl_home(p, base):
                    + f'<div class="split">{img("Example of use: a report, an exhibition or an article", "3/2")}<div>'
                    + lines(3) + ph_text("Partner · where it appeared · when")
                    + doors(button(base + "partners/", "How partners use the archive", quiet=True)) + "</div></div>")
-    return hero + intro + themes + coll + partners
+    how = sec(head("How it works") + steps([
+        ("Request access", "Free for selected non-profit and public partners."),
+        ("Log in", "We approve each organisation by name; then you log in to the archive."),
+        ("Collect and download", "Gather images in the Lightbox. Each download is a free licence for the use you state.")])
+        + doors(button(base + "request-access/", "Request access")))
+    return hero + intro + themes + coll + how + partners
 
 
 def tpl_index_themes(p, base):
@@ -221,7 +226,8 @@ def tpl_theme(p, base):
     nav = sec(f'<div class="theme-nav">'
               f'<a href="{base}themes/{prv["slug"]}/">{img("Theme image", "5/2")}<span class="dir">← Previous theme</span><strong>{e(prv["name"])}</strong></a>'
               f'<a href="{base}themes/{nxt["slug"]}/">{img("Theme image", "5/2")}<span class="dir">Next theme →</span><strong>{e(nxt["name"])}</strong></a></div>')
-    return top + lead_img + samples + action + nav
+    shows = sec(head("What it shows") + note("A short text on what the theme shows and why it matters to partners.") + lines(4))
+    return top + lead_img + shows + samples + action + nav
 
 
 def tpl_collection(p, base):
@@ -241,7 +247,10 @@ def tpl_collection(p, base):
                      + f'<div class="cards-3">{"".join(places)}</div>')
     samples = sec(head("From the collection") + note("A spread across the five themes. " + PUBLIC_SAMPLE) + sample_grid())
     chips = "".join(f'<a class="chip" href="{base}themes/{t["slug"]}/">{e(t["name"])}</a>' for t in THEMES)
-    feeds = sec(head("Themes it feeds") + f'<div class="chips">{chips}</div>')
+    ghosts = '<span class="chip ghost"></span>' * 4
+    feeds = sec('<div class="grid-2"><div>' + head("Themes it feeds") + f'<div class="chips">{chips}</div></div><div>'
+                + head("Goals it serves") + note("The Sustainable Development Goals the collection serves, from the SDG field in the metadata.")
+                + f'<div class="chips">{ghosts}</div></div></div>')
     action = sec(f'<div class="action"><div class="num"><b>1,122</b><span>images in the House Collection</span></div>'
                  + doors(button(archive("/-/galleries/archive", "collection-house"), "Open in the archive →"),
                          button(base + "partners/", "How partners use the archive", quiet=True)) + "</div>", "band")
@@ -298,7 +307,7 @@ def tpl_portal(p, base):
 
 
 def tpl_form(p, base):
-    fields = [("Organisation", "text"), ("Type of organisation", "select"), ("Country", "text"), ("Focus of your work", "text"),
+    fields = [("Organisation", "text"), ("Your role", "text"), ("Type of organisation", "select"), ("Country", "text"), ("Focus of your work", "text"),
               ("How you will use the images", "textarea"), ("What imagery you are looking for", "textarea"), ("Email", "email")]
     rows = []
     for i, (label, kind) in enumerate(fields):
@@ -321,7 +330,9 @@ def tpl_form(p, base):
              + '<ol class="next-steps"><li>We read your request.</li><li>You get a welcome email.</li><li>You log in, collect in the Lightbox and download for each use.</li></ol>'
              + note("How soon we answer: to decide. Companies are answered with the sponsorship route.") + "</aside>")
     return (sec(head(p["title"], level=1) + f'<p class="lead">{e(ACCESS_WHO)} {e(ACCESS_COMPANIES)}</p>', "page-head")
-            + sec(f'<div class="grid-2">{"<div>" + form + "</div>"}{aside}</div>', "tight"))
+            + sec(f'<div class="grid-2">{"<div>" + form + "</div>"}{aside}</div>', "tight")
+            + sec('<div class="card thanks">' + head("Thank you", level=3) + lines(2) + '</div>'
+                  + note("The thank-you state, shown in place of the form after sending: what happens next and how soon.")))
 
 
 def tpl_press(p, base):
@@ -378,7 +389,8 @@ def tpl_text(p, base):
                      f'Partnerships: <a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p>', "page-head")
     parts = [("What we collect", "Organisation, contact details, intended use and the answers you give in the partner forms."),
              ("Why", "To approve access, keep in touch, and report how the images are used, without personal details, to the funders who make new collections possible, with your consent."),
-             ("How long, and your rights", "How long we keep it, and how to see, change or delete it.")]
+             ("How long, and your rights", "How long we keep it, and how to see, change or delete it."),
+             ("Contact", "Who to write to about your data, and how.")]
     body = "".join(sec(head(h) + note(n) + lines(3), "tight") for h, n in parts)
     return sec(head(p["title"], "What we collect when you request access or write to us, and why.", level=1), "page-head") + body
 
@@ -647,6 +659,8 @@ main{padding-bottom:96px}
 .chips{display:flex;flex-wrap:wrap;gap:10px}
 .chip{border:1px solid #c9c6bf;border-radius:999px;padding:8px 16px;text-decoration:none;font-size:15px}
 .chip:hover{border-color:var(--ink)}
+.chip.ghost{display:inline-block;width:120px;height:38px;padding:0;background:var(--bar);border-color:transparent}
+.thanks{max-width:560px}
 
 /* Partners */
 .steps{list-style:none;padding:0;margin:24px 0 16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}

@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../assets/site.css?v=202611060722">
+<link rel="stylesheet" href="../assets/site.css?v=202611060728">
 </head>
 <body class="page-collections tpl-collections">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,10 +40,7 @@
     </nav>
   </div>
 </header>
-<div class="wire-strip"><div class="wrap">
-  <span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span>
-  <button class="notes-toggle" type="button" aria-pressed="false">Clean view</button>
-</div></div>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
 <main id="main">
 <section class="sec page-head"><div class="wrap"><h1>Collections</h1><p class="lead">Each collection is a body of work with its own story and the people behind it.</p></div></section><section class="sec tight"><div class="wrap"><a class="split card-link" href="../collections/house-collection/"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Collection image"><span>Collection image</span></div><div><p class="kicker">Collection</p><h3 class="h-big">House Collection</h3><p>Africa Reframed’s own collection: 1,122 images from Mali, Kenya and The Gambia.</p><p class="meta-row"><span>1,122 images</span><span>21 shoots</span><span>Mali · Kenya · The Gambia</span></p><span class="textlink">Open the collection →</span></div></a></div></section><section class="sec "><div class="wrap"><p class="note">Sponsored collections appear here when they exist, each under its full name. Nothing planned is shown.</p></div></section>
 </main>
@@ -70,6 +67,7 @@
     m.classList.toggle('open', !open);
   });
   var b = document.querySelector('.notes-toggle');
+  if (!b) return;
   function setClean(on){
     document.body.classList.toggle('clean', on);
     b.setAttribute('aria-pressed', String(on));

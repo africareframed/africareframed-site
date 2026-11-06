@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../assets/site.css?v=202611060722">
+<link rel="stylesheet" href="../assets/site.css?v=202611060728">
 </head>
 <body class="page-portal tpl-portal">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,10 +40,7 @@
     </nav>
   </div>
 </header>
-<div class="wire-strip"><div class="wrap">
-  <span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span>
-  <button class="notes-toggle" type="button" aria-pressed="false">Clean view</button>
-</div></div>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
 <main id="main">
 <section class="sec page-head"><div class="wrap"><h1>Partner portal</h1><p class="lead">The archive is for partners: NGOs, media, educational institutions, embassies, ministries and development finance institutions.</p><div class="door-panels"><a class="panel dark" href="https://archive.africareframed.com/-/galleries/archive?src=main-portal"><span class="kicker">Partners</span><strong>Partner log in →</strong><span>Signed in already? This takes you straight to the images.</span></a><a class="panel" href="../request-access/"><span class="kicker">Not a partner yet?</span><strong>Request access</strong><span>Free for selected non-profit and public partners.</span></a></div></div></section><section class="sec " id="desk"><div class="wrap"><h2>The partner’s desk</h2><p class="lead">The one place to tell us how the images are used and what you need next.</p><p class="note">Every answer lands in the partner database; the forms ask for organisation and email. The welcome email, the download email and a three-month check-in point here.</p><div class="cards-4"><div class="card" id="report"><h3>Report a use</h3><div class="mini-form"><span class="f-label">Where it appeared</span><span class="field"></span><span class="f-label">Link</span><span class="field"></span><span class="f-label">Date</span><span class="field"></span><span class="f-label">What you need next</span><span class="field tall"></span><span class="button dead" aria-disabled="true">Send</span></div></div><div class="card" id="request-imagery"><h3>Request imagery</h3><div class="mini-form"><span class="f-label">What you are looking for</span><span class="field tall"></span><span class="f-label">For what</span><span class="field"></span><span class="f-label">By when</span><span class="field"></span><span class="button dead" aria-disabled="true">Send</span></div></div><div class="card" id="working-on"><h3>What are you working on?</h3><div class="mini-form"><span class="f-label">Your project</span><span class="field tall"></span><span class="f-label">Link</span><span class="field"></span><span class="button dead" aria-disabled="true">Send</span></div></div><div class="card" id="call"><h3>Talk to us</h3><div class="lines" aria-hidden="true"><i></i><i></i><i></i></div><p class="note">Optional, never required: a short call about what is missing and what you are working on.</p><span class="button quiet dead" aria-disabled="true">Book a feedback call</span></div></div></div></section><section class="sec " id="news"><div class="wrap"><h2>Partner news</h2><p class="note">News for partners and the numbers as they grow; aggregates and consented examples only. Shown once there is something to show.</p><div class="numbers"><div class="num"><b>—</b><span>partners</span></div><div class="num"><b>—</b><span>images downloaded</span></div><div class="num"><b>—</b><span>uses reported</span></div></div><div class="cards-3"><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: News image"><span>News image</span></div><p class="ph-text">Date</p><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: News image"><span>News image</span></div><p class="ph-text">Date</p><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: News image"><span>News image</span></div><p class="ph-text">Date</p><div class="lines" aria-hidden="true"><i></i><i></i></div></div></div></div></section><section class="sec band" id="rules"><div class="wrap"><h2>Using the images</h2><p>One download is one licence, for the use you state. Credit every use, never change what an image shows, and tell us where the images appear.</p><p class="doors"><a class="button quiet" href="../partners/#using-the-images">All the rules</a><a class="button quiet" href="https://archive.africareframed.com/client?src=main-portal-history">Your download history</a></p></div></section>
 </main>
@@ -70,6 +67,7 @@
     m.classList.toggle('open', !open);
   });
   var b = document.querySelector('.notes-toggle');
+  if (!b) return;
   function setClean(on){
     document.body.classList.toggle('clean', on);
     b.setAttribute('aria-pressed', String(on));

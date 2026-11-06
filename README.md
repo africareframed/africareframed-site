@@ -10,5 +10,8 @@ The public site of Africa Reframed. The archive lives on PhotoDeck at archive.af
 - **Footer:** the about line, then About · Press · Contact · Privacy · Request access · Terms (the archive's terms).
 - **Links into the archive** carry `src=main-…` so their origin is visible in the archive's statistics. Theme pages use interim searches until each theme has its own keyword (Keywording Guide, section 8b).
 - **Link previews:** every page has Open Graph tags. The share image is the logo on black until real images are chosen.
+- **Development page:** every build also writes `/dev/`: the order of work, every page with its template, state and what is still to fill, the masters on the Drive and claude.ai, every link into the archive, the launch checklist and recent changes. It is a view, not a log: decisions and the log stay on the Drive. Set a page's state in `STATE` in `src/build.py`.
+- **Launch switch:** `LAUNCH = True` in `src/build.py` removes `/dev/`, the wireframe strip and `noindex`.
+- **Deploy:** the workflow runs `python3 src/build.py` before publishing, so the live site always matches `src/`.
 - **Not indexed:** `noindex` stays on until launch on the real domain.
 - **Brief:** "Website – Brief and build plan" (Google Doc, 05 Website on the Africa Reframed Drive).

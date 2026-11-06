@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../assets/site.css?v=202611060722">
+<link rel="stylesheet" href="../assets/site.css?v=202611060728">
 </head>
 <body class="page-themes tpl-themes">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,10 +40,7 @@
     </nav>
   </div>
 </header>
-<div class="wire-strip"><div class="wrap">
-  <span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span>
-  <button class="notes-toggle" type="button" aria-pressed="false">Clean view</button>
-</div></div>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
 <main id="main">
 <section class="sec page-head"><div class="wrap"><h1>Themes</h1><p class="lead">Read in order, the five themes are the archive’s argument: people learn, put their skills to work, live connected lives in modern cities, and make culture.</p></div></section><section class="sec tight"><div class="wrap"><p class="note">Each row shows three images from the theme. Public-sample rule: released images, no minors.</p><a class="theme-line" href="../themes/learning/"><span class="order big">1</span><div><h2>Learning</h2><p>Classrooms, campuses, training kitchens and homework at home: people of every age building skills for the work ahead.</p><span class="count">198 images →</span></div><div class="strip3"><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div></div></a><a class="theme-line" href="../themes/work-and-enterprise/"><span class="order big">2</span><div><h2>Work and enterprise</h2><p>Tradespeople, cooks, farmers, shopkeepers and young professionals making a living with skill.</p><span class="count">279 images →</span></div><div class="strip3"><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div></div></a><a class="theme-line" href="../themes/everyday-digital/"><span class="order big">3</span><div><h2>Everyday digital</h2><p>Phones, laptops and money on a screen, used for work, study and keeping in touch as a normal part of the day.</p><span class="count">354 images →</span></div><div class="strip3"><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div></div></a><a class="theme-line" href="../themes/city-life/"><span class="order big">4</span><div><h2>City life</h2><p>Cafés, campuses, rooftops and busy streets: the everyday rhythm of Bamako, Banjul and Nairobi.</p><span class="count">237 images →</span></div><div class="strip3"><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div></div></a><a class="theme-line" href="../themes/creativity-and-culture/"><span class="order big">5</span><div><h2>Creativity and culture</h2><p>Portraits, style and street art.</p><span class="count">137 images →</span></div><div class="strip3"><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:1/1" role="img" aria-label="Image to choose: Image"><span>Image</span></div></div></a></div></section>
 </main>
@@ -70,6 +67,7 @@
     m.classList.toggle('open', !open);
   });
   var b = document.querySelector('.notes-toggle');
+  if (!b) return;
   function setClean(on){
     document.body.classList.toggle('clean', on);
     b.setAttribute('aria-pressed', String(on));

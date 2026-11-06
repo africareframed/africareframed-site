@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../../assets/site.css?v=202611060722">
+<link rel="stylesheet" href="../../assets/site.css?v=202611060728">
 </head>
 <body class="page-work-and-enterprise tpl-theme">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,10 +40,7 @@
     </nav>
   </div>
 </header>
-<div class="wire-strip"><div class="wrap">
-  <span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span>
-  <button class="notes-toggle" type="button" aria-pressed="false">Clean view</button>
-</div></div>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../../dev/">Development</a><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
 <main id="main">
 <section class="sec page-head"><div class="wrap"><p class="kicker">Theme 2 of 5</p><h1>Work and enterprise</h1><p class="statement">Tradespeople, cooks, farmers, shopkeepers and young professionals making a living with skill.</p><p class="meta-row"><span>279 images in the archive</span><span>House Collection</span></p></div></section><section class="sec tight"><div class="wrap"><div class="img wide" style="aspect-ratio:21/9" role="img" aria-label="Image to choose: Lead image for the theme"><span>Lead image for the theme</span></div></div></section><section class="sec "><div class="wrap"><h2>What it shows</h2><p class="note">A short text on what the theme shows and why it matters to partners.</p><div class="lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div></section><section class="sec "><div class="wrap"><h2>From the archive</h2><p class="note">Six to eight images that carry the theme. Public-sample rule: released images, no minors.</p><div class="sample-grid"><div class="img" style="aspect-ratio:4/5" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:4/5" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:4/5" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Image"><span>Image</span></div><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Image"><span>Image</span></div></div></div></section><section class="sec band"><div class="wrap"><div class="action"><div class="num"><b>279</b><span>images on work and enterprise in the archive</span></div><p class="doors"><a class="button" href="https://archive.africareframed.com/-/galleries/archive?search=skills%20and%20jobs&src=main-theme-work-and-enterprise">Open in the archive →</a><a class="button quiet" href="../../request-access/">Request access</a></p></div><p class="small">Partners open the theme in the archive; others are asked to log in or request access first.</p></div></section><section class="sec "><div class="wrap"><div class="theme-nav"><a href="../../themes/learning/"><div class="img" style="aspect-ratio:5/2" role="img" aria-label="Image to choose: Theme image"><span>Theme image</span></div><span class="dir">← Previous theme</span><strong>Learning</strong></a><a href="../../themes/everyday-digital/"><div class="img" style="aspect-ratio:5/2" role="img" aria-label="Image to choose: Theme image"><span>Theme image</span></div><span class="dir">Next theme →</span><strong>Everyday digital</strong></a></div></div></section>
 </main>
@@ -70,6 +67,7 @@
     m.classList.toggle('open', !open);
   });
   var b = document.querySelector('.notes-toggle');
+  if (!b) return;
   function setClean(on){
     document.body.classList.toggle('clean', on);
     b.setAttribute('aria-pressed', String(on));

@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../assets/site.css?v=202611060722">
+<link rel="stylesheet" href="../assets/site.css?v=202611060728">
 </head>
 <body class="page-press tpl-press">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,10 +40,7 @@
     </nav>
   </div>
 </header>
-<div class="wire-strip"><div class="wrap">
-  <span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span>
-  <button class="notes-toggle" type="button" aria-pressed="false">Clean view</button>
-</div></div>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
 <main id="main">
 <section class="sec page-head"><div class="wrap"><h1>Press room</h1><p class="lead">Stories, images for editorial use, and someone to talk to.</p></div></section><section class="sec tight"><div class="wrap"><div class="split"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Press image for the relaunch"><span>Press image for the relaunch</span></div><div><p class="kicker">Press release</p><h2>The relaunch</h2><p class="note">From the Strategic Platform’s draft text, with date and quotes from named people who agreed to them.</p><div class="lines" aria-hidden="true"><i></i><i></i><i></i></div><p class="doors"><span class="button quiet dead" aria-disabled="true">Download the release (PDF)</span></p></div></div></div></section><section class="sec "><div class="wrap"><div class="grid-2"><div><h2>Fact sheet</h2><ul class="list"><li>1,122 images in the House Collection, from Mali, Kenya and The Gambia</li><li>Five themes: Learning, Work and enterprise, Everyday digital, City life, Creativity and culture</li><li>Free for selected non-profit and public partners</li><li>An independent initiative established by Commerce & Culture</li><li>Our images are never AI-generated</li></ul></div><div><h2>Track record</h2><p class="note">Exhibitions and collaborations since 2010, as history.</p><div class="lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div></div></div></section><section class="sec "><div class="wrap"><h2>Press images</h2><p class="note">A curated set for editorial use with the credit line; no images with minors. Open download or through media access: to decide.</p><div class="sample-grid"><div class="img" style="aspect-ratio:4/5" role="img" aria-label="Image to choose: Press image"><span>Press image</span></div><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Press image"><span>Press image</span></div><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Press image"><span>Press image</span></div><div class="img" style="aspect-ratio:4/5" role="img" aria-label="Image to choose: Press image"><span>Press image</span></div><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Press image"><span>Press image</span></div><div class="img" style="aspect-ratio:4/5" role="img" aria-label="Image to choose: Press image"><span>Press image</span></div></div><p class="doors"><span class="button quiet dead" aria-disabled="true">Download the press set</span></p></div></section><section class="sec "><div class="wrap"><h2>Story leads</h2><p class="note">Each lead in two sentences, with the series, the place and who to talk to.</p><div class="cards-2"><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Image from the series"><span>Image from the series</span></div><h3>Culinary training, Banjul</h3><div class="lines" aria-hidden="true"><i></i><i></i></div><p class="ph-text">Series · place · who to talk to</p></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Image from the series"><span>Image from the series</span></div><h3>Women in trades, Banjul</h3><div class="lines" aria-hidden="true"><i></i><i></i></div><p class="ph-text">Series · place · who to talk to</p></div></div></div></section><section class="sec "><div class="wrap"><h2>Logos and portrait</h2><div class="cards-3"><div class="example"><div class="logo-tile"><img src="../assets/logo.png" alt="Africa Reframed logo"></div><p class="small">Logo, white on black</p></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Logo, black on white"><span>Logo, black on white</span></div><p class="small">Logo, black on white</p></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Portrait: Thomas Damgaard"><span>Portrait: Thomas Damgaard</span></div><p class="small">Portrait</p></div></div></div></section><section class="sec band"><div class="wrap"><h2>Press contact</h2><p class="h-big"><a href="mailto:press@africareframed.com">press@africareframed.com</a></p></div></section>
 </main>
@@ -70,6 +67,7 @@
     m.classList.toggle('open', !open);
   });
   var b = document.querySelector('.notes-toggle');
+  if (!b) return;
   function setClean(on){
     document.body.classList.toggle('clean', on);
     b.setAttribute('aria-pressed', String(on));

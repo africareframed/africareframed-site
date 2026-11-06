@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../assets/site.css?v=202611060722">
+<link rel="stylesheet" href="../assets/site.css?v=202611060728">
 </head>
 <body class="page-about tpl-text">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,10 +40,7 @@
     </nav>
   </div>
 </header>
-<div class="wire-strip"><div class="wrap">
-  <span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span>
-  <button class="notes-toggle" type="button" aria-pressed="false">Clean view</button>
-</div></div>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
 <main id="main">
 <section class="sec page-head"><div class="wrap"><h1>About</h1><p class="lead">Spotlighting African innovation and African–European collaboration. An independent initiative established by Commerce &amp; Culture.</p></div></section><section class="sec tight"><div class="wrap"><div class="split"><div class="img" style="aspect-ratio:4/5" role="img" aria-label="Image to choose: Portrait: Thomas Damgaard"><span>Portrait: Thomas Damgaard</span></div><div><h2>Who is behind it</h2><p class="note">Commerce &amp; Culture and Thomas Damgaard: who runs the initiative and why.</p><div class="lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div></div></div></section><section class="sec "><div class="wrap"><h2>Principles</h2><p class="note">How the images are made and used.</p><div class="cards-5"><div class="card"><h3>Real images, never AI-generated</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Consent and releases</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Photographers credited</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Fair terms</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Editorial independence</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div></div></div></section><section class="sec "><div class="wrap"><h2>Legacy</h2><p class="note">History, as proof behind the present.</p><div class="cards-4"><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker">Since 2010</p><h3>Exhibitions and collaborations</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker">2014–2017</p><h3>Afghan Tales</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker">2016</p><h3>Africa Reframed at Øksnehallen</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker"></p><h3>Artist collaborations</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div></div></div></section><section class="sec band"><div class="wrap"><h2>How it is run</h2><p class="note">A non-commercial initiative, administered through KKArt; no licensing sales; surplus funds new collections.</p><div class="lines" aria-hidden="true"><i></i><i></i></div></div></section>
 </main>
@@ -70,6 +67,7 @@
     m.classList.toggle('open', !open);
   });
   var b = document.querySelector('.notes-toggle');
+  if (!b) return;
   function setClean(on){
     document.body.classList.toggle('clean', on);
     b.setAttribute('aria-pressed', String(on));

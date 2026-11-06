@@ -156,8 +156,8 @@ def steps(items):
 def rules_list():
     return ('<ol class="rules">'
             '<li><strong>Who may use the images.</strong> Approved partners, one licence per organisation. The press set is for editorial use.</li>'
-            '<li><strong>What for.</strong> The use you state at download: reports, applications, exhibitions, the press, presentations and your own channels. Free of charge.</li>'
-            '<li><strong>Credit.</strong> The credit line on every use, as given with each image.</li>'
+            '<li><strong>One download, one use.</strong> Each download is a free licence for the use you state there: a report, an application, an exhibition, the press, a presentation or your own channels. Collect and share images in the Lightbox; download when you know the use. A new use, a new download.</li>'
+            '<li><strong>Credit.</strong> The credit line on every use, on or beside the image, as given with each image. For a sponsored collection it names the collection in full, sponsor included.</li>'
             '<li><strong>Editing.</strong> Cropping, resizing and colour are fine; changing what an image shows is not, and neither is altering images with AI or using them to train AI.</li>'
             '<li><strong>The people portrayed.</strong> Accurate captions and contexts they would recognise; never a degrading or misleading one, and never presenting the images as your own operations or results.</li>'
             '<li><strong>No resale.</strong> No resale, sublicensing or use as a logo.</li>'
@@ -253,7 +253,7 @@ def tpl_partners(p, base):
     use = sec(head("Use the images") + f"<p>{e(ACCESS_WHO)}</p>"
               + steps([("Request access", "Tell us who you are and how you will use the images."),
                        ("Approved by name", "We approve each organisation by name."),
-                       ("Search and download", "Find what you need and download it under the free partner licence.")])
+                       ("Collect, then download", "Gather images in the Lightbox and share them with colleagues. Each download is a free licence for the one use you state.")])
               + note("What we ask in return: report a use, and a yearly question about what you are working on.")
               + doors(button(base + "request-access/", "Request access")), sid="use")
     rules = sec(head("Using the images", "The rules for use in plain language. Read them before you apply.") + rules_list()
@@ -291,7 +291,7 @@ def tpl_portal(p, base):
                + numbers([("—", "partners"), ("—", "images downloaded"), ("—", "uses reported")])
                + f'<div class="cards-3">{news_cards}</div>', sid="news")
     rules = sec(head("Using the images")
-                + f'<p>Credit every use, never change what an image shows, and tell us where the images appear.</p>'
+                + f'<p>One download is one licence, for the use you state. Credit every use, never change what an image shows, and tell us where the images appear.</p>'
                 + doors(button(base + "partners/#using-the-images", "All the rules", quiet=True),
                         button(archive("/client", "portal-history"), "Your download history", quiet=True)), "band", sid="rules")
     return top + desk + news + rules
@@ -318,7 +318,7 @@ def tpl_form(p, base):
             f'<p class="small">Read <a href="{base}partners/#using-the-images">the rules for using the images</a> first. '
             f'Until this form is connected, requests go through <a href="{archive("/contact", "request")}">the archive’s request form</a>.</p>')
     aside = ('<aside class="facts-box">' + head("What happens next", level=3)
-             + '<ol class="next-steps"><li>We read your request.</li><li>You get a welcome email.</li><li>You log in and download.</li></ol>'
+             + '<ol class="next-steps"><li>We read your request.</li><li>You get a welcome email.</li><li>You log in, collect in the Lightbox and download for each use.</li></ol>'
              + note("How soon we answer: to decide. Companies are answered with the sponsorship route.") + "</aside>")
     return (sec(head(p["title"], level=1) + f'<p class="lead">{e(ACCESS_WHO)} {e(ACCESS_COMPANIES)}</p>', "page-head")
             + sec(f'<div class="grid-2">{"<div>" + form + "</div>"}{aside}</div>', "tight"))

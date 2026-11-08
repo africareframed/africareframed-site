@@ -76,7 +76,7 @@ def archive(path, src):
 
 
 # ---------------------------------------------------------------------------------------------
-# Wireframe parts
+# Wireframe parts (step 2, 8 November 2026): grey boxes, bars, notes and the draft mark
 # ---------------------------------------------------------------------------------------------
 def img(label, ratio="3/2", dark=False, cls=""):
     """An image still to choose, at its real proportion."""
@@ -91,23 +91,14 @@ def note(text):
 
 
 def lines(n=3):
-    """Text still to write."""
+    """Text still to write (used only where no draft can be written yet: content that does not exist)."""
     return '<div class="lines" aria-hidden="true">' + "<i></i>" * n + "</div>"
 
 
-def ph_text(text):
-    return f'<p class="ph-text">{e(text)}</p>'
-
-
-def sec(inner, cls="", sid=None):
-    a = f' id="{sid}"' if sid else ""
-    return f'<section class="sec {cls}"{a}><div class="wrap">{inner}</div></section>'
-
-
-def head(title, lead=None, kicker=None, level=2):
-    k = f'<p class="kicker">{e(kicker)}</p>' if kicker else ""
-    l = f'<p class="lead">{e(lead)}</p>' if lead else ""
-    return f'{k}<h{level}>{e(title)}</h{level}>{l}'
+def draft(text, tag="p", cls=""):
+    """Draft copy: written now from the masters, marked as a draft until Thomas approves it. Never placeholder text."""
+    c = f' class="{cls}"' if cls else ""
+    return f'<{tag}{c}><span class="draft">{e(text)}</span></{tag}>'
 
 
 def button(href, label, quiet=False):
@@ -118,328 +109,543 @@ def dead_button(label, quiet=False):
     return f'<span class="button{" quiet" if quiet else ""} dead" aria-disabled="true">{e(label)}</span>'
 
 
-def doors(*buttons):
-    return f'<p class="doors">{"".join(buttons)}</p>'
+# ---------------------------------------------------------------------------------------------
+# The modules (Website – modules, 05 Website, approved 8 November 2026): sixteen, each a function with its variants.
+# A module renders as <section class="mod mod-NAME" data-mod="2.n Name (variant)"> on the grid; the label shows in
+# the wireframe and hides in clean view. Every page below is a sequence of modules in the order of the page
+# priorities (Website – Site map and user flows, section 6). Only the grid and DM Sans are styled; the look is step 4.
+# ---------------------------------------------------------------------------------------------
+MODULES = {  # number and name, as in Website – modules
+    "header": "2.1 Header", "opening": "2.2 Opening", "page-head": "2.3 Page head", "text": "2.4 Text section",
+    "photo": "2.5 Photograph", "grid": "2.6 Image grid", "themes": "2.7 Theme sequence", "collection": "2.8 Collection card",
+    "numbers": "2.9 Numbers and counts", "partners": "2.10 Partner strip", "use": "2.11 Use example",
+    "doors": "2.12 Doors and actions", "items": "2.13 Item list", "sponsor": "2.14 Sponsor credit", "form": "2.15 Form",
+    "footer": "2.16 Footer",
+}
 
 
-def numbers(values=NUMBERS):
-    items = "".join(f'<div class="num"><b>{n}</b><span>{e(t)}</span></div>' for n, t in values)
-    return f'<div class="numbers">{items}</div>'
+def mod(name, variant, inner, cls="", sid=None, wrap=True):
+    """One module on the page: the section, its label and its inner content on the grid."""
+    label = MODULES[name] + (f" ({variant})" if variant else "")
+    a = f' id="{sid}"' if sid else ""
+    body = f'<div class="wrap">{inner}</div>' if wrap else inner
+    return f'<section class="mod mod-{name} {cls}" data-mod="{e(label)}"{a}>{body}</section>'
 
 
-def sample_grid(n=8, label="Image"):
-    ratios = ["4/5", "3/2", "3/2", "4/5", "3/2", "4/5", "3/2", "3/2"]
-    return '<div class="sample-grid">' + "".join(img(label, ratios[i % 8]) for i in range(n)) + "</div>"
+def heading(title, level=2, cls=""):
+    c = f' class="{cls}"' if cls else ""
+    return f"<h{level}{c}>{e(title)}</h{level}>"
 
 
-def logos(n=5):
-    return '<div class="logos">' + '<span class="logo">Partner logo</span>' * n + "</div>"
+# 2.2 Opening: the full Opening on Home. Words on white in columns 1–4; the photograph from the line of column 5 off the
+# right edge (below 1,024 px from column 2, the words under it). Stripes and triangles come in step 3.
+def m_opening(title, line=None, label="Opening photograph · released, no minors"):
+    words = f"<h1>{e(title)}</h1>" + (draft(line, "p", "lead") if line else "")
+    return mod("opening", "a, full", f'<div class="cols"><div class="opening-words c1-4">{words}</div>'
+               f'<div class="c5-off">{img(label + " · from the line of column 5 off the right edge (2 below desktop)", None, cls="opening-img")}</div></div>',
+               cls="opening")
 
 
-def theme_card(t, base, i):
-    return (f'<a class="theme-card" href="{base}themes/{t["slug"]}/">{img("Theme image", "4/5")}'
-            f'<span class="order">{i}</span><h3>{e(t["name"])}</h3><p>{e(t["statement"])}</p>'
-            f'<span class="count">{t["count"]} images</span></a>')
+# 2.3 Page head: kicker, title, statement, meta; variants (a) plain, (b) with two doors under it, (c) with the lead photograph.
+def m_page_head(title, statement=None, kicker=None, meta=None, doors=None, lead=None, statement_draft=False):
+    k = f'<p class="kicker">{e(kicker)}</p>' if kicker else ""
+    m = ('<p class="meta-row">' + "".join(f"<span>{e(x)}</span>" for x in meta) + "</p>") if meta else ""
+    s = (draft(statement, "p", "statement") if statement_draft else f'<p class="statement">{e(statement)}</p>') if statement else ""
+    variant = "b, with doors" if doors else "c, with the lead photograph" if lead else "a"
+    inner = f'<div class="cols"><div class="c1-4">{k}<h1>{e(title)}</h1></div><div class="c6-12 head-right">{s}{m}</div></div>'
+    if doors:
+        inner += doors
+    if lead:
+        inner += f'<div class="lead-photo">{lead}</div>'
+    return mod("page-head", variant, inner, cls="page-head")
 
 
-def house_split(base):
+# 2.4 Text section: title left, text right; (b) with a facts box, (c) with a contact, (d) the intro on Home.
+def m_text(title, paras, variant="a", box=None, contact=None, links=None, is_draft=True, sid=None, level=2):
+    body = "".join(draft(p) if is_draft else f"<p>{e(p)}</p>" for p in paras if p)
+    if links:
+        body += f'<p class="doors">{"".join(links)}</p>'
+    if variant == "d":
+        inner = f'<div class="cols"><div class="c1-8">{body}</div></div>'
+        return mod("text", "d, the intro", inner, sid=sid)
+    right = body
+    if variant == "b" and box:
+        right += f'<aside class="facts-box">{box}</aside>'
+    if variant == "c" and contact:
+        right += f'<div class="contact-box"><p class="kicker">{e(contact[0])}</p><p class="h-big"><a href="mailto:{contact[1]}">{contact[1]}</a></p></div>'
+    names = {"a": "a, title left, text right", "b": "b, with a facts box", "c": "c, with a contact"}
+    inner = f'<div class="cols"><div class="c1-4">{heading(title, level)}</div><div class="c6-12">{right}</div></div>'
+    return mod("text", names[variant], inner, sid=sid)
+
+
+# 2.5 Photograph: (a) full bleed, (b) on the columns, (c) photograph and text side by side, alternating.
+CREDIT = "Photo: Africa Reframed"
+
+
+def credit_line(caption=None):
+    c = f'<span class="caption">{e(caption)}</span> ' if caption else ""
+    return f'<p class="credit">{c}<span>{CREDIT}</span></p>'
+
+
+def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12"):
+    if variant == "a":
+        inner = f'<div class="bleed">{img(label, ratio, cls="bleed-img")}</div><div class="wrap">{credit_line(caption)}</div>'
+        return mod("photo", "a, full bleed", inner, wrap=False)
+    if variant == "c":
+        photo = f'<div class="c-half">{img(label, ratio)}{credit_line(caption)}</div>'
+        words = f'<div class="c-half">{text}</div>'
+        order = photo + words if side == "left" else words + photo
+        return mod("photo", f"c, photograph and text, photograph {side}", f'<div class="cols">{order}</div>')
+    return mod("photo", "b, on the columns", f'<div class="cols"><div class="{span}">{img(label, ratio)}{credit_line(caption)}</div></div>')
+
+
+# 2.6 Image grid: (a) three in a row, (b) four portraits, (c) a strip of three squares, (d) six to eight mixed.
+def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None):
+    if variant == "a":
+        cells = "".join(img(label, "3/2") for _ in range(n or 3)); cls = "grid-3"; name = "a, three in a row"
+    elif variant == "b":
+        cells = "".join(img(label, "4/5") for _ in range(n or 4)); cls = "grid-4"; name = "b, four portraits"
+    elif variant == "c":
+        cells = "".join(img(label, "1/1") for _ in range(3)); cls = "grid-strip"; name = "c, a strip of three"
+    else:
+        ratios = ["3/2", "4/5", "3/2", "3/2", "4/5", "3/2", "3/2", "4/5"]
+        cells = "".join(img(label, ratios[i % 8]) for i in range(n or 6)); cls = "grid-mixed"; name = "d, six to eight mixed"
+    top = heading(title) if title else ""
+    top += f'<p class="small">{e(line)}</p>' if line else ""
+    foot = (f'<p class="doors">{link}</p>' if link else "") + credit_line()
+    return mod("grid", name, f'{top}<div class="imgs {cls}">{cells}</div>{foot}')
+
+
+# 2.7 Theme sequence: (a) five entries in a row (Home), (b) five rows (Themes index), (c) previous and next.
+def theme_entry(t, base, i, row=False, ratio="4/5"):
+    strip = f'<div class="imgs grid-strip">{"".join(img("Image", "1/1") for _ in range(3))}</div>' if row else img("Theme image", ratio)
+    return (f'<a class="theme-entry{" row" if row else ""}" href="{base}themes/{t["slug"]}/">'
+            f'<span class="order">{i}</span>{"" if row else strip}<div><h3>{e(t["name"])}</h3><p>{e(t["statement"])}</p>'
+            f'<span class="count">{t["count"]} images</span></div>{strip if row else ""}</a>')
+
+
+def m_themes(base, variant="a", current=None):
+    if variant == "c":
+        n = THEMES.index(current)
+        prv, nxt = THEMES[n - 1], THEMES[(n + 1) % len(THEMES)]
+        inner = (f'<div class="cols"><div class="c-half theme-nav"><span class="dir">← Previous theme</span>{theme_entry(prv, base, THEMES.index(prv) + 1, ratio="5/2")}</div>'
+                 f'<div class="c-half theme-nav"><span class="dir">Next theme →</span>{theme_entry(nxt, base, THEMES.index(nxt) + 1, ratio="5/2")}</div></div>')
+        return mod("themes", "c, previous and next", inner)
+    lead = f'<p class="lead">{e(THEMES_LEAD)}</p>'
+    if variant == "b":
+        rows = "".join(theme_entry(t, base, i, row=True) for i, t in enumerate(THEMES, 1))
+        return mod("themes", "b, five rows", f'<div class="theme-rows">{rows}</div>')
+    cards = "".join(theme_entry(t, base, i) for i, t in enumerate(THEMES, 1))
+    return mod("themes", "a, five in a row", f'<div class="cols"><div class="c1-4">{heading("Five themes")}</div><div class="c6-12">{lead}</div></div>'
+               f'<div class="theme-row">{cards}</div>')
+
+
+# 2.8 Collection card: (a) one card at the full width, (b) a list of cards.
+def collection_card(base):
     meta = "".join(f"<span>{x}</span>" for x in ("1,122 images", "21 shoots", "Mali · Kenya · The Gambia"))
-    return (f'<a class="split card-link" href="{base}collections/house-collection/">{img("Collection image", "3/2")}'
-            f'<div><p class="kicker">Collection</p><h3 class="h-big">House Collection</h3><p>{e(HOUSE_LINE)}</p>'
-            f'<p class="meta-row">{meta}</p><span class="textlink">Open the collection →</span></div></a>')
+    return (f'<a class="collection-card cols" href="{base}collections/house-collection/"><div class="c-half">{img("Collection image", "3/2")}</div>'
+            f'<div class="c-half"><p class="kicker">Collection</p><h3 class="h-big">House Collection</h3><p>{e(HOUSE_LINE)}</p>'
+            f'<p class="meta-row">{meta}</p><span class="textlink">Open the collection</span></div></a>')
 
 
-def mini_form(fields, label):
-    out = "".join(f'<span class="f-label">{e(l)}</span><span class="field{" tall" if tall else ""}"></span>' for l, tall in fields)
-    return f'<div class="mini-form">{out}{dead_button(label)}</div>'
+def m_collection(base, variant="a", title=True):
+    top = f'<div class="cols"><div class="c1-4">{heading("Collections")}</div></div>' if title else ""
+    n = note("A sponsored collection appears here once it is signed, shown as in production with behind-the-scenes material; never as a plan.")
+    return mod("collection", "a, one card" if variant == "a" else "b, a list of cards", top + collection_card(base) + n)
 
 
-def steps(items):
-    out = "".join(f'<li><span class="step-n">{i}</span><h3>{e(t)}</h3><p>{e(d)}</p></li>' for i, (t, d) in enumerate(items, 1))
-    return f'<ol class="steps">{out}</ol>'
+# 2.9 Numbers and counts: (a) a row of three, (b) one count with its action (used inside Doors b), (c) by country.
+def numbers_row(values=NUMBERS, asof="as of 2 November 2026"):
+    items = "".join(f'<div class="num"><b>{n}</b><span>{e(t)}</span></div>' for n, t in values)
+    return f'<div class="numbers">{items}</div><p class="credit">{e(asof)}</p>'
 
 
-def rules_list():
-    return ('<ol class="rules">'
-            '<li><strong>Who may use the images.</strong> Approved partners, one licence per organisation. The press set is for editorial use.</li>'
-            '<li><strong>One download, one use.</strong> Each download is a free licence for the use you state there: a report, an application, an exhibition, the press, a presentation or your own channels. Collect and share images in the Lightbox; download when you know the use. A new use, a new download.</li>'
-            '<li><strong>Credit.</strong> The credit line on every use, on or beside the image, as given with each image. For a sponsored collection it names the collection in full, sponsor included.</li>'
-            '<li><strong>Editing.</strong> Cropping, resizing and colour are fine; changing what an image shows is not, and neither is altering images with AI or using them to train AI.</li>'
-            '<li><strong>The people portrayed.</strong> Accurate captions and contexts they would recognise; never a degrading or misleading one, and never presenting the images as your own operations or results.</li>'
-            '<li><strong>No resale.</strong> No resale, sublicensing or use as a logo.</li>'
-            '<li><strong>Tell us where they appear.</strong> Report a use through the Partner portal.</li>'
-            '</ol>')
+def m_numbers(values=NUMBERS, asof="as of 2 November 2026", variant="a", title=None, note_text=None):
+    top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{note(note_text) if note_text else ""}</div></div>' if title else ""
+    if variant == "c":
+        rows = "".join(f'<div class="num small-num"><b>{n}</b><span>{e(t)}</span></div>' for n, t in values)
+        return mod("numbers", "c, a count by country", f'{top}<div class="numbers by-country">{rows}</div>')
+    return mod("numbers", "a, a row of three", top + numbers_row(values, asof))
+
+
+# 2.10 Partner strip: shown only once there are partners; here in grey so the layout exists.
+def m_partners(n=6, title="In use by"):
+    logos = '<div class="logos">' + '<span class="logo">Partner logo</span>' * n + "</div>"
+    return mod("partners", "", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">'
+               + note("Partners and sponsors by name, with their consent, from the closed preview. Until there are any, this module is left out of the live page.")
+               + f'</div></div>{logos}')
+
+
+# 2.11 Use example: (a) one, side by side; (b) three in a row; (c) partner news.
+def use_card(kind="use"):
+    if kind == "news":
+        return f'<div class="example">{img("News image", "3/2")}<p class="kicker">Date</p>{lines(2)}</div>'
+    return (f'<div class="example">{img("The use: a page, a slide, a post or an exhibition wall", "3/2")}'
+            f'<p class="credit">AR-ID · {CREDIT}</p><p class="small">Partner · publication · use · month, year</p>{lines(2)}</div>')
+
+
+def m_use(variant="a", title="In use"):
+    n = note("Images in use, reported back by partners with their consent. Shown once there are any; until then left out of the live page.")
+    if variant == "a":
+        inner = (f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{n}</div></div>'
+                 f'<div class="cols"><div class="c-half">{img("The use: a page, a slide, a post or an exhibition wall", "3/2")}<p class="credit">AR-ID · {CREDIT}</p></div>'
+                 f'<div class="c-half"><p class="small">Partner · publication · use · month, year</p>{lines(2)}</div></div>')
+        return mod("use", "a, one example", inner)
+    if variant == "c":
+        return mod("use", "c, partner news", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">'
+                   + note("News for partners and the numbers as they grow; aggregates and consented examples only. Shown once there is something to show.")
+                   + f'</div></div><div class="cards-3">{use_card("news") * 3}</div>')
+    return mod("use", "b, three in a row", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{n}</div></div>'
+               f'<div class="cards-3">{use_card() * 3}</div>')
+
+
+# 2.12 Doors and actions: (a) two doors, (b) the action band with a count, (c) the ways on, (d) the contact band.
+def door(href, kicker, title, line, dark=False):
+    return (f'<a class="panel{" dark" if dark else ""}" href="{href}"><span class="kicker">{e(kicker)}</span>'
+            f'<strong>{e(title)}</strong><span>{e(line)}</span></a>')
+
+
+def m_doors(variant, *, doors=None, count=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None):
+    if variant == "a":
+        return mod("doors", "a, two doors", f'<div class="door-panels">{"".join(doors)}</div>', sid=sid)
+    if variant == "b":
+        c = f'<div class="num"><b>{count[0]}</b><span>{e(count[1])}</span></div>'
+        inner = f'<div class="action">{c}<p class="doors">{main}{quiet or ""}</p></div>' + (draft(line, "p", "small") if line else "")
+        return mod("doors", "b, the action band", inner, cls="band", sid=sid)
+    if variant == "d":
+        inner = f'<div class="cols"><div class="c1-4">{heading(kicker)}</div><div class="c6-12"><p class="h-big"><a href="mailto:{address}">{address}</a></p>{draft(line, "p", "small") if line else ""}</div></div>'
+        return mod("doors", "d, the contact band", inner, cls="band", sid=sid)
+    return mod("doors", "c, the ways on", f'<div class="cols"><div class="c6-12 c-offset"><p class="doors">{"".join(links)}</p></div></div>', sid=sid)
+
+
+# 2.13 Item list: (a) plain under rules, (b) numbered steps, (c) accordion, (d) with images, (e) chips.
+def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image_ratio="3/2", image_label="Image"):
+    top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}</div></div>' if title else ""
+    t = (lambda s: draft(s)) if is_draft else (lambda s: f"<p>{e(s)}</p>")
+    if variant == "b":
+        li = "".join(f'<li><span class="step-n">{i}</span><h3>{e(a)}</h3>{t(b)}</li>' for i, (a, b) in enumerate(items, 1))
+        return mod("items", "b, numbered steps", f'{top}<ol class="steps">{li}</ol>', sid=sid)
+    if variant == "c":
+        li = "".join(f'<details class="acc"><summary>{e(a)}<span class="plus" aria-hidden="true"></span></summary>{t(b)}</details>' for a, b in items)
+        return mod("items", "c, accordion", f'{top}<div class="cols"><div class="c6-12 c-offset">{li}</div></div>', sid=sid)
+    if variant == "d":
+        li = "".join(f'<div class="item">{img(x[2] if len(x) > 2 and x[2] else image_label, image_ratio)}<h3>{e(x[0])}</h3>{t(x[1]) if x[1] else ""}</div>' for x in items)
+        return mod("items", "d, with images", f'{top}<div class="cards-3">{li}</div>', sid=sid)
+    if variant == "e":
+        chips = "".join(f'<a class="chip" href="{h}">{e(a)}</a>' if h else f'<span class="chip">{e(a)}</span>' for a, h in items)
+        return mod("items", "e, chips", f'{top}<div class="cols"><div class="c6-12 c-offset chips">{chips}</div></div>', sid=sid)
+    li = "".join(f'<li><strong>{e(a)}</strong>{t(b)}</li>' for a, b in items)
+    return mod("items", "a, plain under rules", f'{top}<ul class="principles">{li}</ul>', sid=sid)
+
+
+# 2.14 Sponsor credit: (theme) "Made possible by …" under the statement; (collection) the full name as the title.
+def m_sponsor(variant="theme"):
+    if variant == "collection":
+        inner = (f'<div class="cols"><div class="c1-4"><p class="kicker">Collection</p><h2>Africa Reframed / [Full collection name]</h2></div>'
+                 f'<div class="c6-12"><div class="logos"><span class="logo">Sponsor logo</span></div>{lines(3)}<p class="small">The sponsor’s contact</p></div></div>'
+                 + note("The sponsor’s statement (at most 80 words) and contact, after the work. Only once a collection is sponsored."))
+        return mod("sponsor", "collection page", inner)
+    inner = (f'<div class="cols"><div class="c6-12 c-offset"><p class="kicker">Made possible by</p><div class="logos"><span class="logo">Sponsor logo</span></div>'
+             f'<p class="small">Founding Partner (working title) · <a href="#">About the collection</a></p></div></div>'
+             + note("Shown under the theme’s statement only once a sponsor has funded the theme. Until then nothing is shown here."))
+    return mod("sponsor", "theme page", inner)
+
+
+# 2.15 Form: (a) the long form with an aside, (b) three short forms, (c) a single quiet action.
+def field(label, kind="text", fid=""):
+    if kind == "select":
+        ctl = (f'<select id="{fid}" disabled><option>NGO</option><option>Media</option><option>Educational institution</option>'
+               f'<option>Embassy or ministry</option><option>Development finance institution</option><option>Company</option></select>')
+    elif kind == "textarea":
+        ctl = f'<textarea id="{fid}" rows="3" disabled></textarea>'
+    else:
+        ctl = f'<input id="{fid}" type="{kind}" disabled>'
+    return f'<label for="{fid}">{e(label)}</label>{ctl}'
+
+
+def m_form(variant="a", title=None, fields=None, aside=None, consent=None, button_label="Send", forms=None, after=None, sid=None, lead=None):
+    if variant == "b":
+        cards = ""
+        for ft, fl, fs in forms:
+            fl_html = "".join(field(l, k, f"{sid or 'f'}-{i}") for i, (l, k) in enumerate(fs))
+            cards += f'<div class="card"><h3>{e(ft)}</h3>{draft(fl, "p", "small") if fl else ""}<form class="mini-form">{fl_html}{dead_button("Send")}</form></div>'
+        top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}</div></div>' if title else ""
+        return mod("form", "b, three short forms", f'{top}<div class="cards-3">{cards}</div>', sid=sid)
+    if variant == "c":
+        inner = f'<div class="cols"><div class="c1-4">{heading(title, 3)}</div><div class="c6-12">{lead or ""}{dead_button(button_label, quiet=True)}</div></div>'
+        return mod("form", "c, a single quiet action", inner, sid=sid)
+    rows = "".join(field(l, k, f"f{i}") for i, (l, k) in enumerate(fields))
+    if consent:
+        rows += f'<label class="check"><input type="checkbox" disabled> <span class="draft">{e(consent)}</span></label>'
+    form = f'<form class="form" aria-label="{e(title)} (not connected yet)">{rows}<button type="button" class="button" disabled>{e(button_label)}</button></form>' + (after or "")
+    inner = f'<div class="cols"><div class="c1-6">{form}</div><div class="c7-12"><aside class="facts-box">{aside or ""}</aside></div></div>'
+    return mod("form", "a, the long form with an aside", inner, sid=sid)
 
 
 # ---------------------------------------------------------------------------------------------
-# The nine templates (each returns the inside of <main>)
+# Draft copy (step 2): written from The engine – brief, the page priorities and the guide’s Words section, within the
+# lengths in Website – modules; marked as draft on the page until Thomas approves it. Sources in comments.
 # ---------------------------------------------------------------------------------------------
-# Section order on the five key pages follows the page priorities: Website – Site map and user flows, section 6 (6 Nov 2026).
-# Engine brief, "For design": the principles a company needs before it puts its name on the work.
-PRINCIPLES_HOME = ["Real images", "Consent", "Credited, fairly paid photographers", "Editorial independence"]
+INTRO_HOME = [  # page priorities, Home 2: who it is for and who is behind it, two or three sentences
+    "Africa Reframed is a partner archive of photographs of modern life in Mali, Kenya and The Gambia: 1,122 images made in our own productions with photographers in Bamako, Nairobi and Banjul.",
+    "Organisations working with Africa in education, skills, business and climate use the images in their reports, applications, exhibitions and their own channels. An independent, non-commercial initiative established by Commerce & Culture.",
+]
+PRINCIPLES = [  # engine brief, For design: the principles a company needs before it puts its name on the work
+    ("Real images", "Every photograph is made by a photographer on location. Our images are never AI-generated and never altered."),
+    ("Consent", "The people in the images agreed to be photographed and to the uses the archive allows."),
+    ("Credited, fairly paid photographers", "The photographers are named on their collection’s page and paid for their work."),
+    ("Editorial independence", "Sponsors get name and stage, never editorial control over what the images show."),
+]
+THEME_TEXTS = {  # theme page 4: what the theme shows and why it matters to partners (Keywording Guide 8b)
+    "learning": "Classrooms and campuses in Bamako and Nairobi, a training kitchen in Banjul, homework at the kitchen table: people of every age building skills, in lessons, in groups around a laptop and on their own. For a partner working in education or vocational training the theme shows teachers as much as learners, and adults building skills as much as children.",
+    "work-and-enterprise": "Tradespeople, cooks, farmers, shopkeepers and young professionals at work, with the tools and the places of their trade: a bicycle repair, a carpenter’s workshop, a market stall, a café meeting, tea fields. For a partner working in skills, enterprise or agriculture the theme shows value being created by people who are good at what they do.",
+    "everyday-digital": "Phones, laptops and money on a screen, used for work, study and keeping in touch: a call in a car, a lesson on a laptop, a payment at a stall. The largest of the five themes. For a partner working in digital services, finance or education it shows technology as an ordinary part of the day, not a novelty.",
+    "city-life": "Cafés, campuses, rooftops and busy streets: the everyday rhythm of Bamako, Banjul and Nairobi, from the morning commute to the evening at a café. For a partner whose work is in cities it shows modern urban life as the given it is.",
+    "creativity-and-culture": "Portraits, style and street art, mostly from Banjul: studio portraits, murals, the way people dress and present themselves. For a partner in culture, media or the creative economy it shows culture as current, made by the people in the frame.",
+}
+THEME_ACTION_LINE = "Partners open the theme in the archive; others are asked to log in or to request access first."  # brief, section 5
+HOUSE_STORY = [  # collection page 2: the story (Keywording Guide 2; AR Archive – Status); partner names only once they agree
+    "The House Collection is Africa Reframed’s own collection: 1,122 photographs made between 2013 and 2018 in 21 shoots in Mali, Kenya and The Gambia, in productions run together with photography workshops in Bamako, Nairobi and Banjul.",
+    "The images show people at work, at study and at home in three modern cities and the countryside around them, photographed in natural light, in their own places. They are released for the uses the archive allows and carry one credit: Photo: Africa Reframed.",
+]
+HOUSE_PEOPLE_NOTE = "The photographers and the workshop partners, credited by name as each agrees (Keywording Guide: partner names stay out until then)."
+PLACES = [  # collection page 5: places and series (Keywording Guide 9, 11b; the shoot list)
+    ("Mali", "Bamako: classrooms, a campus and the street, from the first productions."),
+    ("Kenya", "Nairobi: cafés, offices and campuses; tea fields and a farming village outside the city."),
+    ("The Gambia", "Banjul: a culinary training, women in trades, small businesses and studio portraits. Series: Culinary training, Banjul · Women in trades, Banjul."),
+]
+SPONSOR_TEXT = [  # Partners 4: sponsor a collection, in general terms (brief, Partners; engine brief)
+    "We make new collections with companies as sponsors. A sponsored collection is led by a theme, never by the sponsor’s own activities: it opens a theme the archive does not yet hold, or deepens one of the five.",
+    "The sponsor is named on the collection’s page and credited on the theme page, and gets the whole archive for its own channels, for good, under the same partner licence as everyone else.",
+]
+ACCESS_STEPS = [  # Partners 2: how access works (AR Archive – Status, 3 and 6 November 2026)
+    ("Request access", "Tell us who you are and how you will use the images. We reply within a working day."),
+    ("Approved by name", "We approve each organisation by name; your account opens for the email address you give."),
+    ("Collect, then download", "Gather images in the Lightbox and share them with colleagues. Each download is a free licence for the one use you state."),
+]
+RULES = [  # Partners 3: Using the images, drafted in the brief; to check against the licence
+    ("Who may use the images", "Approved partners, one licence per organisation. The press set is for editorial use."),
+    ("One download, one use", "Each download is a free licence for the use you state there: a report, an application, an exhibition, the press, a presentation or your own channels. A new use, a new download."),
+    ("Credit", "The credit line on every use, on or beside the image: Photo: Africa Reframed. For a sponsored collection it names the collection in full, sponsor included."),
+    ("Editing", "Cropping, resizing and colour are fine; changing what an image shows is not, and neither is altering images with AI or using them to train AI."),
+    ("The people portrayed", "Accurate captions and contexts they would recognise; never a degrading or misleading one, and never presenting the images as your own operations or results."),
+    ("No resale", "No resale, sublicensing or use as a logo."),
+    ("Tell us where they appear", "Report a use through the Partner portal."),
+]
+PORTAL_LEAD = "The archive is for partners: NGOs, media, educational institutions, embassies, ministries and development finance institutions. Signed in already? Partner log in takes you straight to the images."
+PORTAL_RULES = "One download is one licence, for the use you state. Credit every use, never change what an image shows, and tell us where the images appear."
+REQUEST_NEXT = [("We read your request", "and reply within a working day."), ("You get a welcome email", "with your login; the account opens for the address you give."),
+                ("You log in", "collect in the Lightbox and download for each use, free.")]
+REQUEST_CONSENT = "I agree that how we use the images may be reported, without personal details, to the funders who make new collections possible."
+REQUEST_FOOT = "Companies get access through a collection sponsorship; write to partnerships@africareframed.com."
+ABOUT_WHO = [  # About: who is behind it (Strategic Platform; Track Record), as history and proof
+    "Africa Reframed is run by Commerce & Culture, the Copenhagen studio of Thomas Damgaard, which has produced photography, exhibitions and stories with partners in Africa and Europe since 2010.",
+    "The archive grew out of photography workshops in Bamako, Nairobi and Banjul between 2013 and 2018, and out of the exhibition Africa Reframed at Øksnehallen in Copenhagen in 2016.",
+]
+ABOUT_RUN = ["An independent, non-commercial initiative established by Commerce & Culture. The archive is free for selected non-profit and public partners; companies take part by sponsoring a collection, and every sponsored collection makes the archive bigger for all."]
+LEGACY = [("Since 2010", "Productions and exhibitions with partners in Africa and Europe."), ("2014–2017", "Afghan Tales and the Afghan Photography Network."),
+          ("2016", "Africa Reframed at Øksnehallen, Copenhagen."), ("2013–2018", "Photography workshops in Bamako, Nairobi and Banjul: the House Collection.")]
+PRESS_FACTS = [("1,122 images", "in the House Collection, from Mali, Kenya and The Gambia"), ("Five themes", "Learning, Work and enterprise, Everyday digital, City life, Creativity and culture"),
+               ("Free for partners", "selected non-profit and public partners; companies through a collection sponsorship"), ("Established by", "Commerce & Culture, Copenhagen"),
+               ("Real images", "our images are never AI-generated")]
+PRIVACY = [("What we collect", "Your organisation, your name and role, your email address, how you expect to use the images, and the answers you give in the partner forms."),
+           ("Why", "To approve access and keep in touch, and to report how the images are used, without personal details, to the funders who make new collections possible, with your consent."),
+           ("How long, and your rights", "We keep your details while your organisation has access and for one year after. You can ask to see, change or delete them at any time."),
+           ("Who to write to", "hello@africareframed.com.")]
 
 
+# ---------------------------------------------------------------------------------------------
+# The pages, each a sequence of modules in the order of the page priorities (Site map, section 6) and the inventory
+# (section 3). Nine templates; the five key pages first.
+# ---------------------------------------------------------------------------------------------
 def tpl_home(p, base):
-    # 1 What this is: the Opening (design guide, Opening): the core line on white in columns 1–4, one real photograph from
-    #   the line of column 5 off the right edge of the page. Geometry only; the stripes and triangles come in step 3.
-    hero = (f'<section class="opening"><div class="wrap cols">'
-            f'<div class="opening-words c1-4"><h1>{e(CORE_LINE)}</h1>'
-            + note("The Opening: the words on white beside the photograph, never on it. The stripes and triangles cut in from the white edges in step 3.")
-            + f'</div><div class="c5-off">{img("Opening photograph · from a column line off the right edge (5 on desktop, 2 below) · released, no minors", None, cls="opening-img")}</div>'
-            f'</div></section>')
-    # 2 Who it is for and who is behind it; the ways on (7) sit with it, and Request access stays quiet (6 Nov decision)
-    intro = sec('<div class="narrow">'
-                + note("Two or three sentences: what Africa Reframed is, who it is for and who is behind it (Commerce & Culture). A funder checking us gets it here, in the first screen.")
-                + lines(3)
-                + doors(button(base + "themes/", "Explore the themes"), button(base + "partners/", "How partners use the archive", quiet=True))
-                + "</div>", "intro")
-    # 3 That it is in use: partners by name, one example of use, the three numbers
-    inuse = sec(head("In use")
-                + note("The organisations using the archive, by name and with their consent, and one published example of use. They come from the closed preview; until there are any, this section is left out.")
-                + numbers() + logos()
-                + f'<div class="split">{img("Example of use: a report, an exhibition or an article", "3/2")}<div>'
-                + lines(3) + ph_text("Partner · where it appeared · when") + "</div></div>")
-    # 4 The five themes in story order
-    cards = "".join(theme_card(t, base, i) for i, t in enumerate(THEMES, 1))
-    themes = sec(head("Five themes", THEMES_LEAD) + f'<div class="theme-row">{cards}</div>')
-    # 5 The collections
-    coll = sec(head("Collections") + house_split(base)
-               + note("A sponsored collection appears here once it is signed, shown as in production; never as a plan."))
-    # 6 The principles, one line each, linked to About
-    pr = "".join(f'<li><strong>{e(x)}</strong>{lines(1)}</li>' for x in PRINCIPLES_HOME)
-    principles = sec(head("Principles") + note("One line each, in plain words; the full story is on About.")
-                     + f'<ul class="principles">{pr}</ul>'
-                     + doors(button(base + "about/", "About Africa Reframed", quiet=True)), "band")
-    return hero + intro + inuse + themes + coll + principles
+    # 1 What this is: the Opening. 2 Who it is for and who is behind it, with the ways on. 3 In use: the numbers (exist),
+    # partners and an example (from the closed preview). 4 The five themes. 5 The collections. 6 The principles.
+    return (m_opening(CORE_LINE)
+            + m_text(None, INTRO_HOME, "d", links=[button(base + "themes/", "Explore the themes", quiet=True),
+                                                   button(base + "partners/", "How partners use the archive", quiet=True)], sid="intro")
+            + m_numbers(title="In use", note_text="The three numbers exist; partners by name and one example of use come from the closed preview, with consent, and until then the two modules below are left out of the live page.")
+            + m_partners() + m_use("a")
+            + m_themes(base, "a")
+            + m_collection(base)
+            + m_items("Principles", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
+            + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)]))
 
 
 def tpl_index_themes(p, base):
-    rows = []
-    for i, t in enumerate(THEMES, 1):
-        strip = "".join(img("Image", "1/1") for _ in range(3))
-        rows.append(f'<a class="theme-line" href="{base}themes/{t["slug"]}/"><span class="order big">{i}</span>'
-                    f'<div><h2>{e(t["name"])}</h2><p>{e(t["statement"])}</p><span class="count">{t["count"]} images →</span></div>'
-                    f'<div class="strip3">{strip}</div></a>')
-    return (sec(head(p["title"], THEMES_LEAD, level=1), "page-head")
-            + sec(note("Each row shows three images from the theme. " + PUBLIC_SAMPLE) + "".join(rows), "tight"))
+    return m_page_head(p["title"], THEMES_LEAD) + m_themes(base, "b")
 
 
 def tpl_index_collections(p, base):
-    return (sec(head(p["title"], "Each collection is a body of work with its own story and the people behind it.", level=1), "page-head")
-            + sec(house_split(base), "tight")
-            + sec(note("Sponsored collections appear here when they exist, each under its full name. Nothing planned is shown.")))
+    return (m_page_head(p["title"], "Each collection is a body of work with its own story and the people behind it.", statement_draft=True)
+            + m_collection(base, "b", title=False))
 
 
 def tpl_theme(p, base):
     t = p["theme"]
     n = THEMES.index(t)
-    prv, nxt = THEMES[n - 1], THEMES[(n + 1) % len(THEMES)]
-    meta = f'<p class="meta-row"><span>{t["count"]} images in the archive</span><span>House Collection</span></p>'
-    top = sec(f'<p class="kicker">Theme {n + 1} of {len(THEMES)}</p><h1>{e(t["name"])}</h1>'
-              f'<p class="statement">{e(t["statement"])}</p>{meta}', "page-head")
-    lead_img = sec(img("Lead image for the theme", "21/9", cls="wide"), "tight")
-    samples = sec(head("From the archive") + note("Six to eight images that carry the theme. " + PUBLIC_SAMPLE) + sample_grid())
-    action = sec(f'<div class="action"><div class="num"><b>{t["count"]}</b><span>images on {e(t["name"].lower())} in the archive</span></div>'
-                 + doors(button(archive("/-/galleries/archive?search=" + quote(t["query"]), "theme-" + t["slug"]), "Open in the archive →"),
-                         button(base + "request-access/", "Request access", quiet=True))
-                 + '</div><p class="small">Partners open the theme in the archive; others are asked to log in or request access first.</p>', "band")
-    nav = sec(f'<div class="theme-nav">'
-              f'<a href="{base}themes/{prv["slug"]}/">{img("Theme image", "5/2")}<span class="dir">← Previous theme</span><strong>{e(prv["name"])}</strong></a>'
-              f'<a href="{base}themes/{nxt["slug"]}/">{img("Theme image", "5/2")}<span class="dir">Next theme →</span><strong>{e(nxt["name"])}</strong></a></div>')
-    shows = sec(head("What it shows") + note("A short text on what the theme shows and why it matters to partners.") + lines(4))
-    credit = sec(note("The sponsor credit, “made possible by …”, linked to the collection page, once a sponsor has funded the theme. "
-                      "Until then nothing is shown here."), "tight")
-    # Page priorities: name and statement, the evidence, Open in the archive, the text, the sponsor credit, previous and next
-    return top + lead_img + samples + action + shows + credit + nav
+    # 1 name, statement, count; 2 the evidence: a lead image and six to eight samples; 3 Open in the archive; 4 the text;
+    # 5 the sponsor credit; 6 previous and next.
+    lead = m_photo(f"Lead image for {t['name']}", "21/9", "b")
+    return (m_page_head(t["name"], t["statement"], kicker=f"Theme {n + 1} of {len(THEMES)}", meta=[f'{t["count"]} images in the archive', "House Collection"], lead=lead)
+            + m_grid("d", 6, "Image from the theme", line="Six images that carry the theme; released, no minors.", title="From the archive")
+            + m_doors("b", count=(t["count"], f'images on {t["name"].lower()} in the archive'),
+                      main=button(archive("/-/galleries/archive?search=" + quote(t["query"]), "theme-" + t["slug"]), "Open in the archive →"),
+                      quiet=button(base + "request-access/", "Request access", quiet=True), line=THEME_ACTION_LINE)
+            + m_text("What it shows", [THEME_TEXTS[t["slug"]]], "a")
+            + m_sponsor("theme")
+            + m_themes(base, "c", current=t))
 
 
 def tpl_collection(p, base):
     facts = "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in HOUSE_FACTS)
-    top = sec(f'<p class="kicker">Collection</p><h1>House Collection</h1><p class="statement">{e(HOUSE_STATEMENT)}</p>', "page-head")
-    hero = sec(img("Collection image", "21/9", cls="wide"), "tight")
-    story = sec('<div class="grid-2"><div>' + head("The story")
-                + note("How the collection was made, where and with whom. Written as history and proof, in the present tense of the archive.")
-                + lines(6) + '</div><aside class="facts-box">'
-                + f'<dl class="facts">{facts}</dl></aside></div>')
-    people_cards = "".join(f'<div class="person">{img("Portrait", "1/1")}{ph_text("Name · role")}{lines(1)}</div>' for _ in range(3))
-    people = sec(head("The people")
-                 + note("Photographers and workshop partners, credited as each agrees. For a sponsored collection, the sponsor’s credit and its own statement sit here, after the work.")
-                 + f'<div class="cards-3">{people_cards}</div>')
-    places = []
-    for country in ("Mali", "Kenya", "The Gambia"):
-        series = ('<ul class="list">' + "".join(f"<li>{e(s)}</li>" for s in GAMBIA_SERIES) + "</ul>") if country == "The Gambia" else ""
-        places.append(f'<div class="place">{img("Image from " + country, "3/2")}<h3>{e(country)}</h3>{series}{lines(2)}</div>')
-    places_sec = sec(head("Places and series") + note("Series by name and place, as the shoot list gives them.")
-                     + f'<div class="cards-3">{"".join(places)}</div>')
-    samples = sec(head("From the collection") + note("A spread across the five themes. " + PUBLIC_SAMPLE) + sample_grid())
-    chips = "".join(f'<a class="chip" href="{base}themes/{t["slug"]}/">{e(t["name"])}</a>' for t in THEMES)
-    ghosts = '<span class="chip ghost"></span>' * 4
-    feeds = sec('<div class="grid-2"><div>' + head("Themes it feeds") + f'<div class="chips">{chips}</div></div><div>'
-                + head("Goals it serves") + note("The Sustainable Development Goals the collection serves, from the SDG field in the metadata.")
-                + f'<div class="chips">{ghosts}</div></div></div>')
-    action = sec(f'<div class="action"><div class="num"><b>1,122</b><span>images in the House Collection</span></div>'
-                 + doors(button(archive("/-/galleries/archive", "collection-house"), "Open in the archive →"),
-                         button(base + "partners/", "How partners use the archive", quiet=True)) + "</div>"
-                 + f'<p class="small">Sponsoring a collection? Write to <a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a>.</p>', "band")
-    uses = "".join(f'<div class="example">{img("Example of use", "3/2")}{lines(2)}{ph_text("Partner · where it appeared · when")}</div>' for _ in range(3))
-    inuse = sec(head("In use") + note("Images from this collection in use, with consent. Shown once there are any.")
-                + f'<div class="cards-3">{uses}</div>')
-    # Page priorities: name and image, story, people, evidence, places, themes and goals, Open in the archive, in use.
-    # The same template holds a collection in production and, where it applies, the rights note (editorial use only).
-    return top + hero + story + people + samples + places_sec + feeds + action + inuse
+    box = f'<dl class="facts">{facts}</dl>'
+    people = [("Photographer", "", "Portrait"), ("Photographer", "", "Portrait"), ("Workshop partner", "", "Portrait")]
+    # 1 name, statement, image; 2 the story; 3 the people; 4 the evidence; 5 places and series; 6 themes and goals;
+    # 7 Open in the archive, Contact; 8 in use.
+    return (m_page_head("House Collection", HOUSE_STATEMENT, kicker="Collection", lead=m_photo("Collection image", "21/9", "b"))
+            + m_text("The story", HOUSE_STORY, "b", box=box)
+            + m_items("The people", people, "d", lead=note(HOUSE_PEOPLE_NOTE), is_draft=False, image_ratio="1/1", image_label="Portrait")
+            + m_grid("d", 8, "Image from the collection", line="A spread across the five themes; released, no minors.", title="From the collection")
+            + m_items("Places and series", [(c, t, f"Image from {c}") for c, t in PLACES], "d")
+            + m_items("Themes it feeds", [(t["name"], f'{base}themes/{t["slug"]}/') for t in THEMES], "e")
+            + m_items("Goals it serves", [(g, None) for g in ("SDG 4 – Quality Education", "SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality")], "e",
+                      lead=note("From the SDG field in the metadata; the three most frequent for now, to confirm from the AR Metadata sheet."))
+            + m_doors("b", count=("1,122", "images in the House Collection"),
+                      main=button(archive("/-/galleries/archive", "collection-house"), "Open in the archive →"),
+                      quiet=button(base + "partners/", "How partners use the archive", quiet=True),
+                      line=f"Sponsoring a collection? Write to {EMAIL_PARTNERS}.")
+            + m_use("b"))
 
 
 def tpl_partners(p, base):
-    # Brief, Partners: one page, two doors on the first screen, nothing else above them.
-    panels = (f'<div class="door-panels">'
-              f'<a class="panel dark" href="#use"><span class="kicker">Organisations</span>'
-              f'<strong>Use the images</strong><span>Free for selected non-profit and public partners.</span></a>'
-              f'<a class="panel" href="#sponsor"><span class="kicker">Companies</span>'
-              f'<strong>Sponsor a collection</strong><span>Companies get access through a collection sponsorship.</span></a></div>')
-    top = sec(head(p["title"], level=1) + panels, "page-head")
-    use = sec(head("Use the images") + f"<p>{e(ACCESS_WHO)}</p>"
-              + steps([("Request access", "Tell us who you are and how you will use the images."),
-                       ("Approved by name", "We approve each organisation by name."),
-                       ("Collect, then download", "Gather images in the Lightbox and share them with colleagues. Each download is a free licence for the one use you state.")])
-              + note("What we ask in return: report a use, and a yearly question about what you are working on.")
-              + doors(button(base + "request-access/", "Request access")), sid="use")
-    rules = sec(head("Using the images", "The rules for use in plain language. Read them before you apply.") + rules_list()
-                + f'<p class="small">Draft, to be checked against the licence; <a href="{ARCHIVE}/terms">Terms</a> on the archive is the legal text.</p>',
-                "band", sid="using-the-images")
-    examples = "".join(f'<div class="example">{img("Example of use", "3/2")}{lines(2)}{ph_text("Partner · where it appeared · when")}</div>' for _ in range(3))
-    inuse = sec(head("Partners using the archive") + note("Organisations by name and published uses, with their consent.")
-                + logos(10) + f'<div class="cards-3">{examples}</div>', sid="partners")
-    sponsor = sec('<div class="grid-2"><div>' + head("Sponsor a collection") + f"<p>{e(ACCESS_COMPANIES)}</p>"
-                  + note("In general terms: we make new collections with companies as sponsors, theme-led and never about the sponsor’s own activities, opening new themes or deepening existing ones, each with its own collection page and credit on the theme page. The specific offers and prices belong in conversation, not on the site.")
-                  + lines(2) + f'</div><div class="contact-box"><p class="kicker">Partnerships</p>'
-                  f'<p class="h-big"><a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p></div></div>', sid="sponsor")
-    # Page priorities: the two doors, how access works, using the images, sponsor a collection, who already uses it
-    return top + use + rules + sponsor + inuse
+    doors = [door("#use", "Organisations", "Use the images", "Free for selected non-profit and public partners.", dark=True),
+             door("#sponsor", "Companies", "Sponsor a collection", "Companies get access through a collection sponsorship.")]
+    # 1 the two doors; 2 how access works; 3 using the images; 4 sponsor a collection; 5 who already uses the archive; 6 request access, contact.
+    return (m_page_head(p["title"], doors=m_doors("a", doors=doors))
+            + m_text("Use the images", [ACCESS_WHO], "a", is_draft=False, sid="use")
+            + m_items(None, ACCESS_STEPS, "b")
+            + m_doors("c", links=[button(base + "request-access/", "Request access", quiet=True)])
+            + m_items("Using the images", RULES, "c", lead=draft("The rules for use in plain language. Read them before you apply. Terms on the archive is the legal text.", "p", "small"), sid="using-the-images")
+            + m_text("Sponsor a collection", SPONSOR_TEXT, "c", contact=("Partnerships", EMAIL_PARTNERS), sid="sponsor")
+            + m_partners(10, "Partners using the archive") + m_use("b", "In use"))
 
 
 def tpl_portal(p, base):
-    panels = (f'<div class="door-panels">'
-              f'<a class="panel dark" href="{archive("/-/galleries/archive", "portal")}"><span class="kicker">Partners</span>'
-              f'<strong>Partner log in →</strong><span>Signed in already? This takes you straight to the images.</span></a>'
-              f'<a class="panel" href="{base}request-access/"><span class="kicker">Not a partner yet?</span>'
-              f'<strong>Request access</strong><span>Free for selected non-profit and public partners.</span></a></div>')
-    top = sec(head(p["title"], level=1)
-              + f'<p class="lead">The archive is for partners: {e(ACCESS_WHO.split(": ", 1)[1])}</p>' + panels, "page-head")
-    desk = sec(head("The partner’s desk", "The one place to tell us how the images are used and what you need next.")
-               + note("Every answer lands in the partner database; the forms ask for organisation and email. The welcome email, the download email and a three-month check-in point here.")
-               + '<div class="cards-3">'
-               + f'<div class="card" id="report"><h3>Report a use</h3>{mini_form([("Where it appeared", False), ("Link", False), ("Date", False), ("What you need next", True)], "Send")}</div>'
-               + f'<div class="card" id="request-imagery"><h3>Request imagery</h3><p class="small">Can’t find what you need?</p>{mini_form([("What you are looking for", True), ("For what", False), ("By when", False)], "Send")}</div>'
-               + f'<div class="card" id="working-on"><h3>What are you working on?</h3>{mini_form([("Your project", True), ("Link", False)], "Send")}</div>'
-               + "</div>", sid="desk")
-    call = sec('<div class="card call-card" id="call"><div><h3>Talk to us</h3>'
-               + note("Optional, never required: a short call about what is missing and what you are working on.")
-               + lines(2) + f'</div>{dead_button("Book a feedback call", quiet=True)}</div>', "tight")
-    news_cards = "".join(f'<div class="example">{img("News image", "3/2")}{ph_text("Date")}{lines(2)}</div>' for _ in range(3))
-    news = sec(head("Partner news")
-               + note("News for partners and the numbers as they grow; aggregates and consented examples only. Shown once there is something to show.")
-               + numbers([("—", "partners"), ("—", "images downloaded"), ("—", "uses reported")])
-               + f'<div class="cards-3">{news_cards}</div>', sid="news")
-    rules = sec(head("Using the images")
-                + f'<p>One download is one licence, for the use you state. Credit every use, never change what an image shows, and tell us where the images appear.</p>'
-                + doors(button(base + "partners/#using-the-images", "All the rules", quiet=True),
-                        button(archive("/client", "portal-history"), "Your download history", quiet=True)), "band", sid="rules")
-    # Page priorities: the gate, report a use, request imagery and what you are working on, news, the rules, a feedback call
-    return top + desk + news + rules + call
+    doors = [door(archive("/-/galleries/archive", "portal"), "Partners", "Partner log in →", "Signed in already? This takes you straight to the images.", dark=True),
+             door(base + "request-access/", "Not a partner yet?", "Request access", "Free for selected non-profit and public partners.")]
+    forms = [("Report a use", "Where an image appeared, and what you need next.", [("Where it appeared", "text"), ("Link", "url"), ("Date", "text"), ("What you need next", "textarea"), ("Organisation and email", "email")]),
+             ("Request imagery", "Can’t find what you need?", [("What you are looking for", "textarea"), ("For what", "text"), ("By when", "text"), ("Organisation and email", "email")]),
+             ("What are you working on?", "The yearly question, any time.", [("Your project", "textarea"), ("Link", "url"), ("Organisation and email", "email")])]
+    # 1 who it is for and the two doors; 2 report a use; 3 request imagery and what are you working on; 4 news and numbers; 5 the rules reminder; 6 a feedback call.
+    return (m_page_head(p["title"], PORTAL_LEAD, statement_draft=True, doors=m_doors("a", doors=doors))
+            + m_form("b", title="The partner’s desk", forms=forms, sid="desk",
+                     lead=draft("The one place to tell us how the images are used and what you need next. Every answer lands with us, and we answer.", "p"))
+            + m_numbers([("—", "partners"), ("—", "images downloaded"), ("—", "uses reported")], "once there is something to show", title="Partner news",
+                        note_text="The numbers as they grow and news for partners; aggregates and consented examples only. Shown once there is something to show; until then left out of the live page.")
+            + m_use("c", "News")
+            + m_text("Using the images", [PORTAL_RULES], "a", links=[button(base + "partners/#using-the-images", "All the rules", quiet=True),
+                                                                    button(archive("/client", "portal-history"), "Your download history", quiet=True)], sid="rules")
+            + m_form("c", title="Talk to us", button_label="Book a feedback call", sid="call",
+                     lead=draft("Optional, never required: a short call about what is missing and what you are working on.", "p", "small")))
 
 
 def tpl_form(p, base):
     fields = [("Organisation", "text"), ("Your role", "text"), ("Type of organisation", "select"), ("Country", "text"), ("Focus of your work", "text"),
               ("How you will use the images", "textarea"), ("What imagery you are looking for", "textarea"), ("Email", "email")]
-    rows = []
-    for i, (label, kind) in enumerate(fields):
-        fid = f"f{i}"
-        if kind == "select":
-            ctl = (f'<select id="{fid}" disabled><option>NGO</option><option>Media</option><option>Educational institution</option>'
-                   f'<option>Embassy or ministry</option><option>Development finance institution</option><option>Company</option></select>')
-        elif kind == "textarea":
-            ctl = f'<textarea id="{fid}" rows="3" disabled></textarea>'
-        else:
-            ctl = f'<input id="{fid}" type="{kind}" disabled>'
-        rows.append(f'<label for="{fid}">{e(label)}</label>{ctl}')
-    rows.append('<label class="check"><input type="checkbox" disabled> I agree that how we use the images may be reported, '
-                'without personal details, to the funders who make new collections possible.</label>')
-    form = (f'<form class="form" aria-label="Request access (not connected yet)">{"".join(rows)}'
-            f'<button type="button" class="button" disabled>Send the request</button></form>'
-            f'<p class="small">Read <a href="{base}partners/#using-the-images">the rules for using the images</a> first. '
-            f'Until this form is connected, requests go through <a href="{archive("/contact", "request")}">the archive’s request form</a>.</p>')
-    aside = ('<aside class="facts-box">' + head("What happens next", level=3)
-             + '<ol class="next-steps"><li>We read your request.</li><li>You get a welcome email.</li><li>You log in, collect in the Lightbox and download for each use.</li></ol>'
-             + note("How soon we answer: to decide. Companies are answered with the sponsorship route.") + "</aside>")
-    return (sec(head(p["title"], level=1) + f'<p class="lead">{e(ACCESS_WHO)} {e(ACCESS_COMPANIES)}</p>', "page-head")
-            + sec(f'<div class="grid-2">{"<div>" + form + "</div>"}{aside}</div>', "tight")
-            + sec('<div class="card thanks">' + head("Thank you", level=3) + lines(2) + '</div>'
-                  + note("The thank-you state, shown in place of the form after sending: what happens next and how soon.")))
+    aside = heading("What happens next", 3) + '<ol class="next-steps">' + "".join(f"<li><strong>{e(a)}</strong> <span class=\"draft\">{e(b)}</span></li>" for a, b in REQUEST_NEXT) + "</ol>" + draft(REQUEST_FOOT, "p", "small")
+    after = (f'<p class="small">Read <a href="{base}partners/#using-the-images">the rules for using the images</a> first. '
+             f'Until this form is connected, requests go through <a href="{archive("/contact", "request")}">the archive’s request form</a>.</p>')
+    return (m_page_head(p["title"], f"{ACCESS_WHO} {ACCESS_COMPANIES}")
+            + m_form("a", title="Request access", fields=fields, aside=aside, consent=REQUEST_CONSENT, button_label="Send the request", after=after)
+            + m_text("Thank you", ["Your request is with us. We reply within a working day, and the welcome email that follows opens your account."], "a", sid="thanks"))
 
 
 def tpl_press(p, base):
-    facts = ('<ul class="list">'
-             '<li>1,122 images in the House Collection, from Mali, Kenya and The Gambia</li>'
-             '<li>Five themes: Learning, Work and enterprise, Everyday digital, City life, Creativity and culture</li>'
-             '<li>Free for selected non-profit and public partners</li>'
-             '<li>An independent initiative established by Commerce & Culture</li>'
-             '<li>Our images are never AI-generated</li></ul>')
-    top = sec(head(p["title"], "Stories, images for editorial use, and someone to talk to.", level=1), "page-head")
-    release = sec(f'<div class="split">{img("Press image for the relaunch", "3/2")}<div>'
-                  + head("The relaunch", kicker="Press release")
-                  + note("From the Strategic Platform’s draft text, with date and quotes from named people who agreed to them.")
-                  + lines(3) + doors(dead_button("Download the release (PDF)", quiet=True)) + "</div></div>", "tight")
-    factsheet = sec('<div class="grid-2"><div>' + head("Fact sheet") + facts + "</div><div>" + head("Track record")
-                    + note("Exhibitions and collaborations since 2010, as history.") + lines(4) + "</div></div>")
-    pressset = sec(head("Press images")
-                   + note("A curated set for editorial use with the credit line; no images with minors. Open download or through media access: to decide.")
-                   + sample_grid(6, "Press image") + doors(dead_button("Download the press set", quiet=True)))
-    leads = "".join(f'<div class="example">{img("Image from the series", "3/2")}<h3>{e(s)}</h3>{lines(2)}{ph_text("Series · place · who to talk to")}</div>'
-                    for s in GAMBIA_SERIES)
-    leads_sec = sec(head("Story leads") + note("Each lead in two sentences, with the series, the place and who to talk to.")
-                    + f'<div class="cards-2">{leads}</div>')
-    kit = sec(head("Logos and portrait") + '<div class="cards-3">'
-              + f'<div class="example"><div class="logo-tile"><img src="{base}assets/logo.png" alt="Africa Reframed logo"></div><p class="small">Logo, white on black</p></div>'
-              + f'<div class="example">{img("Logo, black on white", "3/2")}<p class="small">Logo, black on white</p></div>'
-              + f'<div class="example">{img("Portrait: Thomas Damgaard", "3/2")}<p class="small">Portrait</p></div></div>')
-    contact = sec(head("Press contact") + f'<p class="h-big"><a href="mailto:{EMAIL_PRESS}">{EMAIL_PRESS}</a></p>', "band")
-    return top + release + factsheet + pressset + leads_sec + kit + contact
+    facts = [(a, b) for a, b in PRESS_FACTS]
+    release_text = heading("The relaunch", 3, "kicker-h") + draft("The press release, from the Strategic Platform’s draft, with date and quotes from named people who agreed to them.", "p") + f'<p class="doors">{dead_button("Download the release (PDF)", quiet=True)}</p>'
+    return (m_page_head(p["title"], "Stories, images for editorial use, and someone to talk to.", statement_draft=True)
+            + m_photo("Press image for the relaunch", "3/2", "c", text=release_text, side="left")
+            + m_items("Fact sheet", facts, "a", is_draft=True)
+            + m_text("Track record", ["Exhibitions and collaborations since 2010, told as history: the proof behind the present."], "a")
+            + m_grid("a", 3, "Press image", line="A curated set for editorial use with the credit line; no images with minors.", title="Press images",
+                     link=dead_button("Download the press set", quiet=True))
+            + m_items("Story leads", [(s, "Two sentences on the series, the place and who to talk to.", "Image from the series") for s in GAMBIA_SERIES], "d")
+            + m_items("Logos and portrait", [("Logo, black on white", "", "Logo"), ("Logo, white on black", "", "Logo"), ("Thomas Damgaard", "", "Portrait")], "d", is_draft=False)
+            + m_doors("d", kicker="Press contact", address=EMAIL_PRESS, line="We answer the same day."))
 
 
 def tpl_text(p, base):
     k = p["slug"]
     if k == "about":
-        principles = ["Real images, never AI-generated", "Consent and releases", "Photographers credited", "Fair terms",
-                      "Editorial independence"]
-        pr = "".join(f'<div class="card"><h3>{e(x)}</h3>{lines(2)}</div>' for x in principles)
-        legacy = [("Since 2010", "Exhibitions and collaborations"), ("2014–2017", "Afghan Tales"),
-                  ("2016", "Africa Reframed at Øksnehallen"), ("", "Artist collaborations")]
-        lg = "".join(f'<div class="example">{img("Archive image", "3/2")}<p class="kicker">{e(y)}</p><h3>{e(t)}</h3>{lines(2)}</div>'
-                     for y, t in legacy)
-        return (sec(head(p["title"], ABOUT_LINE, level=1), "page-head")
-                + sec(f'<div class="split">{img("Portrait: Thomas Damgaard", "4/5")}<div>' + head("Who is behind it")
-                      + note("Commerce & Culture and Thomas Damgaard: who runs the initiative and why.") + lines(4) + "</div></div>", "tight")
-                + sec(head("Principles") + note("How the images are made and used.") + f'<div class="cards-5">{pr}</div>')
-                + sec(head("Legacy") + note("History, as proof behind the present.") + f'<div class="cards-4">{lg}</div>')
-                + sec(head("How it is run") + note("A non-commercial initiative, administered through KKArt; no licensing sales; surplus funds new collections.")
-                      + lines(2), "band"))
+        who = heading("Who is behind it", 3, "kicker-h") + "".join(draft(x) for x in ABOUT_WHO)
+        return (m_page_head(p["title"], ABOUT_LINE)
+                + m_photo("Portrait: Thomas Damgaard", "4/5", "c", text=who, side="left")
+                + m_items("Principles", PRINCIPLES + [("Fair terms", "One download, one licence, free of charge; no resale, no sublicensing.")], "a")
+                + m_items("Legacy", [(t, d, "Archive image") for t, d in LEGACY], "d", lead=note("History, as proof behind the present; images from the earlier sites once the media inventory is done."))
+                + m_text("How it is run", ABOUT_RUN, "a"))
     if k == "contact":
-        return sec(head(p["title"], level=1)
-                   + f'<p class="h-big"><a href="mailto:{EMAIL_MAIN}">{EMAIL_MAIN}</a></p>'
-                   + note("A link to Africa Reframed on LinkedIn.")
-                   + f'<p class="small">Press: <a href="mailto:{EMAIL_PRESS}">{EMAIL_PRESS}</a> · '
-                     f'Partnerships: <a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p>', "page-head")
-    parts = [("What we collect", "Organisation, contact details, intended use and the answers you give in the partner forms."),
-             ("Why", "To approve access, keep in touch, and report how the images are used, without personal details, to the funders who make new collections possible, with your consent."),
-             ("How long, and your rights", "How long we keep it, and how to see, change or delete it."),
-             ("Contact", "Who to write to about your data, and how.")]
-    body = "".join(sec(head(h) + note(n) + lines(3), "tight") for h, n in parts)
-    return sec(head(p["title"], "What we collect when you request access or write to us, and why.", level=1), "page-head") + body
+        return (m_page_head(p["title"], "One quiet way to reach us.", statement_draft=True)
+                + m_doors("d", kicker="Write to us", address=EMAIL_MAIN, line=f"Press: {EMAIL_PRESS} · Partnerships: {EMAIL_PARTNERS} · Africa Reframed on LinkedIn."))
+    return (m_page_head(p["title"], "What we collect when you request access or write to us, and why.", statement_draft=True)
+            + "".join(m_text(h, [t], "a") for h, t in PRIVACY))
 
 
 TEMPLATES = {"home": tpl_home, "themes": tpl_index_themes, "collections": tpl_index_collections, "theme": tpl_theme,
              "collection": tpl_collection, "partners": tpl_partners, "portal": tpl_portal, "form": tpl_form,
              "press": tpl_press, "text": tpl_text}
+
+
+# ---------------------------------------------------------------------------------------------
+# /dev/modules: every module with each of its variants on one page (step 2), generated by every build.
+# ---------------------------------------------------------------------------------------------
+def tpl_modules(base):
+    t = THEMES[0]
+    intro = (m_page_head("Modules", "Every module of the site with each of its variants, on the grid, as the wireframe builds them. "
+                         "From Website – modules (05 Website), approved 8 November 2026. Grey boxes are images at their proportions; "
+                         "text with a dotted underline is draft copy. The header and the footer are the page’s own.", statement_draft=True)
+             + f'<div class="wrap"><p class="small">Show the grid with the button in the strip or the key G. Each module’s label gives its number and variant.</p></div>')
+    sample_box = '<dl class="facts"><dt>Images</dt><dd>1,122</dd><dt>Countries</dt><dd>3</dd></dl>'
+    return (intro
+            + m_opening(CORE_LINE, "One line beneath the heading, at most; on Home nothing more.")
+            + m_page_head("Page head", "A statement of at most 25 words under the title, in the right columns.", kicker="Kicker", meta=["279 images in the archive", "House Collection"])
+            + m_page_head("Page head with doors", doors=m_doors("a", doors=[door("#", "Kicker", "First door", "A line of at most 15 words.", dark=True), door("#", "Kicker", "Second door", "A line of at most 15 words.")]))
+            + m_page_head("Page head with the lead photograph", "The page opening of the theme and collection pages.", lead=m_photo("Lead image", "21/9", "b"))
+            + m_text("Text section", ["Title left, text right: 60 to 160 words of text in the right columns, the measure capped at about 70 characters a line."], "a")
+            + m_text("With a facts box", ["The text, then the facts box in the right columns under it."], "b", box=sample_box)
+            + m_text("With a contact", ["The text, then the contact as the right column’s end."], "c", contact=("Partnerships", EMAIL_PARTNERS))
+            + m_text(None, ["The intro on Home: two or three sentences in columns 1–8 under the Opening, with the ways on."], "d",
+                     links=[button("#", "Explore the themes", quiet=True), button("#", "How partners use the archive", quiet=True)])
+            + m_photo("Full bleed", "21/9", "a", caption="AR-ID · The caption, at most 40 words, led by the AR ID where the image is featured.")
+            + m_photo("On the columns", "3/2", "b", caption="AR-ID · The caption.")
+            + m_photo("Photograph and text", "3/2", "c", text=heading("Beside the photograph", 3) + draft("The text in the other half of the columns; the next one alternates."), side="left")
+            + m_photo("Photograph and text", "4/5", "c", text=heading("Alternating", 3) + draft("The photograph on the right this time."), side="right")
+            + m_grid("a", 3, "Image", title="Image grid: three in a row")
+            + m_grid("b", 4, "Portrait", title="Four portraits")
+            + m_grid("c", title="A strip of three")
+            + m_grid("d", 8, "Image", title="Six to eight, mixed", line="Equal frames with 8 px gaps.")
+            + m_themes(base, "a") + m_themes(base, "b") + m_themes(base, "c", current=t)
+            + m_collection(base)
+            + m_numbers(title="Numbers: a row of three")
+            + m_doors("b", count=("198", "images on learning in the archive"), main=button("#", "Open in the archive →"), quiet=button("#", "Request access", quiet=True), line=THEME_ACTION_LINE)
+            + m_numbers([("72", "Mali"), ("21", "Kenya"), ("105", "The Gambia")], None, "c", title="A count by country", note_text="Illustrative figures; the real counts come from the AR Metadata sheet.")
+            + m_partners(6)
+            + m_use("a") + m_use("b") + m_use("c", "Partner news")
+            + m_doors("c", links=[button("#", "The ways on", quiet=True), button("#", "A second quiet link", quiet=True)])
+            + m_doors("d", kicker="Contact band", address=EMAIL_PRESS, line="A line of at most 15 words.")
+            + m_items("Item list: plain", PRINCIPLES[:3], "a")
+            + m_items("Numbered steps", ACCESS_STEPS, "b")
+            + m_items("Accordion", RULES[:3], "c")
+            + m_items("With images", [("Name", "Role, a line.", "Portrait"), ("Name", "Role, a line.", "Portrait"), ("Name", "Role, a line.", "Portrait")], "d", image_ratio="1/1")
+            + m_items("Chips", [(x["name"], "#") for x in THEMES], "e")
+            + m_sponsor("theme") + m_sponsor("collection")
+            + m_form("a", title="The long form", fields=[("Organisation", "text"), ("Email", "email"), ("How you will use the images", "textarea")],
+                     aside=heading("What happens next", 3) + draft("The aside in columns 7–12."), consent=REQUEST_CONSENT, button_label="Send the request")
+            + m_form("b", title="Three short forms", forms=[("Report a use", "A line.", [("Where it appeared", "text"), ("Link", "url")]),
+                                                               ("Request imagery", "A line.", [("What you are looking for", "textarea")]),
+                                                               ("What are you working on?", "A line.", [("Your project", "textarea")])])
+            + m_form("c", title="A single quiet action", button_label="Book a feedback call", lead=draft("Optional, never required.", "p", "small")))
+
 
 # ---------------------------------------------------------------------------------------------
 # The 16 pages (Website – Site map and user flows, 05 Website)
@@ -484,9 +690,9 @@ ORDER_OF_WORK = [("Brief", "done", "Website – Brief and build plan"),
                  ("Site map and user flows", "done", "Website – Site map and user flows, and the two maps"),
                  ("Page priorities", "done", "Site map and user flows, section 6: what the five key pages must say and do, ranked"),
                  ("Live wireframe", "done", "This site, version 4: the five key pages arranged by the page priorities"),
-                 ("Step 1: the grid, the module list and the header test", "next",
+                 ("Step 1: the grid, the module list and the header test", "done",
                   "The grid's values in the code with the overlay (below); the module list, Website – modules; what PhotoDeck's Custom CSS/HTML can carry"),
-                 ("Step 2: low-resolution modules and the story mockup", "later",
+                 ("Step 2: low-resolution modules and the story mockup", "next",
                   "The wireframe rebuilt from the modules, every module at /dev/modules, the five key pages with draft copy, the phone first"),
                  ("Step 3: the look", "later", "The open visual questions in Claude Design canvases: the Opening, the close, the yellow and the black sections"),
                  ("Step 4: refine and build, module by module", "later", "The white header first; the five key pages to closed-preview quality, then the other eleven"),
@@ -533,8 +739,24 @@ CHECKLIST = [
 LINK_RE = re.compile(r'href="(https://archive\.africareframed\.com[^"]*)"[^>]*>(.*?)</a>', re.S)
 
 
+def sec(inner, cls="", sid=None):
+    """A plain section (the development page only; the site's pages are built from modules)."""
+    a = f' id="{sid}"' if sid else ""
+    return f'<section class="sec {cls}"{a}><div class="wrap">{inner}</div></section>'
+
+
+def head(title, lead=None, kicker=None, level=2):
+    k = f'<p class="kicker">{e(kicker)}</p>' if kicker else ""
+    l = f'<p class="lead">{e(lead)}</p>' if lead else ""
+    return f'{k}<h{level}>{e(title)}</h{level}>{l}'
+
+
+def doors(*buttons):
+    return f'<p class="doors">{"".join(buttons)}</p>'
+
+
 def page_stats(main):
-    return dict(notes=main.count('class="note"'), images=main.count('class="img'), bars=main.count('class="lines"'))
+    return dict(notes=main.count('class="note"'), images=main.count('class="img'), bars=main.count('class="lines"'), drafts=main.count('class="draft"'))
 
 
 def git_log(n=12):
@@ -612,7 +834,9 @@ def tpl_dev(rows, links, base):
                     '<li><strong>Grey bars</strong><span>Text still to write.</span></li>'
                     '<li><strong>Yellow note</strong><span>What goes there, and where it comes from.</span></li>'
                     '<li><strong>Clean view</strong><span>In the yellow strip: hides the notes and labels, so a page can be shown as a layout.</span></li>'
-                    '<li><strong>Grid</strong><span>In the yellow strip, or the key G, or ?grid in the address: draws the columns (blue) and margins (red) of the current width, with the values in a readout.</span></li></ul>')
+                    '<li><strong>Grid</strong><span>In the yellow strip, or the key G, or ?grid in the address: draws the columns (blue) and margins (red) of the current width, with the values in a readout.</span></li>'
+                    '<li><strong>Module labels</strong><span>Every section carries the number and variant of the module it is built from (Website – modules); hidden in clean view. All modules with their variants: <a href="modules/">/dev/modules</a>.</span></li>'
+                    '<li><strong>Draft copy</strong><span>Text with a dotted underline is draft copy written from the masters, to be approved by Thomas; the mark hides in clean view.</span></li></ul>')
             + sec(head("The grid", "Starting values set in step 1 (8 November 2026), on what the design guide already had; to be locked after step 2. "
                        "Shared by the stylesheet, the overlay and this page.")
                   + grid_table())
@@ -792,7 +1016,8 @@ a{color:inherit}
 .wrap{max-width:var(--page-max);margin:0 auto;padding:0 var(--margin)}
 /* The 12-column grid as a utility: children name their columns (c1-4: columns 1 to 4; c6-12: 6 to 12; c5-off: from column 5 off the right edge of the page) */
 .cols{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--gutter)}
-.c1-4{grid-column:1/5}.c6-12{grid-column:6/-1}.c1-12{grid-column:1/-1}
+.c1-4{grid-column:1/5}.c6-12{grid-column:6/-1}.c1-12{grid-column:1/-1}.c1-8{grid-column:1/9}.c1-6{grid-column:1/7}.c7-12{grid-column:7/-1}
+.c-half{grid-column:span 6}.c-offset{grid-column:6/-1}
 .c5-off{grid-column:5/-1;margin-right:var(--off-edge)}
 .bleed{width:100vw;margin-left:calc(50% - 50vw);max-width:none}
 .skip{position:absolute;left:-9999px}
@@ -840,6 +1065,50 @@ a{color:inherit}
 .lines i:last-child{width:62%}
 .ph-text{color:#9a978f;font-style:italic;font-size:14px;margin:0 0 8px}
 body.clean .note,body.clean .img span{display:none}
+/* Draft copy: written from the masters, marked until Thomas approves it; the mark hides in clean view */
+.draft{text-decoration:underline dotted #b8a62a;text-decoration-thickness:1px;text-underline-offset:3px}
+body.clean .draft{text-decoration:none}
+/* Modules: each section carries its number and variant as a label (Website – modules); hidden in clean view */
+.mod{position:relative;padding-top:var(--section)}
+.mod::before{content:attr(data-mod);box-sizing:border-box;position:absolute;left:0;top:calc(var(--section) - 22px);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#8a877f;background:#fff8c2;padding:1px 6px;border-radius:2px;z-index:2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mod.page-head::before,.mod.opening::before{top:8px}
+body.clean .mod::before{display:none}
+.mod.band{background:var(--wash);padding:var(--section-head) 0;margin-top:var(--section)}
+.mod.band::before{top:4px}
+.mod.band + .mod.band{margin-top:0}
+.mod .cols + .cols{margin-top:24px}
+.head-right{padding-top:8px}
+.lead-photo{margin-top:32px}
+.credit{font-size:12px;line-height:1.4;color:var(--ink-soft);margin:6px 0 0}
+.credit .caption{color:var(--ink)}
+.kicker-h{margin-top:0}
+.imgs{display:grid;gap:8px;margin-top:8px}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grid-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-mixed{grid-template-columns:repeat(4,minmax(0,1fr));align-items:start}
+.bleed-img{border-radius:0}
+.theme-entry{display:flex;flex-direction:column;text-decoration:none;scroll-snap-align:start}
+.theme-entry h3{margin:4px 0 6px}
+.theme-entry p{font-size:15px;color:var(--ink-soft);margin:0 0 8px}
+.theme-entry:hover h3{text-decoration:underline}
+.theme-rows{margin-top:8px}
+.theme-entry.row{display:grid;grid-template-columns:72px 1fr 1.3fr;gap:32px;align-items:center;padding:28px 0;border-top:1px solid var(--line)}
+.theme-entry.row .order{font-size:40px;line-height:1;margin:0;color:var(--ink)}
+.theme-entry.row h3{font-size:28px;font-weight:500;margin:0 0 8px}
+.theme-nav .dir{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:8px}
+.collection-card{text-decoration:none;align-items:center;margin-top:8px}
+.collection-card:hover .h-big{text-decoration:underline}
+.item .img{margin-bottom:10px}
+.acc{border-top:1px solid var(--ink);padding:0}
+.acc:last-child{border-bottom:1px solid var(--ink)}
+.acc summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:14px 0;font-size:17px}
+.acc summary::-webkit-details-marker{display:none}
+.acc .plus{width:14px;height:14px;position:relative;flex:none}
+.acc .plus::before,.acc .plus::after{content:"";position:absolute;background:var(--ink);left:0;top:6px;width:14px;height:2px}
+.acc .plus::after{transform:rotate(90deg)}
+.acc[open] .plus::after{display:none}
+.acc p{margin:0 0 16px}
 
 /* Type */
 h1{font-weight:500;font-size:48px;line-height:1.06;margin:0 0 16px;letter-spacing:-.015em;max-width:20ch;text-wrap:balance}
@@ -886,8 +1155,8 @@ main{padding-bottom:var(--section)}
    the right edge; the words stand on white in columns 1–4. Proportions after the guide's hero at 1440 × 720: under the
    128 px header the photograph is 928 × 512 (29:16) with 80 px of white below it; the words start 160 px below the header.
    The stripes and triangles are drawn in step 3; here only the geometry. */
-.opening{overflow-x:hidden;padding-bottom:80px}
-.opening .wrap{row-gap:24px}
+.opening{overflow-x:hidden;padding-bottom:80px;padding-top:0}
+.opening .cols{row-gap:24px}
 .opening-words{padding-top:160px}
 .opening-words h1{font-size:40px;max-width:none}
 .opening-img{aspect-ratio:29/16;max-height:80vh;border-radius:0}
@@ -897,40 +1166,23 @@ main{padding-bottom:var(--section)}
 .numbers{display:flex;flex-wrap:wrap;gap:16px 44px;margin:8px 0}
 .num b{display:block;font-size:44px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
 .num span{font-size:14px;color:var(--ink-soft)}
-.theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;margin-top:20px}
-.theme-card{display:flex;flex-direction:column;text-decoration:none;scroll-snap-align:start}
-.theme-card h3{margin:4px 0 6px}
-.theme-card p{font-size:15px;color:var(--ink-soft);margin:0 0 8px}
+.theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px;margin-top:32px}
 .order{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
 .count{font-size:13px;font-weight:500;margin-top:auto}
-.theme-card:hover h3,.theme-line:hover h2{text-decoration:underline}
 .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:8px 0 32px}
 .logo{aspect-ratio:5/2;border:1px dashed #c9c6bf;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8a877f}
 
-/* Themes index */
-.theme-line{display:grid;grid-template-columns:72px 1fr 1.3fr;gap:32px;align-items:center;padding:28px 0;border-top:1px solid var(--line);text-decoration:none}
-.theme-line h2{margin:0 0 8px}
-.theme-line p{color:var(--ink-soft);margin:0 0 8px}
-.order.big{font-size:40px;line-height:1;margin:0;color:var(--ink)}
-.strip3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 
 /* Theme and collection pages */
 .wide{max-height:62vh}
-.sample-grid{columns:4;column-gap:14px;margin-top:8px}
-.sample-grid .img{margin-bottom:14px;break-inside:avoid}
 .action{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
 .action .doors{margin:0}
-.theme-nav{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.theme-nav a{display:flex;flex-direction:column;gap:4px;text-decoration:none}
-.theme-nav .img{margin-bottom:8px}
-.theme-nav .dir{font-size:13px;color:var(--ink-soft)}
-.theme-nav strong{font-weight:500;font-size:20px}
 .facts-box{border:1px solid var(--line);border-radius:6px;padding:24px;background:#fff}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;font-size:15px;margin:0 0 16px}
 .facts dt{color:var(--ink-soft)}
 .facts dd{margin:0}
 .place h3{margin-top:12px}
-.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;align-content:start}
 .chip{border:1px solid #c9c6bf;border-radius:999px;padding:8px 16px;text-decoration:none;font-size:15px}
 .chip:hover{border-color:var(--ink)}
 .chip.ghost{display:inline-block;width:120px;height:38px;padding:0;background:var(--bar);border-color:transparent}
@@ -953,7 +1205,7 @@ main{padding-bottom:var(--section)}
 .contact-box{border-left:3px solid var(--accent);padding:8px 0 8px 24px;margin-top:44px}
 
 /* Partner portal */
-.door-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+.door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
 .panel{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;min-height:200px;padding:28px;border:1px solid #c9c6bf;border-radius:6px;text-decoration:none}
 .panel strong{font-size:30px;font-weight:500;line-height:1.15}
 .panel span:last-child{font-size:15px;color:var(--ink-soft)}
@@ -1029,12 +1281,12 @@ body.show-grid .grid-overlay{display:block}
   .menu a{padding:12px 0;font-size:17px;width:100%}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
-  .c1-4{grid-column:1/4}.c6-12{grid-column:4/-1}
+  .c1-4{grid-column:1/4}.c6-12,.c-offset{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12{grid-column:5/-1}.c-half{grid-column:span 4}
+  .grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
   .wire-strip .wrap{flex-wrap:wrap}
-  .theme-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(220px,40%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
+  .theme-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(220px,40%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;gap:24px}
   .cards-4,.cards-5,.principles{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .sample-grid{columns:3}
   /* the Opening below desktop: the photograph first, from the line of column 2 off the right edge; the words under it */
   .opening{padding-bottom:0}
   .opening-words{grid-column:1/-1;order:2;padding-top:8px}
@@ -1048,17 +1300,19 @@ body.show-grid .grid-overlay{display:block}
   h1{font-size:34px}
   h2{font-size:24px}
   .statement{font-size:20px}
-  .c1-4,.c6-12{grid-column:1/-1}
+  .c1-4,.c6-12,.c1-8,.c1-6,.c7-12,.c-half,.c-offset{grid-column:1/-1}
+  .grid-3,.grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mod .cols + .cols{margin-top:16px}
+  .theme-entry.row{grid-template-columns:44px 1fr;gap:12px 16px}
+  .theme-entry.row .imgs{grid-column:1 / -1}
+  .theme-entry.row .order{font-size:28px}
+  .theme-entry.row h3{font-size:24px}
+  .numbers{gap:16px 32px}
   .opening-img{aspect-ratio:4/5}
   .opening-words h1{font-size:30px}
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}
   .grid-2{gap:32px}
   .split{gap:20px}
-  .theme-line{grid-template-columns:44px 1fr;gap:12px 16px}
-  .theme-line .strip3{grid-column:1 / -1}
-  .order.big{font-size:28px}
-  .sample-grid{columns:2;column-gap:10px}
-  .sample-grid .img{margin-bottom:10px}
   .contact-box{margin-top:0}
   .panel{min-height:132px;padding:22px}
   .dev-list li,.dev-list li:has(.tag),.dev-list li:has(.where){grid-template-columns:1fr}
@@ -1095,7 +1349,7 @@ def strip_html(base):
         return ""
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
-            f'<a href="{base}dev/">Development</a>'
+            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a>'
             f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
             f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
             f'<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>\n')
@@ -1140,6 +1394,10 @@ def build():
                    desc="Development notes for the Africa Reframed site: generated by the build, removed at launch.")
         dev_dir.mkdir(exist_ok=True)
         (dev_dir / "index.html").write_text(render(dev, tpl_dev(rows, links, "../"), "../"))
+        modules = dict(path="dev/modules/", title="Modules", slug="modules", tpl="modules", nav=None,
+                       desc="Every module of the Africa Reframed site with its variants, on the grid; generated by the build, removed at launch.")
+        (dev_dir / "modules").mkdir(exist_ok=True)
+        (dev_dir / "modules" / "index.html").write_text(render(modules, tpl_modules("../../"), "../../"))
     (ROOT / ".nojekyll").write_text("")
     print("built", len(PAGES), "pages" + ("" if LAUNCH else " and /dev/"), "into", ROOT)
 

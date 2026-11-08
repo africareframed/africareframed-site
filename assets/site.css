@@ -14,7 +14,8 @@ a{color:inherit}
 .wrap{max-width:var(--page-max);margin:0 auto;padding:0 var(--margin)}
 /* The 12-column grid as a utility: children name their columns (c1-4: columns 1 to 4; c6-12: 6 to 12; c5-off: from column 5 off the right edge of the page) */
 .cols{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--gutter)}
-.c1-4{grid-column:1/5}.c6-12{grid-column:6/-1}.c1-12{grid-column:1/-1}
+.c1-4{grid-column:1/5}.c6-12{grid-column:6/-1}.c1-12{grid-column:1/-1}.c1-8{grid-column:1/9}.c1-6{grid-column:1/7}.c7-12{grid-column:7/-1}
+.c-half{grid-column:span 6}.c-offset{grid-column:6/-1}
 .c5-off{grid-column:5/-1;margin-right:var(--off-edge)}
 .bleed{width:100vw;margin-left:calc(50% - 50vw);max-width:none}
 .skip{position:absolute;left:-9999px}
@@ -62,6 +63,50 @@ a{color:inherit}
 .lines i:last-child{width:62%}
 .ph-text{color:#9a978f;font-style:italic;font-size:14px;margin:0 0 8px}
 body.clean .note,body.clean .img span{display:none}
+/* Draft copy: written from the masters, marked until Thomas approves it; the mark hides in clean view */
+.draft{text-decoration:underline dotted #b8a62a;text-decoration-thickness:1px;text-underline-offset:3px}
+body.clean .draft{text-decoration:none}
+/* Modules: each section carries its number and variant as a label (Website – modules); hidden in clean view */
+.mod{position:relative;padding-top:var(--section)}
+.mod::before{content:attr(data-mod);box-sizing:border-box;position:absolute;left:0;top:calc(var(--section) - 22px);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#8a877f;background:#fff8c2;padding:1px 6px;border-radius:2px;z-index:2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mod.page-head::before,.mod.opening::before{top:8px}
+body.clean .mod::before{display:none}
+.mod.band{background:var(--wash);padding:var(--section-head) 0;margin-top:var(--section)}
+.mod.band::before{top:4px}
+.mod.band + .mod.band{margin-top:0}
+.mod .cols + .cols{margin-top:24px}
+.head-right{padding-top:8px}
+.lead-photo{margin-top:32px}
+.credit{font-size:12px;line-height:1.4;color:var(--ink-soft);margin:6px 0 0}
+.credit .caption{color:var(--ink)}
+.kicker-h{margin-top:0}
+.imgs{display:grid;gap:8px;margin-top:8px}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grid-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-mixed{grid-template-columns:repeat(4,minmax(0,1fr));align-items:start}
+.bleed-img{border-radius:0}
+.theme-entry{display:flex;flex-direction:column;text-decoration:none;scroll-snap-align:start}
+.theme-entry h3{margin:4px 0 6px}
+.theme-entry p{font-size:15px;color:var(--ink-soft);margin:0 0 8px}
+.theme-entry:hover h3{text-decoration:underline}
+.theme-rows{margin-top:8px}
+.theme-entry.row{display:grid;grid-template-columns:72px 1fr 1.3fr;gap:32px;align-items:center;padding:28px 0;border-top:1px solid var(--line)}
+.theme-entry.row .order{font-size:40px;line-height:1;margin:0;color:var(--ink)}
+.theme-entry.row h3{font-size:28px;font-weight:500;margin:0 0 8px}
+.theme-nav .dir{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:8px}
+.collection-card{text-decoration:none;align-items:center;margin-top:8px}
+.collection-card:hover .h-big{text-decoration:underline}
+.item .img{margin-bottom:10px}
+.acc{border-top:1px solid var(--ink);padding:0}
+.acc:last-child{border-bottom:1px solid var(--ink)}
+.acc summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:14px 0;font-size:17px}
+.acc summary::-webkit-details-marker{display:none}
+.acc .plus{width:14px;height:14px;position:relative;flex:none}
+.acc .plus::before,.acc .plus::after{content:"";position:absolute;background:var(--ink);left:0;top:6px;width:14px;height:2px}
+.acc .plus::after{transform:rotate(90deg)}
+.acc[open] .plus::after{display:none}
+.acc p{margin:0 0 16px}
 
 /* Type */
 h1{font-weight:500;font-size:48px;line-height:1.06;margin:0 0 16px;letter-spacing:-.015em;max-width:20ch;text-wrap:balance}
@@ -108,8 +153,8 @@ main{padding-bottom:var(--section)}
    the right edge; the words stand on white in columns 1–4. Proportions after the guide's hero at 1440 × 720: under the
    128 px header the photograph is 928 × 512 (29:16) with 80 px of white below it; the words start 160 px below the header.
    The stripes and triangles are drawn in step 3; here only the geometry. */
-.opening{overflow-x:hidden;padding-bottom:80px}
-.opening .wrap{row-gap:24px}
+.opening{overflow-x:hidden;padding-bottom:80px;padding-top:0}
+.opening .cols{row-gap:24px}
 .opening-words{padding-top:160px}
 .opening-words h1{font-size:40px;max-width:none}
 .opening-img{aspect-ratio:29/16;max-height:80vh;border-radius:0}
@@ -119,40 +164,23 @@ main{padding-bottom:var(--section)}
 .numbers{display:flex;flex-wrap:wrap;gap:16px 44px;margin:8px 0}
 .num b{display:block;font-size:44px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
 .num span{font-size:14px;color:var(--ink-soft)}
-.theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;margin-top:20px}
-.theme-card{display:flex;flex-direction:column;text-decoration:none;scroll-snap-align:start}
-.theme-card h3{margin:4px 0 6px}
-.theme-card p{font-size:15px;color:var(--ink-soft);margin:0 0 8px}
+.theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px;margin-top:32px}
 .order{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
 .count{font-size:13px;font-weight:500;margin-top:auto}
-.theme-card:hover h3,.theme-line:hover h2{text-decoration:underline}
 .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:8px 0 32px}
 .logo{aspect-ratio:5/2;border:1px dashed #c9c6bf;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8a877f}
 
-/* Themes index */
-.theme-line{display:grid;grid-template-columns:72px 1fr 1.3fr;gap:32px;align-items:center;padding:28px 0;border-top:1px solid var(--line);text-decoration:none}
-.theme-line h2{margin:0 0 8px}
-.theme-line p{color:var(--ink-soft);margin:0 0 8px}
-.order.big{font-size:40px;line-height:1;margin:0;color:var(--ink)}
-.strip3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 
 /* Theme and collection pages */
 .wide{max-height:62vh}
-.sample-grid{columns:4;column-gap:14px;margin-top:8px}
-.sample-grid .img{margin-bottom:14px;break-inside:avoid}
 .action{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
 .action .doors{margin:0}
-.theme-nav{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.theme-nav a{display:flex;flex-direction:column;gap:4px;text-decoration:none}
-.theme-nav .img{margin-bottom:8px}
-.theme-nav .dir{font-size:13px;color:var(--ink-soft)}
-.theme-nav strong{font-weight:500;font-size:20px}
 .facts-box{border:1px solid var(--line);border-radius:6px;padding:24px;background:#fff}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;font-size:15px;margin:0 0 16px}
 .facts dt{color:var(--ink-soft)}
 .facts dd{margin:0}
 .place h3{margin-top:12px}
-.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;align-content:start}
 .chip{border:1px solid #c9c6bf;border-radius:999px;padding:8px 16px;text-decoration:none;font-size:15px}
 .chip:hover{border-color:var(--ink)}
 .chip.ghost{display:inline-block;width:120px;height:38px;padding:0;background:var(--bar);border-color:transparent}
@@ -175,7 +203,7 @@ main{padding-bottom:var(--section)}
 .contact-box{border-left:3px solid var(--accent);padding:8px 0 8px 24px;margin-top:44px}
 
 /* Partner portal */
-.door-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+.door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
 .panel{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;min-height:200px;padding:28px;border:1px solid #c9c6bf;border-radius:6px;text-decoration:none}
 .panel strong{font-size:30px;font-weight:500;line-height:1.15}
 .panel span:last-child{font-size:15px;color:var(--ink-soft)}
@@ -251,12 +279,12 @@ body.show-grid .grid-overlay{display:block}
   .menu a{padding:12px 0;font-size:17px;width:100%}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
-  .c1-4{grid-column:1/4}.c6-12{grid-column:4/-1}
+  .c1-4{grid-column:1/4}.c6-12,.c-offset{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12{grid-column:5/-1}.c-half{grid-column:span 4}
+  .grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
   .wire-strip .wrap{flex-wrap:wrap}
-  .theme-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(220px,40%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
+  .theme-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(220px,40%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;gap:24px}
   .cards-4,.cards-5,.principles{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .sample-grid{columns:3}
   /* the Opening below desktop: the photograph first, from the line of column 2 off the right edge; the words under it */
   .opening{padding-bottom:0}
   .opening-words{grid-column:1/-1;order:2;padding-top:8px}
@@ -270,17 +298,19 @@ body.show-grid .grid-overlay{display:block}
   h1{font-size:34px}
   h2{font-size:24px}
   .statement{font-size:20px}
-  .c1-4,.c6-12{grid-column:1/-1}
+  .c1-4,.c6-12,.c1-8,.c1-6,.c7-12,.c-half,.c-offset{grid-column:1/-1}
+  .grid-3,.grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mod .cols + .cols{margin-top:16px}
+  .theme-entry.row{grid-template-columns:44px 1fr;gap:12px 16px}
+  .theme-entry.row .imgs{grid-column:1 / -1}
+  .theme-entry.row .order{font-size:28px}
+  .theme-entry.row h3{font-size:24px}
+  .numbers{gap:16px 32px}
   .opening-img{aspect-ratio:4/5}
   .opening-words h1{font-size:30px}
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}
   .grid-2{gap:32px}
   .split{gap:20px}
-  .theme-line{grid-template-columns:44px 1fr;gap:12px 16px}
-  .theme-line .strip3{grid-column:1 / -1}
-  .order.big{font-size:28px}
-  .sample-grid{columns:2;column-gap:10px}
-  .sample-grid .img{margin-bottom:10px}
   .contact-box{margin-top:0}
   .panel{min-height:132px;padding:22px}
   .dev-list li,.dev-list li:has(.tag),.dev-list li:has(.where){grid-template-columns:1fr}

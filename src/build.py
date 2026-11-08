@@ -35,6 +35,7 @@ CORE_LINE = "Visual storytelling for a new partnership between Europe and Africa
 ABOUT_LINE = ("Spotlighting African innovation and African–European collaboration. "
               "An independent initiative established by Commerce & Culture.")             # Strategic Platform, Brand and language
 NUMBERS = [("1,122", "images"), ("3", "countries"), ("5", "themes")]                        # Website brief, Home; AR Metadata, 2 Nov 2026
+MOMENTUM = [("—", "partners"), ("—", "downloads"), ("—", "uses reported")]                  # engine brief, section 5: the momentum numbers; from the closed preview
 EMAIL_MAIN, EMAIL_PRESS, EMAIL_PARTNERS = ("hello@africareframed.com", "press@africareframed.com",
                                            "partnerships@africareframed.com")                 # Start here, Addresses
 HOUSE_LINE = "Africa Reframed’s own collection: 1,122 images from Mali, Kenya and The Gambia."
@@ -161,8 +162,10 @@ def m_page_head(title, statement=None, kicker=None, meta=None, doors=None, lead=
 
 
 # 2.4 Text section: title left, text right; (b) with a facts box, (c) with a contact, (d) the intro on Home.
-def m_text(title, paras, variant="a", box=None, contact=None, links=None, is_draft=True, sid=None, level=2):
+def m_text(title, paras, variant="a", box=None, contact=None, links=None, is_draft=True, sid=None, level=2, meta=None):
     body = "".join(draft(p) if is_draft else f"<p>{e(p)}</p>" for p in paras if p)
+    if meta:
+        body += '<p class="meta-row">' + "".join(f"<span>{e(x)}</span>" for x in meta) + "</p>"
     if links:
         body += f'<p class="doors">{"".join(links)}</p>'
     if variant == "d":
@@ -465,8 +468,10 @@ def tpl_home(p, base):
     # partners and an example (from the closed preview). 4 The five themes. 5 The collections. 6 The principles.
     return (m_opening(CORE_LINE)
             + m_text(None, INTRO_HOME, "d", links=[button(base + "themes/", "Explore the themes", quiet=True),
-                                                   button(base + "partners/", "How partners use the archive", quiet=True)], sid="intro")
-            + m_numbers(title="In use", note_text="The three numbers exist; partners by name and one example of use come from the closed preview, with consent, and until then the two modules below are left out of the live page.")
+                                                   button(base + "partners/", "How partners use the archive", quiet=True)], sid="intro",
+                     meta=[f"{n} {t}" for n, t in NUMBERS])
+            + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
+                        note_text="The momentum numbers (Thomas, 8 November 2026): partners, downloads and uses reported, from PhotoDeck’s orders and the partner database; they grow, where the stock numbers do not. Partners by name and one example of use come from the closed preview, with consent. Until there are any, the three modules are left out of the live page.")
             + m_partners(tight=True) + m_use("a", tight=True)
             + m_themes(base, "a")
             + m_collection(base)

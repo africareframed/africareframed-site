@@ -41,6 +41,10 @@ NUMBERS = [("1,122", "images"), ("3", "countries"), ("5", "themes")]            
 MOMENTUM = [("—", "partners"), ("—", "uses")]
 # Partner types: from the Request access form (type of organisation); aggregates, so shown before any partner is named.
 PARTNER_TYPES = ["NGOs", "media", "educational institutions", "embassies and ministries", "development finance institutions", "companies"]
+PARTNER_WHERE = ["Denmark", "the Nordics", "the EU", "Africa", "elsewhere"]   # from the form's Country field; an aggregate
+# Threshold rule (Thomas, 8 November 2026): an evidence row goes live only above a threshold he sets (for example ten uses,
+# five partners); below it the row is left out, as the "only what exists" rule says. The same records feed each sponsor's
+# report for its own collection (uses by kind, partner types, countries, over time): part of what the sponsorship buys.
 USE_KINDS = ["report or publication", "grant or funding application", "presentation or internal use", "website or social media",
              "press and editorial", "exhibition or event", "education or training material", "other use"]
 EMAIL_MAIN, EMAIL_PRESS, EMAIL_PARTNERS = ("hello@africareframed.com", "press@africareframed.com",
@@ -316,11 +320,13 @@ def door(href, kicker, title, line, dark=False):
             f'<strong>{e(title)}</strong><span>{e(line)}</span></a>')
 
 
-def m_doors(variant, *, doors=None, count=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None, tight=False):
+def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None, tight=False):
     if variant == "a":
         return mod("doors", "a, two doors", f'<div class="door-panels">{"".join(doors)}</div>', sid=sid, tight=tight)
     if variant == "b":
         c = f'<div class="num"><b>{count[0]}</b><span>{e(count[1])}</span></div>'
+        if count2:
+            c = f'<div class="numbers">{c}<div class="num"><b>{count2[0]}</b><span>{e(count2[1])}</span></div></div>'
         inner = f'<div class="action">{c}<p class="doors">{main}{quiet or ""}</p></div>' + (draft(line, "p", "small") if line else "")
         return mod("doors", "b, the action band", inner, cls="band", sid=sid, tight=tight)
     if variant == "d":
@@ -505,7 +511,7 @@ def tpl_theme(p, base):
     lead = m_photo(f"Lead image for {t['name']}", "21/9", "b")
     return (m_page_head(t["name"], t["statement"], kicker=f"Theme {n + 1} of {len(THEMES)}", meta=[f'{t["count"]} images in the archive', "House Collection"], lead=lead)
             + m_grid("d", 6, "Image from the theme", line="Six images that carry the theme; released, no minors.", title="From the archive")
-            + m_doors("b", count=(t["count"], f'images on {t["name"].lower()} in the archive'),
+            + m_doors("b", count=(t["count"], f'images on {t["name"].lower()} in the archive'), count2=("—", "uses"),
                       main=button(archive("/-/galleries/archive?search=" + quote(t["query"]), "theme-" + t["slug"]), "Open in the archive →"),
                       quiet=button(base + "request-access/", "Request access", quiet=True), line=THEME_ACTION_LINE)
             + m_text("What it shows", [THEME_TEXTS[t["slug"]]], "a")
@@ -531,7 +537,9 @@ def tpl_collection(p, base):
                       main=button(archive("/-/galleries/archive", "collection-house"), "Open in the archive →"),
                       quiet=button(base + "partners/", "How partners use the archive", quiet=True),
                       line=f"Sponsoring a collection? Write to {EMAIL_PARTNERS}.")
-            + m_use("b"))
+            + m_numbers([("—", k) for k in USE_KINDS], None, "c", title="Uses of this collection", tight=True,
+                        note_text="The collection’s own uses by kind, from PhotoDeck’s orders for its gallery: what a sponsored collection’s page carries, and what the sponsor’s report draws on. Live above the threshold.")
+            + m_use("b", tight=True))
 
 
 def tpl_partners(p, base):
@@ -546,6 +554,8 @@ def tpl_partners(p, base):
             + m_text("Sponsor a collection", SPONSOR_TEXT, "c", contact=("Partnerships", EMAIL_PARTNERS), sid="sponsor")
             + m_numbers([("—", t) for t in PARTNER_TYPES], None, "c", title="Partners using the archive", sid="partners",
                         note_text="Partners by type, counted from the Request access form: an aggregate, so it can be shown before any partner is named (Thomas, 8 November 2026). Updated with each approval.")
+            + m_numbers([("—", w) for w in PARTNER_WHERE], None, "c", title="Where they are", tight=True,
+                        note_text="Partners by country, from the form’s Country field: a second aggregate, for the development finance institutions and the embassies.")
             + m_partners(10, "By name", tight=True) + m_use("b", "In use", tight=True))
 
 

@@ -124,12 +124,12 @@ MODULES = {  # number and name, as in Website – modules
 }
 
 
-def mod(name, variant, inner, cls="", sid=None, wrap=True):
+def mod(name, variant, inner, cls="", sid=None, wrap=True, tight=False):
     """One module on the page: the section, its label and its inner content on the grid."""
     label = MODULES[name] + (f" ({variant})" if variant else "")
     a = f' id="{sid}"' if sid else ""
     body = f'<div class="wrap">{inner}</div>' if wrap else inner
-    return f'<section class="mod mod-{name} {cls}" data-mod="{e(label)}"{a}>{body}</section>'
+    return f'<section class="mod mod-{name} {cls}{" tight" if tight else ""}" data-mod="{e(label)}"{a}>{body}</section>'
 
 
 def heading(title, level=2, cls=""):
@@ -208,8 +208,9 @@ def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None)
     elif variant == "c":
         cells = "".join(img(label, "1/1") for _ in range(3)); cls = "grid-strip"; name = "c, a strip of three"
     else:
-        ratios = ["3/2", "4/5", "3/2", "3/2", "4/5", "3/2", "3/2", "4/5"]
-        cells = "".join(img(label, ratios[i % 8]) for i in range(n or 6)); cls = "grid-mixed"; name = "d, six to eight mixed"
+        n = n or 6
+        ratio, cls = ("3/2", "grid-3") if n <= 6 else ("4/5", "grid-4")
+        cells = "".join(img(label, ratio) for _ in range(n)); name = f"d, {n} in rows of {3 if n <= 6 else 4}"
     top = heading(title) if title else ""
     top += f'<p class="small">{e(line)}</p>' if line else ""
     foot = (f'<p class="doors">{link}</p>' if link else "") + credit_line()
@@ -269,11 +270,11 @@ def m_numbers(values=NUMBERS, asof="as of 2 November 2026", variant="a", title=N
 
 
 # 2.10 Partner strip: shown only once there are partners; here in grey so the layout exists.
-def m_partners(n=6, title="In use by"):
+def m_partners(n=6, title="In use by", tight=False):
     logos = '<div class="logos">' + '<span class="logo">Partner logo</span>' * n + "</div>"
     return mod("partners", "", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">'
                + note("Partners and sponsors by name, with their consent, from the closed preview. Until there are any, this module is left out of the live page.")
-               + f'</div></div>{logos}')
+               + f'</div></div>{logos}', tight=tight)
 
 
 # 2.11 Use example: (a) one, side by side; (b) three in a row; (c) partner news.
@@ -284,19 +285,19 @@ def use_card(kind="use"):
             f'<p class="credit">AR-ID · {CREDIT}</p><p class="small">Partner · publication · use · month, year</p>{lines(2)}</div>')
 
 
-def m_use(variant="a", title="In use"):
+def m_use(variant="a", title="In use", tight=False):
     n = note("Images in use, reported back by partners with their consent. Shown once there are any; until then left out of the live page.")
     if variant == "a":
         inner = (f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{n}</div></div>'
                  f'<div class="cols"><div class="c-half">{img("The use: a page, a slide, a post or an exhibition wall", "3/2")}<p class="credit">AR-ID · {CREDIT}</p></div>'
                  f'<div class="c-half"><p class="small">Partner · publication · use · month, year</p>{lines(2)}</div></div>')
-        return mod("use", "a, one example", inner)
+        return mod("use", "a, one example", inner, tight=tight)
     if variant == "c":
         return mod("use", "c, partner news", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">'
                    + note("News for partners and the numbers as they grow; aggregates and consented examples only. Shown once there is something to show.")
-                   + f'</div></div><div class="cards-3">{use_card("news") * 3}</div>')
+                   + f'</div></div><div class="cards-3">{use_card("news") * 3}</div>', tight=tight)
     return mod("use", "b, three in a row", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{n}</div></div>'
-               f'<div class="cards-3">{use_card() * 3}</div>')
+               f'<div class="cards-3">{use_card() * 3}</div>', tight=tight)
 
 
 # 2.12 Doors and actions: (a) two doors, (b) the action band with a count, (c) the ways on, (d) the contact band.
@@ -305,50 +306,51 @@ def door(href, kicker, title, line, dark=False):
             f'<strong>{e(title)}</strong><span>{e(line)}</span></a>')
 
 
-def m_doors(variant, *, doors=None, count=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None):
+def m_doors(variant, *, doors=None, count=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None, tight=False):
     if variant == "a":
-        return mod("doors", "a, two doors", f'<div class="door-panels">{"".join(doors)}</div>', sid=sid)
+        return mod("doors", "a, two doors", f'<div class="door-panels">{"".join(doors)}</div>', sid=sid, tight=tight)
     if variant == "b":
         c = f'<div class="num"><b>{count[0]}</b><span>{e(count[1])}</span></div>'
         inner = f'<div class="action">{c}<p class="doors">{main}{quiet or ""}</p></div>' + (draft(line, "p", "small") if line else "")
-        return mod("doors", "b, the action band", inner, cls="band", sid=sid)
+        return mod("doors", "b, the action band", inner, cls="band", sid=sid, tight=tight)
     if variant == "d":
         inner = f'<div class="cols"><div class="c1-4">{heading(kicker)}</div><div class="c6-12"><p class="h-big"><a href="mailto:{address}">{address}</a></p>{draft(line, "p", "small") if line else ""}</div></div>'
-        return mod("doors", "d, the contact band", inner, cls="band", sid=sid)
-    return mod("doors", "c, the ways on", f'<div class="cols"><div class="c6-12 c-offset"><p class="doors">{"".join(links)}</p></div></div>', sid=sid)
+        return mod("doors", "d, the contact band", inner, cls="band", sid=sid, tight=tight)
+    return mod("doors", "c, the ways on", f'<div class="cols"><div class="c6-12 c-offset"><p class="doors">{"".join(links)}</p></div></div>', sid=sid, tight=tight)
 
 
 # 2.13 Item list: (a) plain under rules, (b) numbered steps, (c) accordion, (d) with images, (e) chips.
-def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image_ratio="3/2", image_label="Image"):
+def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image_ratio="3/2", image_label="Image", tight=False):
     top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}</div></div>' if title else ""
     t = (lambda s: draft(s)) if is_draft else (lambda s: f"<p>{e(s)}</p>")
     if variant == "b":
         li = "".join(f'<li><span class="step-n">{i}</span><h3>{e(a)}</h3>{t(b)}</li>' for i, (a, b) in enumerate(items, 1))
-        return mod("items", "b, numbered steps", f'{top}<ol class="steps">{li}</ol>', sid=sid)
+        return mod("items", "b, numbered steps", f'{top}<ol class="steps">{li}</ol>', sid=sid, tight=tight)
     if variant == "c":
         li = "".join(f'<details class="acc"><summary>{e(a)}<span class="plus" aria-hidden="true"></span></summary>{t(b)}</details>' for a, b in items)
-        return mod("items", "c, accordion", f'{top}<div class="cols"><div class="c6-12 c-offset">{li}</div></div>', sid=sid)
+        return mod("items", "c, accordion", f'{top}<div class="cols"><div class="c6-12 c-offset">{li}</div></div>', sid=sid, tight=tight)
     if variant == "d":
         li = "".join(f'<div class="item">{img(x[2] if len(x) > 2 and x[2] else image_label, image_ratio)}<h3>{e(x[0])}</h3>{t(x[1]) if x[1] else ""}</div>' for x in items)
-        return mod("items", "d, with images", f'{top}<div class="cards-3">{li}</div>', sid=sid)
+        return mod("items", "d, with images", f'{top}<div class="cards-3">{li}</div>', sid=sid, tight=tight)
     if variant == "e":
         chips = "".join(f'<a class="chip" href="{h}">{e(a)}</a>' if h else f'<span class="chip">{e(a)}</span>' for a, h in items)
-        return mod("items", "e, chips", f'{top}<div class="cols"><div class="c6-12 c-offset chips">{chips}</div></div>', sid=sid)
+        top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}<div class="chips">{chips}</div></div></div>'
+        return mod("items", "e, chips", top, sid=sid, tight=tight)
     li = "".join(f'<li><strong>{e(a)}</strong>{t(b)}</li>' for a, b in items)
-    return mod("items", "a, plain under rules", f'{top}<ul class="principles">{li}</ul>', sid=sid)
+    return mod("items", "a, plain under rules", f'{top}<ul class="principles">{li}</ul>', sid=sid, tight=tight)
 
 
 # 2.14 Sponsor credit: (theme) "Made possible by …" under the statement; (collection) the full name as the title.
-def m_sponsor(variant="theme"):
+def m_sponsor(variant="theme", tight=False):
     if variant == "collection":
         inner = (f'<div class="cols"><div class="c1-4"><p class="kicker">Collection</p><h2>Africa Reframed / [Full collection name]</h2></div>'
                  f'<div class="c6-12"><div class="logos"><span class="logo">Sponsor logo</span></div>{lines(3)}<p class="small">The sponsor’s contact</p></div></div>'
                  + note("The sponsor’s statement (at most 80 words) and contact, after the work. Only once a collection is sponsored."))
-        return mod("sponsor", "collection page", inner)
+        return mod("sponsor", "collection page", inner, tight=tight)
     inner = (f'<div class="cols"><div class="c6-12 c-offset"><p class="kicker">Made possible by</p><div class="logos"><span class="logo">Sponsor logo</span></div>'
              f'<p class="small">Founding Partner (working title) · <a href="#">About the collection</a></p></div></div>'
              + note("Shown under the theme’s statement only once a sponsor has funded the theme. Until then nothing is shown here."))
-    return mod("sponsor", "theme page", inner)
+    return mod("sponsor", "theme page", inner, tight=tight)
 
 
 # 2.15 Form: (a) the long form with an aside, (b) three short forms, (c) a single quiet action.
@@ -363,32 +365,32 @@ def field(label, kind="text", fid=""):
     return f'<label for="{fid}">{e(label)}</label>{ctl}'
 
 
-def m_form(variant="a", title=None, fields=None, aside=None, consent=None, button_label="Send", forms=None, after=None, sid=None, lead=None):
+def m_form(variant="a", title=None, fields=None, aside=None, consent=None, button_label="Send", forms=None, after=None, sid=None, lead=None, tight=False):
     if variant == "b":
         cards = ""
         for ft, fl, fs in forms:
             fl_html = "".join(field(l, k, f"{sid or 'f'}-{i}") for i, (l, k) in enumerate(fs))
             cards += f'<div class="card"><h3>{e(ft)}</h3>{draft(fl, "p", "small") if fl else ""}<form class="mini-form">{fl_html}{dead_button("Send")}</form></div>'
         top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}</div></div>' if title else ""
-        return mod("form", "b, three short forms", f'{top}<div class="cards-3">{cards}</div>', sid=sid)
+        return mod("form", "b, three short forms", f'{top}<div class="cards-3">{cards}</div>', sid=sid, tight=tight)
     if variant == "c":
         inner = f'<div class="cols"><div class="c1-4">{heading(title, 3)}</div><div class="c6-12">{lead or ""}{dead_button(button_label, quiet=True)}</div></div>'
-        return mod("form", "c, a single quiet action", inner, sid=sid)
+        return mod("form", "c, a single quiet action", inner, sid=sid, tight=tight)
     rows = "".join(field(l, k, f"f{i}") for i, (l, k) in enumerate(fields))
     if consent:
         rows += f'<label class="check"><input type="checkbox" disabled> <span class="draft">{e(consent)}</span></label>'
     form = f'<form class="form" aria-label="{e(title)} (not connected yet)">{rows}<button type="button" class="button" disabled>{e(button_label)}</button></form>' + (after or "")
     inner = f'<div class="cols"><div class="c1-6">{form}</div><div class="c7-12"><aside class="facts-box">{aside or ""}</aside></div></div>'
-    return mod("form", "a, the long form with an aside", inner, sid=sid)
+    return mod("form", "a, the long form with an aside", inner, sid=sid, tight=tight)
 
 
 # ---------------------------------------------------------------------------------------------
 # Draft copy (step 2): written from The engine – brief, the page priorities and the guide’s Words section, within the
 # lengths in Website – modules; marked as draft on the page until Thomas approves it. Sources in comments.
 # ---------------------------------------------------------------------------------------------
-INTRO_HOME = [  # page priorities, Home 2: who it is for and who is behind it, two or three sentences
-    "Africa Reframed is a partner archive of photographs of modern life in Mali, Kenya and The Gambia: 1,122 images made in our own productions with photographers in Bamako, Nairobi and Banjul.",
-    "Organisations working with Africa in education, skills, business and climate use the images in their reports, applications, exhibitions and their own channels. An independent, non-commercial initiative established by Commerce & Culture.",
+INTRO_HOME = [  # page priorities, Home 2: who it is for and who is behind it; one idea per sentence, the modules below carry the facts
+    "Africa Reframed is a partner archive of photographs of modern life in Mali, Kenya and The Gambia, made in our own productions with photographers in Bamako, Nairobi and Banjul.",
+    "Organisations working with Africa use the images in their reports, exhibitions and channels. An independent initiative established by Commerce & Culture.",
 ]
 PRINCIPLES = [  # engine brief, For design: the principles a company needs before it puts its name on the work
     ("Real images", "Every photograph is made by a photographer on location. Our images are never AI-generated and never altered."),
@@ -465,11 +467,11 @@ def tpl_home(p, base):
             + m_text(None, INTRO_HOME, "d", links=[button(base + "themes/", "Explore the themes", quiet=True),
                                                    button(base + "partners/", "How partners use the archive", quiet=True)], sid="intro")
             + m_numbers(title="In use", note_text="The three numbers exist; partners by name and one example of use come from the closed preview, with consent, and until then the two modules below are left out of the live page.")
-            + m_partners() + m_use("a")
+            + m_partners(tight=True) + m_use("a", tight=True)
             + m_themes(base, "a")
             + m_collection(base)
             + m_items("Principles", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
-            + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)]))
+            + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True))
 
 
 def tpl_index_themes(p, base):
@@ -493,7 +495,7 @@ def tpl_theme(p, base):
                       main=button(archive("/-/galleries/archive?search=" + quote(t["query"]), "theme-" + t["slug"]), "Open in the archive →"),
                       quiet=button(base + "request-access/", "Request access", quiet=True), line=THEME_ACTION_LINE)
             + m_text("What it shows", [THEME_TEXTS[t["slug"]]], "a")
-            + m_sponsor("theme")
+            + m_sponsor("theme", tight=True)
             + m_themes(base, "c", current=t))
 
 
@@ -509,7 +511,7 @@ def tpl_collection(p, base):
             + m_grid("d", 8, "Image from the collection", line="A spread across the five themes; released, no minors.", title="From the collection")
             + m_items("Places and series", [(c, t, f"Image from {c}") for c, t in PLACES], "d")
             + m_items("Themes it feeds", [(t["name"], f'{base}themes/{t["slug"]}/') for t in THEMES], "e")
-            + m_items("Goals it serves", [(g, None) for g in ("SDG 4 – Quality Education", "SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality")], "e",
+            + m_items("Goals it serves", [(g, None) for g in ("SDG 4 – Quality Education", "SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality")], "e", tight=True,
                       lead=note("From the SDG field in the metadata; the three most frequent for now, to confirm from the AR Metadata sheet."))
             + m_doors("b", count=("1,122", "images in the House Collection"),
                       main=button(archive("/-/galleries/archive", "collection-house"), "Open in the archive →"),
@@ -524,11 +526,11 @@ def tpl_partners(p, base):
     # 1 the two doors; 2 how access works; 3 using the images; 4 sponsor a collection; 5 who already uses the archive; 6 request access, contact.
     return (m_page_head(p["title"], doors=m_doors("a", doors=doors))
             + m_text("Use the images", [ACCESS_WHO], "a", is_draft=False, sid="use")
-            + m_items(None, ACCESS_STEPS, "b")
-            + m_doors("c", links=[button(base + "request-access/", "Request access", quiet=True)])
+            + m_items(None, ACCESS_STEPS, "b", tight=True)
+            + m_doors("c", links=[button(base + "request-access/", "Request access", quiet=True)], tight=True)
             + m_items("Using the images", RULES, "c", lead=draft("The rules for use in plain language. Read them before you apply. Terms on the archive is the legal text.", "p", "small"), sid="using-the-images")
             + m_text("Sponsor a collection", SPONSOR_TEXT, "c", contact=("Partnerships", EMAIL_PARTNERS), sid="sponsor")
-            + m_partners(10, "Partners using the archive") + m_use("b", "In use"))
+            + m_partners(10, "Partners using the archive") + m_use("b", "In use", tight=True))
 
 
 def tpl_portal(p, base):
@@ -543,10 +545,10 @@ def tpl_portal(p, base):
                      lead=draft("The one place to tell us how the images are used and what you need next. Every answer lands with us, and we answer.", "p"))
             + m_numbers([("—", "partners"), ("—", "images downloaded"), ("—", "uses reported")], "once there is something to show", title="Partner news",
                         note_text="The numbers as they grow and news for partners; aggregates and consented examples only. Shown once there is something to show; until then left out of the live page.")
-            + m_use("c", "News")
+            + m_use("c", "News", tight=True)
             + m_text("Using the images", [PORTAL_RULES], "a", links=[button(base + "partners/#using-the-images", "All the rules", quiet=True),
                                                                     button(archive("/client", "portal-history"), "Your download history", quiet=True)], sid="rules")
-            + m_form("c", title="Talk to us", button_label="Book a feedback call", sid="call",
+            + m_form("c", title="Talk to us", button_label="Book a feedback call", sid="call", tight=True,
                      lead=draft("Optional, never required: a short call about what is missing and what you are working on.", "p", "small")))
 
 
@@ -724,7 +726,7 @@ MASTERS = [
 CHECKLIST = [
     ("Page priorities for the five key pages", "Website – Site map and user flows, section 6", "done"),
     ("Visual design applied to every template", "Brand and design project"),
-    ("Copy written for every note", "{notes} notes open"),
+    ("Draft copy approved by Thomas, and copy written for every note", "{drafts} drafts, {notes} notes open"),
     ("Public images chosen: released, no minors (the public column in the AR Metadata sheet)", "{images} image boxes open"),
     ("A share image for each page we share (1200 × 627, public-safe)", "Brief, Sharing and LinkedIn"),
     ("Theme keywords in the archive, replacing the interim searches", "Keywording Guide, section 8b"),
@@ -797,16 +799,16 @@ def tpl_dev(rows, links, base):
         cur = STAGES.index(STATE.get(slug, "Wireframe"))
         return '<span class="stepper">' + "".join(
             f'<span class="{"on" if i == cur else "done" if i < cur else ""}">{e(st)}</span>' for i, st in enumerate(STAGES)) + "</span>"
-    tot = {k: sum(r["stats"][k] for r in rows) for k in ("notes", "images", "bars")}
+    tot = {k: sum(r["stats"][k] for r in rows) for k in ("notes", "images", "bars", "drafts")}
     body = "".join(
         f'<tr><td><a href="{base}{r["path"]}">{e(r["title"])}</a></td><td class="mono">/{e(r["path"])}</td>'
         f'<td>{e(TEMPLATE_NAMES[r["tpl"]])}</td><td>{stepper(r["slug"])}</td>'
-        f'<td class="n">{r["stats"]["notes"]}</td><td class="n">{r["stats"]["images"]}</td><td class="n">{r["stats"]["bars"]}</td></tr>'
+        f'<td class="n">{r["stats"]["notes"]}</td><td class="n">{r["stats"]["images"]}</td><td class="n">{r["stats"]["bars"]}</td><td class="n">{r["stats"]["drafts"]}</td></tr>'
         for r in rows)
     inventory = (f'<div class="table-scroll"><table class="dev-table"><thead><tr><th>Page</th><th>Address</th><th>Template</th>'
-                 f'<th>State</th><th class="n">Notes</th><th class="n">Images to choose</th><th class="n">Text to write</th></tr></thead>'
+                 f'<th>State</th><th class="n">Notes</th><th class="n">Images to choose</th><th class="n">Text to write</th><th class="n">Draft copy</th></tr></thead>'
                  f'<tbody>{body}</tbody><tfoot><tr><td colspan="4">{len(rows)} pages from {len(set(TEMPLATE_NAMES[r["tpl"]] for r in rows))} templates</td>'
-                 f'<td class="n">{tot["notes"]}</td><td class="n">{tot["images"]}</td><td class="n">{tot["bars"]}</td></tr></tfoot></table></div>')
+                 f'<td class="n">{tot["notes"]}</td><td class="n">{tot["images"]}</td><td class="n">{tot["bars"]}</td><td class="n">{tot["drafts"]}</td></tr></tfoot></table></div>')
     work = "".join(f'<li class="{st}"><span class="tag {st}">{ {"done": "Done", "next": "Next", "later": "Later"}[st] }</span>'
                    f'<strong>{e(name)}</strong><span>{e(what)}</span></li>' for name, st, what in ORDER_OF_WORK)
     masters = "".join(f'<li><a href="{url}">{e(name)}</a> <span class="where">{e(where)}</span><span>{e(what)}</span></li>'
@@ -827,7 +829,7 @@ def tpl_dev(rows, links, base):
                     '<li><strong>This page</strong><span>A view of the build, generated from the code, so it cannot go out of date. '
                     'The site is public, so nothing internal is copied here; the links below need your sign-in.</span></li></ul>', "tight")
             + sec(head("Order of work") + f'<ol class="dev-list work">{work}</ol>')
-            + sec(head("Pages", "Every page, its template and its state. The counts are what is still to fill: yellow notes, image boxes and text bars.")
+            + sec(head("Pages", "Every page, its template and its state. The counts are what is still to fill: yellow notes, image boxes and text bars (text that cannot be drafted yet, since the content does not exist); and the pieces of draft copy awaiting approval.")
                   + inventory)
             + sec(head("How to read the wireframe")
                   + '<ul class="dev-list"><li><strong>Grey box with a cross</strong><span>An image still to choose, at the size and proportion it will have.</span></li>'
@@ -1045,15 +1047,15 @@ a{color:inherit}
 .wire-strip .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
 .strip-tools{display:flex;align-items:center;gap:14px;white-space:nowrap}
 .strip-tools a{color:var(--ink)}
-.notes-toggle{font:inherit;font-size:13px;background:transparent;border:1px solid rgba(21,21,21,.4);border-radius:3px;padding:3px 10px;cursor:pointer;white-space:nowrap;color:var(--ink)}
+.notes-toggle{font:inherit;font-size:13px;background:transparent;border:1px solid rgba(21,21,21,.4);border-radius:0;padding:3px 10px;cursor:pointer;white-space:nowrap;color:var(--ink)}
 
 /* Wireframe parts */
-.img{position:relative;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:2px;
+.img{position:relative;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:0;
   background:
     linear-gradient(to top right,transparent calc(50% - .7px),var(--wire-line) calc(50% - .7px),var(--wire-line) calc(50% + .7px),transparent calc(50% + .7px)),
     linear-gradient(to bottom right,transparent calc(50% - .7px),var(--wire-line) calc(50% - .7px),var(--wire-line) calc(50% + .7px),transparent calc(50% + .7px)),
     var(--wire)}
-.img span{background:var(--wire);color:#6b6862;font-size:12px;line-height:1.35;padding:4px 8px;max-width:80%;text-align:center;border-radius:2px}
+.img span{background:var(--wire);color:#6b6862;font-size:12px;line-height:1.35;padding:4px 8px;max-width:80%;text-align:center;border-radius:0}
 .img.dark{background:
     linear-gradient(to top right,transparent calc(50% - .7px),#454545 calc(50% - .7px),#454545 calc(50% + .7px),transparent calc(50% + .7px)),
     linear-gradient(to bottom right,transparent calc(50% - .7px),#454545 calc(50% - .7px),#454545 calc(50% + .7px),transparent calc(50% + .7px)),
@@ -1061,7 +1063,7 @@ a{color:inherit}
 .img.dark span{background:#2a2a2a;color:#a9a6a0}
 .note{display:block;width:fit-content;max-width:62ch;font-size:13px;line-height:1.45;background:#fff8c2;border-left:3px solid #e0cf3c;padding:6px 10px;color:#4b4943;margin:4px 0 16px}
 .lines{max-width:60ch;margin:8px 0 16px}
-.lines i{display:block;height:10px;background:var(--bar);border-radius:2px;margin:0 0 12px}
+.lines i{display:block;height:10px;background:var(--bar);border-radius:0;margin:0 0 12px}
 .lines i:last-child{width:62%}
 .ph-text{color:#9a978f;font-style:italic;font-size:14px;margin:0 0 8px}
 body.clean .note,body.clean .img span{display:none}
@@ -1070,11 +1072,16 @@ body.clean .note,body.clean .img span{display:none}
 body.clean .draft{text-decoration:none}
 /* Modules: each section carries its number and variant as a label (Website – modules); hidden in clean view */
 .mod{position:relative;padding-top:var(--section)}
-.mod::before{content:attr(data-mod);box-sizing:border-box;position:absolute;left:0;top:calc(var(--section) - 22px);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#8a877f;background:#fff8c2;padding:1px 6px;border-radius:2px;z-index:2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mod::before{content:attr(data-mod);box-sizing:border-box;position:absolute;left:0;top:calc(var(--section) - 22px);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#8a877f;background:#fff8c2;padding:1px 6px;border-radius:0;z-index:2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mod.page-head::before,.mod.opening::before{top:8px}
 body.clean .mod::before{display:none}
 .mod.band{background:var(--wash);padding:var(--section-head) 0;margin-top:var(--section)}
 .mod.band::before{top:4px}
+.mod .mod{padding-top:32px}
+.mod .mod .wrap{padding:0;max-width:none}
+.mod .mod::before{top:8px}
+.mod.tight{padding-top:calc(var(--section)/2)}  /* grouped with the module before it: half the distance */
+.mod.tight::before{top:calc(var(--section)/2 - 22px)}
 .mod.band + .mod.band{margin-top:0}
 .mod .cols + .cols{margin-top:24px}
 .head-right{padding-top:8px}
@@ -1141,13 +1148,13 @@ main{padding-bottom:var(--section)}
 .cards-3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .cards-4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .cards-5{grid-template-columns:repeat(5,minmax(0,1fr))}
-.card{border:1px solid var(--line);border-radius:6px;padding:20px;background:#fff}
+.card{border:1px solid var(--line);border-radius:0;padding:20px;background:#fff}
 .card h3{margin-top:0}
 .example .img{margin-bottom:10px}
 
 /* Buttons */
 .doors{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 12px}
-.button{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;background:var(--accent);color:var(--ink);font:inherit;font-weight:500;font-size:15px;border-radius:3px;border:0;text-decoration:none;cursor:pointer}
+.button{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;background:var(--accent);color:var(--ink);font:inherit;font-weight:500;font-size:15px;border-radius:0;border:0;text-decoration:none;cursor:pointer}
 .button.quiet{background:transparent;border:1px solid #c9c6bf;color:var(--ink)}
 .button[disabled],.button.dead{opacity:.55;cursor:not-allowed}
 
@@ -1170,20 +1177,20 @@ main{padding-bottom:var(--section)}
 .order{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
 .count{font-size:13px;font-weight:500;margin-top:auto}
 .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:8px 0 32px}
-.logo{aspect-ratio:5/2;border:1px dashed #c9c6bf;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8a877f}
+.logo{aspect-ratio:5/2;border:1px dashed #c9c6bf;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8a877f}
 
 
 /* Theme and collection pages */
 .wide{max-height:62vh}
 .action{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
 .action .doors{margin:0}
-.facts-box{border:1px solid var(--line);border-radius:6px;padding:24px;background:#fff}
+.facts-box{border:1px solid var(--line);border-radius:0;padding:24px;background:#fff}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;font-size:15px;margin:0 0 16px}
 .facts dt{color:var(--ink-soft)}
 .facts dd{margin:0}
 .place h3{margin-top:12px}
 .chips{display:flex;flex-wrap:wrap;gap:10px;align-content:start}
-.chip{border:1px solid #c9c6bf;border-radius:999px;padding:8px 16px;text-decoration:none;font-size:15px}
+.chip{border:1px solid #c9c6bf;border-radius:0;padding:8px 16px;text-decoration:none;font-size:15px}
 .chip:hover{border-color:var(--ink)}
 .chip.ghost{display:inline-block;width:120px;height:38px;padding:0;background:var(--bar);border-color:transparent}
 .thanks{max-width:560px}
@@ -1206,7 +1213,7 @@ main{padding-bottom:var(--section)}
 
 /* Partner portal */
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
-.panel{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;min-height:200px;padding:28px;border:1px solid #c9c6bf;border-radius:6px;text-decoration:none}
+.panel{display:flex;flex-direction:column;justify-content:flex-end;gap:6px;min-height:200px;padding:28px;border:1px solid #c9c6bf;border-radius:0;text-decoration:none}
 .panel strong{font-size:30px;font-weight:500;line-height:1.15}
 .panel span:last-child{font-size:15px;color:var(--ink-soft)}
 .panel.dark{background:var(--ground);border-color:var(--ground);color:#fff}
@@ -1215,18 +1222,18 @@ main{padding-bottom:var(--section)}
 .panel:hover strong{text-decoration:underline}
 .mini-form{display:flex;flex-direction:column;gap:4px}
 .f-label{font-size:13px;color:var(--ink-soft);margin-top:6px}
-.field{display:block;height:38px;border:1px solid #d6d3cc;border-radius:3px;background:#fff}
+.field{display:block;height:38px;border:1px solid #d6d3cc;border-radius:0;background:#fff}
 .field.tall{height:76px}
 .mini-form .button,.card .button{align-self:flex-start;margin-top:14px}
 .call-card{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 32px}
 .call-card .button{margin-top:0;align-self:center}
-.logo-tile{background:var(--ground);aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;border-radius:2px;margin-bottom:10px}
+.logo-tile{background:var(--ground);aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;border-radius:0;margin-bottom:10px}
 .logo-tile img{width:62%}
 
 /* Form */
 .form{display:grid;gap:6px;max-width:560px;margin:8px 0 16px}
 .form label{font-size:14px;font-weight:500;margin-top:10px}
-.form input,.form select,.form textarea{font:inherit;padding:10px 12px;border:1px solid #c9c6bf;border-radius:4px;background:#fff}
+.form input,.form select,.form textarea{font:inherit;padding:10px 12px;border:1px solid #c9c6bf;border-radius:0;background:#fff}
 .form .check{display:flex;gap:10px;align-items:flex-start;font-weight:400;color:var(--ink-soft)}
 .form .button{justify-self:start;margin-top:16px}
 .next-steps{padding-left:20px;margin:8px 0 16px}
@@ -1241,7 +1248,7 @@ main{padding-bottom:var(--section)}
 .dev-table .n{text-align:right;font-variant-numeric:tabular-nums}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;overflow-wrap:anywhere}
 .stepper{display:inline-flex;gap:3px;flex-wrap:wrap}
-.stepper span{font-size:11px;padding:2px 6px;border-radius:3px;background:var(--wash);color:#9a978f}
+.stepper span{font-size:11px;padding:2px 6px;border-radius:0;background:var(--wash);color:#9a978f}
 .stepper span.done{background:#e3e1dc;color:var(--ink)}
 .stepper span.on{background:var(--ink);color:#fff}
 .dev-list{list-style:none;padding:0;margin:8px 0 0;max-width:900px}
@@ -1250,7 +1257,7 @@ main{padding-bottom:var(--section)}
 .dev-list .where{font-size:12px;color:#8a877f}
 .dev-list li:has(.tag){grid-template-columns:64px minmax(0,300px) 1fr}
 .dev-list li:has(.where){grid-template-columns:minmax(0,300px) 140px 1fr}
-.tag{display:inline-block;font-size:11px;letter-spacing:.04em;padding:2px 7px;border-radius:3px;height:fit-content;width:fit-content}
+.tag{display:inline-block;font-size:11px;letter-spacing:.04em;padding:2px 7px;border-radius:0;height:fit-content;width:fit-content}
 .tag.done{background:#e3e1dc}.tag.next{background:var(--accent)}.tag.later,.tag.open{border:1px solid #c9c6bf;color:var(--ink-soft)}
 
 /* Footer */
@@ -1268,8 +1275,8 @@ body.show-grid .grid-overlay{display:block}
 .grid-overlay .cols{height:100%}
 .grid-overlay .col{background:rgba(40,110,220,.10);border-left:1px solid rgba(40,110,220,.45);border-right:1px solid rgba(40,110,220,.45);font-size:11px;color:rgba(40,110,220,.9);padding:4px 0 0 4px;font-variant-numeric:tabular-nums}
 .grid-overlay .col.col-5{background:rgba(40,110,220,.16)}  /* the Opening starts here on desktop */
-.grid-read{position:absolute;left:0;right:0;bottom:16px;width:fit-content;background:rgba(21,21,21,.9);color:#fff;font-size:12px;line-height:1.4;padding:6px 10px;border-radius:3px;font-variant-numeric:tabular-nums}
-.grid-toggle{font:inherit;font-size:13px;background:transparent;border:1px solid rgba(21,21,21,.4);border-radius:3px;padding:3px 10px;cursor:pointer;white-space:nowrap;color:var(--ink)}
+.grid-read{position:absolute;left:0;right:0;bottom:16px;width:fit-content;background:rgba(21,21,21,.9);color:#fff;font-size:12px;line-height:1.4;padding:6px 10px;border-radius:0;font-variant-numeric:tabular-nums}
+.grid-toggle{font:inherit;font-size:13px;background:transparent;border:1px solid rgba(21,21,21,.4);border-radius:0;padding:3px 10px;cursor:pointer;white-space:nowrap;color:var(--ink)}
 .grid-toggle[aria-pressed="true"],.notes-toggle[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
 
 /* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
@@ -1308,7 +1315,7 @@ body.show-grid .grid-overlay{display:block}
   .theme-entry.row .order{font-size:28px}
   .theme-entry.row h3{font-size:24px}
   .numbers{gap:16px 32px}
-  .opening-img{aspect-ratio:4/5}
+  .opening-img{aspect-ratio:3/2}  /* 3:2 on phones so the core line sits in the first screen (4:5 pushed it below) */
   .opening-words h1{font-size:30px}
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}
   .grid-2{gap:32px}

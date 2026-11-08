@@ -169,6 +169,8 @@ main{padding-bottom:var(--section)}
 .numbers{display:flex;flex-wrap:wrap;gap:16px 44px;margin:8px 0}
 .num b{display:block;font-size:44px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
 .num span{font-size:14px;color:var(--ink-soft)}
+.numbers.by-kind{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px 32px;border-top:1px solid var(--ink);padding-top:16px;margin-top:16px}
+.small-num b{font-size:32px}
 .theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px;margin-top:32px}
 .order{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
 .count{font-size:13px;font-weight:500;margin-top:auto}
@@ -311,6 +313,7 @@ body.show-grid .grid-overlay{display:block}
   .theme-entry.row .order{font-size:28px}
   .theme-entry.row h3{font-size:24px}
   .numbers{gap:16px 32px}
+  .numbers.by-kind{grid-template-columns:repeat(2,minmax(0,1fr))}
   .opening-img{aspect-ratio:3/2}  /* 3:2 on phones so the core line sits in the first screen (4:5 pushed it below) */
   .opening-words h1{font-size:30px}
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}

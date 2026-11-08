@@ -36,8 +36,11 @@ ABOUT_LINE = ("Spotlighting African innovation and African–European collaborat
               "An independent initiative established by Commerce & Culture.")             # Strategic Platform, Brand and language
 NUMBERS = [("1,122", "images"), ("3", "countries"), ("5", "themes")]                        # Website brief, Home; AR Metadata, 2 Nov 2026
 # The momentum numbers (engine brief, section 5; Thomas, 8 November 2026): a download is a licence for one stated use, so
-# downloads and uses are one count ("uses"); "published" are the uses reported back through the portal with the result.
-MOMENTUM = [("—", "partners"), ("—", "uses"), ("—", "published")]
+# downloads and uses are one count. Uses by kind: the eight licence categories (AR Archive – Status, the pricing profile),
+# generated at every download in PhotoDeck, so the numbers are ours and tell where the images go.
+MOMENTUM = [("—", "partners"), ("—", "uses")]
+USE_KINDS = ["report or publication", "grant or funding application", "presentation or internal use", "website or social media",
+             "press and editorial", "exhibition or event", "education or training material", "other use"]
 EMAIL_MAIN, EMAIL_PRESS, EMAIL_PARTNERS = ("hello@africareframed.com", "press@africareframed.com",
                                            "partnerships@africareframed.com")                 # Start here, Addresses
 HOUSE_LINE = "Africa Reframed’s own collection: 1,122 images from Mali, Kenya and The Gambia."
@@ -266,12 +269,12 @@ def numbers_row(values=NUMBERS, asof="as of 2 November 2026"):
     return f'<div class="numbers">{items}</div><p class="credit">{e(asof)}</p>'
 
 
-def m_numbers(values=NUMBERS, asof="as of 2 November 2026", variant="a", title=None, note_text=None):
+def m_numbers(values=NUMBERS, asof="as of 2 November 2026", variant="a", title=None, note_text=None, tight=False):
     top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{note(note_text) if note_text else ""}</div></div>' if title else ""
     if variant == "c":
         rows = "".join(f'<div class="num small-num"><b>{n}</b><span>{e(t)}</span></div>' for n, t in values)
-        return mod("numbers", "c, a count by country", f'{top}<div class="numbers by-country">{rows}</div>')
-    return mod("numbers", "a, a row of three", top + numbers_row(values, asof))
+        return mod("numbers", "c, counts in a row", f'{top}<div class="numbers by-kind">{rows}</div>', tight=tight)
+    return mod("numbers", "a, a row", top + numbers_row(values, asof), tight=tight)
 
 
 # 2.10 Partner strip: shown only once there are partners; here in grey so the layout exists.
@@ -473,7 +476,9 @@ def tpl_home(p, base):
                                                    button(base + "partners/", "How partners use the archive", quiet=True)], sid="intro",
                      meta=[f"{n} {t}" for n, t in NUMBERS])
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
-                        note_text="The momentum numbers (Thomas, 8 November 2026): partners; uses, one per download, each with its stated purpose (PhotoDeck’s orders); published, the uses reported back through the portal with the result (the partner database). They grow, where the stock numbers do not. Partners by name and one example of use come from the closed preview, with consent. Until there are any, the three modules are left out of the live page.")
+                        note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders). They grow, where the stock numbers do not. Partners by name and one example of use come from the closed preview, with consent. Until there are any, these modules are left out of the live page.")
+            + m_numbers([("—", k) for k in USE_KINDS], None, "c", title="Uses by kind", tight=True,
+                        note_text="The eight licence categories, counted from PhotoDeck’s orders: where the images go. In the wireframe a row of counts in the catalogue form; whether it becomes a drawn graphic is decided in step 3.")
             + m_partners(tight=True) + m_use("a", tight=True)
             + m_themes(base, "a")
             + m_collection(base)
@@ -550,7 +555,7 @@ def tpl_portal(p, base):
     return (m_page_head(p["title"], PORTAL_LEAD, statement_draft=True, doors=m_doors("a", doors=doors))
             + m_form("b", title="The partner’s desk", forms=forms, sid="desk",
                      lead=draft("The one place to tell us how the images are used and what you need next. Every answer lands with us, and we answer.", "p"))
-            + m_numbers(MOMENTUM, "once there is something to show", title="Partner news",
+            + m_numbers(MOMENTUM + [("—", "kinds of use")], "once there is something to show", title="Partner news",
                         note_text="The numbers as they grow and news for partners; aggregates and consented examples only. Shown once there is something to show; until then left out of the live page.")
             + m_use("c", "News", tight=True)
             + m_text("Using the images", [PORTAL_RULES], "a", links=[button(base + "partners/#using-the-images", "All the rules", quiet=True),
@@ -1180,6 +1185,8 @@ main{padding-bottom:var(--section)}
 .numbers{display:flex;flex-wrap:wrap;gap:16px 44px;margin:8px 0}
 .num b{display:block;font-size:44px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
 .num span{font-size:14px;color:var(--ink-soft)}
+.numbers.by-kind{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px 32px;border-top:1px solid var(--ink);padding-top:16px;margin-top:16px}
+.small-num b{font-size:32px}
 .theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px;margin-top:32px}
 .order{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
 .count{font-size:13px;font-weight:500;margin-top:auto}
@@ -1322,6 +1329,7 @@ body.show-grid .grid-overlay{display:block}
   .theme-entry.row .order{font-size:28px}
   .theme-entry.row h3{font-size:24px}
   .numbers{gap:16px 32px}
+  .numbers.by-kind{grid-template-columns:repeat(2,minmax(0,1fr))}
   .opening-img{aspect-ratio:3/2}  /* 3:2 on phones so the core line sits in the first screen (4:5 pushed it below) */
   .opening-words h1{font-size:30px}
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}

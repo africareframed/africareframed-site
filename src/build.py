@@ -39,6 +39,8 @@ NUMBERS = [("1,122", "images"), ("3", "countries"), ("5", "themes")]            
 # downloads and uses are one count. Uses by kind: the eight licence categories (AR Archive – Status, the pricing profile),
 # generated at every download in PhotoDeck, so the numbers are ours and tell where the images go.
 MOMENTUM = [("—", "partners"), ("—", "uses")]
+# Partner types: from the Request access form (type of organisation); aggregates, so shown before any partner is named.
+PARTNER_TYPES = ["NGOs", "media", "educational institutions", "embassies and ministries", "development finance institutions", "companies"]
 USE_KINDS = ["report or publication", "grant or funding application", "presentation or internal use", "website or social media",
              "press and editorial", "exhibition or event", "education or training material", "other use"]
 EMAIL_MAIN, EMAIL_PRESS, EMAIL_PARTNERS = ("hello@africareframed.com", "press@africareframed.com",
@@ -269,12 +271,12 @@ def numbers_row(values=NUMBERS, asof="as of 2 November 2026"):
     return f'<div class="numbers">{items}</div><p class="credit">{e(asof)}</p>'
 
 
-def m_numbers(values=NUMBERS, asof="as of 2 November 2026", variant="a", title=None, note_text=None, tight=False):
+def m_numbers(values=NUMBERS, asof="as of 2 November 2026", variant="a", title=None, note_text=None, tight=False, sid=None):
     top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{note(note_text) if note_text else ""}</div></div>' if title else ""
     if variant == "c":
         rows = "".join(f'<div class="num small-num"><b>{n}</b><span>{e(t)}</span></div>' for n, t in values)
-        return mod("numbers", "c, counts in a row", f'{top}<div class="numbers by-kind">{rows}</div>', tight=tight)
-    return mod("numbers", "a, a row", top + numbers_row(values, asof), tight=tight)
+        return mod("numbers", "c, counts in a row", f'{top}<div class="numbers by-kind">{rows}</div>', tight=tight, sid=sid)
+    return mod("numbers", "a, a row", top + numbers_row(values, asof), tight=tight, sid=sid)
 
 
 # 2.10 Partner strip: shown only once there are partners; here in grey so the layout exists.
@@ -542,7 +544,9 @@ def tpl_partners(p, base):
             + m_doors("c", links=[button(base + "request-access/", "Request access", quiet=True)], tight=True)
             + m_items("Using the images", RULES, "c", lead=draft("The rules for use in plain language. Read them before you apply. Terms on the archive is the legal text.", "p", "small"), sid="using-the-images")
             + m_text("Sponsor a collection", SPONSOR_TEXT, "c", contact=("Partnerships", EMAIL_PARTNERS), sid="sponsor")
-            + m_partners(10, "Partners using the archive") + m_use("b", "In use", tight=True))
+            + m_numbers([("—", t) for t in PARTNER_TYPES], None, "c", title="Partners using the archive", sid="partners",
+                        note_text="Partners by type, counted from the Request access form: an aggregate, so it can be shown before any partner is named (Thomas, 8 November 2026). Updated with each approval.")
+            + m_partners(10, "By name", tight=True) + m_use("b", "In use", tight=True))
 
 
 def tpl_portal(p, base):
@@ -555,7 +559,7 @@ def tpl_portal(p, base):
     return (m_page_head(p["title"], PORTAL_LEAD, statement_draft=True, doors=m_doors("a", doors=doors))
             + m_form("b", title="The partner’s desk", forms=forms, sid="desk",
                      lead=draft("The one place to tell us how the images are used and what you need next. Every answer lands with us, and we answer.", "p"))
-            + m_numbers(MOMENTUM + [("—", "kinds of use")], "once there is something to show", title="Partner news",
+            + m_numbers(MOMENTUM + [("—", "types of partner"), ("—", "kinds of use")], "once there is something to show", title="Partner news",
                         note_text="The numbers as they grow and news for partners; aggregates and consented examples only. Shown once there is something to show; until then left out of the live page.")
             + m_use("c", "News", tight=True)
             + m_text("Using the images", [PORTAL_RULES], "a", links=[button(base + "partners/#using-the-images", "All the rules", quiet=True),

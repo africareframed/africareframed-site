@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../assets/site.css?v=202611060849">
+<link rel="stylesheet" href="../assets/site.css?v=202611080757">
 </head>
 <body class="page-portal tpl-portal">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,7 +40,8 @@
     </nav>
   </div>
 </header>
-<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
+<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>
 <main id="main">
 <section class="sec page-head"><div class="wrap"><h1>Partner portal</h1><p class="lead">The archive is for partners: NGOs, media, educational institutions, embassies, ministries and development finance institutions.</p><div class="door-panels"><a class="panel dark" href="https://archive.africareframed.com/-/galleries/archive?src=main-portal"><span class="kicker">Partners</span><strong>Partner log in →</strong><span>Signed in already? This takes you straight to the images.</span></a><a class="panel" href="../request-access/"><span class="kicker">Not a partner yet?</span><strong>Request access</strong><span>Free for selected non-profit and public partners.</span></a></div></div></section><section class="sec " id="desk"><div class="wrap"><h2>The partner’s desk</h2><p class="lead">The one place to tell us how the images are used and what you need next.</p><p class="note">Every answer lands in the partner database; the forms ask for organisation and email. The welcome email, the download email and a three-month check-in point here.</p><div class="cards-3"><div class="card" id="report"><h3>Report a use</h3><div class="mini-form"><span class="f-label">Where it appeared</span><span class="field"></span><span class="f-label">Link</span><span class="field"></span><span class="f-label">Date</span><span class="field"></span><span class="f-label">What you need next</span><span class="field tall"></span><span class="button dead" aria-disabled="true">Send</span></div></div><div class="card" id="request-imagery"><h3>Request imagery</h3><p class="small">Can’t find what you need?</p><div class="mini-form"><span class="f-label">What you are looking for</span><span class="field tall"></span><span class="f-label">For what</span><span class="field"></span><span class="f-label">By when</span><span class="field"></span><span class="button dead" aria-disabled="true">Send</span></div></div><div class="card" id="working-on"><h3>What are you working on?</h3><div class="mini-form"><span class="f-label">Your project</span><span class="field tall"></span><span class="f-label">Link</span><span class="field"></span><span class="button dead" aria-disabled="true">Send</span></div></div></div></div></section><section class="sec " id="news"><div class="wrap"><h2>Partner news</h2><p class="note">News for partners and the numbers as they grow; aggregates and consented examples only. Shown once there is something to show.</p><div class="numbers"><div class="num"><b>—</b><span>partners</span></div><div class="num"><b>—</b><span>images downloaded</span></div><div class="num"><b>—</b><span>uses reported</span></div></div><div class="cards-3"><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: News image"><span>News image</span></div><p class="ph-text">Date</p><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: News image"><span>News image</span></div><p class="ph-text">Date</p><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: News image"><span>News image</span></div><p class="ph-text">Date</p><div class="lines" aria-hidden="true"><i></i><i></i></div></div></div></div></section><section class="sec band" id="rules"><div class="wrap"><h2>Using the images</h2><p>One download is one licence, for the use you state. Credit every use, never change what an image shows, and tell us where the images appear.</p><p class="doors"><a class="button quiet" href="../partners/#using-the-images">All the rules</a><a class="button quiet" href="https://archive.africareframed.com/client?src=main-portal-history">Your download history</a></p></div></section><section class="sec tight"><div class="wrap"><div class="card call-card" id="call"><div><h3>Talk to us</h3><p class="note">Optional, never required: a short call about what is missing and what you are working on.</p><div class="lines" aria-hidden="true"><i></i><i></i></div></div><span class="button quiet dead" aria-disabled="true">Book a feedback call</span></div></div></section>
 </main>
@@ -79,6 +80,37 @@
     setClean(on);
     try { localStorage.setItem('ar-clean', on ? '1' : '0'); } catch (err) {}
   });
+  /* The grid overlay: the Grid button, ?grid in the address, or the key G. Draws the columns of the current width. */
+  var g = document.querySelector('.grid-toggle'), ov = document.querySelector('.grid-overlay');
+  if (!g || !ov) return;
+  var cols = ov.querySelector('.cols'), read = ov.querySelector('.grid-read');
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function draw(){
+    var n = parseInt(cssVar('--cols'), 10) || 12, h = '';
+    for (var i = 1; i <= n; i++) h += '<div class="col col-' + i + '">' + i + '</div>';
+    cols.innerHTML = h;
+    var first = cols.firstElementChild, w = first ? Math.round(first.getBoundingClientRect().width * 10) / 10 : 0;
+    var bp = window.innerWidth >= 1024 ? 'desktop' : window.innerWidth >= 768 ? 'tablet' : 'phone';
+    read.textContent = window.innerWidth + ' px · ' + bp + ' · ' + n + ' columns × ' + w + ' px · gutter ' + cssVar('--gutter')
+      + ' · margin ' + cssVar('--margin') + ' · content up to ' + cssVar('--content-max') + ' · header ' + cssVar('--header-h') + ' · logo ' + cssVar('--logo-w');
+  }
+  function setGrid(on){
+    document.body.classList.toggle('show-grid', on);
+    g.setAttribute('aria-pressed', String(on));
+    if (on) draw();
+  }
+  var want = /[?&]grid(=|&|$)/.test(location.search);
+  try { setGrid(want || localStorage.getItem('ar-grid') === '1'); } catch (err) { setGrid(want); }
+  g.addEventListener('click', function(){
+    var on = !document.body.classList.contains('show-grid');
+    setGrid(on);
+    try { localStorage.setItem('ar-grid', on ? '1' : '0'); } catch (err) {}
+  });
+  document.addEventListener('keydown', function(ev){
+    if (ev.key !== 'g' || ev.metaKey || ev.ctrlKey || ev.altKey || /input|textarea|select/i.test(ev.target.tagName)) return;
+    g.click();
+  });
+  window.addEventListener('resize', function(){ if (document.body.classList.contains('show-grid')) draw(); });
 })();
 </script>
 </body>

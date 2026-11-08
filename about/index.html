@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../assets/site.css?v=202611060849">
+<link rel="stylesheet" href="../assets/site.css?v=202611080757">
 </head>
 <body class="page-about tpl-text">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,7 +40,8 @@
     </nav>
   </div>
 </header>
-<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
+<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>
 <main id="main">
 <section class="sec page-head"><div class="wrap"><h1>About</h1><p class="lead">Spotlighting African innovation and African–European collaboration. An independent initiative established by Commerce &amp; Culture.</p></div></section><section class="sec tight"><div class="wrap"><div class="split"><div class="img" style="aspect-ratio:4/5" role="img" aria-label="Image to choose: Portrait: Thomas Damgaard"><span>Portrait: Thomas Damgaard</span></div><div><h2>Who is behind it</h2><p class="note">Commerce &amp; Culture and Thomas Damgaard: who runs the initiative and why.</p><div class="lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div></div></div></section><section class="sec "><div class="wrap"><h2>Principles</h2><p class="note">How the images are made and used.</p><div class="cards-5"><div class="card"><h3>Real images, never AI-generated</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Consent and releases</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Photographers credited</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Fair terms</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="card"><h3>Editorial independence</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div></div></div></section><section class="sec "><div class="wrap"><h2>Legacy</h2><p class="note">History, as proof behind the present.</p><div class="cards-4"><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker">Since 2010</p><h3>Exhibitions and collaborations</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker">2014–2017</p><h3>Afghan Tales</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker">2016</p><h3>Africa Reframed at Øksnehallen</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div><div class="example"><div class="img" style="aspect-ratio:3/2" role="img" aria-label="Image to choose: Archive image"><span>Archive image</span></div><p class="kicker"></p><h3>Artist collaborations</h3><div class="lines" aria-hidden="true"><i></i><i></i></div></div></div></div></section><section class="sec band"><div class="wrap"><h2>How it is run</h2><p class="note">A non-commercial initiative, administered through KKArt; no licensing sales; surplus funds new collections.</p><div class="lines" aria-hidden="true"><i></i><i></i></div></div></section>
 </main>
@@ -79,6 +80,37 @@
     setClean(on);
     try { localStorage.setItem('ar-clean', on ? '1' : '0'); } catch (err) {}
   });
+  /* The grid overlay: the Grid button, ?grid in the address, or the key G. Draws the columns of the current width. */
+  var g = document.querySelector('.grid-toggle'), ov = document.querySelector('.grid-overlay');
+  if (!g || !ov) return;
+  var cols = ov.querySelector('.cols'), read = ov.querySelector('.grid-read');
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function draw(){
+    var n = parseInt(cssVar('--cols'), 10) || 12, h = '';
+    for (var i = 1; i <= n; i++) h += '<div class="col col-' + i + '">' + i + '</div>';
+    cols.innerHTML = h;
+    var first = cols.firstElementChild, w = first ? Math.round(first.getBoundingClientRect().width * 10) / 10 : 0;
+    var bp = window.innerWidth >= 1024 ? 'desktop' : window.innerWidth >= 768 ? 'tablet' : 'phone';
+    read.textContent = window.innerWidth + ' px · ' + bp + ' · ' + n + ' columns × ' + w + ' px · gutter ' + cssVar('--gutter')
+      + ' · margin ' + cssVar('--margin') + ' · content up to ' + cssVar('--content-max') + ' · header ' + cssVar('--header-h') + ' · logo ' + cssVar('--logo-w');
+  }
+  function setGrid(on){
+    document.body.classList.toggle('show-grid', on);
+    g.setAttribute('aria-pressed', String(on));
+    if (on) draw();
+  }
+  var want = /[?&]grid(=|&|$)/.test(location.search);
+  try { setGrid(want || localStorage.getItem('ar-grid') === '1'); } catch (err) { setGrid(want); }
+  g.addEventListener('click', function(){
+    var on = !document.body.classList.contains('show-grid');
+    setGrid(on);
+    try { localStorage.setItem('ar-grid', on ? '1' : '0'); } catch (err) {}
+  });
+  document.addEventListener('keydown', function(ev){
+    if (ev.key !== 'g' || ev.metaKey || ev.ctrlKey || ev.altKey || /input|textarea|select/i.test(ev.target.tagName)) return;
+    g.click();
+  });
+  window.addEventListener('resize', function(){ if (document.body.classList.contains('show-grid')) draw(); });
 })();
 </script>
 </body>

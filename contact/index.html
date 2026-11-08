@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="../assets/site.css?v=202611060849">
+<link rel="stylesheet" href="../assets/site.css?v=202611080757">
 </head>
 <body class="page-contact tpl-text">
 <a class="skip" href="#main">Skip to content</a>
@@ -40,7 +40,8 @@
     </nav>
   </div>
 </header>
-<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a href="../dev/">Development</a><button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
+<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>
 <main id="main">
 <section class="sec page-head"><div class="wrap"><h1>Contact</h1><p class="h-big"><a href="mailto:hello@africareframed.com">hello@africareframed.com</a></p><p class="note">A link to Africa Reframed on LinkedIn.</p><p class="small">Press: <a href="mailto:press@africareframed.com">press@africareframed.com</a> · Partnerships: <a href="mailto:partnerships@africareframed.com">partnerships@africareframed.com</a></p></div></section>
 </main>
@@ -79,6 +80,37 @@
     setClean(on);
     try { localStorage.setItem('ar-clean', on ? '1' : '0'); } catch (err) {}
   });
+  /* The grid overlay: the Grid button, ?grid in the address, or the key G. Draws the columns of the current width. */
+  var g = document.querySelector('.grid-toggle'), ov = document.querySelector('.grid-overlay');
+  if (!g || !ov) return;
+  var cols = ov.querySelector('.cols'), read = ov.querySelector('.grid-read');
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function draw(){
+    var n = parseInt(cssVar('--cols'), 10) || 12, h = '';
+    for (var i = 1; i <= n; i++) h += '<div class="col col-' + i + '">' + i + '</div>';
+    cols.innerHTML = h;
+    var first = cols.firstElementChild, w = first ? Math.round(first.getBoundingClientRect().width * 10) / 10 : 0;
+    var bp = window.innerWidth >= 1024 ? 'desktop' : window.innerWidth >= 768 ? 'tablet' : 'phone';
+    read.textContent = window.innerWidth + ' px · ' + bp + ' · ' + n + ' columns × ' + w + ' px · gutter ' + cssVar('--gutter')
+      + ' · margin ' + cssVar('--margin') + ' · content up to ' + cssVar('--content-max') + ' · header ' + cssVar('--header-h') + ' · logo ' + cssVar('--logo-w');
+  }
+  function setGrid(on){
+    document.body.classList.toggle('show-grid', on);
+    g.setAttribute('aria-pressed', String(on));
+    if (on) draw();
+  }
+  var want = /[?&]grid(=|&|$)/.test(location.search);
+  try { setGrid(want || localStorage.getItem('ar-grid') === '1'); } catch (err) { setGrid(want); }
+  g.addEventListener('click', function(){
+    var on = !document.body.classList.contains('show-grid');
+    setGrid(on);
+    try { localStorage.setItem('ar-grid', on ? '1' : '0'); } catch (err) {}
+  });
+  document.addEventListener('keydown', function(ev){
+    if (ev.key !== 'g' || ev.metaKey || ev.ctrlKey || ev.altKey || /input|textarea|select/i.test(ev.target.tagName)) return;
+    g.click();
+  });
+  window.addEventListener('resize', function(){ if (document.body.classList.contains('show-grid')) draw(); });
 })();
 </script>
 </body>

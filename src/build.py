@@ -180,9 +180,13 @@ PRINCIPLES_HOME = ["Real images", "Consent", "Credited, fairly paid photographer
 
 
 def tpl_home(p, base):
-    # 1 What this is: the core line over one real image
-    hero = (f'<section class="hero-full">{img("Opening image · one real image at full width · released, no minors", None, dark=True, cls="hero-img")}'
-            f'<div class="hero-text"><div class="wrap"><h1>{e(CORE_LINE)}</h1></div></div></section>')
+    # 1 What this is: the Opening (design guide, Opening): the core line on white in columns 1–4, one real photograph from
+    #   the line of column 5 off the right edge of the page. Geometry only; the stripes and triangles come in step 3.
+    hero = (f'<section class="opening"><div class="wrap cols">'
+            f'<div class="opening-words c1-4"><h1>{e(CORE_LINE)}</h1>'
+            + note("The Opening: the words on white beside the photograph, never on it. The stripes and triangles cut in from the white edges in step 3.")
+            + f'</div><div class="c5-off">{img("Opening photograph · from a column line off the right edge (5 on desktop, 2 below) · released, no minors", None, cls="opening-img")}</div>'
+            f'</div></section>')
     # 2 Who it is for and who is behind it; the ways on (7) sit with it, and Request access stays quiet (6 Nov decision)
     intro = sec('<div class="narrow">'
                 + note("Two or three sentences: what Africa Reframed is, who it is for and who is behind it (Commerce & Culture). A funder checking us gets it here, in the first screen.")
@@ -480,14 +484,22 @@ ORDER_OF_WORK = [("Brief", "done", "Website – Brief and build plan"),
                  ("Site map and user flows", "done", "Website – Site map and user flows, and the two maps"),
                  ("Page priorities", "done", "Site map and user flows, section 6: what the five key pages must say and do, ranked"),
                  ("Live wireframe", "done", "This site, version 4: the five key pages arranged by the page priorities"),
-                 ("Visual design", "next", "Brand and design project: Rune Høgsberg's design system, key templates first"),
-                 ("Content and images", "later", "Copy for every note; the public images (released, no minors)"),
-                 ("Build and test", "later", "Forms, the real domain on Cloudflare behind a lock, phones and LinkedIn's browser"),
-                 ("Closed preview", "later", "Invited partners and sponsors, in waves; their feedback shapes the site"),
+                 ("Step 1: the grid, the module list and the header test", "next",
+                  "The grid's values in the code with the overlay (below); the module list, Website – modules; what PhotoDeck's Custom CSS/HTML can carry"),
+                 ("Step 2: low-resolution modules and the story mockup", "later",
+                  "The wireframe rebuilt from the modules, every module at /dev/modules, the five key pages with draft copy, the phone first"),
+                 ("Step 3: the look", "later", "The open visual questions in Claude Design canvases: the Opening, the close, the yellow and the black sections"),
+                 ("Step 4: refine and build, module by module", "later", "The white header first; the five key pages to closed-preview quality, then the other eleven"),
+                 ("Step 5: the archive's look on PhotoDeck", "later", "The white header, DM Sans and the brand yellow, with Thomas's go-ahead"),
+                 ("Step 6: the closed preview", "later", "Cloudflare, the real domain, the lock, the forms, then the tests with invited partners"),
                  ("Public launch", "later", "The lock comes off once partners are on board; the checklist below")]
 MASTERS = [
+    ("Website build – start here", "https://docs.google.com/document/d/1PLereZFoiGvBbCnSAgmI92OPKzN_nVIwT0gmLK2ChW8/edit",
+     "Drive, 05 Website", "The handover for the website build: where things stand, what the site follows, the work in order"),
     ("Website – Brief and build plan", "https://docs.google.com/document/d/1a5HFS7CtiNdi1dcYHTFwV089de4adyE8Lp5rNHstD0c/edit",
      "Drive, 05 Website", "What the site is for and how it is built; the master for decisions about the site"),
+    ("The design guide", "https://claude.ai/artifact/Y8kTwb8jhEdkVu6buz2Fnx",
+     "claude.ai", "The Design System “Africa Reframed”: the identity's rules and building blocks (version 19, 7 November 2026)"),
     ("Website – Site map and user flows", "https://docs.google.com/document/d/1a993qulyFc7dbc-RTrb5fPXg9f9ng9YO0jWs51-HX1E/edit",
      "Drive, 05 Website", "Every page, what it holds, and the journeys across the two sites"),
     ("Africa Reframed Site Map", "https://claude.ai/artifact/6L43Dyxn65x4XmdzoMSNTC",
@@ -534,6 +546,30 @@ def git_log(n=12):
         return []
 
 
+def grid_table():
+    """The grid's values, from GRID, for the development page."""
+    d, t, p = GRID["desktop"], GRID["tablet"], GRID["phone"]
+    rows = [
+        ("Width", "1,024 px and up (the full width from 1,440 px)", "768–1,023 px", "below 768 px"),
+        ("Columns", f'{d["cols"]}, each 80 px at the full width', f'{t["cols"]}', f'{p["cols"]}'),
+        ("Gutter", f'{d["gutter"]} px', f'{t["gutter"]} px', f'{p["gutter"]} px'),
+        ("Side margins", f'{d["margin"]} px; wider above 1,440 px, with the content centred', f'{t["margin"]} px', f'{p["margin"]} px'),
+        ("Content width", f'up to {d["content_max"]:,} px', "fluid", "fluid"),
+        ("Header height · logo width", f'{d["header"]} · {d["logo"]} px (the logo is two columns and a gutter)', f'{t["header"]} · {t["logo"]} px', f'{p["header"]} · {p["logo"]} px'),
+        ("Measure", "running text up to 36 em, about 70 characters, inside its columns", "the same", "the same"),
+        ("Between sections", f'{d["section"]} px', f'{t["section"]} px', f'{p["section"]} px'),
+        ("Title left, text right", "title in columns 1–4, text in 6–12", "title in 1–3, text in 4–8", "one column, the title first"),
+        ("Photographs", "full bleed, edge to edge; on the columns; or from a column line off one edge (the Opening: from column 5 off the right edge, the words in 1–4)",
+         "the same three cases; the Opening from the line of column 2 off the right edge, the words below", "the same; the Opening from column 2, the words below"),
+    ]
+    body = "".join(f"<tr><th>{e(a)}</th><td>{e(b)}</td><td>{e(c)}</td><td>{e(d_)}</td></tr>" for a, b, c, d_ in rows)
+    return (f'<div class="table-scroll"><table class="dev-table grid-table"><thead><tr><th></th><th>Desktop</th><th>Tablet</th><th>Phone</th></tr></thead>'
+            f'<tbody>{body}</tbody></table></div>'
+            f'<p class="small">In the code: custom properties in <span class="mono">assets/site.css</span> (--cols, --gutter, --margin, --content-max, --header-h, '
+            f'--logo-w, --section), set once per width in <span class="mono">src/build.py</span>; the utility classes .cols, .c1-4, .c6-12, .c5-off and .bleed. '
+            f'Proposed as section U in Design guide – review and changes.</p>')
+
+
 def tpl_dev(rows, links, base):
     def stepper(slug):
         cur = STAGES.index(STATE.get(slug, "Wireframe"))
@@ -575,13 +611,55 @@ def tpl_dev(rows, links, base):
                   + '<ul class="dev-list"><li><strong>Grey box with a cross</strong><span>An image still to choose, at the size and proportion it will have.</span></li>'
                     '<li><strong>Grey bars</strong><span>Text still to write.</span></li>'
                     '<li><strong>Yellow note</strong><span>What goes there, and where it comes from.</span></li>'
-                    '<li><strong>Clean view</strong><span>In the yellow strip: hides the notes and labels, so a page can be shown as a layout.</span></li></ul>')
+                    '<li><strong>Clean view</strong><span>In the yellow strip: hides the notes and labels, so a page can be shown as a layout.</span></li>'
+                    '<li><strong>Grid</strong><span>In the yellow strip, or the key G, or ?grid in the address: draws the columns (blue) and margins (red) of the current width, with the values in a readout.</span></li></ul>')
+            + sec(head("The grid", "Starting values set in step 1 (8 November 2026), on what the design guide already had; to be locked after step 2. "
+                       "Shared by the stylesheet, the overlay and this page.")
+                  + grid_table())
             + sec(head("Masters") + f'<ul class="dev-list">{masters}</ul>')
             + sec(head("Links into the archive", "Every link from this site into the archive, with its source tag. Signed out, each meets the login wall.")
                   + f'<div class="table-scroll"><table class="dev-table"><thead><tr><th>Link</th><th>On</th><th>Address</th></tr></thead><tbody>{deep}</tbody></table></div>')
             + sec(head("Launch checklist") + f'<ul class="dev-list">{checks}</ul>')
             + sec(head("Recent changes") + changes
                   + doors(button("https://github.com/africareframed/africareframed-site/commits/main", "All changes on GitHub", quiet=True))))
+
+# ---------------------------------------------------------------------------------------------
+# The grid (step 1 of the website build, 8 November 2026; starting values, to be locked after step 2)
+# ---------------------------------------------------------------------------------------------
+# What the design guide already had (README, Layout; tokens): 12 columns with 32 px gutters on desktop; 4 columns with
+# 16 px gutters and 16 px side margins on phones; the title in columns 1–4 and the text in 6–12; the 8 px spacing
+# scale; the header logo 192–256 px wide on desktop and 128 px on phones; the hero drawn at 1440 × 720 under a header
+# row (Opening). The values below fill in what was missing. They are shared: the CSS reads them as custom properties,
+# the overlay (the Grid button in the wireframe strip, ?grid in the address, or the key G) draws them, and the
+# development page lists them. Proposed as section U in "Design guide – review and changes".
+GRID = {
+    # Desktop, 1024 px and up. 12 × 80 px + 11 × 32 px = 1,312 px of content; with 64 px margins the page is 1,440 px
+    # wide, the format the guide draws the hero in, so column 5 starts at 512 px and columns 1–4 span 416 px: the
+    # photograph of the Opening starts on the line of column 5 and the words beside it fill columns 1–4. Above 1,440 px
+    # the content stays 1,312 px wide and centred; the margins grow; a photograph that runs off the edge keeps running.
+    "desktop": dict(min=1024, cols=12, gutter=32, margin=64, content_max=1312, header=128, logo=192, section=96),
+    # Tablet, 768–1023 px: 8 columns with 24 px gutters and 32 px side margins; the menu folds into the menu control
+    # (as the archive's does below tablet width); title left, text right becomes title in 1–3 and text in 4–8.
+    "tablet": dict(min=768, cols=8, gutter=24, margin=32, header=128, logo=192, section=80),
+    # Phone, below 768 px: the guide's 4 columns, 16 px gutters and 16 px margins; one column of content, the title first.
+    "phone": dict(min=0, cols=4, gutter=16, margin=16, header=64, logo=128, section=64),
+}
+# One module (Thomas, 8 November 2026, after the question whether the grid meets a Pentagram or e-Types standard): the column
+# pitch is 112 px (80 + 32), and the logo at 192 px is exactly two columns and a gutter, so it sits on the grid at every
+# desktop width (inside the guide's 192–256 px range). Two header sizes only: 128 px with the 192 px logo on desktop and
+# tablet, 64 px with the 128 px logo on phones. The measure: running text caps at 36 em (about 70 characters at 17 px),
+# because the guide's text columns 6–12 are 752 px at the full width, about 95 characters, more than its own 60–75.
+GRID_CSS_VARS = """  --cols:12; --gutter:32px; --margin:64px; --content-max:1312px;
+  --page-max:calc(var(--content-max) + 2*var(--margin));
+  --off-edge:calc((min(100vw,var(--page-max)) - 100vw)/2 - var(--margin));
+  --header-h:128px; --logo-w:192px; --section:96px; --section-head:64px; --section-tight:32px; --measure:36em;
+"""
+# Photographs relate to the grid in three ways (the guide's four image layouts all use the second):
+# 1. full bleed (.bleed): edge to edge of the page, ignoring the margins; its caption and credit sit on the grid below;
+# 2. on the columns (.cols with c1-12, c6-12 or any span): the photograph starts and ends on column lines;
+# 3. off one edge (.c5-off, the Opening): the photograph starts on a column line and runs off one edge of the page,
+#    so the words stand on white beside it in columns 1–4 (desktop); below 1,024 px the words move under it and the
+#    photograph starts on the line of column 2 (tablet and phone), still running off the right edge.
 
 # ---------------------------------------------------------------------------------------------
 # Layout
@@ -665,6 +743,37 @@ LAYOUT = """<!doctype html>
     setClean(on);
     try {{ localStorage.setItem('ar-clean', on ? '1' : '0'); }} catch (err) {{}}
   }});
+  /* The grid overlay: the Grid button, ?grid in the address, or the key G. Draws the columns of the current width. */
+  var g = document.querySelector('.grid-toggle'), ov = document.querySelector('.grid-overlay');
+  if (!g || !ov) return;
+  var cols = ov.querySelector('.cols'), read = ov.querySelector('.grid-read');
+  function cssVar(name){{ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }}
+  function draw(){{
+    var n = parseInt(cssVar('--cols'), 10) || 12, h = '';
+    for (var i = 1; i <= n; i++) h += '<div class="col col-' + i + '">' + i + '</div>';
+    cols.innerHTML = h;
+    var first = cols.firstElementChild, w = first ? Math.round(first.getBoundingClientRect().width * 10) / 10 : 0;
+    var bp = window.innerWidth >= 1024 ? 'desktop' : window.innerWidth >= 768 ? 'tablet' : 'phone';
+    read.textContent = window.innerWidth + ' px · ' + bp + ' · ' + n + ' columns × ' + w + ' px · gutter ' + cssVar('--gutter')
+      + ' · margin ' + cssVar('--margin') + ' · content up to ' + cssVar('--content-max') + ' · header ' + cssVar('--header-h') + ' · logo ' + cssVar('--logo-w');
+  }}
+  function setGrid(on){{
+    document.body.classList.toggle('show-grid', on);
+    g.setAttribute('aria-pressed', String(on));
+    if (on) draw();
+  }}
+  var want = /[?&]grid(=|&|$)/.test(location.search);
+  try {{ setGrid(want || localStorage.getItem('ar-grid') === '1'); }} catch (err) {{ setGrid(want); }}
+  g.addEventListener('click', function(){{
+    var on = !document.body.classList.contains('show-grid');
+    setGrid(on);
+    try {{ localStorage.setItem('ar-grid', on ? '1' : '0'); }} catch (err) {{}}
+  }});
+  document.addEventListener('keydown', function(ev){{
+    if (ev.key !== 'g' || ev.metaKey || ev.ctrlKey || ev.altKey || /input|textarea|select/i.test(ev.target.tagName)) return;
+    g.click();
+  }});
+  window.addEventListener('resize', function(){{ if (document.body.classList.contains('show-grid')) draw(); }});
 }})();
 </script>
 </body>
@@ -676,20 +785,27 @@ CSS = """:root{
   --text-on-dark:#e3e3e3; --accent:#fef98b; --line:#e6e4df; --wash:#f6f5f2;
   --wire:#ecebe7; --wire-line:#cfccc5; --bar:#e3e1dc;
   --font:"DM Sans",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
-}
+""" + GRID_CSS_VARS + """}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.55}
 a{color:inherit}
-.wrap{max-width:1280px;margin:0 auto;padding:0 32px}
+.wrap{max-width:var(--page-max);margin:0 auto;padding:0 var(--margin)}
+/* The 12-column grid as a utility: children name their columns (c1-4: columns 1 to 4; c6-12: 6 to 12; c5-off: from column 5 off the right edge of the page) */
+.cols{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--gutter)}
+.c1-4{grid-column:1/5}.c6-12{grid-column:6/-1}.c1-12{grid-column:1/-1}
+.c5-off{grid-column:5/-1;margin-right:var(--off-edge)}
+.bleed{width:100vw;margin-left:calc(50% - 50vw);max-width:none}
 .skip{position:absolute;left:-9999px}
 .skip:focus{left:16px;top:8px;background:var(--accent);color:var(--ink);padding:8px 12px;z-index:20}
 :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
 /* Header: logo left, one flat menu right, as on the archive (keep pixel-identical to PhotoDeck) */
 .site-header{background:var(--ground);color:var(--text-on-dark)}
-.bar{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:84px}
+/* On the grid: the logo's left edge on the line of column 1, the menu's right edge on the right edge of column 12;
+   the height and the logo width are the grid's header values (the header turns white in step 4) */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:var(--header-h)}
 .brand{display:inline-flex;align-items:center}
-.brand-logo{height:40px;width:auto;display:block}
+.brand-logo{width:var(--logo-w);height:auto;display:block}
 .menu{display:flex;align-items:center;gap:22px;font-size:15px}
 .menu a{padding:6px 0;border-bottom:2px solid transparent;color:var(--text-on-dark);white-space:nowrap;text-decoration:none}
 .menu a:hover{color:#fff}
@@ -729,7 +845,7 @@ body.clean .note,body.clean .img span{display:none}
 h1{font-weight:500;font-size:48px;line-height:1.06;margin:0 0 16px;letter-spacing:-.015em;max-width:20ch;text-wrap:balance}
 h2{font-weight:500;font-size:28px;line-height:1.2;margin:0 0 12px;letter-spacing:-.01em}
 h3{font-weight:600;font-size:18px;line-height:1.25;margin:12px 0 6px}
-p{margin:0 0 12px;max-width:68ch}
+p{margin:0 0 12px;max-width:var(--measure)}  /* the measure: about 70 characters, whatever the column span */
 .lead{font-size:19px;max-width:60ch;color:var(--ink)}
 .statement{font-size:24px;line-height:1.35;max-width:40ch;margin:0 0 20px;text-wrap:pretty}
 .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px}
@@ -741,12 +857,12 @@ p{margin:0 0 12px;max-width:68ch}
 .meta-row{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:14px;color:var(--ink-soft);margin:0 0 16px}
 .textlink{font-weight:500;border-bottom:2px solid var(--accent)}
 
-/* Sections */
-main{padding-bottom:96px}
-.sec{padding-top:72px}
-.sec.page-head{padding-top:56px}
-.sec.tight{padding-top:28px}
-.sec.band{background:var(--wash);padding:48px 0;margin-top:72px}
+/* Sections: the vertical rhythm on the 8 px scale (96 px between sections on desktop, 80 on tablets, 64 on phones) */
+main{padding-bottom:var(--section)}
+.sec{padding-top:var(--section)}
+.sec.page-head{padding-top:var(--section-head)}
+.sec.tight{padding-top:var(--section-tight)}
+.sec.band{background:var(--wash);padding:var(--section-head) 0;margin-top:var(--section)}
 .sec.band + .sec.band{margin-top:0}
 .grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:56px;align-items:start}
 .split{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center;text-decoration:none;margin-top:8px}
@@ -766,12 +882,16 @@ main{padding-bottom:96px}
 .button.quiet{background:transparent;border:1px solid #c9c6bf;color:var(--ink)}
 .button[disabled],.button.dead{opacity:.55;cursor:not-allowed}
 
-/* Home */
-.hero-full{position:relative}
-.hero-img{aspect-ratio:16/7;max-height:78vh;border-radius:0}
-.hero-img span{position:absolute;top:16px;right:16px}
-.hero-text{position:absolute;left:0;right:0;bottom:0;padding-bottom:48px}
-.hero-text h1{color:#fff;font-size:58px;max-width:15ch;margin:0}
+/* Home: the Opening on the grid (the third photograph case). The photograph starts on the line of column 5 and runs off
+   the right edge; the words stand on white in columns 1–4. Proportions after the guide's hero at 1440 × 720: under the
+   128 px header the photograph is 928 × 512 (29:16) with 80 px of white below it; the words start 160 px below the header.
+   The stripes and triangles are drawn in step 3; here only the geometry. */
+.opening{overflow-x:hidden;padding-bottom:80px}
+.opening .wrap{row-gap:24px}
+.opening-words{padding-top:160px}
+.opening-words h1{font-size:40px;max-width:none}
+.opening-img{aspect-ratio:29/16;max-height:80vh;border-radius:0}
+.opening-img span{position:absolute;top:16px;left:16px;max-width:60%}
 .intro{padding-top:48px}
 .intro-num{padding-top:8px}
 .numbers{display:flex;flex-wrap:wrap;gap:16px 44px;margin:8px 0}
@@ -887,29 +1007,50 @@ main{padding-bottom:96px}
 .site-footer a{color:var(--ink)}
 .about-line{color:var(--ink)}
 
-/* Below tablet width: hamburger, like the archive */
+/* The grid overlay: switched on with the Grid button in the wireframe strip, ?grid in the address or the key G.
+   Columns in blue, margins in red; the readout gives the values at the current width. Not built at launch. */
+.grid-overlay{display:none;position:fixed;inset:0;pointer-events:none;z-index:999}
+body.show-grid .grid-overlay{display:block}
+.grid-overlay .wrap{height:100%;position:relative;background:
+  linear-gradient(to right,rgba(220,60,60,.10) 0 var(--margin),transparent var(--margin) calc(100% - var(--margin)),rgba(220,60,60,.10) calc(100% - var(--margin)))}
+.grid-overlay .cols{height:100%}
+.grid-overlay .col{background:rgba(40,110,220,.10);border-left:1px solid rgba(40,110,220,.45);border-right:1px solid rgba(40,110,220,.45);font-size:11px;color:rgba(40,110,220,.9);padding:4px 0 0 4px;font-variant-numeric:tabular-nums}
+.grid-overlay .col.col-5{background:rgba(40,110,220,.16)}  /* the Opening starts here on desktop */
+.grid-read{position:absolute;left:0;right:0;bottom:16px;width:fit-content;background:rgba(21,21,21,.9);color:#fff;font-size:12px;line-height:1.4;padding:6px 10px;border-radius:3px;font-variant-numeric:tabular-nums}
+.grid-toggle{font:inherit;font-size:13px;background:transparent;border:1px solid rgba(21,21,21,.4);border-radius:3px;padding:3px 10px;cursor:pointer;white-space:nowrap;color:var(--ink)}
+.grid-toggle[aria-pressed="true"],.notes-toggle[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
 @media (max-width:1023px){
+  :root{--cols:8;--gutter:24px;--margin:32px;--section:80px;--section-head:56px;--section-tight:28px}
   .menu-toggle{display:flex}
-  .menu{display:none;position:absolute;left:0;right:0;top:84px;background:var(--ground);flex-direction:column;align-items:flex-start;gap:0;padding:8px 32px 24px;border-top:1px solid rgba(227,227,227,.15);z-index:10}
+  .menu{display:none;position:absolute;left:0;right:0;top:var(--header-h);background:var(--ground);flex-direction:column;align-items:flex-start;gap:0;padding:8px var(--margin) 24px;border-top:1px solid rgba(227,227,227,.15);z-index:10}
   .menu.open{display:flex}
   .menu a{padding:12px 0;font-size:17px;width:100%}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
-  .wrap{padding:0 24px}
+  .c1-4{grid-column:1/4}.c6-12{grid-column:4/-1}
+  .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
+  .wire-strip .wrap{flex-wrap:wrap}
   .theme-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(220px,40%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
   .cards-4,.cards-5,.principles{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sample-grid{columns:3}
-  .hero-text h1{font-size:44px}
+  /* the Opening below desktop: the photograph first, from the line of column 2 off the right edge; the words under it */
+  .opening{padding-bottom:0}
+  .opening-words{grid-column:1/-1;order:2;padding-top:8px}
+  .opening-words h1{font-size:34px;max-width:24ch}
+  .c5-off{grid-column:2/-1;order:1}
+  .opening-img{aspect-ratio:3/2}
 }
+/* Phone (below 768 px): the guide's 4 columns, 16 px gutters and 16 px margins; one column, the title first */
 @media (max-width:767px){
+  :root{--cols:4;--gutter:16px;--margin:16px;--header-h:64px;--logo-w:128px;--section:64px;--section-head:40px;--section-tight:24px}
   h1{font-size:34px}
   h2{font-size:24px}
   .statement{font-size:20px}
-  .sec{padding-top:56px}
-  .sec.page-head{padding-top:40px}
-  .hero-img{aspect-ratio:4/5}
-  .hero-text{padding-bottom:28px}
-  .hero-text h1{font-size:34px}
+  .c1-4,.c6-12{grid-column:1/-1}
+  .opening-img{aspect-ratio:4/5}
+  .opening-words h1{font-size:30px}
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}
   .grid-2{gap:32px}
   .split{gap:20px}
@@ -925,7 +1066,6 @@ main{padding-bottom:96px}
   .theme-row{grid-auto-columns:78%}
 }
 @media (max-width:480px){
-  .wrap{padding:0 16px}
   .cards-4,.cards-5,.principles{grid-template-columns:1fr}
   .wire-strip .wrap{align-items:flex-start}
   .panel strong{font-size:26px}
@@ -956,7 +1096,9 @@ def strip_html(base):
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
             f'<a href="{base}dev/">Development</a>'
-            f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n')
+            f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
+            f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
+            f'<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>\n')
 
 
 def render(p, main, base):

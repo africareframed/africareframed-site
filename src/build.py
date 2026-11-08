@@ -35,7 +35,9 @@ CORE_LINE = "Visual storytelling for a new partnership between Europe and Africa
 ABOUT_LINE = ("Spotlighting African innovation and African–European collaboration. "
               "An independent initiative established by Commerce & Culture.")             # Strategic Platform, Brand and language
 NUMBERS = [("1,122", "images"), ("3", "countries"), ("5", "themes")]                        # Website brief, Home; AR Metadata, 2 Nov 2026
-MOMENTUM = [("—", "partners"), ("—", "downloads"), ("—", "uses reported")]                  # engine brief, section 5: the momentum numbers; from the closed preview
+# The momentum numbers (engine brief, section 5; Thomas, 8 November 2026): a download is a licence for one stated use, so
+# downloads and uses are one count ("uses"); "published" are the uses reported back through the portal with the result.
+MOMENTUM = [("—", "partners"), ("—", "uses"), ("—", "published")]
 EMAIL_MAIN, EMAIL_PRESS, EMAIL_PARTNERS = ("hello@africareframed.com", "press@africareframed.com",
                                            "partnerships@africareframed.com")                 # Start here, Addresses
 HOUSE_LINE = "Africa Reframed’s own collection: 1,122 images from Mali, Kenya and The Gambia."
@@ -471,7 +473,7 @@ def tpl_home(p, base):
                                                    button(base + "partners/", "How partners use the archive", quiet=True)], sid="intro",
                      meta=[f"{n} {t}" for n, t in NUMBERS])
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
-                        note_text="The momentum numbers (Thomas, 8 November 2026): partners, downloads and uses reported, from PhotoDeck’s orders and the partner database; they grow, where the stock numbers do not. Partners by name and one example of use come from the closed preview, with consent. Until there are any, the three modules are left out of the live page.")
+                        note_text="The momentum numbers (Thomas, 8 November 2026): partners; uses, one per download, each with its stated purpose (PhotoDeck’s orders); published, the uses reported back through the portal with the result (the partner database). They grow, where the stock numbers do not. Partners by name and one example of use come from the closed preview, with consent. Until there are any, the three modules are left out of the live page.")
             + m_partners(tight=True) + m_use("a", tight=True)
             + m_themes(base, "a")
             + m_collection(base)
@@ -548,7 +550,7 @@ def tpl_portal(p, base):
     return (m_page_head(p["title"], PORTAL_LEAD, statement_draft=True, doors=m_doors("a", doors=doors))
             + m_form("b", title="The partner’s desk", forms=forms, sid="desk",
                      lead=draft("The one place to tell us how the images are used and what you need next. Every answer lands with us, and we answer.", "p"))
-            + m_numbers([("—", "partners"), ("—", "images downloaded"), ("—", "uses reported")], "once there is something to show", title="Partner news",
+            + m_numbers(MOMENTUM, "once there is something to show", title="Partner news",
                         note_text="The numbers as they grow and news for partners; aggregates and consented examples only. Shown once there is something to show; until then left out of the live page.")
             + m_use("c", "News", tight=True)
             + m_text("Using the images", [PORTAL_RULES], "a", links=[button(base + "partners/#using-the-images", "All the rules", quiet=True),

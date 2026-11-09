@@ -2,7 +2,7 @@
 """Generate the Africa Reframed main site as a live wireframe (version 4, 6 November 2026: arranged by the page priorities).
 
 Structure from "Website – Site map and user flows" (05 Website on the Drive): 16 pages from 9 templates.
-Header: Themes · Collections · Partners | Log in (Log in opens the Partner portal); the archive adds its own
+Header: Themes · Collections · Partners · About | Log in (Log in opens the Partner portal; About moved up from the footer, Thomas, 9 November 2026); the archive adds its own
 tools on its side. Footer: the about line, then About · Press · Contact · Privacy · Request access · Terms.
 
 Wireframe conventions: grey boxes with a cross are images still to choose, at the size and proportion they will
@@ -695,7 +695,7 @@ PAGES = [
          desc="Log in to the Africa Reframed archive, report a use, request imagery and see what is new for partners."),
     dict(path="request-access/", title="Request access", slug="request", tpl="form", nav=None,
          desc="Request access to the Africa Reframed archive: free for selected non-profit and public partners."),
-    dict(path="about/", title="About", slug="about", tpl="text", nav=None, desc=ABOUT_LINE),
+    dict(path="about/", title="About", slug="about", tpl="text", nav="about", desc=ABOUT_LINE),
     dict(path="press/", title="Press room", slug="press", tpl="press", nav=None,
          desc="The Africa Reframed press room: the relaunch, a fact sheet, press images for editorial use and a press contact."),
     dict(path="contact/", title="Contact", slug="contact", tpl="text", nav=None, desc="How to reach Africa Reframed."),
@@ -952,6 +952,7 @@ LAYOUT = """<!doctype html>
       <a href="{base}themes/"{cur_themes}>Themes</a>
       <a href="{base}collections/"{cur_collections}>Collections</a>
       <a href="{base}partners/"{cur_partners}>Partners</a>
+      <a href="{base}about/"{cur_about}>About</a>
       <span class="divider" aria-hidden="true"></span>
       <a href="{base}partner-portal/"{cur_portal}>Log in</a>
     </nav>
@@ -1398,7 +1399,7 @@ def render(p, main, base):
         desc=e(p["desc"]), url=SITE_URL + p["path"], share=SITE_URL + "assets/share-default.png",
         robots="" if LAUNCH else '<meta name="robots" content="noindex">\n', strip=strip_html(base),
         base=base, stamp=STAMP, slug=p["slug"], tpl=p["tpl"], main=main, about_line=e(ABOUT_LINE), archive=ARCHIVE,
-        cur_themes=cur("themes"), cur_collections=cur("collections"), cur_partners=cur("partners"), cur_portal=cur("portal"))
+        cur_themes=cur("themes"), cur_collections=cur("collections"), cur_partners=cur("partners"), cur_about=cur("about"), cur_portal=cur("portal"))
 
 
 def build():

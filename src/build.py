@@ -196,25 +196,25 @@ def m_text(title, paras, variant="a", box=None, contact=None, links=None, is_dra
 CREDIT = "Photo: Africa Reframed"
 
 
-def credit_line(caption=None):
+def credit_line(caption=None, credit=None):
     c = f'<span class="caption">{e(caption)}</span> ' if caption else ""
-    return f'<p class="credit">{c}<span>{CREDIT}</span></p>'
+    return f'<p class="credit">{c}<span>{e(credit or CREDIT)}</span></p>'
 
 
-def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12"):
+def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12", credit=None):
     if variant == "a":
-        inner = f'<div class="bleed">{img(label, ratio, cls="bleed-img")}</div><div class="wrap">{credit_line(caption)}</div>'
+        inner = f'<div class="bleed">{img(label, ratio, cls="bleed-img")}</div><div class="wrap">{credit_line(caption, credit)}</div>'
         return mod("photo", "a, full bleed", inner, wrap=False)
     if variant == "c":
-        photo = f'<div class="c-half">{img(label, ratio)}{credit_line(caption)}</div>'
+        photo = f'<div class="c-half">{img(label, ratio)}{credit_line(caption, credit)}</div>'
         words = f'<div class="c-half">{text}</div>'
         order = photo + words if side == "left" else words + photo
         return mod("photo", f"c, photograph and text, photograph {side}", f'<div class="cols">{order}</div>')
-    return mod("photo", "b, on the columns", f'<div class="cols"><div class="{span}">{img(label, ratio)}{credit_line(caption)}</div></div>')
+    return mod("photo", "b, on the columns", f'<div class="cols"><div class="{span}">{img(label, ratio)}{credit_line(caption, credit)}</div></div>')
 
 
 # 2.6 Image grid: (a) three in a row, (b) four portraits, (c) a strip of three squares, (d) six to eight mixed.
-def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None):
+def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None, credit=None):
     if variant == "a":
         cells = "".join(img(label, "3/2") for _ in range(n or 3)); cls = "grid-3"; name = "a, three in a row"
     elif variant == "b":
@@ -227,7 +227,7 @@ def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None)
         cells = "".join(img(label, ratio) for _ in range(n)); name = f"d, {n} in rows of {3 if n <= 6 else 4}"
     top = heading(title) if title else ""
     top += f'<p class="small">{e(line)}</p>' if line else ""
-    foot = (f'<p class="doors">{link}</p>' if link else "") + credit_line()
+    foot = (f'<p class="doors">{link}</p>' if link else "") + credit_line(None, credit)
     return mod("grid", name, f'{top}<div class="imgs {cls}">{cells}</div>{foot}')
 
 
@@ -336,7 +336,7 @@ def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=No
 
 
 # 2.13 Item list: (a) plain under rules, (b) numbered steps, (c) accordion, (d) with images, (e) chips.
-def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image_ratio="3/2", image_label="Image", tight=False):
+def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image_ratio="3/2", image_label="Image", tight=False, cols=3):
     top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}</div></div>' if title else ""
     t = (lambda s: draft(s)) if is_draft else (lambda s: f"<p>{e(s)}</p>")
     if variant == "b":
@@ -347,7 +347,7 @@ def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image
         return mod("items", "c, accordion", f'{top}<div class="cols"><div class="c6-12 c-offset">{li}</div></div>', sid=sid, tight=tight)
     if variant == "d":
         li = "".join(f'<div class="item">{img(x[2] if len(x) > 2 and x[2] else image_label, image_ratio)}<h3>{e(x[0])}</h3>{t(x[1]) if x[1] else ""}</div>' for x in items)
-        return mod("items", "d, with images", f'{top}<div class="cards-3">{li}</div>', sid=sid, tight=tight)
+        return mod("items", "d, with images", f'{top}<div class="cards-{cols}">{li}</div>', sid=sid, tight=tight)
     if variant == "e":
         chips = "".join(f'<a class="chip" href="{h}">{e(a)}</a>' if h else f'<span class="chip">{e(a)}</span>' for a, h in items)
         top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}<div class="chips">{chips}</div></div></div>'
@@ -456,13 +456,60 @@ REQUEST_NEXT = [("We read your request", "and reply within a working day."), ("Y
                 ("You log in", "collect in the Lightbox and download for each use, free.")]
 REQUEST_CONSENT = "I agree that how we use the images may be reported, without personal details, to the funders who make new collections possible."
 REQUEST_FOOT = "Companies get access through a collection sponsorship; write to partnerships@africareframed.com."
-ABOUT_WHO = [  # About: who is behind it (Strategic Platform; Track Record), as history and proof
-    "Africa Reframed is run by Commerce & Culture, the Copenhagen studio of Thomas Damgaard, which has produced photography, exhibitions and stories with partners in Africa and Europe since 2010.",
-    "The archive grew out of photography workshops in Bamako, Nairobi and Banjul between 2013 and 2018, and out of the exhibition Africa Reframed at Øksnehallen in Copenhagen in 2016.",
+# About (Website – copy, section 1, 9 November 2026; Thomas's order of importance for a funder: the exhibition, the artists,
+# the workshops, where the images went, who is behind it). Afghan Tales and the rest of Commerce & Culture's work stay off the
+# site. Every line is draft until approved in Website – copy. Sources: Track Record; the case stories; the Commerce & Culture pages
+# (their images may be used, Thomas, 9 Nov 2026; their framing is not).
+ABOUT_STATEMENT = ("An exhibition, a network of artists, the workshops where it began, and the images that went out into the world: "
+                   "what stands behind the archive, and who.")
+ABOUT_EXHIBITION = [
+    "Africa Reframed was first the name of an exhibition. From 18 June to 2 August 2016 it filled the 5,000 square metres of Øksnehallen in Copenhagen with more than 300 works by photographers and designers from across the continent: Omar Victor Diop, Namsa Leuba, Fabrice Monteiro, Dillon Marsh, Lien Botha, Tahir Karmali, the students of CFP Bamako, the designer Yinka Ilori and the fashion label ChiChia.",
+    "It was produced with DGI-byen and supported by Danida and Augustinus Fonden. Ten display modules built in oriented strand board carried the works through the hall; two cinemas ran a programme of African film we chose, from the Afripedia series to Run and Crumbs; talks, textile and food workshops and a sound piece by Goodiepal ran alongside. Leuba, Monteiro and Marsh came to Copenhagen for the opening.",
+    "In 2017 the Danish Ministry of Foreign Affairs put Namsa Leuba’s image from the show on the cover of its own evaluation. In 2018 the exhibition returned in digital form at PixlArt in North Jutland, with new photographs streamed live from a workshop in Nairobi.",
 ]
-ABOUT_RUN = ["An independent, non-commercial initiative established by Commerce & Culture. The archive is free for selected non-profit and public partners; companies take part by sponsoring a collection, and every sponsored collection makes the archive bigger for all."]
-LEGACY = [("Since 2010", "Productions and exhibitions with partners in Africa and Europe."), ("2014–2017", "Afghan Tales and the Afghan Photography Network."),
-          ("2016", "Africa Reframed at Øksnehallen, Copenhagen."), ("2013–2018", "Photography workshops in Bamako, Nairobi and Banjul: the House Collection.")]
+ABOUT_EXHIBITION_DOOR = "A collection can open as an exhibition."   # open: now, or once a sponsored collection exists (Thomas)
+ABOUT_ARTISTS_LEAD = ("From 2013 we followed and published photographers across the continent through the African Photography Network; "
+                      "the 2016 exhibition was curated from it. Their work stays on this site by agreement, with their galleries’ credits where they apply.")
+ARTISTS_SHOWN = [  # (name, origin · series · line, image label); shown at Øksnehallen 2016
+    ("Omar Victor Diop", "Senegal · Studio des Vanités, Diaspora · Portraits that place African history inside the present. Courtesy MAGNIN-A, Paris.", "Omar Victor Diop, Diaspora"),
+    ("Namsa Leuba", "Switzerland and Guinea · Khoi San, Zulu Kids, The Kingdom of Mountains · Staged photographs on how cultures see one another; the exhibition’s poster.", "Namsa Leuba, Khoi San"),
+    ("Fabrice Monteiro", "Belgium and Senegal · The Prophecy, A Gorean Summer · Photographs on the environment and heritage, made in Dakar.", "Fabrice Monteiro, The Prophecy"),
+    ("Dillon Marsh", "South Africa · For What It’s Worth, Assimilation · The mines of South Africa and what they yielded, in photographs and CGI.", "Dillon Marsh, For What It’s Worth"),
+    ("Lien Botha", "South Africa · Parrot Jungle · Photographs of return and memory.", "Lien Botha, Parrot Jungle"),
+    ("Tahir Carl Karmali", "Kenya · Jua Kali · Composites built from found objects in Nairobi.", "Tahir Carl Karmali, Jua Kali"),
+    ("Yinka Ilori", "Nigeria and the United Kingdom · If Chairs Could Talk · Furniture rebuilt from discarded chairs, telling Nigerian parables.", "Yinka Ilori, If Chairs Could Talk"),
+    ("Christine Mhando (ChiChia)", "Tanzania and the United Kingdom · Fashion.", "ChiChia"),
+    ("Students of CFP Bamako", "Mali · Bamako Nights, 2011 · The city at night, in dialogue with Seydou Keïta and Malick Sidibé.", "Bamako Nights"),
+]
+ARTISTS_NETWORK = [  # from the network, profiled in the journal (2025); one line each, in our words
+    ("Osborne Macharia", "Kenya · Commercial photography with a story in every frame."), ("Élise Fitte-Duval", "Martinique and Senegal · Contemporary dance, and the floods of Dakar."),
+    ("Fatoumata Diabaté", "Mali · Sutigi: the night belongs to the young."), ("Isaac Kasamani", "Kenya and Uganda · Photojournalism of Uganda’s politics."),
+    ("Antonia Steyn", "South Africa · Portraits of South African figures."), ("Ala Kheir", "Sudan · Landscapes and lives across the country."),
+    ("Adeola Olagunju", "Nigeria · Performance photographs: Resurgence, a manifesto."), ("Jon Riordan", "South Africa · Landscapes shaped by memory."),
+    ("Mpho Mokgadi", "South Africa · Everyday life, on film."), ("Charles Okereke", "Nigeria · Go-Slow: Lagos."),
+    ("Hélène Amouzou", "Togo and Belgium · Self-portraits on displacement."), ("Sydelle Willow Smith", "South Africa · Migration and identity."),
+    ("Jac Kritzinger", "South Africa · The ordinary made visible."), ("Mouna Karray", "Tunisia · Murmurer; Noir."),
+]
+ABOUT_WORKSHOPS = [
+    "The archive began as a school. In February 2010 Commerce & Culture and the photography school CFP Bamako started a two-year programme in which students photographed for the world market and sold their work through Getty Images while still in training, with feedback from Getty’s own art directors. A Danish embassy, a centre for culture and development and a global picture agency in one programme; the first sale came a year later.",
+    "By 2015 twenty-nine photographers were earning from their pictures, and an independent review for the Danish Centre for Culture and Development found that the programme “promotes positive images of Africa, moving away from editorial or development photography”. Two of the three images chosen for the United Nations’ launch of the Global Goals that year were made in Bamako, by Gaoussou and Abdoulaye Sogodogo.",
+    "Workshops followed with the photographers’ union in Freetown, the Photojournalists Association of Kenya at PAWA254 in Nairobi and the Gambia Press Union in Banjul, and in 2018 a new team of photographers came together in Nairobi.",
+]
+ABOUT_INTERVIEWS = [("Aboubacar Traoré", "Photographer and teacher, CFP Bamako.", "Video: interview, plays on click"),
+                    ("Massaran Diankoumba", "Photographer, CFP Bamako.", "Video: interview, plays on click"),
+                    ("John Kalapo", "Photographer, CFP Bamako.", "Video: interview, plays on click")]
+ABOUT_WENT = [
+    "Between 2011 and 2015 images from our productions in Bamako and with our own team were licensed through Getty Images 548 times, in 46 countries, by more than forty organisations: the United Nations, the World Bank and the European Investment Bank; the BBC, The Guardian and Pearson; Microsoft, Samsung and VISA; HSBC and Barclays; McKinsey and Deloitte.",
+    "They bought what the market had lacked: a growing middle class, technology in everyday life, ordinary modern life in African cities. In 2025 we withdrew the collection from Getty.",
+    "The House Collection, 1,122 photographs made by our team between 2013 and 2018 alongside the workshops, is now free to the partners we approve, for one purpose: to carry that picture of Africa into the reports, exhibitions and channels of organisations working with the continent.",
+]
+ABOUT_WHO = [
+    "Africa Reframed is an independent initiative established by Commerce & Culture, the Copenhagen studio founded in 2010 by Thomas Damgaard. Trained in design and art history, he advised the Danish Ministry of Foreign Affairs on culture and development from 2010 to 2014, and has produced photography and exhibitions with partners in Africa and Europe since.",
+    "The visual identity is by the Danish designer Rune Høgsberg, first drawn for the exhibition in 2016. The photographs are made with photographers in Bamako, Nairobi and Banjul, who are named on the collection’s page.",
+    "Partners use the images; companies take part by sponsoring a collection, and every sponsored collection makes the archive bigger for all. Africa Reframed is non-commercial: the archive is free to the partners we approve.",
+]
+ABOUT_PEOPLE = [("Thomas Damgaard", "Founder.", "Portrait"), ("Rune Høgsberg", "Designer of the identity.", "Portrait or the mark"),
+                ("CFP Bamako", "Partner school since 2010.", "The school"), ("The Nairobi team", "Photographers, named as each agrees.", "Portrait")]
 PRESS_FACTS = [("1,122 images", "in the House Collection, from Mali, Kenya and The Gambia"), ("Five themes", "Learning, Work and enterprise, Everyday digital, City life, Creativity and culture"),
                ("Free for partners", "selected non-profit and public partners; companies through a collection sponsorship"), ("Established by", "Commerce & Culture, Copenhagen"),
                ("Real images", "our images are never AI-generated")]
@@ -606,12 +653,30 @@ def tpl_press(p, base):
 def tpl_text(p, base):
     k = p["slug"]
     if k == "about":
-        who = heading("Who is behind it", 3, "kicker-h") + "".join(draft(x) for x in ABOUT_WHO)
-        return (m_page_head(p["title"], ABOUT_LINE)
-                + m_photo("Portrait: Thomas Damgaard", "4/5", "c", text=who, side="left")
+        bam = note("Six frames from Bamako Nights (2011), the students of CFP Bamako; credited by name where the files carry it.")
+        return (m_page_head(p["title"], ABOUT_STATEMENT, statement_draft=True)
+                + m_photo("Installation view, Africa Reframed at Øksnehallen, 2016 (DGI-byen documentation)", "21/9", "a",
+                          caption="Africa Reframed at Øksnehallen, Copenhagen, 2016", credit="Photo: DGI-byen")
+                + m_text("The exhibition", ABOUT_EXHIBITION, "a", links=[button(f"{base}partners/#sponsor", ABOUT_EXHIBITION_DOOR, quiet=True)], sid="exhibition")
+                + m_photo("Installation view: the OSB modules with the framed works", "3/2", "b", span="c6-12",
+                          caption="The display modules, built for the hall", credit="Photo: DGI-byen")
+                + m_items("The artists", [(n, d, l) for n, d, l in ARTISTS_SHOWN], "d", lead=draft(ABOUT_ARTISTS_LEAD), image_ratio="4/5", sid="artists")
+                + m_items("From the network", [(n, d, n) for n, d in ARTISTS_NETWORK], "d",
+                          lead=note("Profiles from the journal, 2025; one work each, the artist’s name and series as the credit. Open: on About, or on a page of its own."),
+                          image_ratio="1/1", tight=True, cols=4)
+                + m_photo("Workshop in Banjul, 2015: participants with a reflector", "3/2", "c",
+                          text=heading("The workshops", 2) + "".join(draft(x) for x in ABOUT_WORKSHOPS), side="right",
+                          caption="Visual storytelling workshop, Gambia Press Union, Banjul, 2015")
+                + m_grid("d", 6, "Bamako Nights, 2011", line="In 2011 the students photographed Bamako at night, in dialogue with Seydou Keïta and Malick Sidibé, who had photographed the city in its first years of independence. The series was shown at Øksnehallen in 2016.",
+                         credit="Students of CFP Bamako, Bamako Nights, 2011")
+                + m_items("In their words", ABOUT_INTERVIEWS, "d", lead=draft("Three of the photographers, on what the programme meant.") + note("Interviews recorded for the programme; played on click with a poster frame, never autoplaying (the one-motion rule). Language and subtitles to check."),
+                          image_ratio="16/9", image_label="Video", tight=True)
+                + m_text("Where the images went", ABOUT_WENT, "a", links=[button(f"{base}themes/", "Explore the themes", quiet=True)], sid="went")
+                + m_photo("One House Collection photograph, from the picks once cleared", "3/2", "b", span="c6-12")
+                + m_text("Who is behind it", ABOUT_WHO, "a", sid="who")
+                + m_items(None, ABOUT_PEOPLE, "d", image_ratio="1/1", tight=True, cols=4)
                 + m_items("Principles", PRINCIPLES + [("Fair terms", "One download, one licence, free of charge; no resale, no sublicensing.")], "a")
-                + m_items("Legacy", [(t, d, "Archive image") for t, d in LEGACY], "d", lead=note("History, as proof behind the present; images from the earlier sites once the media inventory is done."))
-                + m_text("How it is run", ABOUT_RUN, "a"))
+                + m_doors("d", kicker="Write to us", address=EMAIL_MAIN, line=f"Partnerships: {EMAIL_PARTNERS} · Press: {EMAIL_PRESS}"))
     if k == "contact":
         return (m_page_head(p["title"], "One quiet way to reach us.", statement_draft=True)
                 + m_doors("d", kicker="Write to us", address=EMAIL_MAIN, line=f"Press: {EMAIL_PRESS} · Partnerships: {EMAIL_PARTNERS} · Africa Reframed on LinkedIn."))

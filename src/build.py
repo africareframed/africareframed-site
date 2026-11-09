@@ -274,9 +274,10 @@ def m_project(x, extra=""):
     if x["layout"] == "bleed":
         out = m_photo(x["image"], "21/9", "a", caption=x["caption"], credit=x["credit"])
         out += mod("text", "a, the project", f'<div class="cols"><div class="c1-4">{words}</div><div class="c6-12">{body}{extra}</div></div>', tight=True)
-        if x.get("second"):
-            y = x["second"]
-            out += m_photo(y["image"], "3/2", "b", span="c6-12", caption=y["caption"], credit=y["credit"])
+        if x.get("gallery"):
+            g = x["gallery"]
+            cells = "".join(img(label, "3/2") for label in g["labels"])
+            out += mod("grid", f'd, {len(g["labels"])} views of the project', f'<div class="imgs grid-3">{cells}</div>{credit_line(g["caption"], g["credit"])}', tight=True)
         return out
     return m_photo(x["image"], "3/2", "c", text=words + body + extra, side="left", caption=x["caption"], credit=x["credit"])
 
@@ -622,11 +623,13 @@ EXHIBITION_PROJECTS = [  # strongest first; a new exhibition is one more entry, 
          image="Installation view, Africa Reframed at Øksnehallen", caption="Africa Reframed at Øksnehallen, Copenhagen, 2016", credit="Photo: DGI-byen",
          text=["In the summer of 2016 the exhibition filled the 5,000 square metres of Øksnehallen in Copenhagen with more than 300 works by artists and designers from across the continent: Omar Victor Diop, Namsa Leuba, Fabrice Monteiro, Dillon Marsh, Lien Botha and Tahir Carl Karmali, with furniture by Yinka Ilori and fashion by ChiChia. Shown alongside them: Bamako Nights, made by the students of CFP Bamako.",
                "It was produced with DGI-byen and supported by Danida and Augustinus Fonden. Ten display modules built in oriented strand board carried the works through the hall; two cinemas and a programme of talks and workshops ran alongside. The Danish Ministry of Foreign Affairs later put Namsa Leuba’s image from the show on the cover of its own evaluation. The exhibition gave Africa Reframed its name."],
-         second=dict(image="Installation view: the display modules with framed works", caption="The display modules, built for the hall", credit="Photo: DGI-byen")),
-    dict(title="The digital edition at PixlArt", state="record", layout="side",
-         image="PixlArt: the exhibition on large screens", caption="PixlArt, Østervrå, North Jutland, 2018", credit="Photo: Africa Reframed",
-         text=["The same exhibition in another form: a converted church in North Jutland fitted with large screens, with new work from a workshop with our team in Nairobi."]),
+         # More of the exhibition, not more exhibitions (Thomas, 9 November 2026): the scale of the hall in six views.
+         gallery=dict(labels=["The hall: the full length of Øksnehallen", "Visitors among the works", "Framed works on a display module",
+                              "One of the two cinemas", "A talk in the programme", "The exhibition’s poster: Namsa Leuba"],
+                      caption="Africa Reframed at Øksnehallen, Copenhagen, 2016", credit="Photo: DGI-byen")),
 ]
+# Bigger, not smaller (Thomas, 9 November 2026): About features only what enlarges the picture. A small project beside a
+# large one shrinks the large one, so PixlArt (2018) is off the page; more of Øksnehallen instead.
 ABOUT_EXHIBITION_DOOR = "A collection can open as an exhibition"   # open: now, or once a sponsored collection exists (Thomas)
 ABOUT_ARTISTS_LEAD = ("Our exhibitions are curated from a network of artists across the continent, which we have followed and published "
                       "for more than a decade, first through the African Photography Network. Their works are shown here by agreement, "
@@ -660,8 +663,8 @@ WORKSHOP_PROJECTS = [  # strongest first; a new workshop is one more entry, show
     dict(title="CFP Bamako and Getty Images", state="record", layout="side",
          image="Photography students at CFP Bamako", caption="Photography students at CFP Bamako", credit="Photo: Africa Reframed",
          text=["Our first workshop programme ran for six years with the photography school CFP Bamako and Getty Images, funded through the Danish Embassy in Mali. Students photographed for the world market and licensed their work through Getty while still in training, with feedback from Getty’s creative team.",
-               "Their images were licensed by EY, NBC, Cambridge University Press, McKinsey & Company, Pearson, Orange and Vodacom, among others. Two of them, by Gaoussou and Abdoulaye Sogodogo, were chosen for Tell Everyone, the campaign that launched the UN Global Goals and one of the largest ever run: their own picture of Mali, carried to a global audience. An independent review for the Danish Centre for Culture and Development found that the programme “promotes positive images of Africa, moving away from editorial or ‘development’ photography”."],
-         note="The review’s words are quoted from a report on the Drive: to be cleared by Thomas before launch. Tell Everyone: Case story – Getty Images and the UN Global Goals (2015); the Sogodogos to approve how they are named."),
+               "Their images were licensed by EY, NBC, Cambridge University Press, McKinsey & Company, Pearson, Orange and Vodacom, among others. Two of them were chosen for Tell Everyone, the campaign that launched the UN Global Goals and one of the largest ever run: the students’ own picture of Mali, carried to a global audience. An independent review for the Danish Centre for Culture and Development found that the programme “promotes positive images of Africa, moving away from editorial or ‘development’ photography”."],
+         note="The review’s words are quoted from a report on the Drive: to be cleared by Thomas before launch. Tell Everyone: Case story – Getty Images and the UN Global Goals (2015). The students are not named, to spare them trouble at the school (Thomas)."),
 ]
 ABOUT_INTERVIEWS = [("Aboubacar Traoré", "Photographer and teacher, CFP Bamako.", "Film: plays on click"),
                     ("Massaran Diankoumba", "Photographer, CFP Bamako.", "Film: plays on click"),

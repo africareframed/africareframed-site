@@ -777,7 +777,9 @@ def company_story(x, i):
     words = (f'<p class="kicker">{e(x["kind"])}</p><h3 class="story-headline">{e(x["headline"])}</h3>'
              f'<p class="story-company"><strong>{e(x["name"])}</strong> · {e(x["where"])}</p>')
     body = draft(x["text"]) + (draft(x["since"], "p", "small since") if x.get("since") else "")
-    credit, caption = f'Photo: {x["photographer"]} / Africa Reframed', f'{x["name"]}, {x["city"]}, 2021'
+    # The credit line is the collection's (design guide: photographers named on the page, never in the credit); the
+    # photographer is named in the caption, beside the pictures they made.
+    credit, caption = WTV_CREDIT, f'{x["name"]}, {x["city"]}, 2021. Photographer: {x["photographer"]}'
     lead = f'{x["name"]}: the lead photograph from the shoot'
     if i % 3 == 0:
         out = m_photo(lead, "21/9", "a", caption=caption, credit=credit, sid=story_id(x))
@@ -787,7 +789,7 @@ def company_story(x, i):
                       caption=caption, credit=credit, sid=story_id(x))
     cells = "".join(img(f'{x["name"]}: {k}', "1/1") for k in ("the people", "the process", "the product"))
     out += mod("grid", "c, three more from the shoot", f'<div class="imgs grid-strip">{cells}</div>'
-               f'{credit_line(None, "Photographs: " + x["photographer"] + " / Africa Reframed")}', tight=True)
+               f'{credit_line("Photographer: " + x["photographer"], WTV_CREDIT)}', tight=True)
     return out
 
 

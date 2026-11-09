@@ -204,9 +204,9 @@ def credit_line(caption=None, credit=None):
 def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12", credit=None, sid=None):
     if variant == "a":
         inner = f'<div class="bleed">{img(label, ratio, cls="bleed-img")}</div><div class="wrap">{credit_line(caption, credit)}</div>'
-        return mod("photo", "a, full bleed", inner, wrap=False)
+        return mod("photo", "a, full bleed", inner, wrap=False, sid=sid)
     if variant == "c":
-        photo = f'<div class="c-half">{img(label, ratio)}{credit_line(caption, credit)}</div>'
+        photo = f'<div class="c-half photo-half">{img(label, ratio)}{credit_line(caption, credit)}</div>'
         words = f'<div class="c-half">{text}</div>'
         order = photo + words if side == "left" else words + photo
         return mod("photo", f"c, photograph and text, photograph {side}", f'<div class="cols">{order}</div>', sid=sid)
@@ -519,24 +519,32 @@ HOUSE_COLLECTION = dict(
 # (Intellecap's white paper); Vuma Biofuels was a separate investment by the foundation. Photographers named (Thomas).
 WTV = "BESTSELLER FOUNDATION Waste to Value Collection"
 WTV_CREDIT = f"Photo: Africa Reframed / {WTV}"
-WTV_COMPANIES = [  # strongest first, and the first four show the four kinds
-    dict(name="Gjenge Makers", kind="Waste to building materials", where="Nairobi, Kenya · Nzambi Matee, founder", photographer="Paul Mbugua",
-         text="Makes paving blocks and tiles from recycled plastic and sand in Nairobi’s Industrial Area. Its founder, the materials engineer Nzambi Matee, was named a UN Environment Programme Young Champion of the Earth in 2020.",
+WTV_COMPANIES = [  # seven stories, stacked like a magazine feature (Thomas, 9 November 2026): teasers that start the funder's
+    # imagination, no "read more" behind them. Strongest first; the first four show the four kinds of work.
+    dict(name="Gjenge Makers", kind="Waste to building materials", headline="Paving stones from plastic waste", city="Nairobi",
+         where="Nairobi, Kenya · founded by Nzambi Matee", photographer="Paul Mbugua",
+         text="In a workshop in Nairobi’s Industrial Area, plastic waste from packaging factories and collectors is mixed with sand, heated and pressed into paving blocks and tiles, certified by the Kenya Bureau of Standards. The materials engineer Nzambi Matee founded the company in 2017 and was named a UN Environment Programme Young Champion of the Earth in 2020.",
          since="Since then: a gavel she made from recycled plastic was used at the UN Environment Assembly in 2022, and she joined the Explorers Club 50 in 2025."),
-    dict(name="Yo-Waste", kind="Technology for waste", where="Kampala, Uganda · Martin Tumusiime, founder", photographer="Jjumba Martin",
-         text="An app that lets homes and businesses in Kampala book their waste collection, connecting them with independent collectors. It started as a project at Makerere University.",
+    dict(name="Yo-Waste", kind="Technology for waste", headline="Booking the rubbish collection by app", city="Kampala",
+         where="Kampala, Uganda · founded by Martin Tumusiime", photographer="Jjumba Martin",
+         text="Homes and businesses in Kampala book their rubbish collection on a phone, on schedule or on demand, and the app sends an independent collector to the door. Yo-Waste began as a student project at Makerere University.",
          since="Since then: runner-up for the Royal Academy of Engineering’s Africa Prize for Engineering Innovation, 2024."),
-    dict(name="Gracela Ventures", kind="Waste to energy", where="Kampala, Uganda · Grace Nalugwa, founder", photographer="Jjumba Martin",
-         text="Makes cooking briquettes from organic waste for households, schools and hotels, in place of charcoal and firewood.",
+    dict(name="Gracela Ventures", kind="Waste to energy", headline="Cooking fuel from organic waste", city="Kampala",
+         where="Kampala, Uganda · founded by Grace Nalugwa", photographer="Jjumba Martin",
+         text="Organic waste is carbonised and pressed into briquettes that households, schools and hotels burn in place of charcoal and firewood. Grace Nalugwa started the business with a youth livelihood grant and built it in Kawempe, in the north of Kampala.",
          since="Since then: Grace Nalugwa has been a Mandela Washington Fellow, 2022, and a One Young World scholar, 2024."),
-    dict(name="Umuti", kind="Waste to packaging", where="Kigali, Rwanda · founded by four students of the African Leadership University", photographer="Muhire Rukundo Dieudonné",
-         text="When we photographed it in 2021, Umuti made paper bags from the banana and plantain trunks left after the harvest."),
-    dict(name="Zijani", kind="Waste to energy", where="Nairobi, Kenya · Bryan Lukano, founder", photographer="Paul Mbugua",
-         text="When we photographed it in 2021, Zijani collected used cooking oil from hotels and restaurants, to be turned into biodiesel and other products."),
-    dict(name="Green Charcoal Uganda", kind="Waste to energy", where="Tororo, Uganda · Geoffrey Okoth Yoga, founder", photographer="Jjumba Martin",
-         text="When we photographed it in 2021, the company made cooking briquettes from farm waste such as rice and palm kernel husks, bought from smallholder farmers in eastern Uganda."),
-    dict(name="Vuma Biofuels", kind="Waste to energy", where="Awendo, western Kenya · Aaron Pattillo and Ian Otula, founders", photographer="Paul Mbugua",
-         text="When we photographed it in 2021, Vuma made briquettes and pellets from sugarcane waste, as fuel for industrial boilers, schools and homes."),
+    dict(name="Umuti", kind="Waste to packaging", headline="Paper bags from banana trunks", city="Kigali",
+         where="Kigali, Rwanda · founded by four students of the African Leadership University", photographer="Muhire Rukundo Dieudonné",
+         text="In a country that banned plastic bags in 2008, Umuti set out to make paper ones from the banana and plantain trunks left in the fields after the harvest. When we photographed it in 2021, the young company was in its pilot phase, backed by the foundation."),
+    dict(name="Zijani", kind="Waste to energy", headline="Used cooking oil, collected for fuel", city="Nairobi",
+         where="Nairobi, Kenya · founded by Bryan Lukano", photographer="Paul Mbugua",
+         text="When we photographed it in 2021, Zijani collected used cooking oil from hotels, restaurants and caterers in Nairobi, so that it went into biodiesel and other products instead of down the drain. Its founder first had the idea for a university assignment."),
+    dict(name="Green Charcoal Uganda", kind="Waste to energy", headline="Farm husks made into charcoal", city="Tororo",
+         where="Tororo, Uganda · founded by Geoffrey Okoth Yoga", photographer="Jjumba Martin",
+         text="When we photographed it in 2021, the company bought rice, coffee and palm kernel husks and maize cobs from smallholder farmers in eastern Uganda and turned them into cooking briquettes: a farm’s leftovers, sold as fuel."),
+    dict(name="Vuma Biofuels", kind="Waste to energy", headline="Sugarcane waste as fuel", city="Awendo",
+         where="Awendo, western Kenya · founded by Aaron Pattillo and Ian Otula", photographer="Paul Mbugua",
+         text="When we photographed it in 2021, Vuma turned the bagasse left over from sugarcane in western Kenya into briquettes and pellets: fuel for industrial boilers, schools and homes, in place of firewood."),
 ]
 WTV_COLLECTION = dict(
     slug="waste-to-value", title=WTV, kicker="Sponsored collection", statement_draft=True,
@@ -550,7 +558,7 @@ WTV_COLLECTION = dict(
            ("Photographers", "Paul Mbugua, Jjumba Martin, Muhire Rukundo Dieudonné"), ("Photographed", "February 2020 to May 2021"),
            ("Programme", "Waste to Value, BESTSELLER FOUNDATION with Intellecap"), ("Access", "By request, for partners and the press")],
     companies=WTV_COMPANIES,
-    companies_lead="Four turn waste into energy, one into building materials and one into packaging; one builds the technology to collect it.",
+    companies_lead="Seven companies, seven stories. Four turn waste into energy, one into building materials and one into packaging; one builds the technology to collect it.",
     grid_line="Founders, workers and products: in workshops, yards, markets and kitchens.",
     making=[("A brief with every founder", "A video call with each company first, then a brief and a shot list around what it needed to show: its product, its people and its place."),
             ("Photographers from each country", "Photographers from Nairobi, Kampala and Kigali, hired and briefed by us, with every shoot prepared together with the company’s team."),
@@ -577,7 +585,7 @@ WTV_COLLECTION = dict(
                 text=["This collection began with a theme close to the foundation’s own work: waste turned into value. A collection can start from any theme close to a funder’s work, or one it wants to support: a sector, a skill, a city, a change under way.",
                       "We find the people and places that show it, work with photographers from the countries concerned, and deliver the collection with its stories and its behind-the-scenes material. From there the storytelling is shared: the funder, the people in the collection and the press each tell their part with the same images. The funder’s name stands on the collection; the work stays independent."]),
     access=dict(count=("7", "companies in the collection"), request=True, line="Access to this collection is by request, for partners and the press."),
-    sections=["story", "companies", "grid", "making", "photographers", "bts", "went", "words", "access", "sponsor", "invite"],   # ends on the invitation
+    sections=["story", "companies", "making", "photographers", "bts", "went", "words", "access", "sponsor", "invite"],   # the stories carry the images; ends on the invitation
     card=dict(kicker="Sponsored collection", line="Seven young companies in Kenya, Uganda and Rwanda that turn waste into fuel, building materials, packaging and services.",
               meta=["7 companies", "Kenya · Uganda · Rwanda", "Access by request"], image="A photograph from the Waste to Value Collection", credit=WTV_CREDIT),
 )
@@ -751,13 +759,36 @@ def tpl_theme(p, base):
             + m_themes(base, "c", current=t))
 
 
-def company_card(x):
-    """A company in a sponsored collection: its photograph, the kind of work, name, place and founder, what it does
-    (in the tense its status allows) and, where there is one, what has happened since."""
-    since = draft(x["since"], "p", "small since") if x.get("since") else ""
-    return (f'<div class="item company">{img(x["name"] + ": the founder or the work, from the collection", "3/2")}'
-            f'{credit_line(None, "Photo: " + x["photographer"] + " / Africa Reframed")}'
-            f'<p class="kicker">{e(x["kind"])}</p><h3>{e(x["name"])}</h3><p class="small where">{e(x["where"])}</p>{draft(x["text"])}{since}</div>')
+def story_id(x):
+    return "story-" + re.sub(r"[^a-z0-9]+", "-", x["name"].lower()).strip("-")
+
+
+def m_contents(rows):
+    """The stories' contents, like a magazine's: the kind of work, the company and the headline, each linking down."""
+    li = "".join(f'<li><a href="#{story_id(x)}"><span class="kicker">{e(x["kind"])}</span><strong>{e(x["name"])}</strong>'
+                 f'<span class="contents-line">{e(x["headline"])}</span></a></li>' for x in rows)
+    return f'<ul class="contents">{li}</ul>'
+
+
+def company_story(x, i):
+    """One company as a story in a sponsored collection: a teaser told in photographs. The rhythm of a magazine feature: the
+    lead photograph full bleed, then beside the words on the left, then on the right, and again; under each story a strip of
+    three more from the shoot (people, process, product), credited to its photographer. No "read more": the story is the teaser."""
+    words = (f'<p class="kicker">{e(x["kind"])}</p><h3 class="story-headline">{e(x["headline"])}</h3>'
+             f'<p class="story-company"><strong>{e(x["name"])}</strong> · {e(x["where"])}</p>')
+    body = draft(x["text"]) + (draft(x["since"], "p", "small since") if x.get("since") else "")
+    credit, caption = f'Photo: {x["photographer"]} / Africa Reframed', f'{x["name"]}, {x["city"]}, 2021'
+    lead = f'{x["name"]}: the lead photograph from the shoot'
+    if i % 3 == 0:
+        out = m_photo(lead, "21/9", "a", caption=caption, credit=credit, sid=story_id(x))
+        out += mod("text", "a, the story", f'<div class="cols story"><div class="c1-4">{words}</div><div class="c6-12">{body}</div></div>', tight=True)
+    else:
+        out = m_photo(lead, "3/2", "c", text=f'<div class="story">{words}{body}</div>', side="left" if i % 3 == 1 else "right",
+                      caption=caption, credit=credit, sid=story_id(x))
+    cells = "".join(img(f'{x["name"]}: {k}', "1/1") for k in ("the people", "the process", "the product"))
+    out += mod("grid", "c, three more from the shoot", f'<div class="imgs grid-strip">{cells}</div>'
+               f'{credit_line(None, "Photographs: " + x["photographer"] + " / Africa Reframed")}', tight=True)
+    return out
 
 
 def cs_quotes(rows, title):
@@ -771,10 +802,11 @@ def cs_quotes(rows, title):
 COLLECTION_SECTIONS = {
     "story": lambda c, base: m_text(c["story_title"], c["story"], "b",
                                     box='<dl class="facts">' + "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in c["facts"]) + "</dl>"),
-    "companies": lambda c, base: mod("items", "d, the companies",
-                                     f'<div class="cols"><div class="c1-4">{heading("The companies")}</div><div class="c6-12">{draft(c["companies_lead"])}'
-                                     f'{note("Present tense where a company’s current activity is confirmed; otherwise as photographed in 2021, until its founder confirms.")}</div></div>'
-                                     f'<div class="companies">{"".join(company_card(x) for x in c["companies"])}</div>', sid="companies"),
+    "companies": lambda c, base: (mod("items", "a, the stories’ contents",
+                                      f'<div class="cols"><div class="c1-4">{heading("The companies")}</div><div class="c6-12">{draft(c["companies_lead"])}'
+                                      f'{note("Seven stories as teasers, four photographs each from the shoot. Present tense where a company’s current activity is confirmed; otherwise as photographed in 2021, until its founder confirms.")}</div></div>'
+                                      + m_contents(c["companies"]), sid="companies")
+                                  + "".join(company_story(x, i) for i, x in enumerate(c["companies"]))),
     "grid": lambda c, base: m_grid("d", 8, "Image from the collection", line=c["grid_line"], title="From the collection", credit=c.get("credit")),
     "making": lambda c, base: m_items("How it was made", c["making"], "b", lead=draft("From the first call with a founder to the last gallery.")),
     "photographers": lambda c, base: m_items("The photographers", c["photographers"], "d", lead=draft(c["photographers_lead"]), image_ratio="4/5", sid="photographers"),
@@ -1465,12 +1497,17 @@ body.clean .mod::before{display:none}
 
 /* Collections: the list of cards, and a sponsored collection's companies and the founders' words (the collection template) */
 .collection-list .collection-card + .collection-card{margin-top:var(--section-tight);padding-top:var(--section-tight);border-top:1px solid var(--line)}
-.companies{display:grid;gap:44px 24px;margin-top:8px;grid-template-columns:repeat(4,minmax(0,1fr))}
-.company .kicker{margin:14px 0 4px}
-.company h3{font-size:20px;font-weight:500;margin:0 0 4px}
-.company .where{margin:0 0 10px}
-.company p{font-size:15px;line-height:1.45}
-.company .since{border-top:1px solid var(--line);padding-top:10px;margin-top:4px}
+.contents{list-style:none;padding:0;margin:28px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+.contents a{display:block;text-decoration:none;border-top:2px solid var(--ink);padding-top:12px;height:100%}
+.contents .kicker{display:block;margin:0 0 6px}
+.contents strong{display:block;font-weight:500;font-size:20px;line-height:1.2;margin:0 0 4px}
+.contents .contents-line{font-size:15px;color:var(--ink-soft)}
+.contents a:hover strong{text-decoration:underline}
+.story-headline{font-size:32px;font-weight:500;line-height:1.12;letter-spacing:-.01em;margin:0 0 12px;max-width:16ch;text-wrap:balance}
+.story-company{font-size:15px;color:var(--ink-soft);margin:0 0 16px}
+.story-company strong{color:var(--ink);font-weight:500}
+.story .since{border-top:1px solid var(--line);padding-top:10px;margin-top:12px}
+[id^="story-"]{scroll-margin-top:24px}
 .quote{margin:0 0 28px}
 .quote blockquote{margin:0}
 .quote blockquote p{font-size:22px;line-height:1.35;max-width:36ch;margin:0 0 8px}
@@ -1655,7 +1692,7 @@ body.show-grid .grid-overlay{display:block}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
   .wire-strip .wrap{flex-wrap:wrap}
   .theme-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(220px,40%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;gap:24px}
-  .cards-4,.cards-5,.principles,.companies{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards-4,.cards-5,.principles,.contents{grid-template-columns:repeat(2,minmax(0,1fr))}
   /* the Opening below desktop: the photograph first, from the line of column 2 off the right edge; the words under it */
   .opening{padding-bottom:0}
   .opening-words{grid-column:1/-1;order:2;padding-top:8px}
@@ -1676,6 +1713,7 @@ body.show-grid .grid-overlay{display:block}
   h2{font-size:24px}
   .statement{font-size:20px}
   .c1-4,.c6-12,.c1-8,.c1-6,.c7-12,.c-half,.c-offset{grid-column:1/-1}
+  .photo-half{order:-1}  /* photograph and text: the photograph first on phones, whichever side it sits on desktop */
   .grid-3,.grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mod .cols + .cols{margin-top:16px}
   .theme-entry.row{grid-template-columns:44px 1fr;gap:12px 16px}
@@ -1696,8 +1734,8 @@ body.show-grid .grid-overlay{display:block}
   .theme-row{grid-auto-columns:78%}
 }
 @media (max-width:480px){
-  .cards-4,.cards-5,.principles,.companies{grid-template-columns:1fr}
-  .companies{gap:36px}
+  .cards-4,.cards-5,.principles,.contents{grid-template-columns:1fr}
+  .story-headline{font-size:26px}
   .quote blockquote p{font-size:19px}
   .wire-strip .wrap{align-items:flex-start}
   .panel strong{font-size:26px}

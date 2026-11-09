@@ -132,12 +132,17 @@ body.clean .mod::before{display:none}
 
 /* Collections: the list of cards, and a sponsored collection's companies and the founders' words (the collection template) */
 .collection-list .collection-card + .collection-card{margin-top:var(--section-tight);padding-top:var(--section-tight);border-top:1px solid var(--line)}
-.companies{display:grid;gap:44px 24px;margin-top:8px;grid-template-columns:repeat(4,minmax(0,1fr))}
-.company .kicker{margin:14px 0 4px}
-.company h3{font-size:20px;font-weight:500;margin:0 0 4px}
-.company .where{margin:0 0 10px}
-.company p{font-size:15px;line-height:1.45}
-.company .since{border-top:1px solid var(--line);padding-top:10px;margin-top:4px}
+.contents{list-style:none;padding:0;margin:28px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+.contents a{display:block;text-decoration:none;border-top:2px solid var(--ink);padding-top:12px;height:100%}
+.contents .kicker{display:block;margin:0 0 6px}
+.contents strong{display:block;font-weight:500;font-size:20px;line-height:1.2;margin:0 0 4px}
+.contents .contents-line{font-size:15px;color:var(--ink-soft)}
+.contents a:hover strong{text-decoration:underline}
+.story-headline{font-size:32px;font-weight:500;line-height:1.12;letter-spacing:-.01em;margin:0 0 12px;max-width:16ch;text-wrap:balance}
+.story-company{font-size:15px;color:var(--ink-soft);margin:0 0 16px}
+.story-company strong{color:var(--ink);font-weight:500}
+.story .since{border-top:1px solid var(--line);padding-top:10px;margin-top:12px}
+[id^="story-"]{scroll-margin-top:24px}
 .quote{margin:0 0 28px}
 .quote blockquote{margin:0}
 .quote blockquote p{font-size:22px;line-height:1.35;max-width:36ch;margin:0 0 8px}
@@ -322,7 +327,7 @@ body.show-grid .grid-overlay{display:block}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
   .wire-strip .wrap{flex-wrap:wrap}
   .theme-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(220px,40%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;gap:24px}
-  .cards-4,.cards-5,.principles,.companies{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards-4,.cards-5,.principles,.contents{grid-template-columns:repeat(2,minmax(0,1fr))}
   /* the Opening below desktop: the photograph first, from the line of column 2 off the right edge; the words under it */
   .opening{padding-bottom:0}
   .opening-words{grid-column:1/-1;order:2;padding-top:8px}
@@ -343,6 +348,7 @@ body.show-grid .grid-overlay{display:block}
   h2{font-size:24px}
   .statement{font-size:20px}
   .c1-4,.c6-12,.c1-8,.c1-6,.c7-12,.c-half,.c-offset{grid-column:1/-1}
+  .photo-half{order:-1}  /* photograph and text: the photograph first on phones, whichever side it sits on desktop */
   .grid-3,.grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mod .cols + .cols{margin-top:16px}
   .theme-entry.row{grid-template-columns:44px 1fr;gap:12px 16px}
@@ -363,8 +369,8 @@ body.show-grid .grid-overlay{display:block}
   .theme-row{grid-auto-columns:78%}
 }
 @media (max-width:480px){
-  .cards-4,.cards-5,.principles,.companies{grid-template-columns:1fr}
-  .companies{gap:36px}
+  .cards-4,.cards-5,.principles,.contents{grid-template-columns:1fr}
+  .story-headline{font-size:26px}
   .quote blockquote p{font-size:19px}
   .wire-strip .wrap{align-items:flex-start}
   .panel strong{font-size:26px}

@@ -284,23 +284,21 @@ def m_project(x, extra=""):
 def collection_entry(x, base):
     """A collection in the archive (the collection card, 2.8), as proof of the archive."""
     meta = "".join(f"<span>{e(m)}</span>" for m in x["meta"])
-    return (f'<a class="collection-card cols" href="{base}{x["href"]}"><div class="c-half">{img(x["image"], "3/2")}{credit_line()}</div>'
-            f'<div class="c-half">{state_label(x)}<p class="kicker">{e(x["kicker"])}</p><h3 class="h-big">{e(x["title"])}</h3>{draft(x["line"])}'
+    return (f'<a class="collection-card cols" href="{base}{x["href"]}"><div class="c-half">{img(x["image"], "3/2")}{credit_line(None, x.get("credit"))}</div>'
+            f'<div class="c-half">{state_label(x) if x.get("state") else ""}<p class="kicker">{e(x["kicker"])}</p><h3 class="h-big">{e(x["title"])}</h3>{draft(x["line"])}'
             f'<p class="meta-row">{meta}</p><span class="textlink">Open the collection</span></div></a>')
 
 
-# 2.8 Collection card: (a) one card at the full width, (b) a list of cards.
-def collection_card(base):
-    meta = "".join(f"<span>{x}</span>" for x in ("1,122 images", "21 shoots", "Mali · Kenya · The Gambia"))
-    return (f'<a class="collection-card cols" href="{base}collections/house-collection/"><div class="c-half">{img("Collection image", "3/2")}</div>'
-            f'<div class="c-half"><p class="kicker">Collection</p><h3 class="h-big">House Collection</h3><p>{e(HOUSE_LINE)}</p>'
-            f'<p class="meta-row">{meta}</p><span class="textlink">Open the collection</span></div></a>')
+# 2.8 Collection card: (a) one card at the full width, (b) a list of cards. The cards come from COLLECTIONS.
+def collection_card(c, base):
+    return collection_entry(dict(c["card"], title=c["title"], href=f'collections/{c["slug"]}/'), base)
 
 
 def m_collection(base, variant="a", title=True):
     top = f'<div class="cols"><div class="c1-4">{heading("Collections")}</div></div>' if title else ""
-    n = note("A sponsored collection appears here once it is signed, shown as in production with behind-the-scenes material; never as a plan.")
-    return mod("collection", "a, one card" if variant == "a" else "b, a list of cards", top + collection_card(base) + n)
+    n = note("A new sponsored collection appears here once it is signed, shown as in production with behind-the-scenes material; never as a plan.")
+    cards = "".join(collection_card(c, base) for c in COLLECTIONS)
+    return mod("collection", "b, a list of cards", f'{top}<div class="collection-list">{cards}</div>{n}')
 
 
 # 2.9 Numbers and counts: (a) a row of three, (b) one count with its action (used inside Doors b), (c) by country.
@@ -392,7 +390,11 @@ def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image
 
 
 # 2.14 Sponsor credit: (theme) "Made possible by …" under the statement; (collection) the full name as the title.
-def m_sponsor(variant="theme", tight=False):
+def m_sponsor(variant="theme", tight=False, sponsor=None):
+    if variant == "collection" and sponsor:
+        inner = (f'<div class="cols"><div class="c1-4"><p class="kicker">Made possible by</p><h2>{e(sponsor["name"])}</h2></div>'
+                 f'<div class="c6-12"><div class="logos"><span class="logo">Sponsor logo</span></div>{draft(sponsor["text"])}{note(sponsor["note"])}</div></div>')
+        return mod("sponsor", "collection page", inner, tight=tight)
     if variant == "collection":
         inner = (f'<div class="cols"><div class="c1-4"><p class="kicker">Collection</p><h2>Africa Reframed / [Full collection name]</h2></div>'
                  f'<div class="c6-12"><div class="logos"><span class="logo">Sponsor logo</span></div>{lines(3)}<p class="small">The sponsor’s contact</p></div></div>'
@@ -458,17 +460,17 @@ THEME_TEXTS = {  # theme page 4: what the theme shows and why it matters to part
 }
 THEME_ACTION_LINE = "Partners open the theme in the archive; others are asked to log in or to request access first."  # brief, section 5
 HOUSE_STORY = [  # collection page 2: the story (Keywording Guide 2; AR Archive – Status); partner names only once they agree
-    "The House Collection is Africa Reframed’s own collection: 1,122 photographs made between 2013 and 2018 in 21 shoots in Mali, Kenya and The Gambia, in productions run together with photography workshops in Bamako, Nairobi and Banjul.",
+    "The House Collection is Africa Reframed’s own collection: 1,122 photographs made by our team between 2013 and 2018, in 21 shoots in Mali, Kenya and The Gambia, alongside photography workshops in Bamako, Nairobi and Banjul.",
     "The images show people at work, at study and at home in three modern cities and the countryside around them, photographed in natural light, in their own places. They are released for the uses the archive allows and carry one credit: Photo: Africa Reframed.",
 ]
-HOUSE_PEOPLE_NOTE = "The photographers and the workshop partners, credited by name as each agrees (Keywording Guide: partner names stay out until then)."
+# The House Collection names no photographers: "our team" is the credit (Thomas, 9 November 2026). Sponsored collections name theirs.
 PLACES = [  # collection page 5: places and series (Keywording Guide 9, 11b; the shoot list)
     ("Mali", "Bamako: classrooms, a campus and the street, from the first productions."),
     ("Kenya", "Nairobi: cafés, offices and campuses; tea fields and a farming village outside the city."),
     ("The Gambia", "Banjul: a culinary training, women in trades, small businesses and studio portraits. Series: Culinary training, Banjul · Women in trades, Banjul."),
 ]
 SPONSOR_TEXT = [  # Partners 4: sponsor a collection, in general terms (brief, Partners; engine brief)
-    "We make new collections with companies as sponsors. A sponsored collection is led by a theme, never by the sponsor’s own activities: it opens a theme the archive does not yet hold, or deepens one of the five.",
+    "We make new collections with companies and foundations as sponsors. A sponsored collection is led by a theme close to the sponsor’s work, or one it wants to support, never by its own operations: it opens a theme the archive does not yet hold, or deepens one of the five.",
     "The sponsor is named on the collection’s page and credited on the theme page, and gets the whole archive for its own channels, for good, under the same partner licence as everyone else.",
 ]
 ACCESS_STEPS = [  # Partners 2: how access works (AR Archive – Status, 3 and 6 November 2026)
@@ -491,6 +493,90 @@ REQUEST_NEXT = [("We read your request", "and reply within a working day."), ("Y
                 ("You log in", "collect in the Lightbox and download for each use, free.")]
 REQUEST_CONSENT = "I agree that how we use the images may be reported, without personal details, to the funders who make new collections possible."
 REQUEST_FOOT = "Companies get access through a collection sponsorship; write to partnerships@africareframed.com."
+
+# ---------------------------------------------------------------------------------------------
+# Collections (the collection template, 9 November 2026). One template for every collection: each collection is data, and
+# its page is the list of sections it names, in order. A sponsored collection's page is a worked example for the next funder
+# (Thomas, 9 November 2026): it shows what a sponsor gets, a body of work on a theme close to its own, the stories, named
+# photographers, behind-the-scenes material and where the images went, and it ends with the invitation to make one on
+# another theme. The work carries the case; the invitation comes once, at the end. No legal text on these pages.
+# ---------------------------------------------------------------------------------------------
+HOUSE_COLLECTION = dict(
+    slug="house-collection", title="House Collection", kicker="Collection", statement=HOUSE_STATEMENT, statement_draft=False,
+    lead="Collection image", story_title="The story", story=HOUSE_STORY, facts=HOUSE_FACTS,
+    grid_line="A spread across the five themes; released, no minors.",
+    access=dict(count=("1,122", "images in the House Collection"), src="collection-house", line=f"Sponsoring a collection? Write to {EMAIL_PARTNERS}."),
+    sections=["story", "grid", "places", "themes", "goals", "access", "uses"],
+    card=dict(kicker="Our own collection", line="1,122 photographs made by our team in Mali, Kenya and The Gambia.",
+              meta=["1,122 images", "21 shoots", "Mali · Kenya · The Gambia"], image="Collection image"),
+)
+
+# The BESTSELLER FOUNDATION Waste to Value Collection. Sources: Track Record (Bestseller Foundation case, from the mail);
+# BESTSELLER FOUNDATION Waste to Value research (status 24 October 2026); the partnership announcement (20 November 2020).
+# Tense rule (the research): present tense only for the companies with dated activity since 2024 (Gjenge Makers, Yo-Waste,
+# Gracela Ventures); the others as photographed in 2021 until their founders confirm. Never "closed". The cohort was six
+# (Intellecap's white paper); Vuma Biofuels was a separate investment by the foundation. Photographers named (Thomas).
+WTV = "BESTSELLER FOUNDATION Waste to Value Collection"
+WTV_CREDIT = f"Photo: Africa Reframed / {WTV}"
+WTV_COMPANIES = [  # strongest first, and the first four show the four kinds
+    dict(name="Gjenge Makers", kind="Waste to building materials", where="Nairobi, Kenya · Nzambi Matee, founder", photographer="Paul Mbugua",
+         text="Makes paving blocks and tiles from recycled plastic and sand in Nairobi’s Industrial Area. Its founder, the materials engineer Nzambi Matee, was named a UN Environment Programme Young Champion of the Earth in 2020.",
+         since="Since then: a gavel she made from recycled plastic was used at the UN Environment Assembly in 2022, and she joined the Explorers Club 50 in 2025."),
+    dict(name="Yo-Waste", kind="Technology for waste", where="Kampala, Uganda · Martin Tumusiime, founder", photographer="Jjumba Martin",
+         text="An app that lets homes and businesses in Kampala book their waste collection, connecting them with independent collectors. It started as a project at Makerere University.",
+         since="Since then: runner-up for the Royal Academy of Engineering’s Africa Prize for Engineering Innovation, 2024."),
+    dict(name="Gracela Ventures", kind="Waste to energy", where="Kampala, Uganda · Grace Nalugwa, founder", photographer="Jjumba Martin",
+         text="Makes cooking briquettes from organic waste for households, schools and hotels, in place of charcoal and firewood.",
+         since="Since then: Grace Nalugwa has been a Mandela Washington Fellow, 2022, and a One Young World scholar, 2024."),
+    dict(name="Umuti", kind="Waste to packaging", where="Kigali, Rwanda · founded by four students of the African Leadership University", photographer="Muhire Rukundo Dieudonné",
+         text="When we photographed it in 2021, Umuti made paper bags from the banana and plantain trunks left after the harvest."),
+    dict(name="Zijani", kind="Waste to energy", where="Nairobi, Kenya · Bryan Lukano, founder", photographer="Paul Mbugua",
+         text="When we photographed it in 2021, Zijani collected used cooking oil from hotels and restaurants, to be turned into biodiesel and other products."),
+    dict(name="Green Charcoal Uganda", kind="Waste to energy", where="Tororo, Uganda · Geoffrey Okoth Yoga, founder", photographer="Jjumba Martin",
+         text="When we photographed it in 2021, the company made cooking briquettes from farm waste such as rice and palm kernel husks, bought from smallholder farmers in eastern Uganda."),
+    dict(name="Vuma Biofuels", kind="Waste to energy", where="Awendo, western Kenya · Aaron Pattillo and Ian Otula, founders", photographer="Paul Mbugua",
+         text="When we photographed it in 2021, Vuma made briquettes and pellets from sugarcane waste, as fuel for industrial boilers, schools and homes."),
+]
+WTV_COLLECTION = dict(
+    slug="waste-to-value", title=WTV, kicker="Sponsored collection", statement_draft=True,
+    statement="Seven young companies in Kenya, Uganda and Rwanda turning waste into fuel, building materials, packaging and services, photographed by photographers from their own countries.",
+    meta=["7 companies", "Kenya · Uganda · Rwanda", "3 photographers"],
+    lead="Lead image: a founder at work, from the collection", lead_credit=WTV_CREDIT, credit=WTV_CREDIT,
+    story_title="The theme",
+    story=["Waste is a raw material. Across East Africa, young companies build businesses on it: cooking fuel from husks and sugarcane, paving from plastic, paper bags from banana trunks, and an app that gets the rubbish collected. This collection shows seven of them, the people who run them and the work they do, in their own places.",
+           "The companies came through BESTSELLER FOUNDATION’s Waste to Value Challenge, launched with Intellecap in December 2019 across Kenya, Uganda, Tanzania and Rwanda. From more than 400 applications, six were chosen for an accelerator that ran from August 2020 to March 2021, with up to USD 100,000 each and support on markets, products, business planning and finance. Alongside it, the foundation invested in a seventh: Vuma Biofuels."],
+    facts=[("Companies", "7, six of them from the accelerator"), ("Countries", "Kenya, Uganda, Rwanda"),
+           ("Photographers", "Paul Mbugua, Jjumba Martin, Muhire Rukundo Dieudonné"), ("Photographed", "February 2020 to May 2021"),
+           ("Programme", "Waste to Value, BESTSELLER FOUNDATION with Intellecap"), ("Access", "By request, for partners and the press")],
+    companies=WTV_COMPANIES,
+    companies_lead="Four turn waste into energy, one into building materials and one into packaging; one builds the technology to collect it.",
+    grid_line="Founders, workers and products: in workshops, yards, markets and kitchens.",
+    making=[("A brief with every founder", "A video call with each company first, then a brief and a shot list around what it needed to show: its product, its people and its place."),
+            ("Photographers from each country", "Photographers from Nairobi, Kampala and Kigali, hired and briefed by us, with every shoot prepared together with the company’s team."),
+            ("A gallery for everyone involved", "The foundation and each founder got a gallery of their own, to use across all their channels.")],
+    photographers=[("Paul Mbugua", "Nairobi · Rubanipix. Photographed the programme’s kick-off bootcamp in February 2020, then Gjenge Makers, Zijani and Vuma Biofuels.", "Behind the scenes: Paul Mbugua at work"),
+                   ("Jjumba Martin", "Kampala. Photographed Yo-Waste, Gracela Ventures and Green Charcoal Uganda.", "Behind the scenes: Jjumba Martin at work"),
+                   ("Muhire Rukundo Dieudonné", "Kigali · CornWine Films. Photographed Umuti in Kigali and Musanze.", "Behind the scenes: Muhire Rukundo Dieudonné at work")],
+    photographers_lead="Three photographers, one in each country, each credited by name.",
+    bts="Every shoot came with images of the photographer at work, for the foundation’s and the founders’ social media. The first post, from Yo-Waste in Kampala in February 2021, named the photographer and invited other companies to take part.",
+    went=[("The founders", "Each company used its gallery in its own channels. Green Charcoal Uganda entered ten of the photographs in the Sankalp virtual exhibition, the month of its shoot."),
+          ("The foundation", "BESTSELLER FOUNDATION used them in its newsletter and on its new website."),
+          ("The sector", "Intellecap took the full Yo-Waste set, and its white paper on the waste-to-value sector in East Africa, published in July 2021, carries our photographs of Zijani, Yo-Waste and Gjenge Makers."),
+          ("What followed", "The foundation asked us back: to photograph more circular-economy entrepreneurs around Kigali, and to document a waste-to-art project in Nairobi and Cape Town.")],
+    words=[("I have begun benefiting from the photoshoots already.", "Geoffrey Okoth Yoga, Green Charcoal Uganda, February 2021"),
+           ("Paul and his assistant were very professional, organized, and had a great eye for what to shoot.", "Aaron Pattillo, Vuma Biofuels, May 2021")],
+    sponsor=dict(name="BESTSELLER FOUNDATION",
+                 text="BESTSELLER FOUNDATION invests in inclusive and circular businesses across Africa. The collection was made in a strategic partnership with Africa Reframed, which the foundation announced in November 2020.",
+                 note="The foundation’s own statement, at most 80 words, and its logo, as the foundation approves them."),
+    invite=dict(title="A collection on your theme",
+                text=["This collection began with a theme close to the foundation’s own work: waste turned into value. A collection can start from any theme close to a funder’s work, or one it wants to support: a sector, a skill, a city, a change under way.",
+                      "We find the people and places that show it, work with photographers from the countries concerned, and deliver the collection with its stories and its behind-the-scenes material: for the funder’s channels, for the people in it, and for the press. The funder’s name stands on the collection; the work stays independent."]),
+    access=dict(count=("7", "companies in the collection"), request=True, line="Access to this collection is by request, for partners and the press."),
+    sections=["story", "companies", "grid", "making", "photographers", "bts", "went", "words", "access", "sponsor", "invite"],   # ends on the invitation
+    card=dict(kicker="Sponsored collection", line="Seven young companies in Kenya, Uganda and Rwanda that turn waste into fuel, building materials, packaging and services.",
+              meta=["7 companies", "Kenya · Uganda · Rwanda", "Access by request"], image="A photograph from the Waste to Value Collection", credit=WTV_CREDIT),
+)
+COLLECTIONS = [HOUSE_COLLECTION, WTV_COLLECTION]   # the order on Collections and on Home
 # About (About page – build brief, 05 Website; rebuilt 9 November 2026 with Thomas). The function pages are a machine; About is
 # the cultural institution behind it. Three lines of activity, all current: the archive (always on), exhibitions and workshops
 # (mediums we activate when a project is funded). Each opens with the activity in the present tense, then the proof as
@@ -509,7 +595,7 @@ ABOUT_CHANNELS = [  # (anchor, name, one line): the three lines of activity unde
 # 1 The archive: the activity, then the proof
 ABOUT_ARCHIVE = [
     "We run an archive of photographs of contemporary Africa for the organisations that work with the continent: NGOs, media, educational institutions, embassies, development finance institutions and companies. It is free for the non-profit and public partners we approve; companies take part by sponsoring a collection.",
-    "Partners browse the archive, gather images and share them with colleagues, and download what they need. Every download is a licence for one stated use, so we know where the images go. The archive grows by collections, and every new collection makes it bigger for every partner.",
+    "Partners browse the archive, gather images and share them with colleagues, and download what they need. Every download is a licence for one stated use, so we know where the images go. The archive grows by collections.",
 ]
 ARCHIVE_COLLECTIONS = [  # the collections in the archive; a sponsored collection is one more entry, shown first while in production
     dict(title="House Collection", state="record", kicker="The first collection", href="collections/house-collection/",
@@ -638,7 +724,8 @@ def tpl_index_themes(p, base):
 
 def tpl_index_collections(p, base):
     return (m_page_head(p["title"], "Each collection is a body of work with its own story and the people behind it.", statement_draft=True)
-            + m_collection(base, "b", title=False))
+            + m_collection(base, "b", title=False)
+            + m_doors("c", links=[button(base + "partners/#sponsor", "Sponsor a collection on your theme →", quiet=True)], tight=True))
 
 
 def tpl_theme(p, base):
@@ -657,27 +744,64 @@ def tpl_theme(p, base):
             + m_themes(base, "c", current=t))
 
 
+def company_card(x):
+    """A company in a sponsored collection: its photograph, the kind of work, name, place and founder, what it does
+    (in the tense its status allows) and, where there is one, what has happened since."""
+    since = draft(x["since"], "p", "small since") if x.get("since") else ""
+    return (f'<div class="item company">{img(x["name"] + ": the founder or the work, from the collection", "3/2")}'
+            f'{credit_line(None, "Photo: " + x["photographer"] + " / Africa Reframed")}'
+            f'<p class="kicker">{e(x["kind"])}</p><h3>{e(x["name"])}</h3><p class="small where">{e(x["where"])}</p>{draft(x["text"])}{since}</div>')
+
+
+def cs_quotes(rows, title):
+    q = "".join(f'<figure class="quote"><blockquote>{draft("“" + a + "”")}</blockquote><figcaption class="small">{e(b)}</figcaption></figure>' for a, b in rows)
+    inner = (f'<div class="cols"><div class="c1-4">{heading(title, 3, "project-title")}</div><div class="c6-12 quotes">{q}'
+             f'{note("From the founders’ emails; published once each has agreed.")}</div></div>')
+    return mod("text", "a, in their words", inner, tight=True)
+
+
+# The collection page's sections. Each takes the collection and the base path; a collection names the ones it uses, in order.
+COLLECTION_SECTIONS = {
+    "story": lambda c, base: m_text(c["story_title"], c["story"], "b",
+                                    box='<dl class="facts">' + "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in c["facts"]) + "</dl>"),
+    "companies": lambda c, base: mod("items", "d, the companies",
+                                     f'<div class="cols"><div class="c1-4">{heading("The companies")}</div><div class="c6-12">{draft(c["companies_lead"])}'
+                                     f'{note("Present tense where a company’s current activity is confirmed; otherwise as photographed in 2021, until its founder confirms.")}</div></div>'
+                                     f'<div class="companies">{"".join(company_card(x) for x in c["companies"])}</div>', sid="companies"),
+    "grid": lambda c, base: m_grid("d", 8, "Image from the collection", line=c["grid_line"], title="From the collection", credit=c.get("credit")),
+    "making": lambda c, base: m_items("How it was made", c["making"], "b", lead=draft("From the first call with a founder to the last gallery.")),
+    "photographers": lambda c, base: m_items("The photographers", c["photographers"], "d", lead=draft(c["photographers_lead"]), image_ratio="4/5", sid="photographers"),
+    "bts": lambda c, base: m_grid("c", label="Behind the scenes: a photographer at work", line=c["bts"], title="Behind the scenes", level=3, credit=c.get("credit")),
+    "went": lambda c, base: m_items("Where the images went", c["went"], "a", sid="where"),
+    "words": lambda c, base: cs_quotes(c["words"], "In the founders’ words"),
+    "sponsor": lambda c, base: m_sponsor("collection", sponsor=c["sponsor"]),
+    "invite": lambda c, base: m_text(c["invite"]["title"], c["invite"]["text"], "c", contact=("Partnerships", EMAIL_PARTNERS), sid="your-theme",
+                                     links=[button(base + "partners/#sponsor", "How sponsoring a collection works →", quiet=True)]),
+    "places": lambda c, base: m_items("Places and series", [(k, t, f"Image from {k}") for k, t in PLACES], "d"),
+    "themes": lambda c, base: m_items("Themes it feeds", [(t["name"], f'{base}themes/{t["slug"]}/') for t in THEMES], "e"),
+    "goals": lambda c, base: m_items("Goals it serves", [(g, None) for g in ("SDG 4 – Quality Education", "SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality")], "e", tight=True,
+                                     lead=note("From the SDG field in the metadata; the three most frequent for now, to confirm from the AR Metadata sheet.")),
+    "access": lambda c, base: (
+        m_doors("b", count=c["access"]["count"], main=button(base + "request-access/", "Request access to the collection"),
+                quiet=button(f"mailto:{EMAIL_PRESS}", "Press", quiet=True), line=c["access"]["line"], sid="access")
+        if c["access"].get("request") else
+        m_doors("b", count=c["access"]["count"], main=button(archive("/-/galleries/archive", c["access"]["src"]), "Open in the archive →"),
+                quiet=button(base + "partners/", "How partners use the archive", quiet=True), line=c["access"]["line"], sid="access")),
+    "uses": lambda c, base: (m_numbers([("—", k) for k in USE_KINDS], None, "c", title="Uses of this collection", tight=True,
+                                       note_text="The collection’s own uses by kind, from PhotoDeck’s orders for its gallery: what a sponsored collection’s page carries, and what the sponsor’s report draws on. Live above the threshold.")
+                             + m_use("b", tight=True)),
+}
+
+
 def tpl_collection(p, base):
-    facts = "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in HOUSE_FACTS)
-    box = f'<dl class="facts">{facts}</dl>'
-    people = [("Photographer", "", "Portrait"), ("Photographer", "", "Portrait"), ("Workshop partner", "", "Portrait")]
-    # 1 name, statement, image; 2 the story; 3 the people; 4 the evidence; 5 places and series; 6 themes and goals;
-    # 7 Open in the archive, Contact; 8 in use.
-    return (m_page_head("House Collection", HOUSE_STATEMENT, kicker="Collection", lead=m_photo("Collection image", "21/9", "b"))
-            + m_text("The story", HOUSE_STORY, "b", box=box)
-            + m_items("The people", people, "d", lead=note(HOUSE_PEOPLE_NOTE), is_draft=False, image_ratio="1/1", image_label="Portrait")
-            + m_grid("d", 8, "Image from the collection", line="A spread across the five themes; released, no minors.", title="From the collection")
-            + m_items("Places and series", [(c, t, f"Image from {c}") for c, t in PLACES], "d")
-            + m_items("Themes it feeds", [(t["name"], f'{base}themes/{t["slug"]}/') for t in THEMES], "e")
-            + m_items("Goals it serves", [(g, None) for g in ("SDG 4 – Quality Education", "SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality")], "e", tight=True,
-                      lead=note("From the SDG field in the metadata; the three most frequent for now, to confirm from the AR Metadata sheet."))
-            + m_doors("b", count=("1,122", "images in the House Collection"),
-                      main=button(archive("/-/galleries/archive", "collection-house"), "Open in the archive →"),
-                      quiet=button(base + "partners/", "How partners use the archive", quiet=True),
-                      line=f"Sponsoring a collection? Write to {EMAIL_PARTNERS}.")
-            + m_numbers([("—", k) for k in USE_KINDS], None, "c", title="Uses of this collection", tight=True,
-                        note_text="The collection’s own uses by kind, from PhotoDeck’s orders for its gallery: what a sponsored collection’s page carries, and what the sponsor’s report draws on. Live above the threshold.")
-            + m_use("b", tight=True))
+    # The head (name, statement, the lead photograph), then the collection's own sections in its order. House Collection:
+    # the story, the evidence, places and series, themes and goals, Open in the archive, in use. A sponsored collection:
+    # the theme, the companies, the evidence, how it was made, the photographers and behind the scenes, where the images
+    # went, the sponsor, the invitation to a collection on another theme, and access by request.
+    c = p["collection"]
+    head = m_page_head(c["title"], c["statement"], kicker=c["kicker"], meta=c.get("meta"), statement_draft=c.get("statement_draft", False),
+                       lead=m_photo(c["lead"], "21/9", "b", credit=c.get("lead_credit")))
+    return head + "".join(COLLECTION_SECTIONS[s](c, base) for s in c["sections"])
 
 
 def tpl_partners(p, base):
@@ -689,7 +813,8 @@ def tpl_partners(p, base):
             + m_items(None, ACCESS_STEPS, "b", tight=True)
             + m_doors("c", links=[button(base + "request-access/", "Request access", quiet=True)], tight=True)
             + m_items("Using the images", RULES, "c", lead=draft("The rules for use in plain language. Read them before you apply. Terms on the archive is the legal text.", "p", "small"), sid="using-the-images")
-            + m_text("Sponsor a collection", SPONSOR_TEXT, "c", contact=("Partnerships", EMAIL_PARTNERS), sid="sponsor")
+            + m_text("Sponsor a collection", SPONSOR_TEXT, "c", contact=("Partnerships", EMAIL_PARTNERS), sid="sponsor",
+                     links=[button(base + "collections/waste-to-value/", "An example: the Waste to Value Collection →", quiet=True)])
             + m_numbers([("—", t) for t in PARTNER_TYPES], None, "c", title="Partners using the archive", sid="partners",
                         note_text="Partners by type, counted from the Request access form: an aggregate, so it can be shown before any partner is named (Thomas, 8 November 2026). Updated with each approval.")
             + m_numbers([("—", w) for w in PARTNER_WHERE], None, "c", title="Where they are", tight=True,
@@ -854,7 +979,10 @@ PAGES = [
     dict(path="collections/", title="Collections", slug="collections", tpl="collections", nav="collections",
          desc="The collections in the Africa Reframed archive and the people behind them."),
     dict(path="collections/house-collection/", title="House Collection", slug="house-collection", tpl="collection", nav="collections",
-         desc=HOUSE_LINE),
+         collection=HOUSE_COLLECTION, desc=HOUSE_LINE),
+    dict(path="collections/waste-to-value/", title=WTV, slug="waste-to-value", tpl="collection", nav="collections",
+         collection=WTV_COLLECTION,
+         desc="Seven young companies in Kenya, Uganda and Rwanda turning waste into fuel, building materials, packaging and services, photographed for BESTSELLER FOUNDATION."),
     dict(path="partners/", title="Partners", slug="partners", tpl="partners", nav="partners",
          desc="How organisations use the Africa Reframed archive, the rules for using the images, and how companies sponsor a collection."),
     dict(path="partner-portal/", title="Partner portal", slug="portal", tpl="portal", nav="portal",
@@ -1327,6 +1455,18 @@ body.clean .mod::before{display:none}
 .cards-6 .item h3{font-size:15px;margin:8px 0 4px}
 .cards-6 .item p{font-size:13px;line-height:1.4}
 
+/* Collections: the list of cards, and a sponsored collection's companies and the founders' words (the collection template) */
+.collection-list .collection-card + .collection-card{margin-top:var(--section-tight);padding-top:var(--section-tight);border-top:1px solid var(--line)}
+.companies{display:grid;gap:44px 24px;margin-top:8px;grid-template-columns:repeat(4,minmax(0,1fr))}
+.company .kicker{margin:14px 0 4px}
+.company h3{font-size:20px;font-weight:500;margin:0 0 4px}
+.company .where{margin:0 0 10px}
+.company p{font-size:15px;line-height:1.45}
+.company .since{border-top:1px solid var(--line);padding-top:10px;margin-top:4px}
+.quote{margin:0 0 28px}
+.quote blockquote{margin:0}
+.quote blockquote p{font-size:22px;line-height:1.35;max-width:36ch;margin:0 0 8px}
+
 /* Type */
 h1{font-weight:500;font-size:48px;line-height:1.06;margin:0 0 16px;letter-spacing:-.015em;max-width:20ch;text-wrap:balance}
 h2{font-weight:500;font-size:28px;line-height:1.2;margin:0 0 12px;letter-spacing:-.01em}
@@ -1507,7 +1647,7 @@ body.show-grid .grid-overlay{display:block}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
   .wire-strip .wrap{flex-wrap:wrap}
   .theme-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(220px,40%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;gap:24px}
-  .cards-4,.cards-5,.principles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards-4,.cards-5,.principles,.companies{grid-template-columns:repeat(2,minmax(0,1fr))}
   /* the Opening below desktop: the photograph first, from the line of column 2 off the right edge; the words under it */
   .opening{padding-bottom:0}
   .opening-words{grid-column:1/-1;order:2;padding-top:8px}
@@ -1548,7 +1688,9 @@ body.show-grid .grid-overlay{display:block}
   .theme-row{grid-auto-columns:78%}
 }
 @media (max-width:480px){
-  .cards-4,.cards-5,.principles{grid-template-columns:1fr}
+  .cards-4,.cards-5,.principles,.companies{grid-template-columns:1fr}
+  .companies{gap:36px}
+  .quote blockquote p{font-size:19px}
   .wire-strip .wrap{align-items:flex-start}
   .panel strong{font-size:26px}
 }

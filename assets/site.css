@@ -130,6 +130,18 @@ body.clean .mod::before{display:none}
 .cards-6 .item h3{font-size:15px;margin:8px 0 4px}
 .cards-6 .item p{font-size:13px;line-height:1.4}
 
+/* Collections: the list of cards, and a sponsored collection's companies and the founders' words (the collection template) */
+.collection-list .collection-card + .collection-card{margin-top:var(--section-tight);padding-top:var(--section-tight);border-top:1px solid var(--line)}
+.companies{display:grid;gap:44px 24px;margin-top:8px;grid-template-columns:repeat(4,minmax(0,1fr))}
+.company .kicker{margin:14px 0 4px}
+.company h3{font-size:20px;font-weight:500;margin:0 0 4px}
+.company .where{margin:0 0 10px}
+.company p{font-size:15px;line-height:1.45}
+.company .since{border-top:1px solid var(--line);padding-top:10px;margin-top:4px}
+.quote{margin:0 0 28px}
+.quote blockquote{margin:0}
+.quote blockquote p{font-size:22px;line-height:1.35;max-width:36ch;margin:0 0 8px}
+
 /* Type */
 h1{font-weight:500;font-size:48px;line-height:1.06;margin:0 0 16px;letter-spacing:-.015em;max-width:20ch;text-wrap:balance}
 h2{font-weight:500;font-size:28px;line-height:1.2;margin:0 0 12px;letter-spacing:-.01em}
@@ -310,7 +322,7 @@ body.show-grid .grid-overlay{display:block}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
   .wire-strip .wrap{flex-wrap:wrap}
   .theme-row{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(220px,40%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;gap:24px}
-  .cards-4,.cards-5,.principles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards-4,.cards-5,.principles,.companies{grid-template-columns:repeat(2,minmax(0,1fr))}
   /* the Opening below desktop: the photograph first, from the line of column 2 off the right edge; the words under it */
   .opening{padding-bottom:0}
   .opening-words{grid-column:1/-1;order:2;padding-top:8px}
@@ -351,7 +363,9 @@ body.show-grid .grid-overlay{display:block}
   .theme-row{grid-auto-columns:78%}
 }
 @media (max-width:480px){
-  .cards-4,.cards-5,.principles{grid-template-columns:1fr}
+  .cards-4,.cards-5,.principles,.companies{grid-template-columns:1fr}
+  .companies{gap:36px}
+  .quote blockquote p{font-size:19px}
   .wire-strip .wrap{align-items:flex-start}
   .panel strong{font-size:26px}
 }

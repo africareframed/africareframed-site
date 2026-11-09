@@ -214,7 +214,7 @@ def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left
 
 
 # 2.6 Image grid: (a) three in a row, (b) four portraits, (c) a strip of three squares, (d) six to eight mixed.
-def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None, credit=None):
+def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None, credit=None, level=2):
     if variant == "a":
         cells = "".join(img(label, "3/2") for _ in range(n or 3)); cls = "grid-3"; name = "a, three in a row"
     elif variant == "b":
@@ -225,7 +225,7 @@ def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None,
         n = n or 6
         ratio, cls = ("3/2", "grid-3") if n <= 6 else ("4/5", "grid-4")
         cells = "".join(img(label, ratio) for _ in range(n)); name = f"d, {n} in rows of {3 if n <= 6 else 4}"
-    top = heading(title) if title else ""
+    top = heading(title, level, "project-title" if level == 3 else "") if title else ""
     top += f'<p class="small">{e(line)}</p>' if line else ""
     foot = (f'<p class="doors">{link}</p>' if link else "") + credit_line(None, credit)
     return mod("grid", name, f'{top}<div class="imgs {cls}">{cells}</div>{foot}')
@@ -255,32 +255,38 @@ def m_themes(base, variant="a", current=None):
                f'<div class="theme-row">{cards}</div>')
 
 
-# The record (a variant of the collection card, 2.8, About page – build brief, section 6): a channel's dated entries, newest
-# first, entries in production or open at the top. A feature entry carries full text; the others are one line each.
-def record_entries(entries, extra=None):
-    order = list(STATES)
-    rows = sorted(entries, key=lambda x: order.index(x["state"]))
-    out = ""
-    for x in rows:
-        state = f'<span class="state">{STATES[x["state"]]}</span>' if STATES[x["state"]] else ""
-        when = f'<p class="record-when">{e(x["year"])}<span>{e(x["place"])}</span>{state}</p>'
-        body = "".join(draft(t) for t in x["text"]) + (note(x["note"]) if x.get("note") else "")
-        if x.get("feature") and extra and x["title"] in extra:
-            body += extra[x["title"]]
-        cls = "record-entry feature" if x.get("feature") else "record-entry"
-        out += f'<div class="{cls}"><div class="record-left">{when}</div><div class="record-right"><h3>{e(x["title"])}</h3>{body}</div></div>'
-    return f'<div class="record">{out}</div>'
-
-
-def m_record(entries, variant="the record", extra=None, sid=None, tight=False):
-    return mod("collection", f"c, {variant}", record_entries(entries, extra), sid=sid, tight=tight)
-
-
+# About's helpers (About page – build brief): the three lines of activity under the head, and a project as proof of one of them.
 def m_channels(rows):
-    """The three channels under About's head, in the order of the sections, each linking down the page."""
-    li = "".join(f'<li><a href="#{sid}"><span class="kicker">{e(when)}</span><strong>{e(name)}</strong>{draft(line, "span", "channel-line")}</a></li>'
-                 for sid, when, name, line in rows)
-    return mod("items", "a, the three channels", f'<ul class="channels">{li}</ul>', tight=True)
+    """The three lines of activity under About's head, in the order of the sections, each linking down the page."""
+    li = "".join(f'<li><a href="#{sid}"><strong>{e(name)}</strong>{draft(line, "span", "channel-line")}</a></li>' for sid, name, line in rows)
+    return mod("items", "a, the three lines of activity", f'<ul class="channels">{li}</ul>', tight=True)
+
+
+def state_label(x):
+    return f'<p class="kicker state">{STATES[x["state"]]}</p>' if STATES.get(x["state"]) else ""
+
+
+def m_project(x, extra=""):
+    """A project as proof of a line of activity: its title, its text and its photograph. No year as structure: the year sits
+    in the caption. (bleed) the photograph full bleed, the words under it, title left, text right; (side) photograph and text."""
+    words = state_label(x) + heading(x["title"], 3, "project-title")
+    body = "".join(draft(t) for t in x["text"]) + (note(x["note"]) if x.get("note") else "")
+    if x["layout"] == "bleed":
+        out = m_photo(x["image"], "21/9", "a", caption=x["caption"], credit=x["credit"])
+        out += mod("text", "a, the project", f'<div class="cols"><div class="c1-4">{words}</div><div class="c6-12">{body}{extra}</div></div>', tight=True)
+        if x.get("second"):
+            y = x["second"]
+            out += m_photo(y["image"], "3/2", "b", span="c6-12", caption=y["caption"], credit=y["credit"])
+        return out
+    return m_photo(x["image"], "3/2", "c", text=words + body + extra, side="left", caption=x["caption"], credit=x["credit"])
+
+
+def collection_entry(x, base):
+    """A collection in the archive (the collection card, 2.8), as proof of the archive."""
+    meta = "".join(f"<span>{e(m)}</span>" for m in x["meta"])
+    return (f'<a class="collection-card cols" href="{base}{x["href"]}"><div class="c-half">{img(x["image"], "3/2")}{credit_line()}</div>'
+            f'<div class="c-half">{state_label(x)}<p class="kicker">{e(x["kicker"])}</p><h3 class="h-big">{e(x["title"])}</h3>{draft(x["line"])}'
+            f'<p class="meta-row">{meta}</p><span class="textlink">Open the collection</span></div></a>')
 
 
 # 2.8 Collection card: (a) one card at the full width, (b) a list of cards.
@@ -364,8 +370,9 @@ def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=No
 
 
 # 2.13 Item list: (a) plain under rules, (b) numbered steps, (c) accordion, (d) with images, (e) chips.
-def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image_ratio="3/2", image_label="Image", tight=False, cols=3):
-    top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}</div></div>' if title else ""
+def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image_ratio="3/2", image_label="Image", tight=False, cols=3, level=2, cls=""):
+    h = heading(title, level, "project-title" if level == 3 else "") if title else ""
+    top = f'<div class="cols"><div class="c1-4">{h}</div><div class="c6-12">{lead or ""}</div></div>' if title else ""
     t = (lambda s: draft(s)) if is_draft else (lambda s: f"<p>{e(s)}</p>")
     if variant == "b":
         li = "".join(f'<li><span class="step-n">{i}</span><h3>{e(a)}</h3>{t(b)}</li>' for i, (a, b) in enumerate(items, 1))
@@ -381,7 +388,7 @@ def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image
         top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}<div class="chips">{chips}</div></div></div>'
         return mod("items", "e, chips", top, sid=sid, tight=tight)
     li = "".join(f'<li><strong>{e(a)}</strong>{t(b)}</li>' for a, b in items)
-    return mod("items", "a, plain under rules", f'{top}<ul class="principles">{li}</ul>', sid=sid, tight=tight)
+    return mod("items", "a, plain under rules", f'{top}<ul class="principles {cls}">{li}</ul>', sid=sid, tight=tight)
 
 
 # 2.14 Sponsor credit: (theme) "Made possible by …" under the statement; (collection) the full name as the title.
@@ -484,40 +491,57 @@ REQUEST_NEXT = [("We read your request", "and reply within a working day."), ("Y
                 ("You log in", "collect in the Lightbox and download for each use, free.")]
 REQUEST_CONSENT = "I agree that how we use the images may be reported, without personal details, to the funders who make new collections possible."
 REQUEST_FOOT = "Companies get access through a collection sponsorship; write to partnerships@africareframed.com."
-# About (About page – build brief, 05 Website, 9 November 2026). The function pages are a machine; About is the cultural
-# institution behind it: three channels (the archive, exhibitions, workshops), the archive the one in use today. A living page:
-# each channel is named in the present tense and its record is dated, newest first; every entry has a state (in production,
-# now, record) and appears only once signed. Calibres are never mixed: artists, students and photographers, our team.
+# About (About page – build brief, 05 Website; rebuilt 9 November 2026 with Thomas). The function pages are a machine; About is
+# the cultural institution behind it. Three lines of activity, all current: the archive (always on), exhibitions and workshops
+# (mediums we activate when a project is funded). Each opens with the activity in the present tense, then the proof as
+# projects, strongest first; dates only in captions or inside a sentence, never as structure. A project in production or open
+# is shown first with its label; nothing else carries a state. Calibres are never mixed: artists, students, our team.
 # Afghan Tales and Commerce & Culture's other work stay off the site. Every line is draft until Thomas approves it.
-ABOUT_STATEMENT = ("We bring contemporary Africa into view in Europe: through exhibitions of its artists, "
-                   "workshops with its photographers, and an archive in use today.")
-STATES = {"in production": "In production", "now": "Now", "record": ""}   # the order entries are shown in, top first
-
-ABOUT_ARCHIVE = [
-    "The House Collection holds 1,122 photographs made by our team between 2013 and 2018 in Bamako, Nairobi and Banjul, alongside the workshops below.",
-    "In 2025 we withdrew our images from Getty, so that they serve one purpose: to carry this picture of Africa into the work of organisations that work with the continent. They are now free to the non-profit and public partners we approve; companies take part by sponsoring a collection.",
-    "New collections are made the same way, by photographers commissioned on fair terms.",
+ABOUT_STATEMENT = ("We bring contemporary Africa into view in Europe: through an archive of photographs, "
+                   "exhibitions of its artists, and workshops with its photographers.")
+STATES = {"in production": "In production", "now": "Now", "record": ""}   # the order projects are shown in, top first
+ABOUT_CHANNELS = [  # (anchor, name, one line): the three lines of activity under the head, in the order of the sections
+    ("archive", "The archive", "Photographs of contemporary Africa, open to the organisations we approve and growing with every collection."),
+    ("exhibitions", "Exhibitions", "African artists and our own photographs, shown to European audiences."),
+    ("workshops", "Workshops", "African photographers, connected to the international picture market."),
 ]
-ARCHIVE_LICENSEES = ["VISA", "Western Union", "MTN", "McKinsey Global Institute", "Airtel", "Samsung", "Pearson"]   # bought the team's images (Getty contract 5100359; Track Record)
-ABOUT_HINGE = "The archive is the channel in use today. The name comes from another: an exhibition."
 
-ABOUT_EXHIBITIONS_LINE = ("Africa Reframed shows contemporary African art to European audiences: in halls, on screens, "
-                          "and with programmes of film, talks and workshops around the work.")
-EXHIBITIONS = [  # the record, newest first; a new exhibition is one more entry here
-    dict(year="2018", place="PixlArt, Østervrå, North Jutland", title="Africa Reframed, the digital edition", state="record",
-         text=["The exhibition returned in a converted church fitted with large screens, with new work from a workshop with the new Africa Reframed team in Nairobi."]),
-    dict(year="2016", place="Øksnehallen, Copenhagen", title="Africa Reframed", state="record", feature=True,
-         text=["From 18 June to 2 August 2016 the exhibition filled the 5,000 square metres of Øksnehallen with more than 300 works by artists and designers from across the continent: Omar Victor Diop, Namsa Leuba, Fabrice Monteiro, Dillon Marsh, Lien Botha and Tahir Carl Karmali, with furniture by Yinka Ilori and fashion by ChiChia.",
-               "Shown alongside them: Bamako Nights, made by the students of CFP Bamako in an artistic project in 2011.",
-               "It was produced with DGI-byen and supported by Danida and Augustinus Fonden. Ten display modules built in oriented strand board carried the works through the hall, two cinemas ran a programme of African film, and talks and workshops ran alongside. Leuba, Monteiro and Marsh came to Copenhagen for the opening.",
-               "In 2017 the Danish Ministry of Foreign Affairs put Namsa Leuba’s image from the show on the cover of its own evaluation. The exhibition gave Africa Reframed its name."]),
+# 1 The archive: the activity, then the proof
+ABOUT_ARCHIVE = [
+    "We run an archive of photographs of contemporary Africa for the organisations that work with the continent: NGOs, media, educational institutions, embassies, development finance institutions and companies. It is free for the non-profit and public partners we approve; companies take part by sponsoring a collection.",
+    "Partners browse the archive, gather images and share them with colleagues, and download what they need. Every download is a licence for one stated use, so we know where the images go. The archive grows by collections, and every new collection makes it bigger for every partner.",
+]
+ARCHIVE_COLLECTIONS = [  # the collections in the archive; a sponsored collection is one more entry, shown first while in production
+    dict(title="House Collection", state="record", kicker="The first collection", href="collections/house-collection/",
+         line="1,122 photographs made by our team in Bamako, Nairobi and Banjul, alongside our workshops.",
+         meta=["1,122 images", "Mali · Kenya · The Gambia"], image="A photograph from the House Collection, from the picks once cleared"),
+]
+ABOUT_GETTY_BEFORE = "Before the archive, our team’s images were licensed through Getty Images by companies including"
+ARCHIVE_LICENSEES = ["VISA", "Western Union", "MTN", "McKinsey Global Institute", "Airtel", "Samsung", "Pearson"]   # bought the team's images (Getty contract 5100359; Track Record)
+ABOUT_GETTY_AFTER = ("In 2025 we took them back, so that they serve one purpose: to carry this picture of Africa "
+                     "into the work of organisations that work with the continent.")
+ABOUT_HINGE = "The name Africa Reframed comes from an exhibition."
+
+# 2 Exhibitions: the activity, then the projects, then the artists
+ABOUT_EXHIBITIONS = [
+    "We show African artists and our own photographs to European audiences: in halls and on screens, with programmes of film, talks and workshops around the work.",
+    "An exhibition is curated from our network of artists, made with a venue and public funders, and can take a physical or a digital form. A collection can open as an exhibition.",
+]
+EXHIBITION_PROJECTS = [  # strongest first; a new exhibition is one more entry, shown first while in production or open
+    dict(title="Africa Reframed at Øksnehallen", state="record", layout="bleed",
+         image="Installation view, Africa Reframed at Øksnehallen", caption="Africa Reframed at Øksnehallen, Copenhagen, 2016", credit="Photo: DGI-byen",
+         text=["In the summer of 2016 the exhibition filled the 5,000 square metres of Øksnehallen in Copenhagen with more than 300 works by artists and designers from across the continent: Omar Victor Diop, Namsa Leuba, Fabrice Monteiro, Dillon Marsh, Lien Botha and Tahir Carl Karmali, with furniture by Yinka Ilori and fashion by ChiChia. Shown alongside them: Bamako Nights, made by the students of CFP Bamako.",
+               "It was produced with DGI-byen and supported by Danida and Augustinus Fonden. Ten display modules built in oriented strand board carried the works through the hall; two cinemas and a programme of talks and workshops ran alongside. The Danish Ministry of Foreign Affairs later put Namsa Leuba’s image from the show on the cover of its own evaluation. The exhibition gave Africa Reframed its name."],
+         second=dict(image="Installation view: the display modules with framed works", caption="The display modules, built for the hall", credit="Photo: DGI-byen")),
+    dict(title="The digital edition at PixlArt", state="record", layout="side",
+         image="PixlArt: the exhibition on large screens", caption="PixlArt, Østervrå, North Jutland, 2018", credit="Photo: Africa Reframed",
+         text=["The same exhibition in another form: a converted church in North Jutland fitted with large screens, with new work from a workshop with our team in Nairobi."]),
 ]
 ABOUT_EXHIBITION_DOOR = "A collection can open as an exhibition"   # open: now, or once a sponsored collection exists (Thomas)
-
-ABOUT_ARTISTS_LEAD = ("From 2013 we followed and published artists across the continent through the African Photography Network, "
-                      "and curated the 2016 exhibition from it. Their works are shown here by agreement, with their galleries’ credits "
-                      "where they apply. They are not part of the archive and are not available to partners.")
-ARTISTS_SHOWN = [  # (name, origin · series · one line, image label); shown at Øksnehallen 2016; artists, never "photographers"
+ABOUT_ARTISTS_LEAD = ("Our exhibitions are curated from a network of artists across the continent, which we have followed and published "
+                      "for more than a decade, first through the African Photography Network. Their works are shown here by agreement, "
+                      "with their galleries’ credits where they apply. They are not part of the archive and are not available to partners.")
+ARTISTS_SHOWN = [  # (name, origin · series · one line, image label); shown at Øksnehallen; artists, never "photographers"
     ("Omar Victor Diop", "Senegal · Studio des Vanités, Diaspora · Portraits that place African history inside the present. Courtesy MAGNIN-A, Paris.", "Omar Victor Diop, Diaspora"),
     ("Namsa Leuba", "Switzerland and Guinea · Khoi San, Zulu Kids, The Kingdom of Mountains · Staged photographs on how cultures see one another; the exhibition’s poster.", "Namsa Leuba, Khoi San"),
     ("Fabrice Monteiro", "Belgium and Senegal · The Prophecy, A Gorean Summer · Staged images on the environment and on heritage, made in Senegal.", "Fabrice Monteiro, The Prophecy"),
@@ -537,42 +561,45 @@ ARTISTS_NETWORK = [  # from the network, profiled in our journal; one line each,
     ("Jac Kritzinger", "South Africa · The ordinary, made visible."), ("Mouna Karray", "Tunisia · Murmurer; Noir."),
 ]
 
-ABOUT_WORKSHOPS_LINE = ("Our workshops connect African photographers with the international picture market: what buyers look for, "
-                        "how to brief and shoot for it, and how the work is licensed.")
-WORKSHOPS = [  # the record, newest first; a new workshop is one more entry here
-    dict(year="2018", place="Nairobi", title="A new Africa Reframed team", state="record",
-         text=["A workshop and shoot week with a new team of Kenyan photographers."]),
-    dict(year="2015", place="Banjul", title="The Gambia Press Union and the Gambia Tourism and Hospitality Institute", state="record",
-         text=["A week of visual storytelling with the press union, then a three-month programme with local photographers."]),
-    dict(year="2014", place="Nairobi", title="The Photojournalists Association of Kenya", state="record",
-         text=["A master class at PAWA254, the city’s centre for art and social innovation."]),
-    dict(year="2013", place="Freetown", title="The Sierra Leone Union of Photographers", state="record",
-         text=["A four-day workshop on the market for photographers’ work."]),
-    dict(year="From 2010", place="Bamako", title="CFP Bamako and Getty Images", state="record", feature=True,
-         text=["With the photography school CFP Bamako and Getty Images, funded through the Danish Embassy in Mali, students photographed for the world market and licensed their work through Getty while still in training, with feedback from Getty’s creative team. Getty selected the first images in November 2010 and featured the photographers on its blog the next year.",
-               "Buyers of the students’ images included EY, NBC, Cambridge University Press, McKinsey & Company, Pearson, Orange and Vodacom. In 2015 Project Everyone chose three of our images on Getty for the launch campaign of the UN Global Goals; two were by the CFP photographers Gaoussou and Abdoulaye Sogodogo.",
-               "An independent review for the Danish Centre for Culture and Development found in 2015 that the programme “promotes positive images of Africa, moving away from editorial or ‘development’ photography”."],
+# 3 Workshops: the activity, then the projects, the voices, Bamako Nights, the partners
+ABOUT_WORKSHOPS = [
+    "We connect African photographers with the international picture market. Our workshops are built with photography schools, photographers’ unions and press associations, with a funder and a market partner in the same programme, so that training leads to work that sells, and to income.",
+    "Photographers learn what buyers look for, how to brief and shoot for it, and how their work is licensed.",
+]
+WORKSHOP_PROJECTS = [  # strongest first; a new workshop is one more entry, shown first while in production or open
+    dict(title="CFP Bamako and Getty Images", state="record", layout="side",
+         image="Photography students at CFP Bamako", caption="Photography students at CFP Bamako", credit="Photo: Africa Reframed",
+         text=["Our first workshop programme ran for six years with the photography school CFP Bamako and Getty Images, funded through the Danish Embassy in Mali. Students photographed for the world market and licensed their work through Getty while still in training, with feedback from Getty’s creative team.",
+               "Their images were licensed by EY, NBC, Cambridge University Press, McKinsey & Company, Pearson, Orange and Vodacom, among others. Project Everyone chose two of them, by Gaoussou and Abdoulaye Sogodogo, for the launch campaign of the UN Global Goals. An independent review for the Danish Centre for Culture and Development found that the programme “promotes positive images of Africa, moving away from editorial or ‘development’ photography”."],
          note="The review’s words are quoted from a report on the Drive: to be cleared by Thomas before launch."),
 ]
-BAMAKO_NIGHTS = ("In 2011 the students photographed Bamako at night, in dialogue with Seydou Keïta and Malick Sidibé, "
-                 "who had photographed the city in its first years of independence. The series was shown at Øksnehallen in 2016.")
 ABOUT_INTERVIEWS = [("Aboubacar Traoré", "Photographer and teacher, CFP Bamako.", "Film: plays on click"),
                     ("Massaran Diankoumba", "Photographer, CFP Bamako.", "Film: plays on click"),
                     ("John Kalapo", "Photographer, CFP Bamako.", "Film: plays on click")]
-ABOUT_WORKSHOPS_TO_COLLECTION = "The House Collection was photographed by our team alongside this work."
+BAMAKO_NIGHTS = ("An artistic project with the students: Bamako at night, in dialogue with Seydou Keïta and Malick Sidibé, "
+                 "who photographed the city in its first years of independence. Shown at Øksnehallen.")
+WORKSHOP_PARTNERS = [  # the network of workshop partners, by name and place; no years
+    ("Sierra Leone Union of Photographers", "Freetown. A workshop on the market for photographers’ work."),
+    ("Photojournalists Association of Kenya", "Nairobi, at PAWA254. A master class for young photographers."),
+    ("Gambia Press Union", "Banjul. A week of visual storytelling."),
+    ("Gambia Tourism and Hospitality Institute", "Banjul. Three months of shooting with local photographers."),
+    ("The Africa Reframed team in Nairobi", "Kenyan photographers, brought together in a workshop."),
+]
+ABOUT_WORKSHOPS_TO_COLLECTION = "The House Collection was photographed by our team alongside the workshops."
 
+# 4 Who is behind it
 ABOUT_WHO = [
     "Africa Reframed is an independent, non-commercial initiative established by Commerce & Culture, the Copenhagen studio founded in 2010 by Thomas Damgaard. Trained in design and art history, he advised the Danish Ministry of Foreign Affairs on culture and development from 2010 to 2014, and has produced photography and exhibitions with partners in Africa and Europe since.",
-    "The visual identity is by the Danish designer Rune Høgsberg, first drawn for the exhibition in 2016. The archive’s photographs are made by our team.",
+    "The visual identity is by the Danish designer Rune Høgsberg, first drawn for the exhibition at Øksnehallen. The archive’s photographs are made by our team.",
 ]
 ABOUT_PEOPLE = [("Thomas Damgaard", "Founder.", "Portrait"), ("Rune Høgsberg", "The identity.", "Portrait or the mark"),
-                ("CFP Bamako", "Partner school since 2010.", "The school"), ("The Nairobi team", "Photographers, since 2018.", "The team")]
+                ("CFP Bamako", "Partner school.", "The school"), ("The Nairobi team", "Photographers.", "The team")]
 
 
-def channel_state(entries, years):
-    """The overview's first line for a channel: "Now" while an entry is in production or open, otherwise its years."""
-    live = [x for x in entries if x["state"] != "record"]
-    return STATES[live[0]["state"]] if live else years
+def by_state(items):
+    """Projects in production or open first, then the rest in the order given (strongest first)."""
+    order = list(STATES)
+    return sorted(items, key=lambda x: order.index(x["state"]))
 
 PRESS_FACTS = [("1,122 images", "in the House Collection, from Mali, Kenya and The Gambia"), ("Five themes", "Learning, Work and enterprise, Everyday digital, City life, Creativity and culture"),
                ("Free for partners", "selected non-profit and public partners; companies through a collection sponsorship"), ("Established by", "Commerce & Culture, Copenhagen"),
@@ -717,41 +744,33 @@ def tpl_press(p, base):
 def tpl_text(p, base):
     k = p["slug"]
     if k == "about":
-        channels = [("archive", "Now", "The archive", "Our team’s photographs, lent free to the partners we approve."),
-                    ("exhibitions", channel_state(EXHIBITIONS, "2016, 2018"), "Exhibitions", "Artists from across the continent, shown to European audiences."),
-                    ("workshops", channel_state(WORKSHOPS, "2010–2018"), "Workshops", "African photographers, connected to the international picture market.")]
-        register = ('<div class="register"><p class="kicker">Licensed through Getty Images by</p><p class="register-names">'
-                    + "".join(f"<span>{e(n)}</span>" for n in ARCHIVE_LICENSEES) + "</p>"
+        register = ('<div class="register">' + draft(ABOUT_GETTY_BEFORE, "p", "register-lead")
+                    + '<p class="register-names">' + "".join(f"<span>{e(n)}</span>" for n in ARCHIVE_LICENSEES) + "</p>"
+                    + draft(ABOUT_GETTY_AFTER, "p", "register-after")
                     + note("Companies that bought our team’s images, the images now in the archive. Institutional names (the UN, the World Bank, the BBC and others) are added once Thomas has checked they bought the team’s images.") + "</div>")
-        archive_text = (heading("The archive", 2) + draft(ABOUT_ARCHIVE[0]) + register + draft(ABOUT_ARCHIVE[1]) + draft(ABOUT_ARCHIVE[2])
-                        + f'<p class="doors">{button(base + "collections/house-collection/", "Open the House Collection →", quiet=True)}</p>')
-        bamako = (f'<div class="record-sub"><h4>Bamako Nights, 2011</h4>{draft(BAMAKO_NIGHTS)}'
-                  f'<div class="imgs grid-3">{"".join(img("Bamako Nights, 2011", "3/2") for _ in range(6))}</div>'
-                  + credit_line(None, "Students of CFP Bamako, Bamako Nights, 2011") + "</div>"
-                  + '<div class="record-sub"><h4>In their words</h4>' + draft("Three of the programme’s photographers, on what it meant to them.")
-                  + '<div class="cards-3">' + "".join(f'<div class="item">{img(l, "16/9")}<h3>{e(n)}</h3>{draft(d)}</div>' for n, d, l in ABOUT_INTERVIEWS) + "</div>"
-                  + note("Short films of interviews recorded in 2014; played on click with a poster frame, never autoplaying (the one-motion rule).") + "</div>")
         return (m_page_head(p["title"], ABOUT_STATEMENT, statement_draft=True)
-                + m_channels(channels)
-                # 1 The archive: short, text-led; it bridges into the exhibitions
-                + m_photo("A photograph from the House Collection, from the picks once cleared", "3/2", "c", text=archive_text, side="left", sid="archive")
+                + m_channels(ABOUT_CHANNELS)
+                # 1 The archive: always on. The activity, then the proof: its collections, where its images have been, the way in.
+                + m_text("The archive", ABOUT_ARCHIVE, "a", sid="archive")
+                + mod("collection", "a, the collections in the archive", "".join(collection_entry(x, base) for x in by_state(ARCHIVE_COLLECTIONS)), tight=True)
+                + mod("text", "the register", f'<div class="cols"><div class="c6-12">{register}'
+                      f'<p class="doors">{button(base + "partners/#use", "How partners use the archive →", quiet=True)}</p></div></div>', tight=True)
                 + mod("text", "the hinge", f'<div class="cols"><div class="c6-12">{draft(ABOUT_HINGE, "p", "hinge")}</div></div>', tight=True)
-                # 2 Exhibitions, with the artists: the main portion; the page turns here
-                + m_photo("Installation view, Africa Reframed at Øksnehallen, 2016", "21/9", "a",
-                          caption="Africa Reframed at Øksnehallen, Copenhagen, 2016", credit="Photo: DGI-byen")
-                + m_text("Exhibitions", [ABOUT_EXHIBITIONS_LINE], "a", sid="exhibitions")
-                + m_record(EXHIBITIONS, "the record of exhibitions", tight=True)
+                # 2 Exhibitions: a medium we activate. The activity, then the projects, the door, the artists.
+                + m_text("Exhibitions", ABOUT_EXHIBITIONS, "a", sid="exhibitions")
+                + "".join(m_project(x) for x in by_state(EXHIBITION_PROJECTS))
                 + m_doors("c", links=[button(f"{base}partners/#sponsor", ABOUT_EXHIBITION_DOOR + " →", quiet=True)], tight=True)
-                + m_photo("Installation view: the display modules with framed works", "3/2", "b", span="c6-12",
-                          caption="The display modules, built for the hall", credit="Photo: DGI-byen")
-                + m_items("The artists", [(n, d, l) for n, d, l in ARTISTS_SHOWN], "d", lead=draft(ABOUT_ARTISTS_LEAD), image_ratio="4/5", cols=4, sid="artists")
-                + m_items("From the network", [(n, d, n) for n, d in ARTISTS_NETWORK], "d", image_ratio="1/1", cols=6, tight=True,
+                + m_items("The artists", [(n, d, l) for n, d, l in ARTISTS_SHOWN], "d", lead=draft(ABOUT_ARTISTS_LEAD), image_ratio="4/5", cols=4, sid="artists", level=3)
+                + m_items("From the network", [(n, d, n) for n, d in ARTISTS_NETWORK], "d", image_ratio="1/1", cols=6, tight=True, level=3,
                           lead=note("Artists profiled in our journal; one work each, with the artist’s name and series as the credit."))
-                # 3 Workshops: people-led
-                + m_photo("Workshop in Banjul, 2015: participants with a reflector", "3/2", "c",
-                          text=heading("Workshops", 2) + draft(ABOUT_WORKSHOPS_LINE), side="right",
-                          caption="Visual storytelling workshop, Banjul, 2015", sid="workshops")
-                + m_record(WORKSHOPS, "the record of workshops", extra={"CFP Bamako and Getty Images": bamako}, tight=True)
+                # 3 Workshops: a medium we activate. The activity, then the projects, Bamako Nights, the partners.
+                + m_text("Workshops", ABOUT_WORKSHOPS, "a", sid="workshops")
+                + "".join(m_project(x) for x in by_state(WORKSHOP_PROJECTS))
+                + m_items("In their words", ABOUT_INTERVIEWS, "d", image_ratio="16/9", tight=True, level=3,
+                          lead=draft("Three of the programme’s photographers, on what it meant to them.")
+                          + note("Short films of interviews with the photographers; played on click with a poster frame, never autoplaying (the one-motion rule)."))
+                + m_grid("d", 6, "Bamako Nights", line=BAMAKO_NIGHTS, title="Bamako Nights", credit="Students of CFP Bamako, Bamako Nights, 2011", level=3)
+                + m_items("Workshop partners", WORKSHOP_PARTNERS, "a", tight=True, level=3, cls="five")
                 + mod("text", "the way to the collection", f'<div class="cols"><div class="c6-12">{draft(ABOUT_WORKSHOPS_TO_COLLECTION)}'
                       f'<p class="doors">{button(base + "collections/house-collection/", "The House Collection →", quiet=True)}</p></div></div>', tight=True)
                 # 4 Who is behind it
@@ -1290,26 +1309,20 @@ body.clean .mod::before{display:none}
 .acc[open] .plus::after{display:none}
 .acc p{margin:0 0 16px}
 
-/* About: the three channels, the register, the record (About page – build brief) */
+/* About: the three lines of activity, the register, the projects (About page – build brief) */
 .channels{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
-.channels a{display:block;text-decoration:none;border-top:2px solid var(--ink);padding-top:12px;height:100%}
-.channels strong{display:block;font-weight:500;font-size:22px;line-height:1.25;margin:2px 0 6px}
+.channels a{display:block;text-decoration:none;border-top:2px solid var(--ink);padding-top:14px;height:100%}
+.channels strong{display:block;font-weight:500;font-size:24px;line-height:1.2;margin:0 0 8px}
 .channels a:hover strong{text-decoration:underline}
 .channels .channel-line{font-size:15px;color:var(--ink-soft)}
-.register{margin:20px 0 20px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.register .kicker{margin-bottom:6px}
-.register-names{display:flex;flex-wrap:wrap;gap:4px 28px;font-size:19px;line-height:1.4;margin:0;max-width:none}
+.register{margin:0 0 8px;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.register-lead{font-size:14px;color:var(--ink-soft);margin:0 0 8px}
+.register-names{display:flex;flex-wrap:wrap;gap:4px 28px;font-size:20px;line-height:1.4;margin:0 0 12px;max-width:none}
+.register-after{margin:0}
 .hinge{font-size:22px;line-height:1.35;max-width:32ch;margin:0}
-.record{border-bottom:1px solid var(--line)}
-.record-entry{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);column-gap:var(--gutter);padding:20px 0;border-top:1px solid var(--line)}
-.record-entry.feature{padding:28px 0 32px}
-.record-when{font-size:28px;font-weight:500;line-height:1.1;margin:0;display:flex;flex-direction:column;gap:6px}
-.record-when span{font-size:14px;font-weight:400;color:var(--ink-soft);line-height:1.4}
-.record-when .state{display:inline-block;align-self:flex-start;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:var(--accent);padding:2px 8px}
-.record-right h3{margin:2px 0 8px;font-size:20px;font-weight:500}
-.record-entry:not(.feature) .record-right p{color:var(--ink-soft);margin-bottom:0}
-.record-sub{margin-top:28px}
-.record-sub h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:500;margin:0 0 8px}
+.project-title{font-size:22px;font-weight:500;line-height:1.25;margin:0 0 10px}
+.kicker.state{display:inline-block;color:var(--ink);background:var(--accent);padding:2px 8px;margin-bottom:10px}
+.principles.five{grid-template-columns:repeat(5,minmax(0,1fr))}
 .cards-6{display:grid;gap:20px;margin-top:8px;grid-template-columns:repeat(6,minmax(0,1fr))}
 .cards-6 .item h3{font-size:15px;margin:8px 0 4px}
 .cards-6 .item p{font-size:13px;line-height:1.4}
@@ -1482,6 +1495,7 @@ body.show-grid .grid-overlay{display:block}
 @media (max-width:1023px){
   :root{--cols:8;--gutter:24px;--margin:32px;--section:80px;--section-head:56px;--section-tight:28px}
   .cards-6{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .principles.five{grid-template-columns:repeat(2,minmax(0,1fr))}
   .menu-toggle{display:flex}
   .menu{display:none;position:absolute;left:0;right:0;top:var(--header-h);background:var(--paper);flex-direction:column;align-items:flex-start;gap:0;padding:8px var(--margin) 24px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);z-index:10}
   .menu.open{display:flex}
@@ -1505,10 +1519,9 @@ body.show-grid .grid-overlay{display:block}
 @media (max-width:767px){
   :root{--cols:4;--gutter:16px;--margin:16px;--header-h:64px;--logo-w:128px;--section:64px;--section-head:40px;--section-tight:24px}
   .channels{grid-template-columns:1fr;gap:16px}
-  .record-entry{grid-template-columns:1fr;row-gap:8px}
-  .record-when{font-size:22px;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
   .cards-6{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mod-items .cards-4{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 16px}
+  .principles.five{grid-template-columns:1fr}
   .mod-items .cards-4 .item p{font-size:14px;line-height:1.4}
   .hinge{font-size:19px}
   h1{font-size:34px}

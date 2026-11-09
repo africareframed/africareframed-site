@@ -558,11 +558,15 @@ WTV_COLLECTION = dict(
                    ("Jjumba Martin", "Kampala. Photographed Yo-Waste, Gracela Ventures and Green Charcoal Uganda.", "Behind the scenes: Jjumba Martin at work"),
                    ("Muhire Rukundo Dieudonné", "Kigali · CornWine Films. Photographed Umuti in Kigali and Musanze.", "Behind the scenes: Muhire Rukundo Dieudonné at work")],
     photographers_lead="Three photographers, one in each country, each credited by name.",
-    bts="Every shoot came with images of the photographer at work, for the foundation’s and the founders’ social media. The first post, from Yo-Waste in Kampala in February 2021, named the photographer and invited other companies to take part.",
-    went=[("The founders", "Each company used its gallery in its own channels. Green Charcoal Uganda entered ten of the photographs in the Sankalp virtual exhibition, the month of its shoot."),
-          ("The foundation", "BESTSELLER FOUNDATION used them in its newsletter and on its new website."),
-          ("The sector", "Intellecap took the full Yo-Waste set, and its white paper on the waste-to-value sector in East Africa, published in July 2021, carries our photographs of Zijani, Yo-Waste and Gjenge Makers."),
-          ("What followed", "The foundation asked us back: to photograph more circular-economy entrepreneurs around Kigali, and to document a waste-to-art project in Nairobi and Cape Town.")],
+    bts="Every shoot came with images of the photographer at work, shared on the foundation’s and the founders’ social media with the photographer named.",
+    # Shared storytelling (Thomas, 9 November 2026): the big picture on the page, the exact evidence in the docs (Website – copy,
+    # section 4b, web check). General, never loose: every line is true at the level it is pitched.
+    went_title="Shared storytelling",
+    went_lead="A report tells what a programme did. Images let everyone in it tell their own part, and carry the story further than any report.",
+    went=[("The founders", "They used the photographs to present their companies, at investor events and online, in their own words."),
+          ("The foundation", "It carried them in its own channels, to show the businesses it backs."),
+          ("The sector", "The programme’s report on waste-to-value businesses in East Africa opened with them, credited to Africa Reframed."),
+          ("What followed", "The foundation asked us back, to photograph more of the circular economy in Kigali, Nairobi and Cape Town.")],
     words=[("I have begun benefiting from the photoshoots already.", "Geoffrey Okoth Yoga, Green Charcoal Uganda, February 2021"),
            ("Paul and his assistant were very professional, organized, and had a great eye for what to shoot.", "Aaron Pattillo, Vuma Biofuels, May 2021")],
     sponsor=dict(name="BESTSELLER FOUNDATION",
@@ -570,7 +574,7 @@ WTV_COLLECTION = dict(
                  note="The foundation’s own statement, at most 80 words, and its logo, as the foundation approves them."),
     invite=dict(title="A collection on your theme",
                 text=["This collection began with a theme close to the foundation’s own work: waste turned into value. A collection can start from any theme close to a funder’s work, or one it wants to support: a sector, a skill, a city, a change under way.",
-                      "We find the people and places that show it, work with photographers from the countries concerned, and deliver the collection with its stories and its behind-the-scenes material: for the funder’s channels, for the people in it, and for the press. The funder’s name stands on the collection; the work stays independent."]),
+                      "We find the people and places that show it, work with photographers from the countries concerned, and deliver the collection with its stories and its behind-the-scenes material. From there the storytelling is shared: the funder, the people in the collection and the press each tell their part with the same images. The funder’s name stands on the collection; the work stays independent."]),
     access=dict(count=("7", "companies in the collection"), request=True, line="Access to this collection is by request, for partners and the press."),
     sections=["story", "companies", "grid", "making", "photographers", "bts", "went", "words", "access", "sponsor", "invite"],   # ends on the invitation
     card=dict(kicker="Sponsored collection", line="Seven young companies in Kenya, Uganda and Rwanda that turn waste into fuel, building materials, packaging and services.",
@@ -649,15 +653,15 @@ ARTISTS_NETWORK = [  # from the network, profiled in our journal; one line each,
 
 # 3 Workshops: the activity, then the projects, the voices, Bamako Nights, the partners
 ABOUT_WORKSHOPS = [
-    "We connect African photographers with the international picture market. Our workshops are built with photography schools, photographers’ unions and press associations, with a funder and a market partner in the same programme, so that training leads to work that sells, and to income.",
+    "We connect African photographers with the international picture market, so that their own stories of the continent travel. Our workshops are built with photography schools, photographers’ unions and press associations, with a funder and a market partner in the same programme, so that training leads to work that sells, and to income.",
     "Photographers learn what buyers look for, how to brief and shoot for it, and how their work is licensed.",
 ]
 WORKSHOP_PROJECTS = [  # strongest first; a new workshop is one more entry, shown first while in production or open
     dict(title="CFP Bamako and Getty Images", state="record", layout="side",
          image="Photography students at CFP Bamako", caption="Photography students at CFP Bamako", credit="Photo: Africa Reframed",
          text=["Our first workshop programme ran for six years with the photography school CFP Bamako and Getty Images, funded through the Danish Embassy in Mali. Students photographed for the world market and licensed their work through Getty while still in training, with feedback from Getty’s creative team.",
-               "Their images were licensed by EY, NBC, Cambridge University Press, McKinsey & Company, Pearson, Orange and Vodacom, among others. Project Everyone chose two of them, by Gaoussou and Abdoulaye Sogodogo, for the launch campaign of the UN Global Goals. An independent review for the Danish Centre for Culture and Development found that the programme “promotes positive images of Africa, moving away from editorial or ‘development’ photography”."],
-         note="The review’s words are quoted from a report on the Drive: to be cleared by Thomas before launch."),
+               "Their images were licensed by EY, NBC, Cambridge University Press, McKinsey & Company, Pearson, Orange and Vodacom, among others. Two of them, by Gaoussou and Abdoulaye Sogodogo, were chosen for Tell Everyone, the campaign that launched the UN Global Goals and one of the largest ever run: their own picture of Mali, carried to a global audience. An independent review for the Danish Centre for Culture and Development found that the programme “promotes positive images of Africa, moving away from editorial or ‘development’ photography”."],
+         note="The review’s words are quoted from a report on the Drive: to be cleared by Thomas before launch. Tell Everyone: Case story – Getty Images and the UN Global Goals (2015); the Sogodogos to approve how they are named."),
 ]
 ABOUT_INTERVIEWS = [("Aboubacar Traoré", "Photographer and teacher, CFP Bamako.", "Film: plays on click"),
                     ("Massaran Diankoumba", "Photographer, CFP Bamako.", "Film: plays on click"),
@@ -756,7 +760,7 @@ def company_card(x):
 def cs_quotes(rows, title):
     q = "".join(f'<figure class="quote"><blockquote>{draft("“" + a + "”")}</blockquote><figcaption class="small">{e(b)}</figcaption></figure>' for a, b in rows)
     inner = (f'<div class="cols"><div class="c1-4">{heading(title, 3, "project-title")}</div><div class="c6-12 quotes">{q}'
-             f'{note("From the founders’ emails; published once each has agreed.")}</div></div>')
+             f'{note("From the founders’ emails; on the live page only once each has agreed, after launch.")}</div></div>')
     return mod("text", "a, in their words", inner, tight=True)
 
 
@@ -772,7 +776,8 @@ COLLECTION_SECTIONS = {
     "making": lambda c, base: m_items("How it was made", c["making"], "b", lead=draft("From the first call with a founder to the last gallery.")),
     "photographers": lambda c, base: m_items("The photographers", c["photographers"], "d", lead=draft(c["photographers_lead"]), image_ratio="4/5", sid="photographers"),
     "bts": lambda c, base: m_grid("c", label="Behind the scenes: a photographer at work", line=c["bts"], title="Behind the scenes", level=3, credit=c.get("credit")),
-    "went": lambda c, base: m_items("Where the images went", c["went"], "a", sid="where"),
+    "went": lambda c, base: m_items(c.get("went_title", "Where the images went"), c["went"], "a", sid="where",
+                                    lead=draft(c["went_lead"], "p", "lead") if c.get("went_lead") else None),
     "words": lambda c, base: cs_quotes(c["words"], "In the founders’ words"),
     "sponsor": lambda c, base: m_sponsor("collection", sponsor=c["sponsor"]),
     "invite": lambda c, base: m_text(c["invite"]["title"], c["invite"]["text"], "c", contact=("Partnerships", EMAIL_PARTNERS), sid="your-theme",

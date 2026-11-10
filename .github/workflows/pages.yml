@@ -34,3 +34,5 @@ jobs:
           path: .
       - id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          timeout: 1800000   # 30 minutes: the artist pages' images made the site ten times larger (10 November 2026)

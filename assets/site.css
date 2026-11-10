@@ -212,6 +212,9 @@ main{padding-bottom:var(--section)}
 .order{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
 .count{font-size:13px;font-weight:500;margin-top:auto}
 .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:8px 0 32px}
+.logos.supporters{grid-template-columns:repeat(8,minmax(0,1fr));margin:12px 0 8px}
+.supporters .logo{text-align:center;padding:6px;line-height:1.3}
+.supporters-title{margin:0}
 .logo{aspect-ratio:5/2;border:1px dashed #c9c6bf;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8a877f}
 
 
@@ -316,6 +319,7 @@ body.show-grid .grid-overlay{display:block}
 
 /* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
 @media (max-width:1023px){
+  .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}
   :root{--cols:8;--gutter:24px;--margin:32px;--section:80px;--section-head:56px;--section-tight:28px}
   .cards-6{grid-template-columns:repeat(3,minmax(0,1fr))}
   .principles.five{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -340,6 +344,7 @@ body.show-grid .grid-overlay{display:block}
 }
 /* Phone (below 768 px): the guide's 4 columns, 16 px gutters and 16 px margins; one column, the title first */
 @media (max-width:767px){
+  .logos.supporters{grid-template-columns:repeat(2,minmax(0,1fr))}
   :root{--cols:4;--gutter:16px;--margin:16px;--header-h:64px;--logo-w:128px;--section:64px;--section-head:40px;--section-tight:24px}
   .channels{grid-template-columns:1fr;gap:16px}
   .cards-6{grid-template-columns:repeat(2,minmax(0,1fr))}

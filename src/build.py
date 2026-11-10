@@ -324,6 +324,16 @@ def m_partners(n=6, title="In use by", tight=False):
                + f'</div></div>{logos}', tight=tight)
 
 
+# 2.10, supporters (About, Thomas, 10 November 2026): the institutions that have supported the work, strongest first, at equal
+# size (the guide's PartnerStrip: one-colour logos, no tiers, no boxes; the order is the only ranking).
+def m_supporters(rows, title):
+    logos = '<div class="logos supporters">' + "".join(f'<span class="logo" title="{e(what)}">{e(name)}</span>' for name, what in rows) + "</div>"
+    return mod("partners", "supporters", f'<div class="cols"><div class="c1-12">{draft(title, "p", "kicker supporters-title")}</div></div>{logos}'
+               + note("One-colour logos from each organisation’s official files, black on white, equal optical weight. Before launch each gets a short courtesy note "
+                      "(we show you among those who supported our work), which also brings the current logo files. CKU is left out (closed); Canon only if it "
+                      "supported Øksnehallen. Labels name the institution until the logo files are in."), tight=True)
+
+
 # 2.11 Use example: (a) one, side by side; (b) three in a row; (c) partner news.
 def use_card(kind="use"):
     if kind == "news":
@@ -688,6 +698,26 @@ WORKSHOP_PARTNERS = [  # the network of workshop partners, by name and place; no
 ]
 ABOUT_WORKSHOPS_TO_COLLECTION = "The House Collection was photographed by our team alongside the workshops."
 
+# Supporters (Thomas, 10 November 2026): the institutions that helped build Africa Reframed's work, shown as one-colour logos
+# at equal size, strongest first, directly under the overview, so the page does not read as work done alone. "Has been
+# supported by": true without dates, never "is supported by" (ongoing) or "sponsored by". Africa Reframed's own projects only
+# (Afghan Tales and Commerce & Culture's other work stay off the site); funders and in-kind support, never clients, buyers of
+# the images or campaigns that used them. A future sponsor is one more entry. Order set by Thomas, 10 November 2026.
+# CKU is left out (closed). Canon only if it supported Øksnehallen 2016: the Track Record finds its paper for Afghan Tales (2014)
+# and, for 2016, only an invoice for inks. Sources: Track Record (Recognition, funding and media; the Øksnehallen, Stock Program
+# and workshop entries).
+SUPPORTERS_TITLE = "Our work has been supported by"
+SUPPORTERS = [  # (name on the logo's label, what it supported: for the record, not shown on the page)
+    ("Danish Ministry of Foreign Affairs · Danida", "Øksnehallen 2016, through the information grant; the Bamako programme, through the Danish Embassy in Mali"),
+    ("Innovation Fund Denmark", "An investment in Africa Reframed, 2020 (InnoBooster); never implied to back today's model"),
+    ("BESTSELLER FOUNDATION", "The Waste to Value Collection, 2020–2022"),
+    ("Augustinus Fonden", "Øksnehallen 2016"),
+    ("Al Jazeera", "Øksnehallen 2016: a supporter in the programme, and a partner in the film programme"),
+    ("Danish Film Institute", "Øksnehallen 2016"),
+    ("Danish Trade Union Development Agency", "Freetown 2013, as the LO/FTF Council (its name then)"),
+    ("PAWA254", "Nairobi 2014: the master class with the Photojournalists Association of Kenya, in its premises"),
+]
+
 # 4 Who is behind it
 ABOUT_WHO = [
     "Africa Reframed is an independent, non-commercial initiative established by Commerce & Culture, the Copenhagen studio founded in 2010 by Thomas Damgaard. Trained in design and art history, he advised the Danish Ministry of Foreign Affairs on culture and development from 2010 to 2014, and has produced photography and exhibitions with partners in Africa and Europe since.",
@@ -918,6 +948,7 @@ def tpl_text(p, base):
                     + note("Companies that bought our team’s images, the images now in the archive. Institutional names (the UN, the World Bank, the BBC and others) are added once Thomas has checked they bought the team’s images.") + "</div>")
         return (m_page_head(p["title"], ABOUT_STATEMENT, statement_draft=True)
                 + m_channels(ABOUT_CHANNELS)
+                + m_supporters(SUPPORTERS, SUPPORTERS_TITLE)
                 # 1 The archive: always on. The activity, then the proof: its collections, where its images have been, the way in.
                 + m_text("The archive", ABOUT_ARCHIVE, "a", sid="archive")
                 + mod("collection", "a, the collections in the archive", "".join(collection_entry(x, base) for x in by_state(ARCHIVE_COLLECTIONS)), tight=True)
@@ -1097,6 +1128,7 @@ CHECKLIST = [
     ("Header pixel-identical with the archive's", "PhotoDeck custom CSS"),
     ("Real domain: africareframed.com through Cloudflare, and SITE_URL switched", "src/build.py"),
     ("Archive pointed at the real domain: logo link, menu items, About and Contact redirects", "Brief, section 10"),
+    ("About: the supporters’ logo files (official, one-colour) in, and a courtesy note sent to each", "About page – build brief, section 0"),
     ("Every archive link to this site keeps ?src=archive (the partner menu), and the Privacy line checked against the Danish cookie rules", "PhotoDeck menu, logo and footer; Privacy"),
     ("Terms proper confirmed, and Using the images checked against them", "Archive, Terms"),
     ("Tests: deep links signed out and in; phones inside LinkedIn's browser; previews in Post Inspector", "Brief, sections 1 and 5"),
@@ -1615,6 +1647,9 @@ main{padding-bottom:var(--section)}
 .order{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
 .count{font-size:13px;font-weight:500;margin-top:auto}
 .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:8px 0 32px}
+.logos.supporters{grid-template-columns:repeat(8,minmax(0,1fr));margin:12px 0 8px}
+.supporters .logo{text-align:center;padding:6px;line-height:1.3}
+.supporters-title{margin:0}
 .logo{aspect-ratio:5/2;border:1px dashed #c9c6bf;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8a877f}
 
 
@@ -1719,6 +1754,7 @@ body.show-grid .grid-overlay{display:block}
 
 /* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
 @media (max-width:1023px){
+  .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}
   :root{--cols:8;--gutter:24px;--margin:32px;--section:80px;--section-head:56px;--section-tight:28px}
   .cards-6{grid-template-columns:repeat(3,minmax(0,1fr))}
   .principles.five{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -1743,6 +1779,7 @@ body.show-grid .grid-overlay{display:block}
 }
 /* Phone (below 768 px): the guide's 4 columns, 16 px gutters and 16 px margins; one column, the title first */
 @media (max-width:767px){
+  .logos.supporters{grid-template-columns:repeat(2,minmax(0,1fr))}
   :root{--cols:4;--gutter:16px;--margin:16px;--header-h:64px;--logo-w:128px;--section:64px;--section-head:40px;--section-tight:24px}
   .channels{grid-template-columns:1fr;gap:16px}
   .cards-6{grid-template-columns:repeat(2,minmax(0,1fr))}

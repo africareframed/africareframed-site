@@ -214,6 +214,9 @@ main{padding-bottom:var(--section)}
 .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:8px 0 32px}
 .logos.supporters{grid-template-columns:repeat(8,minmax(0,1fr));margin:12px 0 8px}
 .supporters .logo{text-align:center;padding:6px;line-height:1.3}
+.supporters .logo.has-img{border:0;aspect-ratio:auto;height:64px;padding:0}
+.supporters .logo img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
+@media (max-width:1359px){.logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:20px}}
 .supporters-title{margin:0}
 .logo{aspect-ratio:5/2;border:1px dashed #c9c6bf;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8a877f}
 

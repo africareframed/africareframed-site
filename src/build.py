@@ -12,6 +12,7 @@ the header hides the notes.
 Run: python3 src/build.py  (writes the pages and assets/ into the repository root)
 """
 import html
+import math
 import pathlib
 import re
 import shutil
@@ -326,12 +327,22 @@ def m_partners(n=6, title="In use by", tight=False):
 
 # 2.10, supporters (About, Thomas, 10 November 2026): the institutions that have supported the work, strongest first, at equal
 # size (the guide's PartnerStrip: one-colour logos, no tiers, no boxes; the order is the only ranking).
-def m_supporters(rows, title):
-    logos = '<div class="logos supporters">' + "".join(f'<span class="logo" title="{e(what)}">{e(name)}</span>' for name, what in rows) + "</div>"
+def m_supporters(rows, title, base):
+    def one(x):
+        if not x.get("logo"):
+            return f'<span class="logo">{e(x["name"])}</span>'
+        r = x["ratio"]
+        h = min(LOGO_MAX_H, math.sqrt(LOGO_AREA * x.get("weight", 1) ** 2 / r))
+        w = r * h
+        if w > LOGO_MAX_W:
+            w, h = LOGO_MAX_W, LOGO_MAX_W / r
+        return (f'<span class="logo has-img"><img src="{base}assets/supporters/{x["logo"]}" alt="{e(x["name"])}" '
+                f'width="{w:.0f}" height="{h:.0f}" decoding="async"></span>')
+    logos = '<div class="logos supporters">' + "".join(one(x) for x in rows) + "</div>"
     return mod("partners", "supporters", f'<div class="cols"><div class="c1-12">{draft(title, "p", "kicker supporters-title")}</div></div>{logos}'
-               + note("One-colour logos from each organisation’s official files, black on white, equal optical weight. Before launch each gets a short courtesy note "
-                      "(we show you among those who supported our work), which also brings the current logo files. CKU is left out (closed); Canon only if it "
-                      "supported Øksnehallen. Labels name the institution until the logo files are in."), tight=True)
+               + note("The logos are each organisation’s own, taken from its website on 10 November 2026 and shown in one dark tone at equal optical weight. "
+                      "Before launch each gets a short courtesy note (we show you among those who supported our work), which also brings its official "
+                      "one-colour file to replace these. CKU is left out (closed); Canon only if it supported Øksnehallen."), tight=True)
 
 
 # 2.11 Use example: (a) one, side by side; (b) three in a row; (c) partner news.
@@ -707,16 +718,32 @@ ABOUT_WORKSHOPS_TO_COLLECTION = "The House Collection was photographed by our te
 # and, for 2016, only an invoice for inks. Sources: Track Record (Recognition, funding and media; the Øksnehallen, Stock Program
 # and workshop entries).
 SUPPORTERS_TITLE = "Our work has been supported by"
-SUPPORTERS = [  # (name on the logo's label, what it supported: for the record, not shown on the page)
-    ("Danish Ministry of Foreign Affairs · Danida", "Øksnehallen 2016, through the information grant; the Bamako programme, through the Danish Embassy in Mali"),
-    ("Innovation Fund Denmark", "An investment in Africa Reframed, 2020 (InnoBooster); never implied to back today's model"),
-    ("BESTSELLER FOUNDATION", "The Waste to Value Collection, 2020–2022"),
-    ("Augustinus Fonden", "Øksnehallen 2016"),
-    ("Al Jazeera", "Øksnehallen 2016: a supporter in the programme, and a partner in the film programme"),
-    ("Danish Film Institute", "Øksnehallen 2016"),
-    ("Danish Trade Union Development Agency", "Freetown 2013, as the LO/FTF Council (its name then)"),
-    ("PAWA254", "Nairobi 2014: the master class with the Photojournalists Association of Kenya, in its premises"),
+# The logo files (assets/supporters/) were taken on 10 November 2026 from each organisation's own website, the logo in its
+# header, unaltered (Augustinus Fonden's mark and wordmark, two files on its site, are set together as its header shows them):
+#   danish-mfa.png                um.dk/media/c0ybhb1u/um-logo-en.png
+#   innovation-fund-denmark.svg   danmarksinnovationsfond.dk/wp-content/uploads/2026/06/ifd_logo.svg
+#   bestseller-foundation.svg     bestseller.org, the header logo (inline SVG)
+#   augustinus-fonden.svg         augustinusfonden.dk, the header logo (two inline SVGs)
+#   al-jazeera.svg                aljazeera.com, the header logo (inline SVG)
+#   danish-film-institute.svg     dfi.dk/themes/custom/p8z_proto/prototype/source/gfx/dfi_logo_standard.svg
+#   dtda.png                      dtda.dk/wp-content/uploads/2026/03/DTDA_DK_logo1_Positiv.png (renamed from Ulandssekretariatet, April 2026)
+#   pawa254.png                   pawa254.org/wp-content/uploads/2023/09/PAWA254-LOGO-white.png
+# They are shown in one tone by a filter (greyscale, darkened), not redrawn; the official one-colour files replace them when the
+# courtesy notes bring them. Sizes follow equal optical weight: the same area for every logo (LOGO_AREA), capped by the cell,
+# times a factor set by eye for marks that read heavier or lighter than their area.
+SUPPORTERS = [  # name (the logo's alt text), what it supported (for the record only, never on the page), file, width/height, weight
+    dict(name="Ministry of Foreign Affairs of Denmark (Danida)", what="Øksnehallen 2016, through the information grant; the Bamako programme, through the Danish Embassy in Mali",
+         logo="danish-mfa.png", ratio=886 / 200, weight=1.3),
+    dict(name="Innovation Fund Denmark", what="An investment in Africa Reframed, 2020 (InnoBooster); never implied to back today's model",
+         logo="innovation-fund-denmark.svg", ratio=172 / 33, weight=0.9),
+    dict(name="BESTSELLER FOUNDATION", what="The Waste to Value Collection, 2020–2022", logo="bestseller-foundation.svg", ratio=426.17 / 27.03, weight=1.0),
+    dict(name="Augustinus Fonden", what="Øksnehallen 2016", logo="augustinus-fonden.svg", ratio=219 / 74.35, weight=1.1),
+    dict(name="Al Jazeera", what="Øksnehallen 2016: a supporter in the programme, and a partner in the film programme", logo="al-jazeera.svg", ratio=166 / 60, weight=1.0),
+    dict(name="Danish Film Institute", what="Øksnehallen 2016", logo="danish-film-institute.svg", ratio=105.6683 / 25, weight=0.85),
+    dict(name="DTDA, the Danish Trade Union Development Agency", what="Freetown 2013, as the LO/FTF Council (its name then)", logo="dtda.png", ratio=1148 / 324, weight=1.2),
+    dict(name="PAWA254", what="Nairobi 2014: the master class with the Photojournalists Association of Kenya, in its premises", logo="pawa254.png", ratio=802 / 278, weight=0.9),
 ]
+LOGO_AREA, LOGO_MAX_H, LOGO_MAX_W = 3000, 38, 150   # px² of logo per entry at desktop size; the cell caps height and width
 
 # 4 Who is behind it
 ABOUT_WHO = [
@@ -948,7 +975,7 @@ def tpl_text(p, base):
                     + note("Companies that bought our team’s images, the images now in the archive. Institutional names (the UN, the World Bank, the BBC and others) are added once Thomas has checked they bought the team’s images.") + "</div>")
         return (m_page_head(p["title"], ABOUT_STATEMENT, statement_draft=True)
                 + m_channels(ABOUT_CHANNELS)
-                + m_supporters(SUPPORTERS, SUPPORTERS_TITLE)
+                + m_supporters(SUPPORTERS, SUPPORTERS_TITLE, base)
                 # 1 The archive: always on. The activity, then the proof: its collections, where its images have been, the way in.
                 + m_text("The archive", ABOUT_ARCHIVE, "a", sid="archive")
                 + mod("collection", "a, the collections in the archive", "".join(collection_entry(x, base) for x in by_state(ARCHIVE_COLLECTIONS)), tight=True)
@@ -1649,6 +1676,9 @@ main{padding-bottom:var(--section)}
 .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:8px 0 32px}
 .logos.supporters{grid-template-columns:repeat(8,minmax(0,1fr));margin:12px 0 8px}
 .supporters .logo{text-align:center;padding:6px;line-height:1.3}
+.supporters .logo.has-img{border:0;aspect-ratio:auto;height:64px;padding:0}
+.supporters .logo img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
+@media (max-width:1359px){.logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:20px}}
 .supporters-title{margin:0}
 .logo{aspect-ratio:5/2;border:1px dashed #c9c6bf;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8a877f}
 

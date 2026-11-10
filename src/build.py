@@ -401,7 +401,12 @@ def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image
         li = "".join(f'<details class="acc"><summary>{e(a)}<span class="plus" aria-hidden="true"></span></summary>{t(b)}</details>' for a, b in items)
         return mod("items", "c, accordion", f'{top}<div class="cols"><div class="c6-12 c-offset">{li}</div></div>', sid=sid, tight=tight)
     if variant == "d":
-        li = "".join(f'<div class="item">{img(x[2] if len(x) > 2 and x[2] else image_label, image_ratio)}<h3>{e(x[0])}</h3>{t(x[1]) if x[1] else ""}</div>' for x in items)
+        def card(x):
+            extra = x[3] if len(x) > 3 and x[3] else {}
+            pic = extra.get("image") or img(x[2] if len(x) > 2 and x[2] else image_label, image_ratio)
+            name = f'<a href="{extra["href"]}">{e(x[0])}</a>' if extra.get("href") else e(x[0])
+            return f'<div class="item">{pic}<h3>{name}</h3>{t(x[1]) if x[1] else ""}</div>'
+        li = "".join(card(x) for x in items)
         return mod("items", "d, with images", f'{top}<div class="cards-{cols}">{li}</div>', sid=sid, tight=tight)
     if variant == "e":
         chips = "".join(f'<a class="chip" href="{h}">{e(a)}</a>' if h else f'<span class="chip">{e(a)}</span>' for a, h in items)
@@ -682,6 +687,43 @@ ARTISTS_NETWORK = [  # from the network, profiled in our journal; one line each,
     ("Hélène Amouzou", "Togo and Belgium · Self-portraits on displacement."), ("Sydelle Willow Smith", "South Africa · Migration and identity."),
     ("Jac Kritzinger", "South Africa · The ordinary, made visible."), ("Mouna Karray", "Tunisia · Murmurer; Noir."),
 ]
+
+# The artist pages (Artist pages – template, 05 Website; Thomas, 10 November 2026). One entry per artist with a page; the
+# template builds /about/artists/<slug>/ from it, and About links the artist's name to it. Works are shown whole (never
+# cropped, filtered or under the pattern), credited to the artist and the series; never the archive's credit line.
+# Rights: the exhibition agreement gives Africa Reframed and Commerce & Culture perpetual rights to publish the images of the
+# artists shown at Øksnehallen (Thomas, 10 November 2026). Files: assets/artists/<slug>/, web versions at 2,000 and 1,000 px
+# made from the originals (the masters and portraits are in the exhibition folder, to move into 11 Media library / 01 Artists).
+ARTIST_NOT_ARCHIVE = "The works are shown by agreement. They are not part of the archive and are not available to partners."
+ARTISTS = [
+    dict(slug="namsa-leuba", name="Namsa Leuba", group="shown",
+         # Sources: her biography in the exhibition folder (Bio_NamsaLeuba.rtf, 2016); namsaleuba.com/about-me (read 10 November
+         # 2026: lists Africa Reframed, Copenhagen, 2016); the exhibition's own selection (Exhibition Modules / Namsa Leuba);
+         # About page – build brief (her image as the exhibition's poster); Track Record (the ministry's evaluation cover, 2017).
+         line="Staged photographs between documentary, fashion and performance, on the signs and symbols of the cultures she photographs.",
+         text=["Namsa Leuba was born in Switzerland in 1982, of Swiss and Guinean heritage, and studied photography and art direction at ECAL in Lausanne. "
+               "Her photographs are staged with care for props, colours and gestures, and look at how African identities are pictured from outside: "
+               "rituals, statuettes and masquerades, set between the sacred and the everyday.",
+               "At Øksnehallen in 2016 she showed three series from 2014, Kingdom of Mountains, Khoisan and Zulu Kids, and her image was the exhibition’s poster. "
+               "The Danish Ministry of Foreign Affairs later put one of her images from the show on the cover of its own evaluation."],
+         facts=[("Origin", "Switzerland and Guinea"), ("Works in", "Photography"), ("Series shown", "Kingdom of Mountains · Khoisan · Zulu Kids")],
+         connection="Shown at Africa Reframed, Øksnehallen, Copenhagen, 2016",
+         website=("namsaleuba.com", "https://www.namsaleuba.com"), gallery=None,
+         portrait=dict(file="portrait-lea-kloos", credit="Portrait: Lea Kloos", alt="Namsa Leuba, portrait"),
+         lead=dict(file="kingdom-of-mountains-umntanenkosi", title="Umntanenkosi", series="Kingdom of Mountains", w=4347, h=5350),
+         series=[
+             dict(title="Kingdom of Mountains", line="Seven staged portraits in a mountain landscape, each work with its own title; four of them here.",
+                  works=[("kingdom-of-mountains-owesifazane", "Owesifazane", 4133, 5086), ("kingdom-of-mountains-umfana", "Umfana", 4301, 5294),
+                         ("kingdom-of-mountains-qkhwini", "Qkhwini", 4351, 5355), ("kingdom-of-mountains-sangoma", "Sangoma", 4334, 5334)]),
+             dict(title="Khoisan", line="Masked and costumed figures, staged by water, scrub and corrugated iron.",
+                  works=[("khoisan-keala", "Keala", 4134, 5079), ("khoisan-chunara", "Chunara", 4135, 5079),
+                         ("khoisan-maria", "Maria", 4134, 5079), ("khoisan-kokos", "Kokos", 4134, 5079)]),
+         ],
+         note="Zulu Kids, the third series shown, follows: its three masters are over the transfer limit, so Thomas exports them at about 2,000 px. "
+              "Text and lines are draft. Facts from her own biography and namsaleuba.com, read 10 November 2026."),
+]
+ARTIST_BY_NAME = {a["name"]: a for a in ARTISTS}
+
 
 # 3 Workshops: the activity, then the projects, the voices, Bamako Nights, the partners
 ABOUT_WORKSHOPS = [
@@ -986,9 +1028,8 @@ def tpl_text(p, base):
                 + m_text("Exhibitions", ABOUT_EXHIBITIONS, "a", sid="exhibitions")
                 + "".join(m_project(x) for x in by_state(EXHIBITION_PROJECTS))
                 + m_doors("c", links=[button(f"{base}partners/#sponsor", ABOUT_EXHIBITION_DOOR + " →", quiet=True)], tight=True)
-                + m_items("The artists", [(n, d, l) for n, d, l in ARTISTS_SHOWN], "d", lead=draft(ABOUT_ARTISTS_LEAD), image_ratio="4/5", cols=4, sid="artists", level=3)
-                + m_items("From the network", [(n, d, n) for n, d in ARTISTS_NETWORK], "d", image_ratio="1/1", cols=6, tight=True, level=3,
-                          lead=note("Artists profiled in our journal; one work each, with the artist’s name and series as the credit."))
+                + m_items("The artists", [(n, d, l, artist_card(base, n)) for n, d, l in ARTISTS_SHOWN], "d", lead=draft(ABOUT_ARTISTS_LEAD), image_ratio="4/5", cols=4, sid="artists", level=3)
+                + m_network(base)
                 # 3 Workshops: a medium we activate. The activity, then the projects, Bamako Nights, the partners.
                 + m_text("Workshops", ABOUT_WORKSHOPS, "a", sid="workshops")
                 + "".join(m_project(x) for x in by_state(WORKSHOP_PROJECTS))
@@ -1011,9 +1052,85 @@ def tpl_text(p, base):
             + "".join(m_text(h, [t], "a") for h, t in PRIVACY))
 
 
+def artist_card(base, name):
+    """On About: the artist's name links to the artist's page, and the card shows the page's lead work, once the page exists."""
+    a = ARTIST_BY_NAME.get(name)
+    if not a:
+        return {}
+    ld = a["lead"]
+    return dict(href=artist_href(base, a),
+                image=artwork(base, a, ld["file"], a["name"] + ", " + ld["title"] + ", from the series " + ld["series"], ld["w"], ld["h"], "(max-width: 767px) 50vw, 25vw", "work card-work"))
+
+
+def m_network(base):
+    """From the network, on About: rows of text, no images (Thomas, 10 November 2026); each name links to its page once made."""
+    def name(n):
+        a = ARTIST_BY_NAME.get(n)
+        return f'<a href="{artist_href(base, a)}">{e(n)}</a>' if a else e(n)
+    li = "".join(f'<li><strong>{name(n)}</strong>{draft(d, "span")}</li>' for n, d in ARTISTS_NETWORK)
+    return mod("items", "a, rows of text, the network",
+               f'<div class="cols"><div class="c1-4">{heading("From the network", 3, "project-title")}</div><div class="c6-12">'
+               f'<ul class="network-rows">{li}</ul>'
+               + note("Rows of text, no images (Thomas, 10 November 2026). Each name links to the artist’s own page once it is made (Artist pages – template).")
+               + "</div></div>", tight=True)
+
+
+def artist_href(base, a):
+    return f"{base}about/artists/{a['slug']}/"
+
+
+def artwork(base, a, file, alt, w, h, sizes="(max-width: 767px) 100vw, 50vw", cls="work"):
+    """One work, shown whole at its own proportion: never cropped, filtered or under the pattern."""
+    d = f"{base}assets/artists/{a['slug']}/{file}"
+    return (f'<img class="{cls}" src="{d}-1000.jpg" srcset="{d}-1000.jpg 1000w, {d}-2000.jpg 2000w" sizes="{sizes}" '
+            f'width="{w}" height="{h}" alt="{e(alt)}" decoding="async">')
+
+
+def tpl_artist(p, base):
+    a = p["artist"]
+    lead = a["lead"]
+    lead_alt = a["name"] + ", " + lead["title"] + ", from the series " + lead["series"]
+    lead_img = artwork(base, a, lead["file"], lead_alt, lead["w"], lead["h"], "(max-width: 767px) 100vw, 60vw")
+    lead_html = (f'<div class="cols"><figure class="c6-12 work-lead">{lead_img}'
+                 f'<figcaption class="credit"><span>{e(lead_alt)}</span></figcaption></figure></div>')
+    kicker = "Shown at Øksnehallen" if a["group"] == "shown" else "From our network"
+    dl = "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in a["facts"])
+    dl += f'<dt>With Africa Reframed</dt><dd><a href="{base}about/#exhibitions">{e(a["connection"])}</a></dd>' if a.get("connection") else ""
+    if a.get("gallery"):
+        dl += f"<dt>Gallery</dt><dd>{e(a['gallery'])}</dd>"
+    if a.get("website"):
+        dl += f'<dt>Website</dt><dd><a href="{a["website"][1]}" rel="noopener">{e(a["website"][0])}</a></dd>'
+    portrait = ""
+    if a.get("portrait"):
+        pt = a["portrait"]
+        d = f"{base}assets/artists/{a['slug']}/{pt['file']}"
+        portrait = (f'<figure class="artist-portrait"><img src="{d}-800.jpg" srcset="{d}-800.jpg 800w, {d}-1600.jpg 1600w" sizes="(max-width: 767px) 100vw, 33vw" '
+                    f'alt="{e(pt["alt"])}" decoding="async"><figcaption class="credit"><span>{e(pt["credit"])}</span></figcaption></figure>')
+    box = f'{portrait}<aside class="facts-box"><dl class="facts">{dl}</dl><p class="small">{e(ARTIST_NOT_ARCHIVE)}</p></aside>'
+    text = "".join(draft(t) for t in a["text"])
+    out = (m_page_head(a["name"], a["line"], kicker=kicker, statement_draft=True)
+           + mod("photo", "b, the lead work, whole", lead_html, tight=True)
+           + mod("text", "b, with a facts box (artist)", f'<div class="cols"><div class="c1-6 artist-text">{text}{note(a["note"]) if a.get("note") else ""}</div><div class="c8-12">{box}</div></div>'))
+    for sr in a["series"]:
+        works = "".join("<figure>" + artwork(base, a, f, a["name"] + ", " + t + ", from the series " + sr["title"], w, h, "(max-width: 767px) 50vw, 25vw")
+                        + f"<figcaption>{e(t)}</figcaption></figure>" for f, t, w, h in sr["works"])
+        out += mod("grid", "artwork row, whole works", f'<h3 class="project-title">{e(sr["title"])}</h3>{draft(sr["line"], "p", "small")}'
+                   f'<div class="works">{works}</div>' + credit_line(None, f'{a["name"]}, from the series {sr["title"]}'))
+    others = [x for x in ARTISTS if x is not a]
+    if others:
+        i = ARTISTS.index(a)
+        prev, nxt = ARTISTS[i - 1], ARTISTS[(i + 1) % len(ARTISTS)]
+        more = "".join(f'<a class="button quiet" href="{artist_href(base, x)}">{e(lbl)}: {e(x["name"])}</a>' for lbl, x in (("Previous", prev), ("Next", nxt)) if x is not a)
+    else:
+        more = ""
+    out += mod("doors", "c, more artists", f'<div class="cols"><div class="c1-12"><p class="doors">{more}{button(base + "about/#artists", "All the artists on About →", quiet=True)}</p>'
+               + (note("Previous and next artist appear once there are more artist pages.") if not others else "") + "</div></div>", tight=True)
+    return out
+
+
 TEMPLATES = {"home": tpl_home, "themes": tpl_index_themes, "collections": tpl_index_collections, "theme": tpl_theme,
              "collection": tpl_collection, "partners": tpl_partners, "portal": tpl_portal, "form": tpl_form,
-             "press": tpl_press, "text": tpl_text}
+             "press": tpl_press, "text": tpl_text, "artist": tpl_artist}
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1097,6 +1214,9 @@ PAGES = [
     dict(path="privacy/", title="Privacy", slug="privacy", tpl="text", nav=None,
          desc="What Africa Reframed collects when you request access or write to us, and why."),
 ]
+PAGES += [dict(path=f"about/artists/{a['slug']}/", title=a["name"], slug=f"artist-{a['slug']}", tpl="artist", nav="about",
+                desc=a["line"], artist=a, doc_title=f"{a['name']} · Artists · Africa Reframed",
+                share=f"assets/artists/{a['slug']}/share.jpg") for a in ARTISTS]
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1108,7 +1228,7 @@ STAGES = ["Wireframe", "Copy", "Design", "Ready"]
 STATE = {}            # slug -> stage; every page is at "Wireframe" until it moves on
 TEMPLATE_NAMES = {"home": "Home", "themes": "Index", "collections": "Index", "theme": "Theme page",
                   "collection": "Collection page", "partners": "Partners", "portal": "Partner portal",
-                  "form": "Form", "press": "Press room", "text": "Text page"}
+                  "form": "Form", "press": "Press room", "text": "Text page", "artist": "Artist page"}
 ORDER_OF_WORK = [("Brief", "done", "Website – Brief and build plan"),
                  ("Site map and user flows", "done", "Website – Site map and user flows, and the two maps"),
                  ("Page priorities", "done", "Site map and user flows, section 6: what the five key pages must say and do, ranked"),
@@ -1688,6 +1808,27 @@ main{padding-bottom:var(--section)}
 .action{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
 .action .doors{margin:0}
 .facts-box{border:1px solid var(--line);border-radius:0;padding:24px;background:#fff}
+/* Artist pages (Artist pages – template): works are shown whole at their own proportion, never cropped or filtered. */
+.work{display:block;width:100%;height:auto;background:#f4f4f4}
+.work-lead{margin:0}
+.work-lead img{width:auto;max-width:100%;max-height:86vh}
+.work-lead .credit{margin-top:10px}
+.works{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;align-items:start;margin:20px 0 4px}
+.works figure{margin:0}
+.works figcaption{font-size:13px;color:var(--ink-soft);margin-top:8px}
+.artist-text p{margin-top:0}
+.artist-portrait{margin:0 0 24px}
+.artist-portrait img{display:block;width:100%;height:auto}
+.artist-portrait .credit{margin-top:8px}
+.c8-12{grid-column:8/-1}
+.card-work{aspect-ratio:4/5;object-fit:contain;background:#fff;margin-bottom:10px}
+.item h3 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
+.item h3 a:hover{border-bottom-color:var(--ink)}
+.network-rows{list-style:none;padding:0;margin:8px 0 0;columns:2;column-gap:var(--gutter)}
+.network-rows li{break-inside:avoid;padding:10px 0;border-top:1px solid var(--line)}
+.network-rows strong{display:block;font-weight:600}
+.network-rows strong a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
+.network-rows span{font-size:15px;color:var(--ink-soft)}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;font-size:15px;margin:0 0 16px}
 .facts dt{color:var(--ink-soft)}
 .facts dd{margin:0}
@@ -1794,7 +1935,7 @@ body.show-grid .grid-overlay{display:block}
   .menu a{padding:12px 0;font-size:17px;width:100%}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
-  .c1-4{grid-column:1/4}.c6-12,.c-offset{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12{grid-column:5/-1}.c-half{grid-column:span 4}
+  .c1-4{grid-column:1/4}.c6-12,.c-offset{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12,.c8-12{grid-column:5/-1}.c-half{grid-column:span 4}
   .grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
   .wire-strip .wrap{flex-wrap:wrap}
@@ -1820,7 +1961,10 @@ body.show-grid .grid-overlay{display:block}
   h1{font-size:34px}
   h2{font-size:24px}
   .statement{font-size:20px}
-  .c1-4,.c6-12,.c1-8,.c1-6,.c7-12,.c-half,.c-offset{grid-column:1/-1}
+  .c1-4,.c6-12,.c1-8,.c1-6,.c7-12,.c8-12,.c-half,.c-offset{grid-column:1/-1}
+  .works{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .network-rows{columns:1}
+  .work-lead img{max-height:none;width:100%}
   .photo-half{order:-1}  /* photograph and text: the photograph first on phones, whichever side it sits on desktop */
   .grid-3,.grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mod .cols + .cols{margin-top:16px}
@@ -1883,10 +2027,10 @@ def strip_html(base):
 
 def render(p, main, base):
     cur = lambda s: ' aria-current="page"' if p["nav"] == s else ""
-    doc_title = "Africa Reframed" if p["slug"] == "home" else f'{p["title"]} · Africa Reframed'
+    doc_title = p.get("doc_title") or ("Africa Reframed" if p["slug"] == "home" else f'{p["title"]} · Africa Reframed')
     return LAYOUT.format(
         doc_title=e(doc_title), og_title=e(p["title"] if p["slug"] != "home" else "Africa Reframed"),
-        desc=e(p["desc"]), url=SITE_URL + p["path"], share=SITE_URL + "assets/share-default.png",
+        desc=e(p["desc"]), url=SITE_URL + p["path"], share=SITE_URL + p.get("share", "assets/share-default.png"),
         robots="" if LAUNCH else '<meta name="robots" content="noindex">\n', strip=strip_html(base),
         base=base, stamp=STAMP, slug=p["slug"], tpl=p["tpl"], main=main, about_line=e(ABOUT_LINE), archive=ARCHIVE, partner_script=PARTNER_SCRIPT,
         archive_browse=archive("/-/galleries/archive", "menu"), archive_lightbox=archive("/lightbox", "menu"),

@@ -226,6 +226,27 @@ main{padding-bottom:var(--section)}
 .action{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
 .action .doors{margin:0}
 .facts-box{border:1px solid var(--line);border-radius:0;padding:24px;background:#fff}
+/* Artist pages (Artist pages – template): works are shown whole at their own proportion, never cropped or filtered. */
+.work{display:block;width:100%;height:auto;background:#f4f4f4}
+.work-lead{margin:0}
+.work-lead img{width:auto;max-width:100%;max-height:86vh}
+.work-lead .credit{margin-top:10px}
+.works{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;align-items:start;margin:20px 0 4px}
+.works figure{margin:0}
+.works figcaption{font-size:13px;color:var(--ink-soft);margin-top:8px}
+.artist-text p{margin-top:0}
+.artist-portrait{margin:0 0 24px}
+.artist-portrait img{display:block;width:100%;height:auto}
+.artist-portrait .credit{margin-top:8px}
+.c8-12{grid-column:8/-1}
+.card-work{aspect-ratio:4/5;object-fit:contain;background:#fff;margin-bottom:10px}
+.item h3 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
+.item h3 a:hover{border-bottom-color:var(--ink)}
+.network-rows{list-style:none;padding:0;margin:8px 0 0;columns:2;column-gap:var(--gutter)}
+.network-rows li{break-inside:avoid;padding:10px 0;border-top:1px solid var(--line)}
+.network-rows strong{display:block;font-weight:600}
+.network-rows strong a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
+.network-rows span{font-size:15px;color:var(--ink-soft)}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;font-size:15px;margin:0 0 16px}
 .facts dt{color:var(--ink-soft)}
 .facts dd{margin:0}
@@ -332,7 +353,7 @@ body.show-grid .grid-overlay{display:block}
   .menu a{padding:12px 0;font-size:17px;width:100%}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
-  .c1-4{grid-column:1/4}.c6-12,.c-offset{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12{grid-column:5/-1}.c-half{grid-column:span 4}
+  .c1-4{grid-column:1/4}.c6-12,.c-offset{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12,.c8-12{grid-column:5/-1}.c-half{grid-column:span 4}
   .grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
   .wire-strip .wrap{flex-wrap:wrap}
@@ -358,7 +379,10 @@ body.show-grid .grid-overlay{display:block}
   h1{font-size:34px}
   h2{font-size:24px}
   .statement{font-size:20px}
-  .c1-4,.c6-12,.c1-8,.c1-6,.c7-12,.c-half,.c-offset{grid-column:1/-1}
+  .c1-4,.c6-12,.c1-8,.c1-6,.c7-12,.c8-12,.c-half,.c-offset{grid-column:1/-1}
+  .works{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .network-rows{columns:1}
+  .work-lead img{max-height:none;width:100%}
   .photo-half{order:-1}  /* photograph and text: the photograph first on phones, whichever side it sits on desktop */
   .grid-3,.grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mod .cols + .cols{margin-top:16px}

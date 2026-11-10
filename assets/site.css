@@ -229,6 +229,8 @@ main{padding-bottom:var(--section)}
 /* Artist pages (Artist pages – template): works are shown whole at their own proportion, never cropped or filtered. */
 .work{display:block;width:100%;height:auto;background:#f4f4f4}
 .work-lead{margin:0}
+.lead-tall{grid-column:6/-1}.lead-square{grid-column:5/-1}.lead-wide{grid-column:4/-1}
+.works.works-wide{grid-template-columns:repeat(3,minmax(0,1fr))}
 .work-lead img{width:auto;max-width:100%;max-height:86vh}
 .work-lead .credit{margin-top:10px}
 .works{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;align-items:start;margin:20px 0 4px}
@@ -351,6 +353,7 @@ body.show-grid .grid-overlay{display:block}
   .menu a{padding:12px 0;font-size:17px;width:100%}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
+  .lead-tall{grid-column:4/-1}.lead-square{grid-column:3/-1}.lead-wide{grid-column:2/-1}.works.works-wide{grid-template-columns:repeat(2,minmax(0,1fr))}
   .c1-4{grid-column:1/4}.c6-12,.c-offset{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12,.c8-12{grid-column:5/-1}.c-half{grid-column:span 4}
   .grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
@@ -379,6 +382,7 @@ body.show-grid .grid-overlay{display:block}
   .statement{font-size:20px}
   .c1-4,.c6-12,.c1-8,.c1-6,.c7-12,.c8-12,.c-half,.c-offset{grid-column:1/-1}
   .works{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .lead-tall,.lead-square,.lead-wide{grid-column:1/-1}.works.works-wide{grid-template-columns:minmax(0,1fr)}
   .network-rows{columns:1}
   .work-lead img{max-height:none;width:100%}
   .photo-half{order:-1}  /* photograph and text: the photograph first on phones, whichever side it sits on desktop */

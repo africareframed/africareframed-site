@@ -683,9 +683,9 @@ ARTISTS_NETWORK = [  # from the network, profiled in our journal; one line each,
     ("Fatoumata Diabaté", "Mali · Sutigi: the night belongs to the young."), ("Isaac Kasamani", "Kenya and Uganda · Photojournalism of Uganda’s politics."),
     ("Antonia Steyn", "South Africa · Portraits of South African figures."), ("Ala Kheir", "Sudan · Landscapes and lives across the country."),
     ("Adeola Olagunju", "Nigeria · Performance photographs: Resurgence, a manifesto."), ("Jon Riordan", "South Africa · Landscapes shaped by memory."),
-    ("Mpho Mokgadi", "South Africa · Everyday life, on film."), ("Charles Okereke", "Nigeria · Go-Slow: Lagos at a standstill."),
+    ("Mpho Mokgadi", "South Africa · Everyday life, on film."), ("Charles Okereke", "Nigeria · Photographs close to abstraction, on people and the environment."),
     ("Hélène Amouzou", "Togo and Belgium · Self-portraits on displacement."), ("Sydelle Willow Smith", "South Africa · Migration and identity."),
-    ("Jac Kritzinger", "South Africa · The ordinary, made visible."), ("Mouna Karray", "Tunisia · Murmurer; Noir."),
+    ("Jac Kritzinger", "South Africa · The ordinary, made visible."), ("Mouna Karray", "Tunisia · Noir; Identity at Stake."),
 ]
 
 # The artist pages (Artist pages – template, 05 Website; Thomas, 10 November 2026). One entry per artist with a page; the
@@ -862,6 +862,163 @@ ARTISTS = [
          ],
          note="Text and series line are draft. The lead is a work, not the image chosen on commerceandculture.org, which is a portrait of him. "
               "That these chairs belong to If Chairs Could Talk is to confirm: the exhibition folder calls them his new collection."),
+    # From the network: the fourteen artists profiled in the Commerce & Culture journal (Artist pages – template).
+    dict(slug='osborne-macharia', name='Osborne Macharia', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Staged photographs with the finish of advertising, each frame built around a story.',
+         text=['Osborne Macharia is a Kenyan photographer. Trained as an architect, he taught himself photography, and works in commercial and advertising photography for brands and agencies in Kenya and abroad.', 'Between commissions he works on personal projects: staged portraits, lit and composed with the care of an advertising shoot, each built around a story.'],
+         facts=[('Origin', 'Kenya'), ('Works in', 'Photography')],
+         lead=dict(file="work-00", title=None, series='Selected works', w=1500, h=1019),
+         series=[
+             dict(title='Selected works', line='From his personal projects: elders and women in Maasai dress, lit as in a studio against a dark sky.',
+                  works=[("work-02", None, 1125, 1500), ("work-03", None, 1125, 1500), ("work-05", None, 1126, 1500), ("work-06", None, 1126, 1500)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find. The series these works come from is to name.'),
+    dict(slug='elise-fitte-duval', name='Élise Fitte-Duval', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Photographs of contemporary dance in Africa, followed from the rehearsal room to the stage.',
+         text=['Élise Fitte-Duval is a photographer from Martinique who works in Senegal. She studied at the École d’Arts Plastiques in Martinique and at the École Nationale Supérieure des Arts Décoratifs in Paris.', 'In 2011 Casa África named her best female African photographer at the Bamako Encounters for Vivre les pieds dans l’eau, her series on the floods in Dakar.'],
+         facts=[('Origin', 'Martinique, works in Senegal'), ('Works in', 'Photography'), ('Series', 'Danser l’Espoir')],
+         lead=dict(file="work-00", title=None, series='Danser l’Espoir', w=1500, h=1000),
+         series=[
+             dict(title='Danser l’Espoir', line='An ongoing project since 2003: Fitte-Duval follows contemporary dancers from across the continent in their work sessions, offstage as well as on, to show how the art is made and how it is changing.',
+                  works=[("work-01", None, 1500, 1000), ("work-02", None, 1500, 1000), ("work-03", None, 1500, 1000)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='fatoumata-diabate', name='Fatoumata Diabaté', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Photographs of youth, style and the night in Bamako and other cities.',
+         text=['Fatoumata Diabaté was born in Bamako, Mali, in 1980, and trained there at the Centre de Formation Audiovisuel Promo-Femmes and at the Centre de Formation en Photographie.', 'In 2005 her series Touaregs, en gestes et en mouvements won the Prix Afrique en Création of the Institut Français and was shown at the sixth Bamako Encounters.'],
+         facts=[('Origin', 'Mali'), ('Works in', 'Photography'), ('Series', 'Sutigi')],
+         lead=dict(file="work-00", title=None, series='Sutigi', w=1500, h=1000),
+         series=[
+             dict(title='Sutigi', line='The night is ours. Begun in Bamako while she was training, and continued in other cities: young women, her friends among them, photographed at night in the clothes they go out in, in the streets, cultural centres and clubs. For Diabaté, the night is when the young feel most at ease.',
+                  works=[("work-01", None, 1500, 1000), ("work-03", None, 1500, 1000), ("work-04", None, 1500, 1000), ("work-06", None, 1500, 1000)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='isaac-kasamani', name='Isaac Kasamani', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Photojournalism of Uganda’s politics, from the middle of the protests.',
+         text=['Isaac Kasamani is a Kenyan photojournalist based in Uganda. He trained at the Daily Monitor, Uganda’s leading independent newspaper, and works for it and for Agence France-Presse.', 'Most of his work is political: protests, unrest and the events of public life, photographed from close in, where the confrontation is.'],
+         facts=[('Origin', 'Kenya, works in Uganda'), ('Works in', 'Photojournalism')],
+         lead=dict(file="work-00", title=None, series='Selected works', w=1500, h=1007),
+         series=[
+             dict(title='Selected works', line='Protests in Uganda and their policing: the crowd, the fires, the riot police.',
+                  works=[("work-02", None, 1500, 1007), ("work-03", None, 1500, 996), ("work-04", None, 1500, 996), ("work-05", None, 1500, 1056)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='antonia-steyn', name='Antonia Steyn', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Portraits of South African figures, made with a strong sense of staging.',
+         text=['Antonia Steyn graduated from the University of Cape Town in 2000 and has worked as a professional photographer since 2005, in portraiture and in campaigns for advertising clients.', 'Her portrait of the satirist Pieter-Dirk Uys won her Media24 Photographer of the Year in 2007, and her triptych Steyn & De Villiers the Vuleka Art Award in 2011.'],
+         facts=[('Origin', 'South Africa'), ('Works in', 'Photography')],
+         lead=dict(file="work-00", title=None, series='Selected works', w=1500, h=1125),
+         series=[
+             dict(title='Selected works', line='Portraits set in the landscape: figures photographed in fields and cemeteries, under heavy skies.',
+                  works=[("work-01", None, 1500, 1126), ("work-03", None, 1500, 1199), ("work-04", None, 1500, 1200), ("work-05", None, 1500, 1199)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='ala-kheir', name='Ala Kheir', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Photographs of cities, landscapes and everyday life, in Sudan and beyond.',
+         text=['Ala Kheir was born in Nyala, in south-western Sudan, in 1985, and has photographed since he bought his first camera in 2005.', 'He keeps to no single subject and photographs everything around him, inspired by the American photographer Robert Adams. He had a solo exhibition at the Addis Foto Fest in 2012.'],
+         facts=[('Origin', 'Sudan'), ('Works in', 'Photography')],
+         lead=dict(file="work-00", title=None, series='Selected works', w=1500, h=1000),
+         series=[
+             dict(title='Selected works', line='Streets, buildings and open land.',
+                  works=[("work-01", None, 1500, 1000), ("work-02", None, 1500, 1000), ("work-03", None, 1500, 1000), ("work-05", None, 1500, 885)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='adeola-olagunju', name='Adeola Olagunju', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Performance photographs that answer social, political and religious decay.',
+         text=['Adeola Olagunju lives and works in Lagos. She graduated in fine and applied arts from Ladoke Akintola University of Technology in 2009, and received the LagosPhoto award in 2012 and the Young ArtFund Amsterdam award in 2013.', 'Her work is mostly performance for the camera, through which she questions stereotypes and the state of society.'],
+         facts=[('Origin', 'Nigeria'), ('Works in', 'Photography and performance'), ('Series', 'Resurgence: A Manifesto')],
+         lead=dict(file="work-00", title=None, series='Resurgence: A Manifesto', w=1500, h=1000),
+         series=[
+             dict(title='Resurgence: A Manifesto', line='Performances for the camera in abandoned industrial places: a refusal of the social, political and religious decay Olagunju sees around her, and a call to wake from it.',
+                  works=[("work-01", None, 1500, 1000), ("work-02", None, 1500, 1000), ("work-03", None, 1500, 1000), ("work-05", None, 1500, 1000)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='jon-riordan', name='Jon Riordan', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Landscapes of South Africa, read for the history that lies in them.',
+         text=['Jon Riordan was born in Port Elizabeth in 1981 and lives in Cape Town. He studied photojournalism, and took a master’s degree in documentary arts at the University of Cape Town under Paul Weinberg.', 'He photographs everyday surroundings rather than the personal, guided by Simon Schama’s idea that landscape is built up from layers of memory as much as of rock: in South Africa, the past is visible in the present.'],
+         facts=[('Origin', 'South Africa'), ('Works in', 'Photography')],
+         lead=dict(file="work-00", title=None, series='Selected works', w=1500, h=1001),
+         series=[
+             dict(title='Selected works', line='Open land on the edges of Cape Town: grass, rubbish, a sofa left behind, washing on a line.',
+                  works=[("work-02", None, 1500, 994), ("work-06", None, 1500, 992), ("work-09", None, 1500, 1001), ("work-13", None, 1500, 1001)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='mpho-mokgadi', name='Mpho Mokgadi', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Black-and-white photographs on film, a diary of the people and places around him.',
+         text=['Mpho Mokgadi is a photographer based in Johannesburg. He began with a film camera his mother gave him as a child, and has worked on film ever since.', 'His photographs are personal: scenes and people as he meets them, kept as a visual diary.'],
+         facts=[('Origin', 'South Africa'), ('Works in', 'Photography, on film')],
+         lead=dict(file="work-00", title=None, series='Selected works', w=1346, h=1346),
+         series=[
+             dict(title='Selected works', line='Portraits and interiors in black and white.',
+                  works=[("work-01", None, 1500, 1498), ("work-03", None, 1500, 1500), ("work-05", None, 1434, 1500), ("work-07", None, 1500, 1498)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='charles-okereke', name='Charles Okereke', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Photographs close to abstraction, on people and the environment.',
+         text=['Charles Okereke was born in Kano, in northern Nigeria, in 1966. He works in painting, photography, sculpture and furniture design, from research into people and the environment.', 'He is a member of the Black Box photography collective and a founding member of Invisible Borders, the trans-African photographers’ road trip.'],
+         facts=[('Origin', 'Nigeria'), ('Works in', 'Photography, painting, sculpture and design')],
+         lead=dict(file="work-00", title=None, series='Selected works', w=1500, h=1000),
+         series=[
+             dict(title='Selected works', line='Traces pressed into the ground, a figure against the sky, forms like planets: photographs that come close to abstraction and ask for a second look.',
+                  works=[("work-01", None, 1500, 1000), ("work-02", None, 1500, 1000), ("work-03", None, 1500, 1001), ("work-04", None, 1500, 1000)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='helene-amouzou', name='Hélène Amouzou', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Self-portraits on film, made in long exposures while she waited for asylum in Belgium.',
+         text=['Hélène Amouzou was born in Togo in 1969 and lives in Molenbeek, Belgium. She works on film, and lets chance into her long exposures.', 'Self-portraiture is, in her words, a way of writing without words. She has drawn on the work of the American photographer Francesca Woodman.'],
+         facts=[('Origin', 'Togo, lives in Belgium'), ('Works in', 'Photography')],
+         lead=dict(file="work-00", title=None, series='Self-portraits', w=1500, h=1458),
+         series=[
+             dict(title='Self-portraits', line='Made over two years while she went through the asylum process in Belgium and waited for her residence permit. In bare rooms with peeling floral wallpaper, she, her clothes and often a suitcase appear as ghostly traces, between absence and presence.',
+                  works=[("work-01", None, 1453, 1500), ("work-02", None, 1483, 1500), ("work-03", None, 1477, 1500), ("work-05", None, 1500, 1430)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='sydelle-willow-smith', name='Sydelle Willow Smith', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Photographs and films on memory, home and migration.',
+         text=['Sydelle Willow Smith was born in Johannesburg in 1987 and is based in Cape Town. She trained at the Market Photo Workshop, and took degrees in social anthropology and in video production at the University of Cape Town.', 'Her photographs and films follow people and the places they make home, with a focus on memory, placemaking and migration.'],
+         facts=[('Origin', 'South Africa'), ('Works in', 'Photography and film')],
+         lead=dict(file="work-00", title=None, series='Selected works', w=1500, h=1000),
+         series=[
+             dict(title='Selected works', line='Homes, streets and gatherings: the private and public places where people make a life.',
+                  works=[("work-01", None, 1500, 1000), ("work-03", None, 1500, 1000), ("work-04", None, 1500, 959), ("work-08", None, 1500, 984)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='jac-kritzinger', name='Jac Kritzinger', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Art, documentary and portrait photographs that look for what lies behind the everyday.',
+         text=['Jac Kritzinger was born in Cape Town in 1976 and turned to photography after an honours degree in film studies. He works in art, documentary and portrait photography.', 'He calls himself a poet before a photographer, and looks, with a sense of humour, for what shines behind the confines of everyday reality.'],
+         facts=[('Origin', 'South Africa'), ('Works in', 'Photography')],
+         lead=dict(file="work-00", title=None, series='Selected works', w=1500, h=995),
+         series=[
+             dict(title='Selected works', line='A figure in the air, a dead tree, a frame standing in an empty field: everyday scenes, turned slightly strange.',
+                  works=[("work-02", None, 1500, 998), ("work-03", None, 1500, 998), ("work-04", None, 1500, 998), ("work-05", None, 1500, 998)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
+    dict(slug='mouna-karray', name='Mouna Karray', group="network",
+         # Sources: the artist's profile on commerceandculture.org (text and images, at 1,500 px; the lead is the image Thomas chose there).
+         line='Photographs on identity, memory and constraint.',
+         text=['Mouna Karray was born in Sfax, Tunisia, in 1970, and took an MA in image media at the Tokyo Institute of Polytechnics and Arts in 2002. She lives and works between Sfax and Paris.', 'Her work has been shown at the Bamako Encounters in 2011 and at Photoquai, at the Musée du Quai Branly in Paris, in 2009.'],
+         facts=[('Origin', 'Tunisia'), ('Works in', 'Photography'), ('Series', 'Noir · Identity at Stake')],
+         lead=dict(file="work-00", title=None, series='Noir', w=1500, h=1500),
+         series=[
+             dict(title='Noir', line='2013. Her body hidden in a white sack, only a hand and a cable release showing: making the photograph becomes a way out of confinement.',
+                  works=[("work-02", None, 1500, 1500), ("work-03", None, 1500, 1500)]),
+             dict(title='Identity at Stake', line='2005. Karray photographs women in their own surroundings, then takes their place in the same setting, in their clothes and with their gestures: each pair shows the difference that remains.',
+                  works=[("work-04", None, 1500, 1500), ("work-05", None, 1500, 1500), ("work-06", None, 1500, 1500), ("work-07", None, 1500, 1500)]),
+         ],
+         note='Text and series lines are draft, from the profile on commerceandculture.org. Website to find.'),
 ]
 ARTIST_BY_NAME = {a["name"]: a for a in ARTISTS}
 
@@ -1218,7 +1375,7 @@ def m_network(base):
 
 def work_label(a, title, series):
     """Caption and alt text of a work: the artist, the title where the work has one, the series."""
-    return a["name"] + (f", {title}" if title else "") + f", from the series {series}"
+    return a["name"] + (f", {title}" if title else "") + (f", from the series {series}" if series and series != "Selected works" else "")
 
 
 def artist_href(base, a):
@@ -1239,7 +1396,7 @@ def tpl_artist(p, base):
     lead_img = artwork(base, a, lead["file"], lead_alt, lead["w"], lead["h"], "(max-width: 767px) 100vw, 60vw")
     lead_html = (f'<div class="cols"><figure class="c6-12 work-lead">{lead_img}'
                  f'<figcaption class="credit"><span>{e(lead_alt)}</span></figcaption></figure></div>')
-    kicker = "Shown at Øksnehallen" if a["group"] == "shown" else "From our network"
+    kicker = "Shown at Øksnehallen" if a["group"] == "shown" else "From the network"
     dl = "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in a["facts"])
     dl += f'<dt>Exhibited</dt><dd><a href="{base}about/#exhibitions">{e(EXHIBITION)}</a></dd>' if a["group"] == "shown" else ""
     if a.get("gallery"):

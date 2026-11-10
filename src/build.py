@@ -666,13 +666,13 @@ EXHIBITION_PROJECTS = [  # strongest first; a new exhibition is one more entry, 
 # large one shrinks the large one, so PixlArt (2018) is off the page; more of Øksnehallen instead.
 ABOUT_EXHIBITION_DOOR = "A collection can open as an exhibition"   # open: now, or once a sponsored collection exists (Thomas)
 ABOUT_ARTISTS_LEAD = ("Our exhibitions are curated from a network of artists across the continent, which we have followed and published "
-                      "for more than a decade, first through the African Photography Network. Their works are shown here by agreement, "
-                      "with their galleries’ credits where they apply. They are not part of the archive and are not available to partners.")
+                      "for more than a decade, first through the African Photography Network. The works remain the artists’ own, "
+                      "under their copyright, with their galleries’ credits where they apply.")
 ARTISTS_SHOWN = [  # (name, origin · series · one line, image label); shown at Øksnehallen; artists, never "photographers"
     ("Omar Victor Diop", "Senegal · Studio des Vanités, Diaspora · Portraits that place African history inside the present. Courtesy MAGNIN-A, Paris.", "Omar Victor Diop, Diaspora"),
-    ("Namsa Leuba", "Switzerland and Guinea · Khoi San, Zulu Kids, The Kingdom of Mountains · Staged photographs on how cultures see one another; the exhibition’s poster.", "Namsa Leuba, Khoi San"),
+    ("Namsa Leuba", "Switzerland and Guinea · Khoi San, Zulu Kids, The Kingdom of Mountains · Staged photographs on how cultures see one another.", "Namsa Leuba, Khoi San"),
     ("Fabrice Monteiro", "Belgium and Senegal · The Prophecy, A Gorean Summer · Staged images on the environment and on heritage, made in Senegal.", "Fabrice Monteiro, The Prophecy"),
-    ("Dillon Marsh", "South Africa · For What It’s Worth, Assimilation · The mines of South Africa and what they yielded.", "Dillon Marsh, For What It’s Worth"),
+    ("Dillon Marsh", "South Africa · For What It’s Worth, Assimilation, Common Ground · The mines of South Africa and what they yielded.", "Dillon Marsh, For What It’s Worth"),
     ("Lien Botha", "South Africa · Parrot Jungle · Photographs of return and memory.", "Lien Botha, Parrot Jungle"),
     ("Tahir Carl Karmali", "Kenya · Jua Kali · Composites built from found objects in Nairobi.", "Tahir Carl Karmali, Jua Kali"),
     ("Yinka Ilori", "Nigeria and the United Kingdom · Furniture rebuilt from discarded chairs, telling Nigerian parables.", "Yinka Ilori, furniture"),
@@ -694,32 +694,174 @@ ARTISTS_NETWORK = [  # from the network, profiled in our journal; one line each,
 # Rights: the exhibition agreement gives Africa Reframed and Commerce & Culture perpetual rights to publish the images of the
 # artists shown at Øksnehallen (Thomas, 10 November 2026). Files: assets/artists/<slug>/, web versions at 2,000 and 1,000 px
 # made from the originals (the masters and portraits are in the exhibition folder, to move into 11 Media library / 01 Artists).
-ARTIST_NOT_ARCHIVE = "The works are shown by agreement. They are not part of the archive and are not available to partners."
+# The facts box says what a museum label would: the artist's copyright, the gallery's courtesy where there is one, and for
+# the artists shown at Øksnehallen why the works are here. Nothing that suggests a relationship with Africa Reframed
+# (Thomas, 10 November 2026: no "by agreement", no "With Africa Reframed", no partners).
+EXHIBITION = "Africa Reframed, Øksnehallen, Copenhagen, 2016"
+
+
+def artist_rights(a):
+    line = f"All images © {a['name']}."
+    if a.get("courtesy"):
+        line += f" {a['courtesy']}."
+    if a["group"] == "shown":
+        line += f" Shown here because these works were part of the exhibition {EXHIBITION}."
+    return line
+
+
+def artist_credit(a):
+    return f"© {a['name']}" + (f" · {a['courtesy']}" if a.get("courtesy") else "")
 ARTISTS = [
-    dict(slug="namsa-leuba", name="Namsa Leuba", group="shown",
-         # Sources: her biography in the exhibition folder (Bio_NamsaLeuba.rtf, 2016); namsaleuba.com/about-me (read 10 November
-         # 2026: lists Africa Reframed, Copenhagen, 2016); the exhibition's own selection (Exhibition Modules / Namsa Leuba);
-         # About page – build brief (her image as the exhibition's poster); Track Record (the ministry's evaluation cover, 2017).
-         line="Staged photographs between documentary, fashion and performance, on the signs and symbols of the cultures she photographs.",
-         text=["Namsa Leuba was born in Switzerland in 1982, of Swiss and Guinean heritage, and studied photography and art direction at ECAL in Lausanne. "
-               "Her photographs are staged with care for props, colours and gestures, and look at how African identities are pictured from outside: "
-               "rituals, statuettes and masquerades, set between the sacred and the everyday.",
-               "At Øksnehallen in 2016 she showed three series from 2014, Kingdom of Mountains, Khoisan and Zulu Kids, and her image was the exhibition’s poster. "
-               "The Danish Ministry of Foreign Affairs later put one of her images from the show on the cover of its own evaluation."],
-         facts=[("Origin", "Switzerland and Guinea"), ("Works in", "Photography"), ("Series shown", "Kingdom of Mountains · Khoisan · Zulu Kids")],
-         connection="Shown at Africa Reframed, Øksnehallen, Copenhagen, 2016",
-         website=("namsaleuba.com", "https://www.namsaleuba.com"), gallery=None,
-         lead=dict(file="kingdom-of-mountains-umntanenkosi", title="Umntanenkosi", series="Kingdom of Mountains", w=4347, h=5350),
+    dict(slug="omar-victor-diop", name="Omar Victor Diop", group="shown", courtesy="Courtesy MAGNIN-A, Paris",
+         # Sources: the exhibition catalogue 2016 (proof: facts only, its texts are DGI-byen's); MAGNIN-A's list of the works chosen for the show (2016-05_Liste oeuvres choisies.pdf: titles,
+         # years, series, the courtesy line); his profile on commerceandculture.org (the lead is the image Thomas chose there).
+         line="Studio portraits and staged self-portraits that draw on the history of African portraiture and of Africans in Europe.",
+         text=["Omar Victor Diop was born in Dakar in 1980. He studied at business school in Paris and worked in finance and corporate "
+               "communications before he turned to photography full time in 2012, the year after his series The Future of Beauty was shown "
+               "at the Bamako Biennale.",
+               "His work joins photography with costume, styling and writing, and takes up the tradition of the great West African studio portraitists."],
+         facts=[("Origin", "Senegal"), ("Works in", "Photography"), ("Series shown", "Diaspora · Le Studio des Vanités"), ("Gallery", "MAGNIN-A, Paris")],
+         website=("omarviktor.com", "https://www.omarviktor.com"),
+         lead=dict(file="diaspora-albert-badin", title="Albert Badin", series="Diaspora", w=667, h=1000),
          series=[
-             dict(title="Kingdom of Mountains", line="Seven staged portraits in a mountain landscape, each work with its own title; four of them here.",
-                  works=[("kingdom-of-mountains-owesifazane", "Owesifazane", 4133, 5086), ("kingdom-of-mountains-umfana", "Umfana", 4301, 5294),
-                         ("kingdom-of-mountains-qkhwini", "Qkhwini", 4351, 5355), ("kingdom-of-mountains-sangoma", "Sangoma", 4334, 5334)]),
-             dict(title="Khoisan", line="Masked and costumed figures, staged by water, scrub and corrugated iron.",
-                  works=[("khoisan-keala", "Keala", 4134, 5079), ("khoisan-chunara", "Chunara", 4135, 5079),
-                         ("khoisan-maria", "Maria", 4134, 5079), ("khoisan-kokos", "Kokos", 4134, 5079)]),
+             dict(title="Diaspora", line="Self-portraits, 2014 and 2015. Diop takes the place of Africans who made their mark in Europe between the "
+                  "fifteenth and the nineteenth century, each staged after a historical portrait, with an object from football added: their "
+                  "stories, tied to the place of Africans in Europe today.",
+                  works=[("diaspora-august-sabac-el-cher", "August Sabac El Cher", 2362, 3543), ("diaspora-malick-ambar", "Malick Ambar", 2492, 3543),
+                         ("diaspora-omar-ibn-said", "Omar Ibn Said", 2362, 3543), ("diaspora-jean-baptiste-belley", "Jean-Baptiste Belley", 667, 1000)]),
+             dict(title="Le Studio des Vanités", line="Portraits made from 2011 of young creative people from Dakar and other African cities, "
+                  "in the manner of the West African studio photographers. The backdrops are textiles from his mother’s collection, handed down "
+                  "through generations, chosen for their colours and patterns.",
+                  works=[("vanites-adama", "Adama", 1600, 1600), ("vanites-aminata", "Aminata", 1600, 1600),
+                         ("vanites-selly", "Selly", 1666, 2500), ("vanites-oumy-ndour", "Oumy Ndour", 2000, 3000)]),
          ],
-         note="Zulu Kids, the third series shown, follows: its three masters are over the transfer limit, so Thomas exports them at about 2,000 px. "
-              "Text and lines are draft. Facts from her own biography and namsaleuba.com, read 10 November 2026."),
+         note="Text and series lines are draft. The lead (Albert Badin) and Jean-Baptiste Belley exist here only at 1,000 px: "
+              "MAGNIN-A can send larger files. Website from the 2016 catalogue, to confirm."),
+    dict(slug="namsa-leuba", name="Namsa Leuba", group="shown",
+         # Sources: her biography in the exhibition folder (Bio_NamsaLeuba.rtf, 2016); the exhibition catalogue 2016 (proof, p5:
+         # facts only, its texts are DGI-byen's); namsaleuba.com (Khoisan, The Kingdom of Mountains, Zulu Kids; read 10 November
+         # 2026); the lead is the image Thomas chose for her profile on commerceandculture.org (Chunara).
+         line="Staged photographs between documentary, fashion and performance, on the signs and symbols of the cultures she photographs.",
+         text=["Namsa Leuba was born in 1982 to a Guinean mother and a Swiss father, and grew up by Lake Neuchâtel in Switzerland. "
+               "She studied photography and art direction at ECAL, the University of Art and Design Lausanne.",
+               "Her photographs look at African identity through Western eyes. Spanning documentary, fashion and performance, she stages "
+               "rituals, ceremonies, statuettes and masquerades with careful attention to props, colours and gestures, and questions the line "
+               "between fact and fiction, and between the sacred and the profane."],
+         facts=[("Origin", "Switzerland and Guinea"), ("Works in", "Photography"), ("Series shown", "Khoisan · The Kingdom of Mountains · Zulu Kids")],
+         website=("namsaleuba.com", "https://www.namsaleuba.com"),
+         lead=dict(file="khoisan-chunara", title="Chunara", series="Khoisan", w=4135, h=5079),
+         series=[
+             dict(title="Khoisan", line="Made in 2014 in the Northern Cape, South Africa. Where her other series invent their own blend of cultures, "
+                  "Khoisan draws on the traditions of the Khoisan people themselves. Clothing, props and accessories take over the figures, "
+                  "and the photographs sit between documentary and fashion.",
+                  works=[("khoisan-keala", "Keala", 4134, 5079), ("khoisan-koos", "Koos", 4134, 5078), ("khoisan-chunara", "Chunara", 4135, 5079),
+                         ("khoisan-maria", "Maria", 4134, 5079), ("khoisan-kokos", "Kokos", 4134, 5079)]),
+             dict(title="The Kingdom of Mountains", line="Made in 2014 around the Katse Dam in Lesotho, during a six-month residency in South Africa. "
+                  "Leuba staged the clothes and accessories of the people who live there in the landscape around them: performative portraits "
+                  "rather than documents, on how African traditions are translated into Western images.",
+                  works=[("kingdom-of-mountains-owesifazane", "Owesifazane", 4133, 5086), ("kingdom-of-mountains-umntanenkosi", "Umntanenkosi", 4347, 5350),
+                         ("kingdom-of-mountains-qkhwini", "Qkhwini", 4351, 5355), ("kingdom-of-mountains-sangoma", "Sangoma", 4334, 5334)]),
+             dict(title="Zulu Kids", line="Made in 2014 with children in KwaZulu-Natal and Soweto, South Africa, following her series Ya Kala Ben, "
+                  "made in Guinea. The children pose on wooden logs like statuettes, a tradition Leuba invented, since statuettes have no place "
+                  "in Zulu culture; Zulu, West African and European signs are layered in each image.",
+                  works=[], pending="The three works shown follow when Thomas has exported them from the masters at about 2,000 px."),
+         ],
+         note="Text and series lines are draft, from her biography (2016), the exhibition catalogue (2016) and namsaleuba.com, read 10 November 2026."),
+    dict(slug="fabrice-monteiro", name="Fabrice Monteiro", group="shown",
+         # Sources: the exhibition catalogue 2016 (proof: facts only, its texts are DGI-byen's); his profile on commerceandculture.org (images at 2,500 px and the lead Thomas chose there).
+         line="Staged photographs that join the craft of fashion photography to the history and the environment of West Africa.",
+         text=["Fabrice Monteiro was born in 1972 to a Beninese father and a Belgian mother, and is based in Dakar. He worked as a model for "
+               "ten years before he turned to photography in his mid-thirties, encouraged by the New York photographer Alfonse Pagano, whom he met in 2007.",
+               "His images draw on both his African and his European roots, and carry tradition and the present day in staged, carefully dressed scenes."],
+         facts=[("Origin", "Belgium and Benin, based in Senegal"), ("Works in", "Photography"), ("Series shown", "The Prophecy · A Gorean Summer")],
+         lead=dict(file="prophecy-3", title=None, series="The Prophecy", w=2500, h=1669),
+         series=[
+             dict(title="The Prophecy", line="Made in 2013 with the costume designer Doulsy and the organisation Ecofund. Figures in costumes made "
+                  "from the waste found at each site stand in polluted places across Senegal, like the djinns of West African tradition: spirits "
+                  "that warn of what is being done to the land.",
+                  works=[("prophecy-1", None, 2500, 1669), ("prophecy-2", None, 2500, 1669), ("prophecy-5", None, 2500, 1669), ("prophecy-6", None, 2500, 1669)]),
+             dict(title="A Gorean Summer", line="Made in 2012 on Gorée, the island off Dakar remembered as a place of the Atlantic slave trade and "
+                  "visited today by tourists from all over the world. The series looks at what happens when memory and tourism meet in the same place.",
+                  works=[("gorean-summer-1", None, 2500, 1685), ("gorean-summer-3", None, 2500, 1663), ("gorean-summer-5", None, 2500, 1667), ("gorean-summer-7", None, 2500, 1667)]),
+         ],
+         note="Text and series lines are draft. Images from his profile on commerceandculture.org, at 2,500 px (the exhibition folder has only small "
+              "files). The works are untitled here: their titles, if they have them, to add. Website to find: he is now with MAGNIN-A, Paris."),
+    dict(slug="dillon-marsh", name="Dillon Marsh", group="shown",
+         # Sources: the exhibition catalogue 2016 (proof: facts only, its texts are DGI-byen's); his profile on commerceandculture.org (For What It's Worth, Assimilation, the lead); the exhibition folder
+         # (Common Ground, from the print files).
+         line="Photographs of the South African landscape and the marks people leave on it, sometimes with computer graphics added.",
+         text=["Dillon Marsh was born in Cape Town in 1981 and studied fine art at the University of Stellenbosch, where he turned to photography. "
+               "He has also worked as a retoucher, and brings computer-generated imagery into some of his photographs to show what the camera alone cannot.",
+               "His series pick out one kind of thing that recurs across a landscape, a family of objects that would otherwise blend in, and photograph it place by place."],
+         facts=[("Origin", "South Africa"), ("Works in", "Photography"), ("Series shown", "For What It’s Worth · Assimilation · Common Ground")],
+         lead=dict(file="central-rand-goldfield", title="Central Rand Goldfield", series="For What It’s Worth", w=1500, h=1200),
+         series=[
+             dict(title="For What It’s Worth", line="Mines across South Africa, from the copper mines of Namaqualand and the diamond mines of the "
+                  "Northern Cape to the gold fields of the Witwatersrand. Into each photograph Marsh sets a sphere made with computer graphics, "
+                  "sized to the volume of metal or diamonds the mine has produced, so that what came out of the ground stands beside the place it came from.",
+                  works=[("copperton-mine", "Copperton Mine", 2500, 2000), ("kimberley-mine", "Kimberley Mine", 2500, 2000),
+                         ("koffiefontein-mine", "Koffiefontein Mine", 2500, 2000), ("east-rand-goldfield", "East Rand Goldfield", 2500, 2000)]),
+             dict(title="Assimilation", line="Telephone poles in the Kalahari, taken over by the huge communal nests of sociable weavers: birds "
+                  "making a home of the structures people have put into the landscape.",
+                  works=[("assimilation-1", "Assimilation 1", 2500, 2000), ("assimilation-3", "Assimilation 3", 2500, 2000),
+                         ("assimilation-5", "Assimilation 5", 2500, 2000), ("assimilation-8", "Assimilation 8", 2500, 2000)]),
+             dict(title="Common Ground", line="Termite mounds in town: in car parks, on building plots, under trees and among graves, the mounds "
+                  "hold their ground in the spaces people have claimed.",
+                  works=[("common-ground-1", "Common Ground 1", 5811, 4649), ("common-ground-3", "Common Ground 3", 5811, 4649),
+                         ("common-ground-10", "Common Ground 10", 5811, 4649), ("common-ground-12", "Common Ground 12", 5811, 4649)]),
+         ],
+         note="Text and series lines are draft. Common Ground is described from the photographs themselves: its place and year to confirm "
+              "with the artist. Website to confirm."),
+    dict(slug="lien-botha", name="Lien Botha", group="shown",
+         # Sources: the exhibition catalogue 2016 (proof: facts only, its texts are DGI-byen's); her profile on commerceandculture.org (images at 2,500 px, the lead, the series in her words).
+         line="Photographs of memory and place, from a practice that moves between photography, printmaking and sculpture.",
+         text=["Lien Botha was born in South Africa in 1961. She worked as a press photographer before taking a degree in fine art at the "
+               "Michaelis School of Fine Art in Cape Town in 1988, and has worked since in photography, printmaking, painting and sculpture.",
+               "Her work returns to the places of daily life and finds in their details the traces of personal and shared memory."],
+         facts=[("Origin", "South Africa"), ("Works in", "Photography, printmaking and sculpture"), ("Series shown", "Parrot Jungle")],
+         lead=dict(file="parrot-jungle-lead", title=None, series="Parrot Jungle", w=1500, h=1000),
+         series=[
+             dict(title="Parrot Jungle", line="A disrupted road trip on the coast road between Betty’s Bay and Cape Town, made of the places missed "
+                  "on the way to somewhere else: roadkill, people walking, stray dogs, the road gone under the rain, a site hut about to disappear. "
+                  "Botha calls it a drive-by revisited: forty-five photographs of a world in decay, still full of birdsong.",
+                  works=[("parrot-jungle-01", None, 2500, 1666), ("parrot-jungle-19", None, 2500, 1667), ("parrot-jungle-27", None, 2500, 1667), ("parrot-jungle-4422", None, 2500, 1813)]),
+         ],
+         note="Text and series line are draft. Website to find: none confirmed."),
+    dict(slug="tahir-carl-karmali", name="Tahir Carl Karmali", group="shown",
+         # Sources: the exhibition catalogue 2016 (proof: facts only, its texts are DGI-byen's); his profile on commerceandculture.org (the lead); the exhibition folder (the five works shown, as
+         # 1,500 px files named "Bamako Nights" by mistake, numbered as the masters Juak_3 to Juak_12); okayafrica.com on Jua Kali.
+         line="Composite portraits of Nairobi’s creative workers, built from objects salvaged in the city.",
+         text=["Tahir Carl Karmali was born in Kenya in 1987 and grew up in Nairobi. He began as an ink painter, joining abstract painting with "
+               "portraiture, and took up the camera while he travelled and worked in Asia and Europe.",
+               "He works across photography, mixed media and installation, on questions of economy and ethnicity, and builds digital composites from found objects."],
+         facts=[("Origin", "Kenya"), ("Works in", "Photography, mixed media and installation"), ("Series shown", "Jua Kali")],
+         lead=dict(file="jua-kali-lead", title=None, series="Jua Kali", w=1001, h=1500),
+         series=[
+             dict(title="Jua Kali", line="Portraits of creative workers in Nairobi’s informal economy, the jua kali, among them dancers, writers, "
+                  "designers and sculptors. Each sitter was photographed outdoors in daylight, and each portrait is built up into a collage of "
+                  "objects Karmali gathered at dump sites and recycling yards. The series asks whether the informal economy is the real power of the city.",
+                  works=[("jua-kali-3", None, 1001, 1500), ("jua-kali-8", None, 1001, 1500), ("jua-kali-11", None, 1001, 1500), ("jua-kali-12", None, 1001, 1500)]),
+         ],
+         note="Text and series line are draft. The works are shown at 1,500 px; the masters (about 220 MB each) can replace them. Website to find."),
+    dict(slug="yinka-ilori", name="Yinka Ilori", group="shown",
+         # Sources: the exhibition catalogue 2016 (proof: facts only, its texts are DGI-byen's); his profile on commerceandculture.org (images at 2,500 px, the lead); the exhibition folder (Backbone);
+         # design-milk.com on If Chairs Could Talk (2015).
+         line="Furniture rebuilt from discarded chairs, telling the Nigerian parables of his childhood.",
+         text=["Yinka Ilori was born in London in 1987 to Nigerian parents, and studied furniture and product design at London Metropolitan University.",
+               "His work sits between art and design. He gives old chairs new life by joining parts of different chairs and adding textiles and colour, "
+               "draws on the parables and the African fabrics he grew up with, and uses them to raise questions of hope, class and sexuality."],
+         facts=[("Origin", "Nigeria and the United Kingdom"), ("Works in", "Furniture and design"), ("Series shown", "If Chairs Could Talk")],
+         website=("yinkailori.com", "https://yinkailori.com"),
+         # The image chosen for his profile on commerceandculture.org is a portrait of him, so the lead is a work (no portraits).
+         lead=dict(file="helping-hand", title="Helping Hand", series="If Chairs Could Talk", w=3840, h=5760),
+         series=[
+             dict(title="If Chairs Could Talk", line="Chairs found and rebuilt, each telling a story drawn from a Nigerian parable. The collection "
+                  "was first shown in 2015 at The Shop at Bluebird in London, during the London Design Festival.",
+                  works=[("a-trapped-star", "A Trapped Star", 1667, 2500), ("captain-hook", "Captain Hook", 1667, 2500),
+                         ("flower-bomb", "Flower Bomb", 1667, 2500), ("backbone", "Backbone", 3840, 5760)]),
+         ],
+         note="Text and series line are draft. The lead is a work, not the image chosen on commerceandculture.org, which is a portrait of him. "
+              "That these chairs belong to If Chairs Could Talk is to confirm: the exhibition folder calls them his new collection."),
 ]
 ARTIST_BY_NAME = {a["name"]: a for a in ARTISTS}
 
@@ -1058,7 +1200,7 @@ def artist_card(base, name):
         return {}
     ld = a["lead"]
     return dict(href=artist_href(base, a),
-                image=artwork(base, a, ld["file"], a["name"] + ", " + ld["title"] + ", from the series " + ld["series"], ld["w"], ld["h"], "(max-width: 767px) 50vw, 25vw", "work card-work"))
+                image=artwork(base, a, ld["file"], work_label(a, ld.get("title"), ld["series"]), ld["w"], ld["h"], "(max-width: 767px) 50vw, 25vw", "work card-work"))
 
 
 def m_network(base):
@@ -1072,6 +1214,11 @@ def m_network(base):
                f'<ul class="network-rows">{li}</ul>'
                + note("Rows of text, no images (Thomas, 10 November 2026). Each name links to the artist’s own page once it is made (Artist pages – template).")
                + "</div></div>", tight=True)
+
+
+def work_label(a, title, series):
+    """Caption and alt text of a work: the artist, the title where the work has one, the series."""
+    return a["name"] + (f", {title}" if title else "") + f", from the series {series}"
 
 
 def artist_href(base, a):
@@ -1088,28 +1235,29 @@ def artwork(base, a, file, alt, w, h, sizes="(max-width: 767px) 100vw, 50vw", cl
 def tpl_artist(p, base):
     a = p["artist"]
     lead = a["lead"]
-    lead_alt = a["name"] + ", " + lead["title"] + ", from the series " + lead["series"]
+    lead_alt = work_label(a, lead.get("title"), lead["series"])
     lead_img = artwork(base, a, lead["file"], lead_alt, lead["w"], lead["h"], "(max-width: 767px) 100vw, 60vw")
     lead_html = (f'<div class="cols"><figure class="c6-12 work-lead">{lead_img}'
                  f'<figcaption class="credit"><span>{e(lead_alt)}</span></figcaption></figure></div>')
     kicker = "Shown at Øksnehallen" if a["group"] == "shown" else "From our network"
     dl = "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in a["facts"])
-    dl += f'<dt>With Africa Reframed</dt><dd><a href="{base}about/#exhibitions">{e(a["connection"])}</a></dd>' if a.get("connection") else ""
+    dl += f'<dt>Exhibited</dt><dd><a href="{base}about/#exhibitions">{e(EXHIBITION)}</a></dd>' if a["group"] == "shown" else ""
     if a.get("gallery"):
         dl += f"<dt>Gallery</dt><dd>{e(a['gallery'])}</dd>"
     if a.get("website"):
         dl += f'<dt>Website</dt><dd><a href="{a["website"][1]}" rel="noopener">{e(a["website"][0])}</a></dd>'
     # No portrait (Thomas, 10 November 2026): the template shows the work only, so every artist's page is the same.
-    box = f'<aside class="facts-box"><dl class="facts">{dl}</dl><p class="small">{e(ARTIST_NOT_ARCHIVE)}</p></aside>'
+    box = f'<aside class="facts-box"><dl class="facts">{dl}</dl><p class="small">{e(artist_rights(a))}</p></aside>'
     text = "".join(draft(t) for t in a["text"])
     out = (m_page_head(a["name"], a["line"], kicker=kicker, statement_draft=True)
            + mod("photo", "b, the lead work, whole", lead_html, tight=True)
            + mod("text", "b, with a facts box (artist)", f'<div class="cols"><div class="c1-6 artist-text">{text}{note(a["note"]) if a.get("note") else ""}</div><div class="c8-12">{box}</div></div>'))
     for sr in a["series"]:
-        works = "".join("<figure>" + artwork(base, a, f, a["name"] + ", " + t + ", from the series " + sr["title"], w, h, "(max-width: 767px) 50vw, 25vw")
-                        + f"<figcaption>{e(t)}</figcaption></figure>" for f, t, w, h in sr["works"])
-        out += mod("grid", "artwork row, whole works", f'<h3 class="project-title">{e(sr["title"])}</h3>{draft(sr["line"], "p", "small")}'
-                   f'<div class="works">{works}</div>' + credit_line(None, f'{a["name"]}, from the series {sr["title"]}'))
+        works = "".join("<figure>" + artwork(base, a, f, work_label(a, t, sr["title"]), w, h, "(max-width: 767px) 50vw, 25vw")
+                        + (f"<figcaption>{e(t)}</figcaption>" if t else "") + "</figure>" for f, t, w, h in sr["works"] if f != lead["file"])
+        body = (f'<div class="works">{works}</div>' + credit_line(None, artist_credit(a))) if works else note(sr.get("pending", "Images follow."))
+        out += mod("grid", "artwork row, whole works", f'<h3 class="project-title">{e(sr["title"])}</h3>'
+                   f'<div class="cols"><div class="c1-8">{draft(sr["line"], "p", "series-text")}</div></div>{body}')
     others = [x for x in ARTISTS if x is not a]
     if others:
         i = ARTISTS.index(a)

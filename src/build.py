@@ -709,7 +709,6 @@ ARTISTS = [
          facts=[("Origin", "Switzerland and Guinea"), ("Works in", "Photography"), ("Series shown", "Kingdom of Mountains · Khoisan · Zulu Kids")],
          connection="Shown at Africa Reframed, Øksnehallen, Copenhagen, 2016",
          website=("namsaleuba.com", "https://www.namsaleuba.com"), gallery=None,
-         portrait=dict(file="portrait-lea-kloos", credit="Portrait: Lea Kloos", alt="Namsa Leuba, portrait"),
          lead=dict(file="kingdom-of-mountains-umntanenkosi", title="Umntanenkosi", series="Kingdom of Mountains", w=4347, h=5350),
          series=[
              dict(title="Kingdom of Mountains", line="Seven staged portraits in a mountain landscape, each work with its own title; four of them here.",
@@ -1100,13 +1099,8 @@ def tpl_artist(p, base):
         dl += f"<dt>Gallery</dt><dd>{e(a['gallery'])}</dd>"
     if a.get("website"):
         dl += f'<dt>Website</dt><dd><a href="{a["website"][1]}" rel="noopener">{e(a["website"][0])}</a></dd>'
-    portrait = ""
-    if a.get("portrait"):
-        pt = a["portrait"]
-        d = f"{base}assets/artists/{a['slug']}/{pt['file']}"
-        portrait = (f'<figure class="artist-portrait"><img src="{d}-800.jpg" srcset="{d}-800.jpg 800w, {d}-1600.jpg 1600w" sizes="(max-width: 767px) 100vw, 33vw" '
-                    f'alt="{e(pt["alt"])}" decoding="async"><figcaption class="credit"><span>{e(pt["credit"])}</span></figcaption></figure>')
-    box = f'{portrait}<aside class="facts-box"><dl class="facts">{dl}</dl><p class="small">{e(ARTIST_NOT_ARCHIVE)}</p></aside>'
+    # No portrait (Thomas, 10 November 2026): the template shows the work only, so every artist's page is the same.
+    box = f'<aside class="facts-box"><dl class="facts">{dl}</dl><p class="small">{e(ARTIST_NOT_ARCHIVE)}</p></aside>'
     text = "".join(draft(t) for t in a["text"])
     out = (m_page_head(a["name"], a["line"], kicker=kicker, statement_draft=True)
            + mod("photo", "b, the lead work, whole", lead_html, tight=True)
@@ -1817,9 +1811,6 @@ main{padding-bottom:var(--section)}
 .works figure{margin:0}
 .works figcaption{font-size:13px;color:var(--ink-soft);margin-top:8px}
 .artist-text p{margin-top:0}
-.artist-portrait{margin:0 0 24px}
-.artist-portrait img{display:block;width:100%;height:auto}
-.artist-portrait .credit{margin-top:8px}
 .c8-12{grid-column:8/-1}
 .card-work{aspect-ratio:4/5;object-fit:contain;background:#fff;margin-bottom:10px}
 .item h3 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}

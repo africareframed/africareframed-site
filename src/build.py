@@ -665,9 +665,15 @@ EXHIBITION_PROJECTS = [  # strongest first; a new exhibition is one more entry, 
 # Bigger, not smaller (Thomas, 9 November 2026): About features only what enlarges the picture. A small project beside a
 # large one shrinks the large one, so PixlArt (2018) is off the page; more of Øksnehallen instead.
 ABOUT_EXHIBITION_DOOR = "A collection can open as an exhibition"   # open: now, or once a sponsored collection exists (Thomas)
-ABOUT_ARTISTS_LEAD = ("Our exhibitions are curated from a network of artists across the continent, which we have followed and published "
-                      "for more than a decade, first through the African Photography Network. The works remain the artists’ own, "
-                      "under their copyright, with their galleries’ credits where they apply.")
+ABOUT_ARTISTS_LEAD = ("Our exhibitions are curated from the artists we have followed and published for more than a decade. "
+                      "The works remain the artists’ own, under their copyright, with their galleries’ credits where they apply.")
+# The African Photography Network (Thomas, 10 November 2026): open, run by us since 2014 (online from May 2014, "Powered by
+# Commerce & Culture"), named in words only (no logo, no page, no menu item, never a link to the old domain, which now
+# forwards elsewhere). It shows up in two places: this section on About and the network artists' own pages. The exhibition
+# artists are not tied to it: they came to us through the exhibition. "From and in Africa": Élise Fitte-Duval is from
+# Martinique and works in Senegal.
+NETWORK = "African Photography Network"
+NETWORK_LEAD = "An open network of photographers from and in Africa, which we have run since 2014."
 ARTISTS_SHOWN = [  # (name, origin · series · one line, image label); shown at Øksnehallen; artists, never "photographers"
     ("Omar Victor Diop", "Senegal · Studio des Vanités, Diaspora · Portraits that place African history inside the present. Courtesy MAGNIN-A, Paris.", "Omar Victor Diop, Diaspora"),
     ("Namsa Leuba", "Switzerland and Guinea · Khoi San, Zulu Kids, The Kingdom of Mountains · Staged photographs on how cultures see one another.", "Namsa Leuba, Khoi San"),
@@ -706,6 +712,8 @@ def artist_rights(a):
         line += f" {a['courtesy']}."
     if a["group"] == "shown":
         line += f" Shown here because these works were part of the exhibition {EXHIBITION}."
+    elif a["group"] == "network":
+        line += f" Shown here as part of the {NETWORK}."
     return line
 
 
@@ -1374,8 +1382,10 @@ def m_network(base):
         a = ARTIST_BY_NAME.get(n)
         return f'<a href="{artist_href(base, a)}">{e(n)}</a>' if a else e(n)
     li = "".join(f'<li><strong>{name(n)}</strong>{draft(d, "span")}</li>' for n, d in ARTISTS_NETWORK)
+    join = f'Photographers who want to join can <a href="{base}contact/">write to us</a>.'
     return mod("items", "a, rows of text, the network",
-               f'<div class="cols"><div class="c1-4">{heading("From the network", 3, "project-title")}</div><div class="c6-12">'
+               f'<div class="cols" id="network"><div class="c1-4">{heading(NETWORK, 3, "project-title")}</div><div class="c6-12">'
+               f'<p class="network-lead">{e(NETWORK_LEAD)} {join}</p>'
                f'<ul class="network-rows">{li}</ul>'
                + note("Rows of text, no images (Thomas, 10 November 2026). Each name links to the artist’s own page once it is made (Artist pages – template).")
                + "</div></div>", tight=True)
@@ -1406,9 +1416,10 @@ def tpl_artist(p, base):
     lead_img = artwork(base, a, lead["file"], lead_alt, lead["w"], lead["h"], "(max-width: 767px) 100vw, 60vw")
     lead_html = (f'<div class="cols"><figure class="c6-12 work-lead">{lead_img}'
                  f'<figcaption class="credit"><span>{e(lead_alt)}</span></figcaption></figure></div>')
-    kicker = "Shown at Øksnehallen" if a["group"] == "shown" else "From the network"
+    kicker = "Shown at Øksnehallen" if a["group"] == "shown" else NETWORK
     dl = "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in a["facts"])
     dl += f'<dt>Exhibited</dt><dd><a href="{base}about/#exhibitions">{e(EXHIBITION)}</a></dd>' if a["group"] == "shown" else ""
+    dl += f'<dt>Network</dt><dd><a href="{base}about/#network">{e(NETWORK)}</a></dd>' if a["group"] == "network" else ""
     if a.get("gallery"):
         dl += f"<dt>Gallery</dt><dd>{e(a['gallery'])}</dd>"
     if a.get("website"):
@@ -2130,6 +2141,7 @@ main{padding-bottom:var(--section)}
 .card-work{aspect-ratio:4/5;object-fit:cover;object-position:50% 50%;background:#fff;margin-bottom:10px}
 .item h3 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
 .item h3 a:hover{border-bottom-color:var(--ink)}
+.network-lead{margin:0 0 20px;max-width:34em}
 .network-rows{list-style:none;padding:0;margin:8px 0 0;columns:2;column-gap:var(--gutter)}
 .network-rows li{break-inside:avoid;padding:10px 0;border-top:1px solid var(--line)}
 .network-rows strong{display:block;font-weight:600}

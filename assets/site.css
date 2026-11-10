@@ -239,6 +239,7 @@ main{padding-bottom:var(--section)}
 .card-work{aspect-ratio:4/5;object-fit:cover;object-position:50% 50%;background:#fff;margin-bottom:10px}
 .item h3 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
 .item h3 a:hover{border-bottom-color:var(--ink)}
+.network-lead{margin:0 0 20px;max-width:34em}
 .network-rows{list-style:none;padding:0;margin:8px 0 0;columns:2;column-gap:var(--gutter)}
 .network-rows li{break-inside:avoid;padding:10px 0;border-top:1px solid var(--line)}
 .network-rows strong{display:block;font-weight:600}

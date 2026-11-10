@@ -236,7 +236,7 @@ main{padding-bottom:var(--section)}
 .works figcaption{font-size:13px;color:var(--ink-soft);margin-top:8px}
 .artist-text p{margin-top:0}
 .c8-12{grid-column:8/-1}
-.card-work{aspect-ratio:4/5;object-fit:contain;background:#fff;margin-bottom:10px}
+.card-work{aspect-ratio:4/5;object-fit:cover;object-position:50% 50%;background:#fff;margin-bottom:10px}
 .item h3 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
 .item h3 a:hover{border-bottom-color:var(--ink)}
 .network-rows{list-style:none;padding:0;margin:8px 0 0;columns:2;column-gap:var(--gutter)}

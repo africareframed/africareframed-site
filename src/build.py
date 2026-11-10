@@ -712,7 +712,7 @@ def artist_rights(a):
 def artist_credit(a):
     return f"© {a['name']}" + (f" · {a['courtesy']}" if a.get("courtesy") else "")
 ARTISTS = [
-    dict(slug="omar-victor-diop", name="Omar Victor Diop", group="shown", courtesy="Courtesy MAGNIN-A, Paris",
+    dict(slug="omar-victor-diop", name="Omar Victor Diop", group="shown", courtesy="Courtesy MAGNIN-A, Paris", card_focus=(0.571, 0.357),
          # Sources: the exhibition catalogue 2016 (proof: facts only, its texts are DGI-byen's); MAGNIN-A's list of the works chosen for the show (2016-05_Liste oeuvres choisies.pdf: titles,
          # years, series, the courtesy line); his profile on commerceandculture.org (the lead is the image Thomas chose there).
          line="Studio portraits and staged self-portraits that draw on the history of African portraiture and of Africans in Europe.",
@@ -737,7 +737,7 @@ ARTISTS = [
          ],
          note="Text and series lines are draft. The lead (Albert Badin) and Jean-Baptiste Belley exist here only at 1,000 px: "
               "MAGNIN-A can send larger files. Website from the 2016 catalogue, to confirm."),
-    dict(slug="namsa-leuba", name="Namsa Leuba", group="shown",
+    dict(slug="namsa-leuba", name="Namsa Leuba", group="shown", card_focus=(0.507, 0.241),
          # Sources: her biography in the exhibition folder (Bio_NamsaLeuba.rtf, 2016); the exhibition catalogue 2016 (proof, p5:
          # facts only, its texts are DGI-byen's); namsaleuba.com (Khoisan, The Kingdom of Mountains, Zulu Kids; read 10 November
          # 2026); the lead is the image Thomas chose for her profile on commerceandculture.org (Chunara).
@@ -1357,7 +1357,15 @@ def artist_card(base, name):
         return {}
     ld = a["lead"]
     return dict(href=artist_href(base, a),
-                image=artwork(base, a, ld["file"], work_label(a, ld.get("title"), ld["series"]), ld["w"], ld["h"], "(max-width: 767px) 50vw, 25vw", "work card-work"))
+                image=artwork(base, a, ld["file"], work_label(a, ld.get("title"), ld["series"]), ld["w"], ld["h"], "(max-width: 767px) 50vw, 25vw", "work card-work",
+                              style=card_focus(a)))
+
+
+def card_focus(a):
+    """The card on About is a thumbnail: the lead cropped to fill the 4:5 frame, as the Insights overview on
+    commerceandculture.org crops it (Thomas, 10 November 2026), around the focal point set there; the centre otherwise."""
+    x, y = a.get("card_focus", (0.5, 0.5))
+    return "" if (x, y) == (0.5, 0.5) else f"object-position:{x * 100:.0f}% {y * 100:.0f}%"
 
 
 def m_network(base):
@@ -1382,11 +1390,13 @@ def artist_href(base, a):
     return f"{base}about/artists/{a['slug']}/"
 
 
-def artwork(base, a, file, alt, w, h, sizes="(max-width: 767px) 100vw, 50vw", cls="work"):
-    """One work, shown whole at its own proportion: never cropped, filtered or under the pattern."""
+def artwork(base, a, file, alt, w, h, sizes="(max-width: 767px) 100vw, 50vw", cls="work", style=""):
+    """One work, shown whole at its own proportion: never cropped, filtered or under the pattern (on the artist's page).
+    The only exception is the card on About, a thumbnail cropped to its frame (artist_card)."""
     d = f"{base}assets/artists/{a['slug']}/{file}"
+    st = f' style="{style}"' if style else ""
     return (f'<img class="{cls}" src="{d}-1000.jpg" srcset="{d}-1000.jpg 1000w, {d}-2000.jpg 2000w" sizes="{sizes}" '
-            f'width="{w}" height="{h}" alt="{e(alt)}" decoding="async">')
+            f'width="{w}" height="{h}" alt="{e(alt)}" decoding="async"{st}>')
 
 
 def tpl_artist(p, base):
@@ -2117,7 +2127,7 @@ main{padding-bottom:var(--section)}
 .works figcaption{font-size:13px;color:var(--ink-soft);margin-top:8px}
 .artist-text p{margin-top:0}
 .c8-12{grid-column:8/-1}
-.card-work{aspect-ratio:4/5;object-fit:contain;background:#fff;margin-bottom:10px}
+.card-work{aspect-ratio:4/5;object-fit:cover;object-position:50% 50%;background:#fff;margin-bottom:10px}
 .item h3 a{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
 .item h3 a:hover{border-bottom-color:var(--ink)}
 .network-rows{list-style:none;padding:0;margin:8px 0 0;columns:2;column-gap:var(--gutter)}

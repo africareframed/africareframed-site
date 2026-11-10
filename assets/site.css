@@ -34,6 +34,9 @@ a{color:inherit}
 .menu a:hover{color:var(--ink-soft)}
 .menu a[aria-current="page"]{border-bottom-color:var(--ink)}
 .divider{display:inline-block;width:1px;height:18px;background:var(--ink);margin:0 4px}
+/* The partner menu: the archive's tools show only to a visitor this browser remembers coming back from the archive
+   (PARTNER_SCRIPT); so does the strip's switch to the public menu. */
+html:not(.is-partner) .partner-only,html:not(.is-partner) .partner-switch{display:none}
 .menu-toggle{display:none;background:none;border:0;padding:8px;cursor:pointer;width:44px;height:44px;flex-direction:column;justify-content:center;gap:5px}
 .menu-toggle span{display:block;height:2px;background:var(--ink)}
 
@@ -373,5 +376,6 @@ body.show-grid .grid-overlay{display:block}
   .story-headline{font-size:26px}
   .quote blockquote p{font-size:19px}
   .wire-strip .wrap{align-items:flex-start}
+  .strip-tools{flex-wrap:wrap;row-gap:4px}
   .panel strong{font-size:26px}
 }

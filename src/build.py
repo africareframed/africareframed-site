@@ -3,7 +3,7 @@
 
 Structure from "Website – Site map and user flows" (05 Website on the Drive): 16 pages from 9 templates.
 Header: Themes · Collections · Partners · About | Log in (Log in opens the Partner portal; About moved up from the footer, Thomas, 9 November 2026); the archive adds its own
-tools on its side. Footer: the about line, then About · Press · Contact · Privacy · Request access · Terms.
+tools on its side, Browse images · Lightbox, and this site shows them too to a partner it remembers (PARTNER_SCRIPT, 10 November 2026). Footer: the about line, then About · Press · Contact · Privacy · Request access · Terms.
 
 Wireframe conventions: grey boxes with a cross are images still to choose, at the size and proportion they will
 have; grey bars are text still to write; yellow notes say what goes there. Real words appear only where they
@@ -708,6 +708,7 @@ PRESS_FACTS = [("1,122 images", "in the House Collection, from Mali, Kenya and T
 PRIVACY = [("What we collect", "Your organisation, your name and role, your email address, how you expect to use the images, and the answers you give in the partner forms."),
            ("Why", "To approve access and keep in touch, and to report how the images are used, without personal details, to the funders who make new collections possible, with your consent."),
            ("How long, and your rights", "We keep your details while your organisation has access and for one year after. You can ask to see, change or delete them at any time."),
+           ("On your device", "If you come to this site from the archive, your browser remembers it for 30 days, so the menu shows the archive’s links. Nothing is sent to us or anyone else, and clearing this site’s data in your browser removes it."),
            ("Who to write to", "hello@africareframed.com.")]
 
 
@@ -1096,6 +1097,7 @@ CHECKLIST = [
     ("Header pixel-identical with the archive's", "PhotoDeck custom CSS"),
     ("Real domain: africareframed.com through Cloudflare, and SITE_URL switched", "src/build.py"),
     ("Archive pointed at the real domain: logo link, menu items, About and Contact redirects", "Brief, section 10"),
+    ("Every archive link to this site keeps ?src=archive (the partner menu), and the Privacy line checked against the Danish cookie rules", "PhotoDeck menu, logo and footer; Privacy"),
     ("Terms proper confirmed, and Using the images checked against them", "Archive, Terms"),
     ("Tests: deep links signed out and in; phones inside LinkedIn's browser; previews in Post Inspector", "Brief, sections 1 and 5"),
     ("LAUNCH = True in src/build.py: removes this page, the wireframe strip and noindex", "src/build.py"),
@@ -1250,6 +1252,38 @@ GRID_CSS_VARS = """  --cols:12; --gutter:32px; --margin:64px; --content-max:1312
 #    photograph starts on the line of column 2 (tablet and phone), still running off the right edge.
 
 # ---------------------------------------------------------------------------------------------
+# The partner menu (Thomas, 10 November 2026). The archive (PhotoDeck) shows Browse images · Lightbox in its menu; this
+# site cannot know who is signed in there (PhotoDeck runs none of our code and tells no other site who is logged in).
+# So this site remembers, in the visitor's own browser, that the visitor came back from the archive: every link from the
+# archive to this site carries ?src=archive (set in PhotoDeck's menu, logo and footer links). For 30 days after the last
+# such return, the menu shows the archive's tools as well. A memory, not a login check: the archive's login stays the
+# gate, and signed out the tools meet the login wall, as they do on the archive. ?partner=off forgets it (the wireframe
+# strip has the switch). Nothing is sent anywhere; the Privacy page says so. The tag is removed from the address at once,
+# so a copied link does not pass the memory on. Runs in the head, so the menu never flickers.
+# ---------------------------------------------------------------------------------------------
+PARTNER_DAYS = 30
+PARTNER_SCRIPT = """<script>
+(function(){
+  var K = 'ar-partner', now = Date.now(), q = new URLSearchParams(location.search), t = 0;
+  var back = q.get('src') === 'archive', off = q.get('partner') === 'off';
+  try {
+    if (back) localStorage.setItem(K, String(now));
+    if (off) localStorage.removeItem(K);
+    t = parseInt(localStorage.getItem(K) || '0', 10) || 0;
+    if (t && now - t > DAYS * 864e5) { localStorage.removeItem(K); t = 0; }
+  } catch (err) {}
+  if (t) document.documentElement.classList.add('is-partner');
+  if (back || q.has('partner')) {
+    if (back) q.delete('src');
+    q.delete('partner');
+    var rest = q.toString();
+    try { history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash); } catch (err) {}
+  }
+})();
+</script>
+""".replace("DAYS", str(PARTNER_DAYS))
+
+# ---------------------------------------------------------------------------------------------
 # Layout
 # ---------------------------------------------------------------------------------------------
 LAYOUT = """<!doctype html>
@@ -1272,7 +1306,7 @@ LAYOUT = """<!doctype html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
-<link rel="stylesheet" href="{base}assets/site.css?v={stamp}">
+{partner_script}<link rel="stylesheet" href="{base}assets/site.css?v={stamp}">
 </head>
 <body class="page-{slug} tpl-{tpl}">
 <a class="skip" href="#main">Skip to content</a>
@@ -1290,6 +1324,8 @@ LAYOUT = """<!doctype html>
       <a href="{base}partners/"{cur_partners}>Partners</a>
       <a href="{base}about/"{cur_about}>About</a>
       <span class="divider" aria-hidden="true"></span>
+      <a class="partner-only" href="{archive_browse}">Browse images</a>
+      <a class="partner-only" href="{archive_lightbox}">Lightbox</a>
       <a href="{base}partner-portal/"{cur_portal}>Log in</a>
     </nav>
   </div>
@@ -1401,6 +1437,9 @@ a{color:inherit}
 .menu a:hover{color:var(--ink-soft)}
 .menu a[aria-current="page"]{border-bottom-color:var(--ink)}
 .divider{display:inline-block;width:1px;height:18px;background:var(--ink);margin:0 4px}
+/* The partner menu: the archive's tools show only to a visitor this browser remembers coming back from the archive
+   (PARTNER_SCRIPT); so does the strip's switch to the public menu. */
+html:not(.is-partner) .partner-only,html:not(.is-partner) .partner-switch{display:none}
 .menu-toggle{display:none;background:none;border:0;padding:8px;cursor:pointer;width:44px;height:44px;flex-direction:column;justify-content:center;gap:5px}
 .menu-toggle span{display:block;height:2px;background:var(--ink)}
 
@@ -1740,6 +1779,7 @@ body.show-grid .grid-overlay{display:block}
   .story-headline{font-size:26px}
   .quote blockquote p{font-size:19px}
   .wire-strip .wrap{align-items:flex-start}
+  .strip-tools{flex-wrap:wrap;row-gap:4px}
   .panel strong{font-size:26px}
 }
 """
@@ -1767,6 +1807,7 @@ def strip_html(base):
         return ""
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
+            f'<a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a>'
             f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a>'
             f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
             f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
@@ -1780,7 +1821,8 @@ def render(p, main, base):
         doc_title=e(doc_title), og_title=e(p["title"] if p["slug"] != "home" else "Africa Reframed"),
         desc=e(p["desc"]), url=SITE_URL + p["path"], share=SITE_URL + "assets/share-default.png",
         robots="" if LAUNCH else '<meta name="robots" content="noindex">\n', strip=strip_html(base),
-        base=base, stamp=STAMP, slug=p["slug"], tpl=p["tpl"], main=main, about_line=e(ABOUT_LINE), archive=ARCHIVE,
+        base=base, stamp=STAMP, slug=p["slug"], tpl=p["tpl"], main=main, about_line=e(ABOUT_LINE), archive=ARCHIVE, partner_script=PARTNER_SCRIPT,
+        archive_browse=archive("/-/galleries/archive", "menu"), archive_lightbox=archive("/lightbox", "menu"),
         cur_themes=cur("themes"), cur_collections=cur("collections"), cur_partners=cur("partners"), cur_about=cur("about"), cur_portal=cur("portal"))
 
 

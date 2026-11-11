@@ -246,12 +246,12 @@ CUT_ACROSS = bars_svg(1440, 600, 96, [(-36, 380), (150, 250), (336, 150), (522, 
 CUT_NARROW = bars_svg(300, 200, 33, [(-8, 120), (52, 75), (112, 40)], [(55, 160), (103, 180), (165, 190)], "cut cut-narrow", "xMinYMax")
 
 
-def m_opening(title, line=None, label="Opening photograph · released, no minors", version=None, base=None):
+def m_opening(title, line=None, label="Opening photograph · released, no minors", version=None, base=None, photo=None):
     v = version or OPENING_VERSION
     if v == "across" and base is not None:
-        inside, cap = opening_photo(base)
+        inside, cap = opening_photo(base, photo)
         sid = slot("opening", "3/2", label)
-        if CUR["slug"] == "home":
+        if CUR["slug"] == "home" and not photo:
             PICKS[sid] = dict(ar=OPENING_PHOTO["ar"], place=OPENING_PHOTO["place"], year=OPENING_PHOTO["year"])
         words = f"<h1>{e(limit('headline', title))}</h1>" + (draft(limit("lead", line), "p", "lead") if line else "")
         return mod("opening", "b, across the window", f'<figure class="frame"><div class="opening-frame bleed">{inside}</div>'
@@ -293,7 +293,7 @@ def cut_on_photo(w, h, bar, bars, tris, cls):
 
 
 OPENING_PHOTO = dict(
-    ar="AR-2002", place="Banjul, The Gambia", year="2015", file="assets/opening/ar-2002",   # the year is the file's capture date
+    ar="AR-2002", place="Banjul, The Gambia", year="2015", file="assets/opening/ar-2002", size=(1920, 1237), shape="2000/1288",   # the year is the file's capture date
     alt="A woman in a wax-print top and headwrap, her arms folded, in front of a wax-print fabric in Banjul",
     # the frame: the photograph from 45 down (of 1,333 at 2,000 px wide), 2,000 x 1,288
     wide=cut_on_photo(2000, 1288, 170, [(874, 125), (1534, 105), (1814, 395), (2164, 715), (2474, 1085)],
@@ -303,13 +303,27 @@ OPENING_PHOTO = dict(
                        [(440, 155, 75), (770, 430, 100), (635, 605, 105), (910, 560, 70)], "cut cut-narrow"))
 
 
-def opening_photo(base):
+# A second photograph on trial (Thomas, 11 November 2026, 17:13): AR-1645, two women dancing on the beach in Banjul. Its
+# background is a pale sky, so the white of the pattern is quiet here. Nothing in it repeats the triangles, so they stay
+# on the sky and the sea and touch neither woman; the stripes fall beside the raised arms and lean as the arms do.
+OPENING_TRIALS = [dict(
+    ar="AR-1645", place="Banjul, The Gambia", year="2015", file="assets/opening/ar-1645", size=(1920, 1209), shape="2000/1259",
+    alt="Two young women dance with their arms raised on a beach in Banjul",
+    # the frame: the photograph from 80 down (of 1,339 at 2,000 px wide), 2,000 x 1,259
+    wide=cut_on_photo(2000, 1259, 170, [(900, 170), (1560, 60), (1880, 180), (2260, 520)],
+                      [(1010, 170, 70), (1400, 330, 85), (1840, 800, 90), (1700, 960, 70)], "cut cut-wide"),
+    # closer, at 16:9: the part from 200 to 1,900 across and from 250 down
+    close=cut_on_photo(1700, 956, 110, [(560, 30), (1560, 40), (1890, 330)],
+                       [(1210, 150, 70), (1600, 560, 75)], "cut cut-narrow"))]
+
+
+def opening_photo(base, t=None):
     """The Opening's photograph with the pattern on it, and its caption: the AR ID, linked into the archive, place and year."""
-    t = OPENING_PHOTO
+    t = t or OPENING_PHOTO
     f = base + t["file"]
     pic = (f'<picture><source media="(max-width:1023px)" srcset="{f}-close-800.jpg 800w, {f}-close-1200.jpg 1200w, {f}-close-2000.jpg 2000w" sizes="100vw">'
            f'<img class="opening-img opening-real" src="{f}-wide-1920.jpg" srcset="{f}-wide-1920.jpg 1920w, {f}-wide-2880.jpg 2880w, {f}-wide-3840.jpg 3840w" sizes="100vw" '
-           f'width="1920" height="1237" alt="{e(t["alt"])}" fetchpriority="high"></picture>')
+           f'width="{t["size"][0]}" height="{t["size"][1]}" style="--shape:{t["shape"]}" alt="{e(t["alt"])}" fetchpriority="high"></picture>')
     cap = f'<a href="{archive("/-/galleries/archive?search=" + t["ar"], "image")}">{t["ar"]}</a> · {e(t["place"])}, {t["year"]}'
     return pic + t["wide"] + t["close"], cap
 
@@ -2080,6 +2094,10 @@ def tpl_opening(base):
     for i, (v, text) in enumerate(names, 1):
         on = " · on Home now" if v == OPENING_VERSION else ""
         out += f'<p class="wrap kicker type-label">Version {i}: {e(text)}{on}</p>' + m_opening(CORE_LINE, version=v, base=base)
+        if v == "across":
+            for t in OPENING_TRIALS:
+                out += (f'<p class="wrap kicker type-label">On trial, not on Home: version 1 with {t["ar"]}</p>'
+                        + m_opening(CORE_LINE, version=v, base=base, photo=t))
     return out.replace("<h1>Visual storytelling", '<p class="h1">Visual storytelling').replace("Africa.</h1>", "Africa.</p>")
 
 
@@ -2845,7 +2863,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .opening.across h1,.opening.words h1,.opening.across .h1,.opening.words .h1{font-size:var(--fs-display);line-height:1;letter-spacing:-.03em;margin:0;max-width:none}
 .from-top{transform:scaleY(-1)}
 .opening-real{display:block;width:100%;height:auto;object-fit:cover;object-position:50% 0}
-@media (min-width:1024px){.opening.across.real .opening-img{aspect-ratio:2000/1288;max-height:max(560px,calc(100vh - var(--header-h)))}}
+@media (min-width:1024px){.opening.across.real .opening-img{aspect-ratio:var(--shape,2000/1288);max-height:max(560px,calc(100vh - var(--header-h)))}}
 .opening-frame picture{display:block}
 .mod.opening.real::before{display:none}  /* the wireframe's module label does not lie on a real photograph */
 .imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}

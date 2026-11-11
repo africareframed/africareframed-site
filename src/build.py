@@ -473,7 +473,7 @@ def m_project(x, extra=""):
         else:
             out += mod("text", "a, the project", f'<div class="cols"><div class="c1-4">{words}</div><div class="c6-12">{body}{extra}</div></div>', tight=True)
         return out
-    return m_photo(x["image"], "3/2", "c", text=words + body + extra, side="left", caption=x["caption"], credit=x["credit"])
+    return m_photo(x["image"], "3/2", "c", text=words + body + extra, side="left", caption=x["caption"], credit=x["credit"], wide=True)
 
 
 def collection_entry(x, base):
@@ -1742,23 +1742,27 @@ def tpl_text(p, base):
                     + '<p class="register-names">' + "".join(f"<span>{e(n)}</span>" for n in ARCHIVE_LICENSEES) + "</p>"
                     + draft(ABOUT_GETTY_AFTER, "p", "register-after")
                     + note("Companies that bought our team’s images, the images now in the archive. Institutional names (the UN, the World Bank, the BBC and others) are added once Thomas has checked they bought the team’s images.") + "</div>")
-        return (m_page_head(p["title"], ABOUT_STATEMENT, statement_draft=True)
+        # Four chapters (the plan of 11 November 2026, the whole site): the archive, exhibitions, workshops, who is behind
+        # it. Each opens with twice the space above it and its title at the page-title size in Light. The order and the
+        # words are the build brief's (About page – build brief): credibility, then wonder, then people.
+        opener = lambda title, paras, sid: chapter(m_text(title, paras, "a", sid=sid)).replace("<h2>", '<h2 class="chapter-title">', 1)
+        head = (m_page_head(p["title"], ABOUT_STATEMENT, statement_draft=True)
                 + m_channels(ABOUT_CHANNELS)
-                + m_supporters(SUPPORTERS, SUPPORTERS_TITLE, base)
-                # 1 The archive: always on. The activity, then the proof: its collections, where its images have been, the way in.
-                + m_text("The archive", ABOUT_ARCHIVE, "a", sid="archive")
+                + m_supporters(SUPPORTERS, SUPPORTERS_TITLE, base))
+        # 1 The archive: always on. The activity, then the proof: its collections, where its images have been, the way in.
+        the_archive = (opener("The archive", ABOUT_ARCHIVE, "archive")
                 + mod("collection", "a, the collections in the archive", "".join(collection_entry(x, base) for x in by_state(ARCHIVE_COLLECTIONS)), tight=True)
                 + mod("text", "the register", f'<div class="cols"><div class="c6-12">{register}'
                       f'<p class="doors">{button(base + "partners/#use", "How partners use the archive →", quiet=True)}</p></div></div>', tight=True)
-                + mod("text", "the hinge", f'<div class="cols"><div class="c6-12">{draft(ABOUT_HINGE, "p", "hinge")}</div></div>', tight=True)
-                # 2 Exhibitions: a medium we activate. The activity, then the projects, the door, the artists.
-                + m_text("Exhibitions", ABOUT_EXHIBITIONS, "a", sid="exhibitions")
+                + mod("text", "the hinge", f'<div class="cols"><div class="c6-12">{draft(ABOUT_HINGE, "p", "hinge")}</div></div>', tight=True))
+        # 2 Exhibitions: a medium we activate. The activity, then the projects, the door, the artists. The page turns here.
+        exhibitions = (opener("Exhibitions", ABOUT_EXHIBITIONS, "exhibitions")
                 + "".join(m_project(x) for x in by_state(EXHIBITION_PROJECTS))
                 + m_doors("c", links=[button(f"{base}partners/#sponsor", ABOUT_EXHIBITION_DOOR + " →", quiet=True)], tight=True, left=True)
                 + m_items("The artists", [(n, about_line(n, d), l, artist_card(base, n)) for n, d, l in ARTISTS_SHOWN], "d", lead=draft(ABOUT_ARTISTS_LEAD), image_ratio="4/5", cols=4, sid="artists", level=3)
-                + m_network(base)
-                # 3 Workshops: a medium we activate. The activity, then the projects, Bamako Nights, the partners.
-                + m_text("Workshops", ABOUT_WORKSHOPS, "a", sid="workshops")
+                + m_network(base))
+        # 3 Workshops: a medium we activate. The activity, then the projects, Bamako Nights, the partners.
+        workshops = (opener("Workshops", ABOUT_WORKSHOPS, "workshops")
                 + "".join(m_project(x) for x in by_state(WORKSHOP_PROJECTS))
                 + m_items("In their words", ABOUT_INTERVIEWS, "d", image_ratio="16/9", tight=True, level=3,
                           lead=draft("Three of the programme’s photographers, on what it meant to them.")
@@ -1766,12 +1770,16 @@ def tpl_text(p, base):
                 + m_grid("e", label="Bamako Nights", line=BAMAKO_NIGHTS, title="Bamako Nights", credit="Students of CFP Bamako, Bamako Nights, 2011", level=3, cap=False)
                 + m_items("Workshop partners", WORKSHOP_PARTNERS, "a", tight=True, level=3, cls="five")
                 + mod("text", "the way to the collection", f'<div class="cols"><div class="c6-12">{draft(ABOUT_WORKSHOPS_TO_COLLECTION)}'
-                      f'<p class="doors">{button(base + "collections/house-collection/", "The House Collection →", quiet=True)}</p></div></div>', tight=True)
-                # 4 Who is behind it
-                + m_text("Who is behind it", ABOUT_WHO, "a", sid="who")
+                      f'<p class="doors">{button(base + "collections/house-collection/", "The House Collection →", quiet=True)}</p></div></div>', tight=True))
+        # 4 Who is behind it
+        who = (opener("Who is behind it", ABOUT_WHO, "who")
                 + m_items(None, ABOUT_PEOPLE, "d", image_ratio="1/1", tight=True, cols=4)
                 + m_items("Principles", PRINCIPLES + [("Fair terms", "One download, one licence, free of charge; no resale, no sublicensing.")], "a", cls="five")
                 + m_doors("d", kicker="Write to us", address=EMAIL_MAIN, line=f"Partnerships: {EMAIL_PARTNERS} · Press: {EMAIL_PRESS}"))
+        # p["dark"]: the test page /dev/about-black/, where the exhibitions and the artists' works stand on black
+        if p.get("dark"):
+            exhibitions = f'<div class="dark">{exhibitions}</div>'
+        return head + the_archive + exhibitions + workshops + who
     if k == "contact":
         return (m_page_head(p["title"], "One quiet way to reach us.", statement_draft=True)
                 + m_doors("d", kicker="Write to us", address=EMAIL_MAIN, line=f"Press: {EMAIL_PRESS} · Partnerships: {EMAIL_PARTNERS} · Africa Reframed on LinkedIn."))
@@ -2564,6 +2572,17 @@ body.clean .mod::before{display:none}
 .e-words .facts{margin-top:24px}
 .e-words p{max-width:var(--measure)}
 .row-3{margin-top:24px}
+.chapter-title{font-size:var(--fs-title);font-weight:300;line-height:1.05;letter-spacing:-.02em;margin:0 0 16px}   /* a chapter of a long page: its title at the page-title size, in Light */
+/* A black section (the test at /dev/about-black/): the same modules with the ground and the ink exchanged. What black is
+   for on the site is Thomas's to decide (Quality rules, rule 18); the candidate is the exhibitions and the artists' works. */
+.dark{background:var(--ground);color:#fff;--ink:#fff;--ink-soft:#b9b7b1;--line:#3a3a3a;--paper:#151515;--wire:#242424;--wire-line:#3c3c3c;--wash:#1e1e1e;
+  margin-top:calc(var(--section)*2);padding-bottom:var(--section)}
+.dark > .mod.chapter:first-child{padding-top:var(--section)}
+.dark > .mod.chapter:first-child::before{top:calc(var(--section) - 22px)}
+.dark .img span{background:var(--wire);color:#9a978f}
+.dark .button.quiet{background:transparent;border-color:#fff;color:#fff}
+.dark .button.quiet:hover{background:#fff;color:var(--ground)}
+.dark + .mod.chapter{padding-top:calc(var(--section)*2)}
 .rows .cols{border-top:1px solid var(--line);padding-top:24px}
 .rows .cols h2{margin:0}
 .logo-card{aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--paper)}
@@ -2982,7 +3001,7 @@ def strip_html(base):
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
             f'<a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a>'
-            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/images/">Images</a>'
+            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/about-black/">About on black</a><a href="{base}dev/images/">Images</a>'
             f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
             f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
             f'<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>\n')
@@ -3052,6 +3071,12 @@ def build():
                    desc="Three versions of the Opening of the Africa Reframed site, side by side; generated by the build, removed at launch.")
         (dev_dir / "opening").mkdir(exist_ok=True)
         (dev_dir / "opening" / "index.html").write_text(render(opn, tpl_opening("../../"), "../../"))
+        abk = dict(path="dev/about-black/", title="About", slug="about-black", tpl="text", nav=None, dark=True,
+                   desc="A test: About with its exhibitions on black; generated by the build, removed at launch.")
+        (dev_dir / "about-black").mkdir(exist_ok=True)
+        abk_main = ('<p class="wrap kicker type-label">A test, not the live page: the exhibitions and the artists’ works on black. The live About is on white.</p>'
+                    + tpl_text(dict(abk, slug="about"), "../../"))
+        (dev_dir / "about-black" / "index.html").write_text(render(abk, abk_main, "../../"))
     # The page for a wrong address (Quality rules, rule 25). Its links are absolute, since it answers at any depth.
     root_path = urlparse(SITE_URL).path
     nf = dict(path="404.html", title="Page not found", slug="not-found", tpl="text", nav=None,

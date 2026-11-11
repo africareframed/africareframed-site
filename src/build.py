@@ -292,7 +292,7 @@ def cut_on_photo(w, h, bar, bars, tris, cls):
     return f'<svg class="{cls}" viewBox="0 0 {w} {h}" preserveAspectRatio="xMidYMin slice" aria-hidden="true" fill="#fff">{poly}</svg>'
 
 
-OPENING_PHOTO = dict(
+PHOTO_AR_2002 = dict(
     ar="AR-2002", place="Banjul, The Gambia", year="2015", file="assets/opening/ar-2002", size=(1920, 1237), shape="2000/1288",   # the year is the file's capture date
     alt="A woman in a wax-print top and headwrap, her arms folded, in front of a wax-print fabric in Banjul",
     # the frame: the photograph from 45 down (of 1,333 at 2,000 px wide), 2,000 x 1,288
@@ -306,7 +306,7 @@ OPENING_PHOTO = dict(
 # A second photograph on trial (Thomas, 11 November 2026, 17:13): AR-1645, two women dancing on the beach in Banjul. Its
 # background is a pale sky, so the white of the pattern is quiet here. Nothing in it repeats the triangles, so they stay
 # on the sky and the sea and touch neither woman; the stripes fall beside the raised arms and lean as the arms do.
-OPENING_TRIALS = [dict(
+PHOTO_AR_1645 = dict(
     ar="AR-1645", place="Banjul, The Gambia", year="2015", file="assets/opening/ar-1645", size=(1920, 1209), shape="2000/1259",
     alt="Two young women dance with their arms raised on a beach in Banjul",
     # the frame: the photograph from 80 down (of 1,339 at 2,000 px wide), 2,000 x 1,259
@@ -314,7 +314,10 @@ OPENING_TRIALS = [dict(
                       [(1010, 170, 70), (1400, 330, 85), (1840, 800, 90), (1700, 960, 70)], "cut cut-wide"),
     # closer, at 16:9: the part from 200 to 1,900 across and from 250 down
     close=cut_on_photo(1700, 956, 110, [(560, 30), (1560, 40), (1890, 330)],
-                       [(1210, 150, 70), (1600, 560, 75)], "cut cut-narrow"))]
+                       [(1210, 150, 70), (1600, 560, 75)], "cut cut-narrow"))
+# On Home since 11 November 2026, 17:20 (Thomas): the beach. AR-2002 stays on the test page. Neither is the final choice.
+OPENING_PHOTO = PHOTO_AR_1645
+OPENING_TRIALS = [PHOTO_AR_2002]
 
 
 def opening_photo(base, t=None):

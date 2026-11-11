@@ -322,7 +322,7 @@ ROLES = {    # how an image is shown -> (in words, its width in px on a 1,440 px
     "two-thirds": ("Large photograph, columns 5 to 12", 864), "pair": ("One of a pair, half the columns each", 652),
     "feature": ("Full bleed, the width of the window", 1920), "half": ("Half the columns", 640), "third": ("A third of the columns", 416),
     "grid-3": ("Grid, three in a row", 432), "grid-4": ("Grid, four portraits in a row", 322), "strip": ("Strip of three squares", 432),
-    "row-strip": ("Square in a theme’s row", 216), "theme": ("Theme entry, five in a row", 237), "theme-nav": ("Previous or next theme", 640),
+    "row-strip": ("Square in a theme’s row", 216), "row": ("A theme’s photograph on the Themes page", 512), "theme": ("Theme entry, five in a row", 237), "theme-nav": ("Previous or next theme", 640),
 }
 
 
@@ -420,7 +420,7 @@ def m_rows(items):
 
 # 2.7 Theme sequence: (a) five entries in a row (Home), (b) five rows (Themes index), (c) previous and next.
 def theme_entry(t, base, i, row=False, ratio="4/5"):
-    strip = (f'<div class="imgs grid-strip">{"".join(frame("Image", "1/1", role="row-strip", own=False, cap=False) for _ in range(3))}</div>' if row
+    strip = (frame(f'Image for {t["name"]}', "3/2", role="row", own=False, cap=False) if row
              else frame("Theme image", ratio, role="theme-nav" if ratio == "5/2" else "theme", own=False, cap=False))
     return (f'<a class="theme-entry{" row" if row else ""}" href="{base}themes/{t["slug"]}/">'
             f'<span class="order">{i}</span>{"" if row else strip}<div><h3>{e(t["name"])}</h3><p>{e(limit("theme statement", t["statement"]))}</p>'
@@ -823,7 +823,7 @@ WTV_COLLECTION = dict(
                 text=["This collection began with a theme close to the foundation’s own work: waste turned into value. A collection can start from any theme close to a funder’s work, or one it wants to support: a sector, a skill, a city, a change under way.",
                       "We find the people and places that show it, work with photographers from the countries concerned, and deliver the collection with its stories and its behind-the-scenes material. From there the storytelling is shared: the funder, the people in the collection and the press each tell their part with the same images. The funder’s name stands on the collection; the work stays independent."]),
     access=dict(count=("7", "companies in the collection"), request=True, line="Access to this collection is by request, for partners and the press."),
-    sections=["story", "companies", "making", "photographers", "bts", "went", "words", "access", "sponsor", "invite"],   # the stories carry the images; ends on the invitation
+    sections=["story", "companies", "making", "photographers", "went", "words", "access", "sponsor", "invite"],   # behind the scenes is told with the photographers   # the stories carry the images; ends on the invitation
     card=dict(kicker="Sponsored collection", line="Seven young companies in Kenya, Uganda and Rwanda that turn waste into fuel, building materials, packaging and services.",
               meta=["7 companies", "Kenya · Uganda · Rwanda", "Access by request"], image="A photograph from the Waste to Value Collection", credit=WTV_CREDIT),
 )
@@ -1604,9 +1604,8 @@ def company_story(x, i):
     else:
         out = m_photo(lead, "3/2", "c", text=f'<div class="story">{words}{body}</div>', side="left" if i % 3 == 1 else "right",
                       caption=caption, credit=credit, sid=story_id(x), wide=True)
-    # One credit for a story (rule 15, as changed on 11 November 2026): the lead photograph's caption names the company, the
-    # place and the photographer, and its credit stands for the pair beneath it.
-    out += m_pair([f'{x["name"]}: {k}' for k in ("the people at work", "the product")], credited_by=story_id(x))
+    # One photograph for each company (Thomas, 11 November 2026, 14:37): a few rightly chosen images, not a cascade. The
+    # pair that stood under each story is gone; the collection itself is in the archive.
     return out
 
 
@@ -1627,13 +1626,13 @@ COLLECTION_SECTIONS = {
                               m_text(c["story_title"], c["story"], "b", box=facts_html(c))),
     "companies": lambda c, base: (mod("items", "a, the stories’ contents",
                                       f'<div class="cols"><div class="c1-4">{heading(c.get("companies_title", "The companies"))}</div><div class="c6-12">{draft(c["companies_lead"])}'
-                                      f'{note("Seven stories as teasers, three photographs each from the shoot: one large and a pair. Present tense where a company’s current activity is confirmed; otherwise as photographed in 2021, until its founder confirms.")}</div></div>'
+                                      f'{note("Seven stories as teasers, one photograph each. Present tense where a company’s current activity is confirmed; otherwise as photographed in 2021, until its founder confirms.")}</div></div>'
                                       + m_contents(c["companies"]), sid="companies")
                                   + "".join(company_story(x, i) for i, x in enumerate(c["companies"]))),
     "grid": lambda c, base: m_grid("e", label="Image from the collection", line=c["grid_line"], title="From the collection", credit=c.get("credit"),
                                    aside=facts_html(c)),   # the evidence with the facts and the count (collection page 4)
     "making": lambda c, base: m_items("How it was made", c["making"], "b", lead=draft("From the first call with a founder to the last gallery.")),
-    "photographers": lambda c, base: m_items(c.get("photographers_title", "The photographers"), c["photographers"], "d", lead=draft(c["photographers_lead"]), image_ratio="4/5", sid="photographers", credit=c.get("credit")),
+    "photographers": lambda c, base: m_items(c.get("photographers_title", "The photographers"), c["photographers"], "d", lead=draft(c["photographers_lead"] + (" " + c["bts"] if c.get("bts") and "bts" not in c["sections"] else "")), image_ratio="4/5", sid="photographers", credit=c.get("credit")),
     "bts": lambda c, base: m_grid("c", label="Behind the scenes: a photographer at work", line=c["bts"], title="Behind the scenes", level=3, credit=c.get("credit")),
     "went": lambda c, base: m_items(c.get("went_title", "Where the images went"), c["went"], "a", sid="where",
                                     lead=draft(c["went_lead"], "p", "lead") if c.get("went_lead") else None),
@@ -1878,6 +1877,9 @@ def tpl_artist(p, base):
     box = f'<aside class="facts-box"><dl class="facts">{dl}</dl><p class="small">{e(artist_rights(a))}</p></aside>'
     text = "".join(draft(t) for t in a["text"])
     out = (m_page_head(a["name"], a["line"], kicker=kicker, statement_draft=True)
+           # the works stand on black, as the exhibitions do on About (Thomas, 11 November 2026: black holds the exhibitions
+           # and the artists' works, and groups them as one category); the page's name stays on white, and so do the ways on
+           + '<div class="dark works-dark">'
            + mod("photo", "b, the lead work, whole", lead_html, tight=True)
            + mod("text", "b, with a facts box (artist)", f'<div class="cols"><div class="c1-6 artist-text">{text}{note(a["note"]) if a.get("note") else ""}</div><div class="c8-12">{box}</div></div>'))
     for sr in a["series"]:
@@ -1898,6 +1900,7 @@ def tpl_artist(p, base):
                      + "</ul></div></div>")
         out += mod("grid", "artwork row, whole works", f'<h3 class="project-title">{e(sr["title"])}</h3>'
                    f'<div class="cols"><div class="c1-8">{draft(sr["line"], "p", "series-text")}</div></div>{body}')
+    out += "</div>"
     others = [x for x in NAV if x is not a]
     if others:
         i = NAV.index(a)
@@ -2010,7 +2013,6 @@ def _tpl_modules(base):
             + m_photo("Photograph and text", "4/5", "c", text=heading("Alternating", 3) + draft("The photograph on the right this time."), side="right")
             + m_photo("Photograph and text, wide", "3/2", "c", text=heading("The wide form", 3) + draft("The photograph over eight columns, the words in four: the large photograph of a story."), side="left", wide=True)
             + m_grid("e", label="Image", title="One large and a row of three", aside=draft("The words that belong to the set stand here, beside the large photograph: a theme’s text, a collection’s facts, a project’s words."))
-            + m_pair(["One of a pair", "The other"])
             + m_grid("a", 3, "Image", title="Three in a row")
             + m_grid("c", title="A strip of three")
             + m_themes(base, "a") + m_themes(base, "b") + m_themes(base, "c", current=t)
@@ -2563,7 +2565,7 @@ body.clean .mod::before{display:none}
 .theme-entry p{font-size:var(--fs-text);color:var(--ink-soft);margin:0 0 8px}
 .theme-entry:hover h3{text-decoration:underline}
 .theme-rows{margin-top:8px}
-.theme-entry.row{display:grid;grid-template-columns:72px 1fr 1.3fr;gap:32px;align-items:center;padding:32px 0;border-top:1px solid var(--line)}
+.theme-entry.row{display:grid;grid-template-columns:72px 1.3fr 1fr;gap:32px;align-items:center;padding:32px 0;border-top:1px solid var(--line)}
 .theme-entry.row .order{font-size:var(--fs-title);font-weight:300;line-height:1;margin:0;color:var(--ink)}
 .theme-entry.row h3{font-size:var(--fs-head);font-weight:700;margin:0 0 8px}
 .theme-nav .dir{display:block;font-size:var(--fs-text);color:var(--ink-soft);margin-bottom:8px}
@@ -2582,6 +2584,8 @@ body.clean .mod::before{display:none}
 .dark .button.quiet{background:transparent;border-color:#fff;color:#fff}
 .dark .button.quiet:hover{background:#fff;color:var(--ground)}
 .dark + .mod.chapter{padding-top:calc(var(--section)*2)}
+.dark.works-dark{margin-top:var(--section-head)}
+.dark img.work{background:#1e1e1e}
 .rows .cols{border-top:1px solid var(--line);padding-top:24px}
 .rows .cols h2{margin:0}
 .logo-card{aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--paper)}
@@ -2953,7 +2957,7 @@ body.show-grid .grid-overlay{display:block}
   .grid-3,.grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mod .cols + .cols{margin-top:16px}
   .theme-entry.row{grid-template-columns:44px 1fr;gap:12px 16px}
-  .theme-entry.row .imgs{grid-column:1 / -1}
+  .theme-entry.row .frame{grid-column:1 / -1}
   .numbers{gap:16px 32px}
   .numbers.by-kind{grid-template-columns:repeat(2,minmax(0,1fr))}
   .opening-img{aspect-ratio:3/2}  /* 3:2 on phones so the core line sits in the first screen (4:5 pushed it below) */

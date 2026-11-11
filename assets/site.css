@@ -120,7 +120,7 @@ body.clean .mod::before{display:none}
 .theme-entry p{font-size:var(--fs-text);color:var(--ink-soft);margin:0 0 8px}
 .theme-entry:hover h3{text-decoration:underline}
 .theme-rows{margin-top:8px}
-.theme-entry.row{display:grid;grid-template-columns:72px 1fr 1.3fr;gap:32px;align-items:center;padding:32px 0;border-top:1px solid var(--line)}
+.theme-entry.row{display:grid;grid-template-columns:72px 1.3fr 1fr;gap:32px;align-items:center;padding:32px 0;border-top:1px solid var(--line)}
 .theme-entry.row .order{font-size:var(--fs-title);font-weight:300;line-height:1;margin:0;color:var(--ink)}
 .theme-entry.row h3{font-size:var(--fs-head);font-weight:700;margin:0 0 8px}
 .theme-nav .dir{display:block;font-size:var(--fs-text);color:var(--ink-soft);margin-bottom:8px}
@@ -139,6 +139,8 @@ body.clean .mod::before{display:none}
 .dark .button.quiet{background:transparent;border-color:#fff;color:#fff}
 .dark .button.quiet:hover{background:#fff;color:var(--ground)}
 .dark + .mod.chapter{padding-top:calc(var(--section)*2)}
+.dark.works-dark{margin-top:var(--section-head)}
+.dark img.work{background:#1e1e1e}
 .rows .cols{border-top:1px solid var(--line);padding-top:24px}
 .rows .cols h2{margin:0}
 .logo-card{aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--paper)}
@@ -510,7 +512,7 @@ body.show-grid .grid-overlay{display:block}
   .grid-3,.grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mod .cols + .cols{margin-top:16px}
   .theme-entry.row{grid-template-columns:44px 1fr;gap:12px 16px}
-  .theme-entry.row .imgs{grid-column:1 / -1}
+  .theme-entry.row .frame{grid-column:1 / -1}
   .numbers{gap:16px 32px}
   .numbers.by-kind{grid-template-columns:repeat(2,minmax(0,1fr))}
   .opening-img{aspect-ratio:3/2}  /* 3:2 on phones so the core line sits in the first screen (4:5 pushed it below) */

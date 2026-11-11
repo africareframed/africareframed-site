@@ -270,6 +270,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .opening.across h1,.opening.words h1,.opening.across .h1,.opening.words .h1{font-size:var(--fs-display);line-height:1;letter-spacing:-.03em;margin:0;max-width:none}
 .from-top{transform:scaleY(-1)}
 .opening-real{display:block;width:100%;height:auto;object-fit:cover;object-position:50% 0}
+@media (min-width:1024px){.opening.across.real .opening-img{aspect-ratio:2000/1288;max-height:max(560px,calc(100vh - var(--header-h)))}}
 .opening-frame picture{display:block}
 .imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
 .intro{padding-top:48px}

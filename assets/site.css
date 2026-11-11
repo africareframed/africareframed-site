@@ -139,7 +139,6 @@ body.clean .mod::before{display:none}
 .dark .button.quiet{background:transparent;border-color:#fff;color:#fff}
 .dark .button.quiet:hover{background:#fff;color:var(--ground)}
 .dark + .mod.chapter{padding-top:calc(var(--section)*2)}
-.dark.works-dark{margin-top:var(--section-head)}
 .dark img.work{background:#1e1e1e}
 .rows .cols{border-top:1px solid var(--line);padding-top:24px}
 .rows .cols h2{margin:0}
@@ -278,7 +277,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .num span{font-size:var(--fs-text);color:var(--ink-soft)}   /* what the number counts, at the text size (the plan of 11 November 2026, step 3: less small print) */
 .numbers.by-kind{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px 32px;border-top:1px solid var(--ink);padding-top:16px;margin-top:16px}
 .small-num b{font-size:var(--fs-head)}
-.theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px;margin-top:32px}
+.theme-row{display:grid;grid-template-columns:repeat(var(--theme-cols,5),minmax(0,1fr));gap:32px;margin-top:32px}
 .order{font-size:var(--fs-small);color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
 .theme-row .order{font-size:var(--fs-display);font-weight:300;line-height:1;color:var(--ink);margin:0 0 12px}   /* the themes numbered in Light, as the chapters of the 2019 plan */
 .count{font-size:var(--fs-small);font-weight:400;margin-top:auto}
@@ -352,12 +351,11 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 /* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive
    stands on the yellow. */
 .panel{display:flex;flex-direction:column;gap:8px;border-top:2px solid var(--ink);padding:24px 0 0;text-decoration:none}
-.panel strong{font-size:var(--fs-title);font-weight:700;line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+.panel strong{font-size:var(--fs-head);font-weight:700;line-height:1.15;letter-spacing:-.01em;text-wrap:balance}   /* one step under the page's name (Thomas, 11 November 2026) */
 .panel span:last-child{color:var(--ink-soft)}
 .panel.archive{background:var(--accent);border-top-color:var(--accent);padding:24px}
 .panel.archive .kicker,.panel.archive span:last-child{color:var(--ink)}
-.panel:hover strong{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:8px}
-.page-head.has-doors h1{font-size:var(--fs-head);line-height:1.15;letter-spacing:-.01em}
+.panel:hover strong{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
 .mini-form{display:flex;flex-direction:column;gap:4px}
 .f-label{font-size:var(--fs-small);color:var(--ink-soft);margin-top:8px}
 .field{display:block;height:38px;border:1px solid #d6d3cc;border-radius:0;background:#fff}

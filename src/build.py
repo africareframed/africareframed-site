@@ -35,7 +35,7 @@ e = html.escape
 CORE_LINE = "Visual storytelling for a new partnership between Europe and Africa."          # Strategic Platform, Brand and language
 ABOUT_LINE = ("Spotlighting African innovation and African–European collaboration. "
               "An independent initiative established by Commerce & Culture.")             # Strategic Platform, Brand and language
-NUMBERS = [("1,122", "images"), ("3", "countries"), ("5", "themes")]                        # Website brief, Home; AR Metadata, 2 Nov 2026
+NUMBERS = [("1,122", "images"), ("3", "countries")]   # the number of themes is not a fixed fact (Thomas, 11 November 2026)                        # Website brief, Home; AR Metadata, 2 Nov 2026
 # The momentum numbers (engine brief, section 5; Thomas, 8 November 2026): a download is a licence for one stated use, so
 # downloads and uses are one count. Uses by kind: the eight licence categories (AR Archive – Status, the pricing profile),
 # generated at every download in PhotoDeck, so the numbers are ours and tell where the images go.
@@ -74,7 +74,13 @@ THEMES = [
     dict(slug="creativity-and-culture", name="Creativity and culture", count=137, query="creativity and culture",
          statement="Portraits, style and street art."),
 ]
-THEMES_LEAD = ("In order, the five themes are the archive’s argument: people learn, put their skills to work, "
+# The themes grow with the collections (Thomas, 11 November 2026, 14:57): these five are what the House Collection delivers
+# today, and more will come, so nothing on the site presents them as a closed set. No "coming soon" either: the wording
+# says where the themes come from. Until 15:00 that day: "In order, the five themes are the archive’s argument: …".
+NUMBER_WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
+THEMES_SOURCE = ["Themes come from collections",   # the Themes page's closing section, a draft
+                 "These five are drawn from the House Collection. Each new collection can bring a theme of its own."]
+THEMES_LEAD = ("These five themes come from the House Collection: people learn, put their skills to work, "
                "live connected lives in modern cities, and make culture.")                            # Keywording Guide, 8b
 
 # Who gets access: AR Archive – Status, "Who gets access, and sponsors" (Thomas, 3 Nov 2026)
@@ -191,7 +197,7 @@ def mod(name, variant, inner, cls="", sid=None, wrap=True, tight=False):
     return f'<section class="mod mod-{name} {cls}{" tight" if tight else ""}" data-mod="{e(label)}"{a}>{body}</section>'
 
 
-DRAFT_HEADINGS = {"How access works", "The rules in short", "The archive in five themes"}
+DRAFT_HEADINGS = {"How access works", "The rules in short", "Themes come from collections"}
 # Headings that say something (Quality rules, rule 7), decided on 11 November 2026 on Thomas's authority; each is built from
 # sentences already on its page, and none repeats the first sentence of the text beneath it (rule 4).
 
@@ -277,9 +283,11 @@ def m_page_head(title, statement=None, kicker=None, meta=None, doors=None, lead=
 
 
 # 2.4 Text section: title left, text right; (b) with a facts box, (c) with a contact, (d) the intro on Home.
-def m_text(title, paras, variant="a", box=None, contact=None, links=None, is_draft=True, sid=None, level=2, meta=None):
+def m_text(title, paras, variant="a", box=None, contact=None, links=None, is_draft=True, sid=None, level=2, meta=None, lead_first=False):
     limit("text section", " ".join(p for p in paras if p))
     body = "".join(draft(p) if is_draft else f"<p>{e(p)}</p>" for p in paras if p)
+    if lead_first and paras:       # a chapter's opener: its first sentence at the intro size, the rest as text
+        body = draft(limit("lead", paras[0]), "p", "lead") + "".join(draft(p) for p in paras[1:] if p)
     if variant == "d" and paras:   # the intro on Home: the first sentence at the intro size, the rest as text
         body = draft(paras[0], "p", "lead") + "".join(draft(p) for p in paras[1:] if p)
     if links:
@@ -434,13 +442,17 @@ def m_themes(base, variant="a", current=None):
         inner = (f'<div class="cols"><div class="c-half theme-nav"><span class="dir">← Previous theme</span>{theme_entry(prv, base, THEMES.index(prv) + 1, ratio="5/2")}</div>'
                  f'<div class="c-half theme-nav"><span class="dir">Next theme →</span>{theme_entry(nxt, base, THEMES.index(nxt) + 1, ratio="5/2")}</div></div>')
         return mod("themes", "c, previous and next", inner)
-    lead = f'<p class="lead">{e(THEMES_LEAD)}</p>'
+    lead = draft(limit("lead", THEMES_LEAD), "p", "lead")
+    title = f"The first {NUMBER_WORDS[len(THEMES)]} themes"
+    DRAFT_HEADINGS.add(title)
     if variant == "b":
         rows = "".join(theme_entry(t, base, i, row=True) for i, t in enumerate(THEMES, 1))
-        return mod("themes", "b, five rows", f'<div class="theme-rows">{rows}</div>')
+        return mod("themes", "b, rows", f'<div class="theme-rows">{rows}</div>')
     cards = "".join(theme_entry(t, base, i) for i, t in enumerate(THEMES, 1))
-    return mod("themes", "a, five in a row", f'<div class="cols"><div class="c1-4">{heading("The archive in five themes")}</div><div class="c6-12">{lead}</div></div>'
-               f'<div class="theme-row">{cards}</div>')
+    # up to five stand in one row; from six they stand in two even rows, so a new theme needs no new design
+    n = len(THEMES)
+    return mod("themes", "a, in a row", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead}</div></div>'
+               f'<div class="theme-row" style="--theme-cols:{n if n <= 5 else -(-n // 2)}">{cards}</div>')
 
 
 # About's helpers (About page – build brief): the three lines of activity under the head, and a project as proof of one of them.
@@ -844,9 +856,15 @@ ABOUT_CHANNELS = [  # (anchor, name, one line): the three lines of activity unde
 ]
 
 # 1 The archive: the activity, then the proof
-ABOUT_ARCHIVE = [
+ABOUT_ARCHIVE_LONG = [   # the wording until 11 November 2026, 15:00, kept
     "We run an archive of photographs of contemporary Africa for the organisations that work with the continent: NGOs, media, educational institutions, embassies, development finance institutions and companies. It is free for the non-profit and public partners we approve; companies take part by sponsoring a collection.",
     "Partners browse the archive, gather images and share them with colleagues, and download what they need. Every download is a licence for one stated use, so we know where the images go. The archive grows by collections.",
+]
+# Shortened as a draft for Thomas (11 November 2026): the first sentence opens the chapter at the intro size; how the archive
+# works is told on the function pages (About page – build brief, 5.1).
+ABOUT_ARCHIVE = [
+    "We run an archive of photographs of contemporary Africa for the organisations that work with the continent.",
+    "It is free for the non-profit and public partners we approve; companies take part by sponsoring a collection. Every download is a licence for one stated use, so we know where the images go. The archive grows by collections.",
 ]
 ARCHIVE_COLLECTIONS = [  # the collections in the archive; a sponsored collection is one more entry, shown first while in production
     dict(title="House Collection", state="record", kicker="The first collection", href="collections/house-collection/",
@@ -860,14 +878,21 @@ ABOUT_GETTY_AFTER = ("In 2025 we took them back, so that they serve one purpose:
 ABOUT_HINGE = "The name Africa Reframed comes from an exhibition."
 
 # 2 Exhibitions: the activity, then the projects, then the artists
-ABOUT_EXHIBITIONS = [
+ABOUT_EXHIBITIONS_LONG = [   # the wording until 11 November 2026, 15:00, kept
     "We show African artists and our own photographs to European audiences: in halls and on screens, with programmes of film, talks and workshops around the work.",
     "An exhibition is curated from our network of artists, made with a venue and public funders, and can take a physical or a digital form. A collection can open as an exhibition.",
+]
+# Shortened as a draft for Thomas (11 November 2026).
+ABOUT_EXHIBITIONS = [
+    "We show African artists and our own photographs to European audiences in halls and on screens, with film, talks and workshops around the work.",
+    "An exhibition is curated from our network of artists, made with a venue and public funders, and can take a physical or a digital form.",
 ]
 EXHIBITION_PROJECTS = [  # strongest first; a new exhibition is one more entry, shown first while in production or open
     dict(title="Africa Reframed at Øksnehallen", state="record", layout="bleed",
          image="Installation view, Africa Reframed at Øksnehallen", caption="Africa Reframed at Øksnehallen, Copenhagen, 2016", credit="Photo: DGI-byen",
-         text=["In the summer of 2016 the exhibition filled the 5,000 square metres of Øksnehallen in Copenhagen with more than 300 works by artists and designers from across the continent: Omar Victor Diop, Namsa Leuba, Fabrice Monteiro, Dillon Marsh, Lien Botha and Tahir Carl Karmali, with furniture by Yinka Ilori and fashion by ChiChia. Shown alongside them: Bamako Nights, made by the students of CFP Bamako.",
+         text=["In the summer of 2016 the exhibition filled the 5,000 square metres of Øksnehallen in Copenhagen with more than 300 works by artists and designers from across the continent. It was produced with DGI-byen and supported by Danida and Augustinus Fonden.",
+               "The Danish Ministry of Foreign Affairs later put Namsa Leuba’s image from the show on the cover of its own evaluation. The exhibition gave Africa Reframed its name."],
+         text_long=["In the summer of 2016 the exhibition filled the 5,000 square metres of Øksnehallen in Copenhagen with more than 300 works by artists and designers from across the continent: Omar Victor Diop, Namsa Leuba, Fabrice Monteiro, Dillon Marsh, Lien Botha and Tahir Carl Karmali, with furniture by Yinka Ilori and fashion by ChiChia. Shown alongside them: Bamako Nights, made by the students of CFP Bamako.",
                "It was produced with DGI-byen and supported by Danida and Augustinus Fonden. Ten display modules built in oriented strand board carried the works through the hall; two cinemas and a programme of talks and workshops ran alongside. The Danish Ministry of Foreign Affairs later put Namsa Leuba’s image from the show on the cover of its own evaluation. The exhibition gave Africa Reframed its name."],
          # More of the exhibition, not more exhibitions (Thomas, 9 November 2026): the scale of the hall in six views.
          gallery=dict(labels=["The hall: the full length of Øksnehallen", "Visitors among the works", "Framed works on a display module",
@@ -1440,14 +1465,21 @@ ARTIST_BY_NAME = {a["name"]: a for a in ARTISTS + [FILMS]}
 
 
 # 3 Workshops: the activity, then the projects, the voices, Bamako Nights, the partners
-ABOUT_WORKSHOPS = [
+ABOUT_WORKSHOPS_LONG = [   # the wording until 11 November 2026, 15:00, kept
     "We connect African photographers with the international picture market, so that their own stories of the continent travel. Our workshops are built with photography schools, photographers’ unions and press associations, with a funder and a market partner in the same programme, so that training leads to work that sells, and to income.",
     "Photographers learn what buyers look for, how to brief and shoot for it, and how their work is licensed.",
+]
+# Shortened as a draft for Thomas (11 November 2026).
+ABOUT_WORKSHOPS = [
+    "We connect African photographers with the international picture market, so that their own stories of the continent travel.",
+    "Our workshops are built with photography schools, photographers’ unions and press associations, with a funder and a market partner in the same programme, so that training leads to work that sells, and to income.",
 ]
 WORKSHOP_PROJECTS = [  # strongest first; a new workshop is one more entry, shown first while in production or open
     dict(title="CFP Bamako and Getty Images", state="record", layout="side",
          image="Photography students at CFP Bamako", caption="Photography students at CFP Bamako", credit="Photo: Africa Reframed",
-         text=["Our first workshop programme ran for six years with the photography school CFP Bamako and Getty Images, funded through the Danish Embassy in Mali. Students photographed for the world market and licensed their work through Getty while still in training, with feedback from Getty’s creative team.",
+         text=["Our first workshop programme ran for six years with the photography school CFP Bamako and Getty Images, funded through the Danish Embassy in Mali. Students licensed their work through Getty while still in training.",
+               "Their images were licensed by EY, NBC, Cambridge University Press, McKinsey & Company, Pearson, Orange and Vodacom, among others. Two were chosen for Tell Everyone, the campaign that launched the UN Global Goals."],
+         text_long=["Our first workshop programme ran for six years with the photography school CFP Bamako and Getty Images, funded through the Danish Embassy in Mali. Students photographed for the world market and licensed their work through Getty while still in training, with feedback from Getty’s creative team.",
                "Their images were licensed by EY, NBC, Cambridge University Press, McKinsey & Company, Pearson, Orange and Vodacom, among others. Two of them were chosen for Tell Everyone, the campaign that launched the UN Global Goals and one of the largest ever run: the students’ own picture of Mali, carried to a global audience. An independent review for the Danish Centre for Culture and Development found that the programme “promotes positive images of Africa, moving away from editorial or ‘development’ photography”."],
          note="The review’s words are quoted from a report on the Drive: to be cleared by Thomas before launch. Tell Everyone: Case story – Getty Images and the UN Global Goals (2015). The students are not named, to spare them trouble at the school (Thomas)."),
 ]
@@ -1502,9 +1534,14 @@ SUPPORTERS = [  # name (the logo's alt text), what it supported (for the record 
 LOGO_AREA, LOGO_MAX_H, LOGO_MAX_W = 3000, 38, 150   # px² of logo per entry at desktop size; the cell caps height and width
 
 # 4 Who is behind it
-ABOUT_WHO = [
+ABOUT_WHO_LONG = [   # the wording until 11 November 2026, 15:00, kept
     "Africa Reframed is an independent, non-commercial initiative established by Commerce & Culture, the Copenhagen studio founded in 2010 by Thomas Damgaard. Trained in design and art history, he advised the Danish Ministry of Foreign Affairs on culture and development from 2010 to 2014, and has produced photography and exhibitions with partners in Africa and Europe since.",
     "The visual identity is by the Danish designer Rune Høgsberg, first drawn for the exhibition at Øksnehallen. The archive’s photographs are made by our team.",
+]
+# The same words in a new order (11 November 2026): the first sentence opens the chapter.
+ABOUT_WHO = [
+    "Africa Reframed is an independent, non-commercial initiative established by Commerce & Culture, the Copenhagen studio founded in 2010 by Thomas Damgaard.",
+    "Trained in design and art history, he advised the Danish Ministry of Foreign Affairs on culture and development from 2010 to 2014, and has produced photography and exhibitions with partners in Africa and Europe since. The visual identity is by the Danish designer Rune Høgsberg, first drawn for the exhibition at Øksnehallen. The archive’s photographs are made by our team.",
 ]
 ABOUT_PEOPLE = [("Thomas Damgaard", "Founder.", "Portrait"), ("Rune Høgsberg", "The identity.", "Portrait or the mark"),
                 ("CFP Bamako", "Partner school.", "The school"), ("The Nairobi team", "Photographers.", "The team")]
@@ -1515,7 +1552,7 @@ def by_state(items):
     order = list(STATES)
     return sorted(items, key=lambda x: order.index(x["state"]))
 
-PRESS_FACTS = [("1,122 images", "in the House Collection, from Mali, Kenya and The Gambia"), ("Five themes", "Learning, Work and enterprise, Everyday digital, City life, Creativity and culture"),
+PRESS_FACTS = [("1,122 images", "in the House Collection, from Mali, Kenya and The Gambia"), ("The first five themes", "Learning, Work and enterprise, Everyday digital, City life, Creativity and culture"),
                ("Free for partners", "selected non-profit and public partners; companies through a collection sponsorship"), ("Established by", "Commerce & Culture, Copenhagen"),
                ("Real images", "our images are never AI-generated")]
 PRIVACY = [("What we collect", "Your organisation, your name and role, your email address, how you expect to use the images, and the answers you give in the partner forms."),
@@ -1549,7 +1586,9 @@ def tpl_home(p, base):
 
 
 def tpl_index_themes(p, base):
-    return m_page_head(p["title"], THEMES_LEAD) + m_themes(base, "b")
+    return (m_page_head(p["title"], THEMES_LEAD, statement_draft=True) + m_themes(base, "b")
+            + m_text(THEMES_SOURCE[0], [THEMES_SOURCE[1]], "a",
+                     links=[button(base + "partners/#sponsor", "Sponsor a collection on your theme →", quiet=True)]))
 
 
 def tpl_index_collections(p, base):
@@ -1563,7 +1602,7 @@ def tpl_theme(p, base):
     n = THEMES.index(t)
     # 1 name, statement, count; 2 the evidence: a lead image and six to eight samples; 3 Open in the archive; 4 the text;
     # 5 the sponsor credit; 6 previous and next.
-    return (m_page_head(t["name"], t["statement"], kicker=f"Theme {n + 1} of {len(THEMES)}",
+    return (m_page_head(t["name"], t["statement"], kicker=f"Theme {n + 1}",
                         meta=[(f'{t["count"]} images in the archive →', archive("/-/galleries/archive?search=" + quote(t["query"]), "theme-head-" + t["slug"])), "House Collection"])
             + m_photo(f"Lead image for {t['name']}", "21/9", "a", lead=True, echo=True)
             + m_grid("e", label="Image from the theme", title="What it shows", aside=draft(limit("text section", THEME_TEXTS[t["slug"]])))
@@ -1744,16 +1783,16 @@ def tpl_text(p, base):
         # Four chapters (the plan of 11 November 2026, the whole site): the archive, exhibitions, workshops, who is behind
         # it. Each opens with twice the space above it and its title at the page-title size in Light. The order and the
         # words are the build brief's (About page – build brief): credibility, then wonder, then people.
-        opener = lambda title, paras, sid: chapter(m_text(title, paras, "a", sid=sid)).replace("<h2>", '<h2 class="chapter-title">', 1)
+        opener = lambda title, paras, sid: chapter(m_text(title, paras, "a", sid=sid, lead_first=True)).replace("<h2>", '<h2 class="chapter-title">', 1)
         head = (m_page_head(p["title"], ABOUT_STATEMENT, statement_draft=True)
                 + m_channels(ABOUT_CHANNELS)
                 + m_supporters(SUPPORTERS, SUPPORTERS_TITLE, base))
         # 1 The archive: always on. The activity, then the proof: its collections, where its images have been, the way in.
         the_archive = (opener("The archive", ABOUT_ARCHIVE, "archive")
-                + mod("collection", "a, the collections in the archive", "".join(collection_entry(x, base) for x in by_state(ARCHIVE_COLLECTIONS)), tight=True)
+                + mod("collection", "a, the collections in the archive", "".join(collection_entry(x, base) for x in by_state(ARCHIVE_COLLECTIONS)))
                 + mod("text", "the register", f'<div class="cols"><div class="c6-12">{register}'
                       f'<p class="doors">{button(base + "partners/#use", "How partners use the archive →", quiet=True)}</p></div></div>', tight=True)
-                + mod("text", "the hinge", f'<div class="cols"><div class="c6-12">{draft(ABOUT_HINGE, "p", "hinge")}</div></div>', tight=True))
+                + mod("text", "the hinge", f'<div class="cols"><div class="c6-12">{draft(ABOUT_HINGE, "p", "hinge")}</div></div>'))
         # 2 Exhibitions: a medium we activate. The activity, then the projects, the door, the artists. The page turns here.
         exhibitions = (opener("Exhibitions", ABOUT_EXHIBITIONS, "exhibitions")
                 + "".join(m_project(x) for x in by_state(EXHIBITION_PROJECTS))
@@ -1763,11 +1802,11 @@ def tpl_text(p, base):
         # 3 Workshops: a medium we activate. The activity, then the projects, Bamako Nights, the partners.
         workshops = (opener("Workshops", ABOUT_WORKSHOPS, "workshops")
                 + "".join(m_project(x) for x in by_state(WORKSHOP_PROJECTS))
-                + m_items("In their words", ABOUT_INTERVIEWS, "d", image_ratio="16/9", tight=True, level=3,
+                + m_items("In their words", ABOUT_INTERVIEWS, "d", image_ratio="16/9", level=3,
                           lead=draft("Three of the programme’s photographers, on what it meant to them.")
                           + note("Short films of interviews with the photographers; played on click with a poster frame, never autoplaying (the one-motion rule)."))
                 + m_grid("e", label="Bamako Nights", line=BAMAKO_NIGHTS, title="Bamako Nights", credit="Students of CFP Bamako, Bamako Nights, 2011", level=3, cap=False)
-                + m_items("Workshop partners", WORKSHOP_PARTNERS, "a", tight=True, level=3, cls="five")
+                + m_items("Workshop partners", WORKSHOP_PARTNERS, "a", level=3, cls="five")
                 + mod("text", "the way to the collection", f'<div class="cols"><div class="c6-12">{draft(ABOUT_WORKSHOPS_TO_COLLECTION)}'
                       f'<p class="doors">{button(base + "collections/house-collection/", "The House Collection →", quiet=True)}</p></div></div>', tight=True))
         # 4 Who is behind it
@@ -1815,7 +1854,7 @@ def m_network(base):
                f'<p class="network-lead">{e(NETWORK_LEAD)} {join}</p>'
                f'<ul class="network-rows">{li}</ul>'
                + note("Rows of text, no images (Thomas, 10 November 2026). Each name links to the artist’s own page once it is made (Artist pages – template).")
-               + "</div></div>", tight=True)
+               + "</div></div>")
 
 
 def work_label(a, title, series):
@@ -1877,9 +1916,8 @@ def tpl_artist(p, base):
     box = f'<aside class="facts-box"><dl class="facts">{dl}</dl><p class="small">{e(artist_rights(a))}</p></aside>'
     text = "".join(draft(t) for t in a["text"])
     out = (m_page_head(a["name"], a["line"], kicker=kicker, statement_draft=True)
-           # the works stand on black, as the exhibitions do on About (Thomas, 11 November 2026: black holds the exhibitions
-           # and the artists' works, and groups them as one category); the page's name stays on white, and so do the ways on
-           + '<div class="dark works-dark">'
+           # On white (Thomas, 11 November 2026, 14:57): on black these pages confused. Black stays for the Exhibitions
+           # chapter on About.
            + mod("photo", "b, the lead work, whole", lead_html, tight=True)
            + mod("text", "b, with a facts box (artist)", f'<div class="cols"><div class="c1-6 artist-text">{text}{note(a["note"]) if a.get("note") else ""}</div><div class="c8-12">{box}</div></div>'))
     for sr in a["series"]:
@@ -1900,7 +1938,6 @@ def tpl_artist(p, base):
                      + "</ul></div></div>")
         out += mod("grid", "artwork row, whole works", f'<h3 class="project-title">{e(sr["title"])}</h3>'
                    f'<div class="cols"><div class="c1-8">{draft(sr["line"], "p", "series-text")}</div></div>{body}')
-    out += "</div>"
     others = [x for x in NAV if x is not a]
     if others:
         i = NAV.index(a)
@@ -2583,7 +2620,6 @@ body.clean .mod::before{display:none}
 .dark .button.quiet{background:transparent;border-color:#fff;color:#fff}
 .dark .button.quiet:hover{background:#fff;color:var(--ground)}
 .dark + .mod.chapter{padding-top:calc(var(--section)*2)}
-.dark.works-dark{margin-top:var(--section-head)}
 .dark img.work{background:#1e1e1e}
 .rows .cols{border-top:1px solid var(--line);padding-top:24px}
 .rows .cols h2{margin:0}
@@ -2722,7 +2758,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .num span{font-size:var(--fs-text);color:var(--ink-soft)}   /* what the number counts, at the text size (the plan of 11 November 2026, step 3: less small print) */
 .numbers.by-kind{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px 32px;border-top:1px solid var(--ink);padding-top:16px;margin-top:16px}
 .small-num b{font-size:var(--fs-head)}
-.theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px;margin-top:32px}
+.theme-row{display:grid;grid-template-columns:repeat(var(--theme-cols,5),minmax(0,1fr));gap:32px;margin-top:32px}
 .order{font-size:var(--fs-small);color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
 .theme-row .order{font-size:var(--fs-display);font-weight:300;line-height:1;color:var(--ink);margin:0 0 12px}   /* the themes numbered in Light, as the chapters of the 2019 plan */
 .count{font-size:var(--fs-small);font-weight:400;margin-top:auto}
@@ -2796,12 +2832,11 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 /* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive
    stands on the yellow. */
 .panel{display:flex;flex-direction:column;gap:8px;border-top:2px solid var(--ink);padding:24px 0 0;text-decoration:none}
-.panel strong{font-size:var(--fs-title);font-weight:700;line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+.panel strong{font-size:var(--fs-head);font-weight:700;line-height:1.15;letter-spacing:-.01em;text-wrap:balance}   /* one step under the page's name (Thomas, 11 November 2026) */
 .panel span:last-child{color:var(--ink-soft)}
 .panel.archive{background:var(--accent);border-top-color:var(--accent);padding:24px}
 .panel.archive .kicker,.panel.archive span:last-child{color:var(--ink)}
-.panel:hover strong{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:8px}
-.page-head.has-doors h1{font-size:var(--fs-head);line-height:1.15;letter-spacing:-.01em}
+.panel:hover strong{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
 .mini-form{display:flex;flex-direction:column;gap:4px}
 .f-label{font-size:var(--fs-small);color:var(--ink-soft);margin-top:8px}
 .field{display:block;height:38px;border:1px solid #d6d3cc;border-radius:0;background:#fff}

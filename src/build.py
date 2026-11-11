@@ -68,13 +68,13 @@ THEMES = [
     dict(slug="work-and-enterprise", name="Work and enterprise", count=279, query="skills and jobs",
          statement="Tradespeople, cooks, farmers, shopkeepers and young professionals making a living with skill."),
     dict(slug="everyday-digital", name="Everyday digital", count=354, query="everyday technology",
-         statement="Phones, laptops and money on a screen, used for work, study and keeping in touch as a normal part of the day."),
+         statement="Phones, laptops and money on a screen: work, study and keeping in touch as a normal part of the day."),   # 20 words since 11 November 2026 (the Keywording Guide, 8b, changed with it)
     dict(slug="city-life", name="City life", count=237, query="urban life",
          statement="Cafés, campuses, rooftops and busy streets: the everyday rhythm of Bamako, Banjul and Nairobi."),
     dict(slug="creativity-and-culture", name="Creativity and culture", count=137, query="creativity and culture",
          statement="Portraits, style and street art."),
 ]
-THEMES_LEAD = ("Read in order, the five themes are the archive’s argument: people learn, put their skills to work, "
+THEMES_LEAD = ("In order, the five themes are the archive’s argument: people learn, put their skills to work, "
                "live connected lives in modern cities, and make culture.")                            # Keywording Guide, 8b
 
 # Who gets access: AR Archive – Status, "Who gets access, and sponsors" (Thomas, 3 Nov 2026)
@@ -1591,8 +1591,10 @@ def company_story(x, i):
         out = m_photo(lead, "3/2", "c", text=f'<div class="story">{words}{body}</div>', side="left" if i % 3 == 1 else "right",
                       caption=caption, credit=credit, sid=story_id(x), wide=True)
     cells = "".join(frame(f'{x["name"]}: {k}', "3/2", role="pair", own=False, cap=False) for k in ("the people at work", "the product"))
-    out += mod("grid", "f, a pair from the shoot", f'<div class="imgs grid-pair">{cells}</div>'
-               f'{credit_line("Photographer: " + x["photographer"], WTV_CREDIT, group=True)}', tight=True)
+    # One credit for a story (rule 15, as changed on 11 November 2026): the lead photograph's caption names the company, the
+    # place and the photographer, and its credit stands for the pair beneath it. The pair's module says which story credits it.
+    out += mod("grid", "f, a pair from the shoot", f'<div class="imgs grid-pair">{cells}</div>', tight=True).replace(
+        '<section class="mod ', f'<section data-credited-by="{story_id(x)}" class="mod ', 1)
     return out
 
 
@@ -2858,6 +2860,7 @@ body.show-grid .grid-overlay{display:block}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
   .lead-tall{grid-column:4/-1}.lead-square{grid-column:3/-1}.lead-wide{grid-column:2/-1}.works.works-wide{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .theme-entry.row h3{font-size:var(--fs-text)}   /* below desktop a theme's name stands at the text size, in Bold (rule 11: one size carries the page) */
   .c1-9,.c5-12,.c-wide,.c-side,.e-words{grid-column:1/-1}
   .e-words{margin-bottom:24px}
   .c-wide.photo-half{order:-1}  /* the photograph first below desktop, whichever side it sits on */
@@ -2924,7 +2927,9 @@ body.show-grid .grid-overlay{display:block}
   .grid-2{gap:32px}
   .split{gap:24px}
   .contact-box{margin-top:0}
-  .contact-box .h-big,.mod-doors .h-big{font-size:var(--fs-text)}   /* an address stays on one line on a phone */
+  .contact-box .h-big,.mod-doors .h-big{font-size:var(--fs-text)}
+  /* running text on a phone: 35 to 45 characters a line (rule 10); the column is a little narrower than the images */
+  main p:not(.doors):not(.credit):not(.meta-row):not(.kicker):not(.lead):not(.statement),main dd,main blockquote,main .film-list li > span,main .network-rows span{max-width:19em}   /* an address stays on one line on a phone */
   .theme-nav + .theme-nav{margin-top:32px}
   .dev-list li,.dev-list li:has(.tag),.dev-list li:has(.where){grid-template-columns:1fr}
   .strip-tools{gap:10px}

@@ -89,7 +89,10 @@ MEASURE_JS = r"""
     // where the credit stands.
     const own = [...fig.querySelectorAll('.credit, figcaption')].some(c => c.innerText.trim().length > 0 && !c.classList.contains('group'));
     const group = e.closest('.mod') && e.closest('.mod').querySelector('.credit.group');
-    return !(own || group || e.closest('a[href]'));
+    // a story's credit (11 November 2026): the pair under a company's story is credited by the story's lead photograph
+    const by = e.closest('.mod') && e.closest('.mod').dataset.creditedBy, lead = by && document.getElementById(by);
+    const story = !!(lead && [...lead.querySelectorAll('.credit')].some(c => c.innerText.trim().length > 0));
+    return !(own || group || story || e.closest('a[href]'));
   }).length;
   const overlaid = frames.filter(e => { const r = e.getBoundingClientRect(); return [...e.querySelectorAll('*')].some(c => !c.matches('span') && vis(c)); }).length;
   // the yellow: any element whose ground, rule or type is a yellow

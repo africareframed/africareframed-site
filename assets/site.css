@@ -440,6 +440,7 @@ body.show-grid .grid-overlay{display:block}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
   .lead-tall{grid-column:4/-1}.lead-square{grid-column:3/-1}.lead-wide{grid-column:2/-1}.works.works-wide{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .theme-entry.row h3{font-size:var(--fs-text)}   /* below desktop a theme's name stands at the text size, in Bold (rule 11: one size carries the page) */
   .c1-9,.c5-12,.c-wide,.c-side,.e-words{grid-column:1/-1}
   .e-words{margin-bottom:24px}
   .c-wide.photo-half{order:-1}  /* the photograph first below desktop, whichever side it sits on */
@@ -506,7 +507,9 @@ body.show-grid .grid-overlay{display:block}
   .grid-2{gap:32px}
   .split{gap:24px}
   .contact-box{margin-top:0}
-  .contact-box .h-big,.mod-doors .h-big{font-size:var(--fs-text)}   /* an address stays on one line on a phone */
+  .contact-box .h-big,.mod-doors .h-big{font-size:var(--fs-text)}
+  /* running text on a phone: 35 to 45 characters a line (rule 10); the column is a little narrower than the images */
+  main p:not(.doors):not(.credit):not(.meta-row):not(.kicker):not(.lead):not(.statement),main dd,main blockquote,main .film-list li > span,main .network-rows span{max-width:19em}   /* an address stays on one line on a phone */
   .theme-nav + .theme-nav{margin-top:32px}
   .dev-list li,.dev-list li:has(.tag),.dev-list li:has(.where){grid-template-columns:1fr}
   .strip-tools{gap:10px}

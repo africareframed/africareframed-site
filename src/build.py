@@ -378,18 +378,19 @@ def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left
 
 
 # 2.6 Image grid: (a) three in a row, (b) four portraits, (c) a strip of three squares, (d) six to eight mixed.
-def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None, credit=None, level=2):
+def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None, credit=None, level=2, aside=None):
     cell = lambda r: frame(label, r, role={"3/2": "grid-3", "4/5": "grid-4", "1/1": "strip"}[r], own=False, cap=False)
     top = heading(title, level, "project-title" if level == 3 else "") if title else ""
     top += f'<p class="small">{e(line)}</p>' if line else ""
     foot = credit_line(credit=credit, group=True) + (f'<p class="doors">{link}</p>' if link else "")
     if variant == "e":
         # One large photograph and one row of three (rule 16: the strongest is shown larger rather than more being shown
-        # smaller). The large one carries its caption; one credit stands for the four.
+        # smaller). The large one carries its caption; one credit stands for the four. The words that belong to the
+        # evidence stand beside the large photograph in columns 1 to 4 (aside): no empty column beside it.
         big = frame(label + ", the strongest, large", "3/2", role="two-thirds", own=False)
         cells = "".join(cell("3/2") for _ in range(3))
         return mod("grid", "e, one large and a row of three",
-                   f'<div class="cols"><div class="c1-4">{top}</div><div class="c5-12">{big}</div></div><div class="imgs grid-3 row-3">{cells}</div>{foot}')
+                   f'<div class="cols"><div class="c1-4 e-words">{top}{aside or ""}</div><div class="c5-12">{big}</div></div><div class="imgs grid-3 row-3">{cells}</div>{foot}')
     if variant == "a":
         cells = "".join(cell("3/2") for _ in range(n or 3)); cls = "grid-3"; name = "a, three in a row"
     elif variant == "b":
@@ -473,7 +474,7 @@ HOME_COLLECTIONS_TITLE = "Two collections, one of them sponsored"   # true while
 
 def m_collection(base, variant="a", title=True):
     assert len(COLLECTIONS) == 2 and sum(1 for c in COLLECTIONS if c.get("sponsor")) == 1, "HOME_COLLECTIONS_TITLE no longer fits the collections"
-    top = f'<div class="cols"><div class="c1-4">{heading(HOME_COLLECTIONS_TITLE)}</div></div>' if title else ""
+    top = f'<div class="cols"><div class="c1-8">{heading(HOME_COLLECTIONS_TITLE)}</div></div>' if title else ""
     n = note("A new sponsored collection appears here once it is signed, shown as in production with behind-the-scenes material; never as a plan.")
     cards = "".join(collection_card(c, base) for c in COLLECTIONS)
     return mod("collection", "b, a list of cards", f'{top}<div class="collection-list">{cards}</div>{n}')
@@ -558,7 +559,7 @@ def door(href, kicker, title, line, dark=False):
             f'<strong>{e(title)}</strong><span>{e(line)}</span></a>')
 
 
-def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None, tight=False):
+def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None, tight=False, left=False):
     if variant == "a":
         return mod("doors", "a, two doors", f'<div class="door-panels">{"".join(doors)}</div>', sid=sid, tight=tight)
     if variant == "b":
@@ -570,7 +571,7 @@ def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=No
     if variant == "d":
         inner = f'<div class="cols"><div class="c1-4">{heading(kicker)}</div><div class="c6-12"><p class="h-big"><a href="mailto:{address}">{address}</a></p>{draft(line, "p", "small") if line else ""}</div></div>'
         return mod("doors", "d, the contact band", inner, cls="band", sid=sid, tight=tight)
-    return mod("doors", "c, the ways on", f'<div class="cols"><div class="c6-12 c-offset"><p class="doors">{"".join(links)}</p></div></div>', sid=sid, tight=tight)
+    return mod("doors", "c, the ways on", f'<div class="cols"><div class="{"c1-12" if left else "c6-12 c-offset"}"><p class="doors">{"".join(links)}</p></div></div>', sid=sid, tight=tight)
 
 
 # 2.13 Item list: (a) plain under rules, (b) numbered steps, (c) accordion, (d) with images, (e) chips.
@@ -1524,7 +1525,7 @@ def tpl_home(p, base):
             + m_photo("A photograph from the archive, full bleed · released, no minors", "21/9", "a")
             + chapter(m_collection(base))
             + chapter(m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"))
-            + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True))
+            + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))   # under the principles, on their left edge
 
 
 def tpl_index_themes(p, base):
@@ -1545,8 +1546,7 @@ def tpl_theme(p, base):
     return (m_page_head(t["name"], t["statement"], kicker=f"Theme {n + 1} of {len(THEMES)}",
                         meta=[(f'{t["count"]} images in the archive →', archive("/-/galleries/archive?search=" + quote(t["query"]), "theme-head-" + t["slug"])), "House Collection"])
             + m_photo(f"Lead image for {t['name']}", "21/9", "a", lead=True, echo=True)
-            + m_grid("e", label="Image from the theme", line="Four images that carry the theme; released, no minors.", title="From the archive")
-            + m_text("What it shows", [THEME_TEXTS[t["slug"]]], "a")
+            + m_grid("e", label="Image from the theme", title="What it shows", aside=draft(limit("text section", THEME_TEXTS[t["slug"]])))
             + m_sponsor("theme", tight=True, sponsor=THEME_SPONSORS.get(t["slug"]))
             # the way into the archive, as one yellow surface near the end of the page (the count in the head is its link at the top)
             + m_doors("b", count=(t["count"], f'images on {t["name"].lower()} in the archive'), count2=("—", "uses"),
@@ -1597,16 +1597,21 @@ def cs_quotes(rows, title):
     return mod("text", "a, in their words", inner, tight=True)
 
 
+def facts_html(c):
+    return '<dl class="facts">' + "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in c["facts"]) + "</dl>"
+
+
 # The collection page's sections. Each takes the collection and the base path; a collection names the ones it uses, in order.
 COLLECTION_SECTIONS = {
-    "story": lambda c, base: m_text(c["story_title"], c["story"], "b",
-                                    box='<dl class="facts">' + "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in c["facts"]) + "</dl>"),
+    "story": lambda c, base: (m_text(c["story_title"], c["story"], "a") if "grid" in c["sections"] else
+                              m_text(c["story_title"], c["story"], "b", box=facts_html(c))),
     "companies": lambda c, base: (mod("items", "a, the stories’ contents",
                                       f'<div class="cols"><div class="c1-4">{heading(c.get("companies_title", "The companies"))}</div><div class="c6-12">{draft(c["companies_lead"])}'
                                       f'{note("Seven stories as teasers, three photographs each from the shoot: one large and a pair. Present tense where a company’s current activity is confirmed; otherwise as photographed in 2021, until its founder confirms.")}</div></div>'
                                       + m_contents(c["companies"]), sid="companies")
                                   + "".join(company_story(x, i) for i, x in enumerate(c["companies"]))),
-    "grid": lambda c, base: m_grid("e", label="Image from the collection", line=c["grid_line"], title="From the collection", credit=c.get("credit")),
+    "grid": lambda c, base: m_grid("e", label="Image from the collection", line=c["grid_line"], title="From the collection", credit=c.get("credit"),
+                                   aside=facts_html(c)),   # the evidence with the facts and the count (collection page 4)
     "making": lambda c, base: m_items("How it was made", c["making"], "b", lead=draft("From the first call with a founder to the last gallery.")),
     "photographers": lambda c, base: m_items(c.get("photographers_title", "The photographers"), c["photographers"], "d", lead=draft(c["photographers_lead"]), image_ratio="4/5", sid="photographers", credit=c.get("credit")),
     "bts": lambda c, base: m_grid("c", label="Behind the scenes: a photographer at work", line=c["bts"], title="Behind the scenes", level=3, credit=c.get("credit")),
@@ -2526,6 +2531,10 @@ body.clean .mod::before{display:none}
 .theme-entry.row .order{font-size:var(--fs-title);font-weight:300;line-height:1;margin:0;color:var(--ink)}
 .theme-entry.row h3{font-size:var(--fs-head);font-weight:700;margin:0 0 8px}
 .theme-nav .dir{display:block;font-size:var(--fs-text);color:var(--ink-soft);margin-bottom:8px}
+.theme-nav .order{display:none}   /* previous and next say which way; the theme's number stands on its own page */
+.e-words .facts{margin-top:24px}
+.e-words p{max-width:var(--measure)}
+.row-3{margin-top:24px}   /* air between the large photograph's caption and the row */
 .collection-card{text-decoration:none;align-items:center;margin-top:8px}
 .collection-card:hover .h-big{text-decoration:underline}
 .item .img{margin-bottom:12px}
@@ -2722,7 +2731,7 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .steps li{border-top:2px solid var(--ink);padding-top:16px}
 .steps h3{margin:8px 0 4px}
 .steps p{font-size:var(--fs-text);color:var(--ink-soft);margin:0}
-.step-n{font-size:var(--fs-small);color:var(--ink-soft)}
+.step-n{display:block;font-size:var(--fs-title);font-weight:300;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}   /* numbers in Light, as the themes on Home */
 .rules{padding-left:24px;columns:2 320px;column-gap:64px;margin:8px 0 24px}
 .rules li{margin:0 0 16px;break-inside:avoid}
 .contact-box{border-top:1px solid var(--line);padding:16px 0 0;margin-top:48px}
@@ -2833,7 +2842,8 @@ body.show-grid .grid-overlay{display:block}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
   .lead-tall{grid-column:4/-1}.lead-square{grid-column:3/-1}.lead-wide{grid-column:2/-1}.works.works-wide{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .c1-9,.c5-12,.c-wide,.c-side{grid-column:1/-1}
+  .c1-9,.c5-12,.c-wide,.c-side,.e-words{grid-column:1/-1}
+  .e-words{margin-bottom:24px}
   .c-wide.photo-half{order:-1}  /* the photograph first below desktop, whichever side it sits on */
   .c-side{margin-top:24px}
   .opening.across .opening-img,.opening.words .opening-img{aspect-ratio:16/9;max-height:none}
@@ -2898,6 +2908,8 @@ body.show-grid .grid-overlay{display:block}
   .grid-2{gap:32px}
   .split{gap:24px}
   .contact-box{margin-top:0}
+  .contact-box .h-big,.mod-doors .h-big{font-size:var(--fs-text)}   /* an address stays on one line on a phone */
+  .theme-nav + .theme-nav{margin-top:32px}
   .dev-list li,.dev-list li:has(.tag),.dev-list li:has(.where){grid-template-columns:1fr}
   .strip-tools{gap:10px}
   .theme-row{grid-auto-columns:78%}

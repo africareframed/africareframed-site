@@ -124,6 +124,10 @@ body.clean .mod::before{display:none}
 .theme-entry.row .order{font-size:var(--fs-title);font-weight:300;line-height:1;margin:0;color:var(--ink)}
 .theme-entry.row h3{font-size:var(--fs-head);font-weight:700;margin:0 0 8px}
 .theme-nav .dir{display:block;font-size:var(--fs-text);color:var(--ink-soft);margin-bottom:8px}
+.theme-nav .order{display:none}   /* previous and next say which way; the theme's number stands on its own page */
+.e-words .facts{margin-top:24px}
+.e-words p{max-width:var(--measure)}
+.row-3{margin-top:24px}   /* air between the large photograph's caption and the row */
 .collection-card{text-decoration:none;align-items:center;margin-top:8px}
 .collection-card:hover .h-big{text-decoration:underline}
 .item .img{margin-bottom:12px}
@@ -320,7 +324,7 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .steps li{border-top:2px solid var(--ink);padding-top:16px}
 .steps h3{margin:8px 0 4px}
 .steps p{font-size:var(--fs-text);color:var(--ink-soft);margin:0}
-.step-n{font-size:var(--fs-small);color:var(--ink-soft)}
+.step-n{display:block;font-size:var(--fs-title);font-weight:300;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}   /* numbers in Light, as the themes on Home */
 .rules{padding-left:24px;columns:2 320px;column-gap:64px;margin:8px 0 24px}
 .rules li{margin:0 0 16px;break-inside:avoid}
 .contact-box{border-top:1px solid var(--line);padding:16px 0 0;margin-top:48px}
@@ -431,7 +435,8 @@ body.show-grid .grid-overlay{display:block}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
   .lead-tall{grid-column:4/-1}.lead-square{grid-column:3/-1}.lead-wide{grid-column:2/-1}.works.works-wide{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .c1-9,.c5-12,.c-wide,.c-side{grid-column:1/-1}
+  .c1-9,.c5-12,.c-wide,.c-side,.e-words{grid-column:1/-1}
+  .e-words{margin-bottom:24px}
   .c-wide.photo-half{order:-1}  /* the photograph first below desktop, whichever side it sits on */
   .c-side{margin-top:24px}
   .opening.across .opening-img,.opening.words .opening-img{aspect-ratio:16/9;max-height:none}
@@ -496,6 +501,8 @@ body.show-grid .grid-overlay{display:block}
   .grid-2{gap:32px}
   .split{gap:24px}
   .contact-box{margin-top:0}
+  .contact-box .h-big,.mod-doors .h-big{font-size:var(--fs-text)}   /* an address stays on one line on a phone */
+  .theme-nav + .theme-nav{margin-top:32px}
   .dev-list li,.dev-list li:has(.tag),.dev-list li:has(.where){grid-template-columns:1fr}
   .strip-tools{gap:10px}
   .theme-row{grid-auto-columns:78%}

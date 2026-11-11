@@ -226,14 +226,35 @@ CLOSE_PATTERN = bars_svg(640, 320, 48, [(40, 110), (157, 250), (274, 170), (391,
                          [(140, 260), (295, 200), (372, 270), (480, 280)], "close-pattern", "xMaxYMax")
 
 
-# 2.2 Opening: the full Opening on Home. Words on white in columns 1–4; the photograph from the line of column 5 off the
-# right edge (below 1,024 px from column 2, the words under it). Stripes and triangles come in step 3.
-def m_opening(title, line=None, label="Opening photograph · released, no minors"):
+# 2.2 Opening: the full Opening on Home, in three versions that stand side by side at /dev/opening/ (the plan of
+# 11 November 2026, step 1). Nothing lies on the photograph but the cut (rule 14); the headline stands on white.
+# - "across": the photograph across the whole window under the header, the cut coming in from the white below it, and the
+#   headline at the display size beneath, so that photograph and headline are the first screen.
+# - "words": the headline first on white, then the photograph across the window, the cut coming in from the white above.
+# - "column": the version of 11 November 2026, 12:05: words in columns 1 to 4, the photograph from column 5 off the right edge.
+OPENING_VERSION = "across"   # the version Home is built with
+CUT_ACROSS = bars_svg(1440, 600, 96, [(-36, 380), (150, 250), (336, 150), (522, 70)],
+                      [(170, 470), (250, 350), (330, 520), (420, 420), (520, 545), (700, 570)], "cut cut-wide", "xMinYMax")
+CUT_NARROW = bars_svg(300, 200, 33, [(-8, 120), (52, 75), (112, 40)], [(55, 160), (103, 180), (165, 190)], "cut cut-narrow", "xMinYMax")
+
+
+def m_opening(title, line=None, label="Opening photograph · released, no minors", version=None):
+    v = version or OPENING_VERSION
     words = f"<h1>{e(limit('headline', title))}</h1>" + (draft(limit("lead", line), "p", "lead") if line else "")
-    return mod("opening", "a, full", f'<div class="cols"><div class="opening-words c1-4">{words}</div>'
-               f'<div class="c5-off"><figure class="frame"><div class="opening-frame">{img(label + " · from the line of column 5 off the right edge (2 below desktop)", None, cls="opening-img")}'
-               f'{OPENING_CUT}</div>{credit_line(cap=caption_html(slot("opening", None, label)))}</figure></div></div>',
-               cls="opening")
+    if v == "column":
+        return mod("opening", "a, in the columns", f'<div class="cols"><div class="opening-words c1-4">{words}</div>'
+                   f'<div class="c5-off"><figure class="frame"><div class="opening-frame">{img(label + " · from the line of column 5 off the right edge (2 below desktop)", None, cls="opening-img")}'
+                   f'{OPENING_CUT}</div>{credit_line(cap=caption_html(slot("opening-column", None, label)))}</figure></div></div>',
+                   cls="opening column")
+    cut = (CUT_ACROSS + CUT_NARROW) if v == "across" else (CUT_ACROSS + CUT_NARROW).replace('class="cut ', 'class="cut from-top ')
+    photo = (f'<figure class="frame"><div class="opening-frame bleed">{img(label + " · across the window", None, cls="opening-img")}{cut}</div>'
+             f'<div class="wrap">{credit_line(cap=caption_html(slot("opening", "21/9", label)))}</div></figure>')
+    text = f'<div class="wrap"><div class="cols"><div class="opening-words c1-9">{words}</div></div></div>'
+    return mod("opening", "b, across the window" if v == "across" else "c, the words first", photo + text if v == "across" else text + photo,
+               cls=f"opening {v}", wrap=False)
+
+
+ECHO = ""   # the one echo between the Opening and the close (rule 19): drawn in step 5
 
 
 # 2.3 Page head: kicker, title, statement, meta; variants (a) plain, (b) with two doors under it, (c) with the lead photograph.
@@ -257,6 +278,8 @@ def m_page_head(title, statement=None, kicker=None, meta=None, doors=None, lead=
 def m_text(title, paras, variant="a", box=None, contact=None, links=None, is_draft=True, sid=None, level=2, meta=None):
     limit("text section", " ".join(p for p in paras if p))
     body = "".join(draft(p) if is_draft else f"<p>{e(p)}</p>" for p in paras if p)
+    if variant == "d" and paras:   # the intro on Home: the first sentence at the intro size, the rest as text
+        body = draft(paras[0], "p", "lead") + "".join(draft(p) for p in paras[1:] if p)
     if links:
         body += f'<p class="doors">{"".join(links)}</p>'
     if meta:
@@ -292,7 +315,9 @@ PICKS = {}   # slot id -> dict(ar="AR-1022", place="Bamako, Mali", year="2014", 
 SLOTS = []   # every image position, in page order
 CUR = {"slug": None, "title": None, "n": 0}
 ROLES = {    # how an image is shown -> (in words, its width in px on a 1,440 px screen)
-    "opening": ("The Opening: from column 5 off the right edge", 928), "lead": ("Lead photograph, the full content width", 1312),
+    "opening": ("The Opening: across the window", 1920), "opening-column": ("The Opening: from column 5 off the right edge", 928),
+    "lead": ("Lead photograph, the full content width", 1312), "lead-bleed": ("Lead photograph, full bleed, the width of the window", 1920),
+    "two-thirds": ("Large photograph, columns 5 to 12", 864), "pair": ("One of a pair, half the columns each", 652),
     "feature": ("Full bleed, the width of the window", 1920), "half": ("Half the columns", 640), "third": ("A third of the columns", 416),
     "grid-3": ("Grid, three in a row", 432), "grid-4": ("Grid, four portraits in a row", 322), "strip": ("Strip of three squares", 432),
     "row-strip": ("Square in a theme’s row", 216), "theme": ("Theme entry, five in a row", 237), "theme-nav": ("Previous or next theme", 640),
@@ -335,12 +360,12 @@ def frame(label, ratio="3/2", caption=None, credit=None, cls="", role="grid-3", 
     return f'<figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}>{img(label, ratio, cls=cls)}{below}</figure>'
 
 
-def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12", credit=None, sid=None):
-    role = {"a": "feature", "c": "half"}.get(variant, "lead" if span == "c1-12" else "half")
+def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12", credit=None, sid=None, lead=False, echo=False):
+    role = "lead-bleed" if lead else {"a": "feature", "c": "half"}.get(variant, "lead" if span == "c1-12" else "half")
     below = credit_line(credit=credit, cap=caption_html(slot(role, ratio, label), caption))
     if variant == "a":
-        inner = f'<figure class="frame"><div class="bleed">{img(label, ratio, cls="bleed-img")}</div><div class="wrap">{below}</div></figure>'
-        return mod("photo", "a, full bleed", inner, wrap=False, sid=sid)
+        inner = f'<figure class="frame"><div class="bleed">{img(label, ratio, cls="bleed-img")}{ECHO if echo else ""}</div><div class="wrap">{below}</div></figure>'
+        return mod("photo", "a, full bleed" + (", the lead" if lead else ""), inner, wrap=False, sid=sid, tight=lead, cls="lead-bleed" if lead else "")
     if variant == "c":
         photo = f'<div class="c-half photo-half">{img(label, ratio)}{below}</div>'
         words = f'<div class="c-half">{text}</div>'
@@ -351,7 +376,17 @@ def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left
 
 # 2.6 Image grid: (a) three in a row, (b) four portraits, (c) a strip of three squares, (d) six to eight mixed.
 def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None, credit=None, level=2):
-    cell = lambda r: frame(label, r, role={"3/2": "grid-3", "4/5": "grid-4", "1/1": "strip"}[r], own=False)
+    cell = lambda r: frame(label, r, role={"3/2": "grid-3", "4/5": "grid-4", "1/1": "strip"}[r], own=False, cap=False)
+    top = heading(title, level, "project-title" if level == 3 else "") if title else ""
+    top += f'<p class="small">{e(line)}</p>' if line else ""
+    foot = credit_line(credit=credit, group=True) + (f'<p class="doors">{link}</p>' if link else "")
+    if variant == "e":
+        # One large photograph and one row of three (rule 16: the strongest is shown larger rather than more being shown
+        # smaller). The large one carries its caption; one credit stands for the four.
+        big = frame(label + ", the strongest, large", "3/2", role="two-thirds", own=False)
+        cells = "".join(cell("3/2") for _ in range(3))
+        return mod("grid", "e, one large and a row of three",
+                   f'<div class="cols"><div class="c1-4">{top}</div><div class="c5-12">{big}</div></div><div class="imgs grid-3 row-3">{cells}</div>{foot}')
     if variant == "a":
         cells = "".join(cell("3/2") for _ in range(n or 3)); cls = "grid-3"; name = "a, three in a row"
     elif variant == "b":
@@ -362,9 +397,6 @@ def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None,
         n = n or 6
         ratio, cls = ("3/2", "grid-3") if n <= 6 else ("4/5", "grid-4")
         cells = "".join(cell(ratio) for _ in range(n)); name = f"d, {n} in rows of {3 if n <= 6 else 4}"
-    top = heading(title, level, "project-title" if level == 3 else "") if title else ""
-    top += f'<p class="small">{e(line)}</p>' if line else ""
-    foot = credit_line(credit=credit, group=True) + (f'<p class="doors">{link}</p>' if link else "")
     return mod("grid", name, f'{top}<div class="imgs {cls}">{cells}</div>{foot}')
 
 
@@ -551,7 +583,7 @@ def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image
     if variant == "d":
         def card(x):
             extra = x[3] if len(x) > 3 and x[3] else {}
-            pic = extra.get("image") or frame(x[2] if len(x) > 2 and x[2] else image_label, image_ratio, role="third", own=False)
+            pic = extra.get("image") or frame(x[2] if len(x) > 2 and x[2] else image_label, image_ratio, role="third", own=False, cap=False)
             name = f'<a href="{extra["href"]}">{e(x[0])}</a>' if extra.get("href") else e(x[0])
             return f'<div class="item">{pic}<h3>{name}</h3>{t(x[1]) if x[1] else ""}</div>'
         li = "".join(card(x) for x in items)
@@ -684,7 +716,7 @@ HOUSE_COLLECTION = dict(
     lead="Collection image", story_title="The story", story=HOUSE_STORY, facts=HOUSE_FACTS,
     grid_line="A spread across the five themes; released, no minors.",
     access=dict(count=("1,122", "images in the House Collection"), src="collection-house", line=f"Sponsoring a collection? Write to {EMAIL_PARTNERS}."),
-    sections=["story", "feature", "grid", "places", "themes", "goals", "access", "uses"],
+    sections=["story", "grid", "places", "feature", "themes", "goals", "access", "uses"],
     card=dict(kicker="Our own collection", line="1,122 photographs made by our team in Mali, Kenya and The Gambia.",
               meta=["1,122 images", "21 shoots", "Mali · Kenya · The Gambia"], image="Collection image"),
 )
@@ -1502,13 +1534,12 @@ def tpl_theme(p, base):
     n = THEMES.index(t)
     # 1 name, statement, count; 2 the evidence: a lead image and six to eight samples; 3 Open in the archive; 4 the text;
     # 5 the sponsor credit; 6 previous and next.
-    lead = m_photo(f"Lead image for {t['name']}", "21/9", "b")
     return (m_page_head(t["name"], t["statement"], kicker=f"Theme {n + 1} of {len(THEMES)}",
-                        meta=[(f'{t["count"]} images in the archive →', archive("/-/galleries/archive?search=" + quote(t["query"]), "theme-head-" + t["slug"])), "House Collection"], lead=lead)
-            + m_grid("d", 6, "Image from the theme", line="Six images that carry the theme; released, no minors.", title="From the archive")
+                        meta=[(f'{t["count"]} images in the archive →', archive("/-/galleries/archive?search=" + quote(t["query"]), "theme-head-" + t["slug"])), "House Collection"])
+            + m_photo(f"Lead image for {t['name']}", "21/9", "a", lead=True, echo=True)
+            + m_grid("e", label="Image from the theme", line="Four images that carry the theme; released, no minors.", title="From the archive")
             + m_text("What it shows", [THEME_TEXTS[t["slug"]]], "a")
             + m_sponsor("theme", tight=True, sponsor=THEME_SPONSORS.get(t["slug"]))
-            + m_photo(f"A photograph from {t['name']}, full bleed", "21/9", "a")
             # the way into the archive, as one yellow surface near the end of the page (the count in the head is its link at the top)
             + m_doors("b", count=(t["count"], f'images on {t["name"].lower()} in the archive'), count2=("—", "uses"),
                       main=button(archive("/-/galleries/archive?search=" + quote(t["query"]), "theme-" + t["slug"]), "Open in the archive →"),
@@ -1529,8 +1560,8 @@ def m_contents(rows):
 
 def company_story(x, i):
     """One company as a story in a sponsored collection: a teaser told in photographs. The rhythm of a magazine feature: the
-    lead photograph full bleed, then beside the words on the left, then on the right, and again; under each story a strip of
-    three more from the shoot (people, process, product), credited to its photographer. No "read more": the story is the teaser."""
+    lead photograph full bleed, then beside the words on the left, then on the right, and again; under each story a pair
+    more from the shoot (the people at work, the product), credited to its photographer. No "read more": the story is the teaser."""
     words = (f'<p class="kicker">{e(x["kind"])}</p><h3 class="story-headline">{e(x["headline"])}</h3>'
              f'<p class="story-company"><strong>{e(x["name"])}</strong> · {e(x["where"])}</p>')
     limit("company story", x["text"] + " " + (x.get("since") or ""))
@@ -1545,8 +1576,8 @@ def company_story(x, i):
     else:
         out = m_photo(lead, "3/2", "c", text=f'<div class="story">{words}{body}</div>', side="left" if i % 3 == 1 else "right",
                       caption=caption, credit=credit, sid=story_id(x))
-    cells = "".join(frame(f'{x["name"]}: {k}', "1/1", role="strip", own=False) for k in ("the people", "the process", "the product"))
-    out += mod("grid", "c, three more from the shoot", f'<div class="imgs grid-strip">{cells}</div>'
+    cells = "".join(frame(f'{x["name"]}: {k}', "3/2", role="pair", own=False, cap=False) for k in ("the people at work", "the product"))
+    out += mod("grid", "f, a pair from the shoot", f'<div class="imgs grid-pair">{cells}</div>'
                f'{credit_line("Photographer: " + x["photographer"], WTV_CREDIT, group=True)}', tight=True)
     return out
 
@@ -1564,10 +1595,10 @@ COLLECTION_SECTIONS = {
                                     box='<dl class="facts">' + "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in c["facts"]) + "</dl>"),
     "companies": lambda c, base: (mod("items", "a, the stories’ contents",
                                       f'<div class="cols"><div class="c1-4">{heading("The companies")}</div><div class="c6-12">{draft(c["companies_lead"])}'
-                                      f'{note("Seven stories as teasers, four photographs each from the shoot. Present tense where a company’s current activity is confirmed; otherwise as photographed in 2021, until its founder confirms.")}</div></div>'
+                                      f'{note("Seven stories as teasers, three photographs each from the shoot: one large and a pair. Present tense where a company’s current activity is confirmed; otherwise as photographed in 2021, until its founder confirms.")}</div></div>'
                                       + m_contents(c["companies"]), sid="companies")
                                   + "".join(company_story(x, i) for i, x in enumerate(c["companies"]))),
-    "grid": lambda c, base: m_grid("d", 8, "Image from the collection", line=c["grid_line"], title="From the collection", credit=c.get("credit")),
+    "grid": lambda c, base: m_grid("e", label="Image from the collection", line=c["grid_line"], title="From the collection", credit=c.get("credit")),
     "making": lambda c, base: m_items("How it was made", c["making"], "b", lead=draft("From the first call with a founder to the last gallery.")),
     "photographers": lambda c, base: m_items("The photographers", c["photographers"], "d", lead=draft(c["photographers_lead"]), image_ratio="4/5", sid="photographers", credit=c.get("credit")),
     "bts": lambda c, base: m_grid("c", label="Behind the scenes: a photographer at work", line=c["bts"], title="Behind the scenes", level=3, credit=c.get("credit")),
@@ -1603,8 +1634,8 @@ def tpl_collection(p, base):
         meta[0] = (meta[0], "#companies")                       # a sponsored collection: the way on is down to its stories
     elif not c["access"].get("request"):
         meta.insert(0, (f'{c["access"]["count"][0]} images in the archive →', archive("/-/galleries/archive", c["access"]["src"] + "-head")))
-    head = m_page_head(c["title"], c["statement"], kicker=c["kicker"], meta=meta, statement_draft=c.get("statement_draft", False),
-                       lead=m_photo(c["lead"], "21/9", "b", credit=c.get("lead_credit")))
+    head = (m_page_head(c["title"], c["statement"], kicker=c["kicker"], meta=meta, statement_draft=c.get("statement_draft", False))
+            + m_photo(c["lead"], "21/9", "a", credit=c.get("lead_credit"), lead=True, echo=True))
     return head + "".join(COLLECTION_SECTIONS[s](c, base) for s in c["sections"])
 
 
@@ -1844,7 +1875,7 @@ TEMPLATES = {"home": tpl_home, "themes": tpl_index_themes, "collections": tpl_in
 # /dev/modules: every module with each of its variants on one page (step 2), generated by every build.
 # ---------------------------------------------------------------------------------------------
 TYPE_SCALE = [  # (the named style, size, weights, what it is for, a sample)
-    ("fs-display", "64 px (44 px below desktop)", "700", "The display size. Used only if Thomas chooses it for the Home headline (below).", "Visual storytelling", 700),
+    ("fs-display", "64 px (44 px below desktop)", "700; 300 for a number", "The display size: the Home headline and the five themes’ numbers on Home.", "Visual storytelling", 700),
     ("fs-title", "44 px (32 px below desktop)", "700; 300 for a number", "The page title; the big number.", "House Collection · 1,122", 700),
     ("fs-head", "22 px", "700; 300 for the intro", "A section’s title and a card’s title; the statement under a page title; a lead.", "The story", 700),
     ("fs-text", "17 px", "400; 700 for an item’s title", "All text, the menu, buttons and fields. It carries most of a page’s words.", "The images show people at work, at study and at home.", 400),
@@ -1860,12 +1891,23 @@ def tpl_type(base):
     out = m_page_head("Type", "Six sizes and three weights, each with one job. A page shows four at most: the page title, the heading and the intro, the text, the small print.",
                       kicker="Development")
     out += mod("text", "the scale", f'<div class="type-rows">{rows}</div>')
-    out += mod("text", "the choice", f'<div class="cols"><div class="c1-4">{heading("The Home headline: 44 or 64 px")}</div><div class="c6-12">'
-               f'<p>The site is built with 44 px, the size of every page title. Below is the same Opening with the headline at 64 px, '
-               f'the scale’s display size. For Thomas to choose.</p></div></div>', tight=True)
-    out += '<p class="wrap kicker type-label">As built: 44 px</p>' + m_opening(CORE_LINE)
-    out += '<p class="wrap kicker type-label">The other: 64 px</p><div class="trial-display">' + m_opening(CORE_LINE) + "</div>"
+    out += mod("text", "the choice", f'<div class="cols"><div class="c1-4">{heading("The Home headline: 64 px")}</div><div class="c6-12">'
+               f'<p>Since 11 November 2026 Home is built with its headline at the display size. The three versions of the Opening '
+               f'stand side by side at <a href="{base}dev/opening/">/dev/opening/</a>.</p></div></div>', tight=True)
     return out
+
+
+def tpl_opening(base):
+    """/dev/opening/: the three versions of the Opening, each at its real size. Home is built with OPENING_VERSION."""
+    names = [("across", "The photograph across the window, the headline at 64 px beneath it"),
+             ("words", "The headline at 64 px first, then the photograph across the window"),
+             ("column", "The version of 12:05: words at 44 px in columns 1 to 4, the photograph from column 5")]
+    out = m_page_head("The Opening", "Three versions of Home’s first screen. Nothing lies on the photograph but the cut; the headline stands on white.",
+                      kicker="Development")
+    for i, (v, text) in enumerate(names, 1):
+        on = " · on Home now" if v == OPENING_VERSION else ""
+        out += f'<p class="wrap kicker type-label">Version {i}: {e(text)}{on}</p>' + m_opening(CORE_LINE, version=v)
+    return out.replace("<h1>Visual storytelling", '<p class="h1">Visual storytelling').replace("Africa.</h1>", "Africa.</p>")
 
 
 def tpl_images(base):
@@ -2376,6 +2418,7 @@ a{color:inherit}
 .c1-4{grid-column:1/5}.c6-12{grid-column:6/-1}.c1-12{grid-column:1/-1}.c1-8{grid-column:1/9}.c1-6{grid-column:1/7}.c7-12{grid-column:7/-1}
 .c-half{grid-column:span 6}.c-offset{grid-column:6/-1}
 .c5-off{grid-column:5/-1;margin-right:var(--off-edge)}
+.c1-9{grid-column:1/10}.c5-12{grid-column:5/-1}
 .bleed{width:100%;max-width:none}
 .skip{position:absolute;left:-9999px}
 .skip:focus{left:16px;top:8px;background:var(--ink);color:#fff;padding:8px 12px;z-index:20}
@@ -2591,6 +2634,15 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .cut{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .cut-narrow{display:none}
 #intro{padding-top:var(--section-tight)}
+/* The Opening across the window (the plan of 11 November 2026, step 1). The photograph is as wide as the window and as high
+   as leaves the headline in the first screen; the headline at the display size stands on white beneath it (or above it). */
+.opening.across,.opening.words{padding-bottom:0;overflow:visible}
+.opening.across .opening-img,.opening.words .opening-img{aspect-ratio:21/9;max-height:max(352px,calc(100vh - var(--header-h) - 280px))}
+.opening.across .opening-words{padding-top:32px}
+.opening.words .opening-words{padding-top:64px;padding-bottom:48px}
+.opening.across h1,.opening.words h1,.opening.across .h1,.opening.words .h1{font-size:var(--fs-display);line-height:1;letter-spacing:-.03em;margin:0;max-width:none}
+.from-top{transform:scaleY(-1)}
+.imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
 .intro{padding-top:48px}
 .intro-num{padding-top:8px}
 .numbers{display:flex;flex-wrap:wrap;gap:16px 48px;margin:8px 0}
@@ -2600,7 +2652,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .small-num b{font-size:var(--fs-head)}
 .theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px;margin-top:32px}
 .order{font-size:var(--fs-small);color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
-.theme-row .order{font-size:var(--fs-title);font-weight:300;line-height:1;color:var(--ink);margin:0 0 12px}   /* the themes numbered in Light, as the chapters of the 2019 plan */
+.theme-row .order{font-size:var(--fs-display);font-weight:300;line-height:1;color:var(--ink);margin:0 0 12px}   /* the themes numbered in Light, as the chapters of the 2019 plan */
 .count{font-size:var(--fs-small);font-weight:400;margin-top:auto}
 .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:8px 0 32px}
 .logos.supporters{grid-template-columns:repeat(8,minmax(0,1fr));margin:12px 0 8px}
@@ -2709,7 +2761,7 @@ main input[type=checkbox]:checked{background:var(--ink);box-shadow:inset 0 0 0 4
 .type-label{margin-top:var(--section);margin-bottom:0}
 .type-label + .mod{padding-top:16px}
 .opening-words .h1{font-weight:700;font-size:var(--fs-title);line-height:1.05;letter-spacing:-.02em;margin:0 0 16px;text-wrap:balance}
-.trial-display .opening-words .h1{font-size:var(--fs-display);line-height:1}
+.type-label{max-width:none}
 
 /* Development page */
 .table-scroll{overflow-x:auto;margin-top:8px}
@@ -2773,6 +2825,10 @@ body.show-grid .grid-overlay{display:block}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
   .lead-tall{grid-column:4/-1}.lead-square{grid-column:3/-1}.lead-wide{grid-column:2/-1}.works.works-wide{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .c1-9,.c5-12{grid-column:1/-1}
+  .opening.across .opening-img,.opening.words .opening-img{aspect-ratio:16/9;max-height:none}
+  .opening.across .opening-words{padding-top:24px}
+  .opening.words .opening-words{padding-top:32px;padding-bottom:32px;order:0}
   .c1-4{grid-column:1/4}.c6-12,.c-offset{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12,.c8-12{grid-column:5/-1}.c-half{grid-column:span 4}
   .grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
@@ -2807,6 +2863,18 @@ body.show-grid .grid-overlay{display:block}
   .close{flex-direction:column;align-items:stretch;min-height:0}
   .close-pattern{position:static;order:-1;width:100%;height:160px}
   .close-words{max-width:none;padding:32px 0}
+  .opening.across .opening-img,.opening.words .opening-img{aspect-ratio:16/9}  /* 16:9 on phones, so the way on stands in the first screen (rule 23) */
+  #intro{padding-top:16px}
+  /* on a phone the ways on stand directly under the first sentence, in the first screen; the second paragraph follows them */
+  #intro .c1-8{display:flex;flex-direction:column}
+  #intro .lead{margin-bottom:16px}
+  #intro .doors{order:1;margin:0 0 24px}
+  #intro .c1-8 > p:not(.lead):not(.doors):not(.meta-row){order:2}
+  #intro .meta-row{order:3}
+  .opening.across h1,.opening.words h1,.opening.across .h1,.opening.words .h1{font-size:var(--fs-title);line-height:1.05;letter-spacing:-.02em}
+  .opening.across .opening-words{padding-top:16px}
+  .mod-photo.lead-bleed .bleed-img{aspect-ratio:3/2!important}
+  .imgs.row-3{grid-template-columns:repeat(3,minmax(0,1fr))}  /* the row of three stays one row under its large photograph */
   .lead-photo .img{aspect-ratio:3/2!important}  /* the lead photograph has its own crop on a phone (rule 24) */
   .photo-half{order:-1}  /* photograph and text: the photograph first on phones, whichever side it sits on desktop */
   .grid-3,.grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -2855,7 +2923,7 @@ def strip_html(base):
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
             f'<a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a>'
-            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/images/">Images</a>'
+            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/images/">Images</a>'
             f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
             f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
             f'<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>\n')
@@ -2920,7 +2988,11 @@ def build():
         typ = dict(path="dev/type/", title="Type", slug="type", tpl="type", nav=None,
                    desc="The type scale of the Africa Reframed site and the Home headline at two sizes; generated by the build, removed at launch.")
         (dev_dir / "type").mkdir(exist_ok=True)
-        (dev_dir / "type" / "index.html").write_text(render(typ, tpl_type("../../"), "../../").replace("<h1>Visual storytelling", "<p class=\"h1\">Visual storytelling").replace("Africa.</h1>", "Africa.</p>"))
+        (dev_dir / "type" / "index.html").write_text(render(typ, tpl_type("../../"), "../../"))
+        opn = dict(path="dev/opening/", title="The Opening", slug="opening", tpl="opening", nav=None,
+                   desc="Three versions of the Opening of the Africa Reframed site, side by side; generated by the build, removed at launch.")
+        (dev_dir / "opening").mkdir(exist_ok=True)
+        (dev_dir / "opening" / "index.html").write_text(render(opn, tpl_opening("../../"), "../../"))
     # The page for a wrong address (Quality rules, rule 25). Its links are absolute, since it answers at any depth.
     root_path = urlparse(SITE_URL).path
     nf = dict(path="404.html", title="Page not found", slug="not-found", tpl="text", nav=None,

@@ -28,6 +28,11 @@ WEIGHTS = {"300", "400", "700"}                                  # rule 11
 MEASURE = {"desktop": 75, "tablet": 75, "phone": 48}             # rule 10 (the phone: 35 to 45 is the aim, 48 the gate)
 BUDGET = {"home": 350, "theme": 200, "collection": 300, "partners": 350, "portal": 200}   # words a page, by template
 BUDGET_BY_SLUG = {"waste-to-value": None}                        # a sponsored collection is budgeted by story (90 words)
+# The plan of 11 November 2026: what the site is steered towards, measured on the key pages at 1,440 px. A miss is listed,
+# it does not fail the gate: small print at most 15% of the letters; the first screen's largest type at least 2.5 times the
+# text; no more than two sections in a row in one layout.
+KEY = ("home", "theme", "collection", "partners", "portal")
+TARGET = dict(small=0.15, jump=2.5, run=2)
 
 MEASURE_JS = r"""
 () => {
@@ -106,6 +111,24 @@ MEASURE_JS = r"""
   });
   const text = main.innerText;
   const strip = document.querySelector('.wire-strip');
+  // The craft measures of the plan of 11 November 2026 (rules 5, 6, 16 and 19; Website – quality review, section 12).
+  // Small print: the share of all the letters of the content, captions and credits included, set under 14 px.
+  let letters = 0, smallLetters = 0, firstMax = 0;
+  for (const e of all) {
+    if (!e.closest('main') || tl(e) < 2) continue;
+    const z = parseFloat(getComputedStyle(e).fontSize), n = tl(e), r = e.getBoundingClientRect();
+    letters += n; if (z < 14) smallLetters += n;
+    if (r.top + scrollY < H && z > firstMax) firstMax = z;                       // the largest type of the first screen
+  }
+  const body = parseFloat(getComputedStyle(document.body).fontSize);
+  const top0 = strip ? strip.getBoundingClientRect().height : 0;
+  let firstImage = 0;                                                            // the largest photograph's share of the first screen
+  for (const e of frames) { const r = e.getBoundingClientRect(), t = r.top + scrollY - top0; const h = Math.max(0, Math.min(r.bottom + scrollY - top0, H) - Math.max(t, 0)); firstImage = Math.max(firstImage, r.width * h / (W * H)); }
+  const grids = [...main.querySelectorAll('.imgs, .cards-2, .cards-3, .cards-4, .cards-5, .cards-6, .works')].filter(vis).map(g => g.querySelectorAll('.img, img').length).filter(n => n);
+  const pattern = [...document.querySelectorAll('svg.cut, svg.echo, svg.close-pattern')].filter(vis).length;
+  const mods = [...main.querySelectorAll('section.mod')].filter(s => !s.parentElement.closest('section.mod')).map(s => s.dataset.mod);
+  let run = 1, maxRun = mods.length ? 1 : 0, runAt = '';
+  for (let i = 1; i < mods.length; i++) { run = mods[i] === mods[i - 1] ? run + 1 : 1; if (run > maxRun) { maxRun = run; runAt = mods[i]; } }
   return {
     sizes, weights, total, measure, measureAt, words: words(main), frames: frames.length, nocredit, overlaid, yellow,
     small, controls: controls.length, heads,
@@ -116,6 +139,8 @@ MEASURE_JS = r"""
     straight: (text.match(/["']/g) || []).length,
     h1: document.querySelectorAll('h1').length,
     anims: document.getAnimations().length,
+    smallShare: letters ? smallLetters / letters : 0, jump: firstMax / body, firstImage, grids, pattern, maxRun, runAt,
+    screens: Math.round(10 * document.documentElement.scrollHeight / H) / 10,
   };
 }
 """
@@ -175,12 +200,27 @@ def run(only=None):
     return out
 
 
+misses = []   # the plan's targets missed (not failures)
+
+
+def craft(rows):
+    """The plan's measures on the key pages at 1,440 px, one line a page."""
+    out = []
+    for m in rows:
+        if m["width"] == "desktop" and m["tpl"] in KEY:
+            out.append(f'{m["slug"]:28} small {m["smallShare"]:4.0%}  jump {m["jump"]:3.1f}  first image {m["firstImage"]:4.0%}  '
+                       f'images {m["frames"]:2}  largest grid {max(m["grids"] or [0])}  pattern {m["pattern"]}  run {m["maxRun"]}  screens {m["screens"]:4.1f}')
+    return out
+
+
 def verdict(rows):
     """One line a page and width, and the failures by rule. Returns (lines, failures)."""
     fails, lines = {}, []
 
     def fail(rule, slug, width, what):
         fails.setdefault(rule, []).append(f"{slug} ({width}): {what}")
+
+    misses.clear()
 
     site_sizes = set()
     for m in rows:
@@ -222,6 +262,17 @@ def verdict(rows):
             fail(29, slug, w, f'{m["h1"]} main headings')
         if m["anims"]:
             fail(20, slug, w, f'{m["anims"]} animations running')
+        if m["grids"] and max(m["grids"]) > 8:
+            fail(16, slug, w, f'{max(m["grids"])} images in one grid')
+        if m["pattern"] > 3:
+            fail(19, slug, w, f'the pattern {m["pattern"]} times')
+        if w == "desktop" and m["tpl"] in KEY:
+            if m["smallShare"] > TARGET["small"]:
+                misses.append(f'{slug}: small print {m["smallShare"]:.0%} of the letters')
+            if m["jump"] < TARGET["jump"]:
+                misses.append(f'{slug}: the first screen’s largest type is {m["jump"]:.1f} times the text')
+            if m["maxRun"] > TARGET["run"]:
+                misses.append(f'{slug}: {m["maxRun"]} sections in a row as “{m["runAt"]}”')
         budget = BUDGET_BY_SLUG.get(slug, BUDGET.get(m["tpl"]))
         if w == "desktop" and budget and m["words"] > budget:
             fail(4, slug, w, f'{m["words"]} words, budget {budget}')
@@ -262,7 +313,13 @@ if __name__ == "__main__":
             print("   ", x)
         if not a.pages and len(items) > 6:
             print(f"    … and {len(items) - 6} more")
+    print("\nThe plan’s measures (key pages, 1,440 px):")
+    print("\n".join(craft(rows)))
+    if misses:
+        print(f"Targets missed: {len(misses)}")
+        for x in misses:
+            print("   ", x)
     print(f"\n{len(rows)} page views checked; rules failing: {', '.join(str(r) for r in sorted(fails)) or 'none'}")
     if a.json:
-        pathlib.Path(a.json).write_text(json.dumps(dict(rows=rows, fails=fails, css=css_findings()), indent=1, ensure_ascii=False))
+        pathlib.Path(a.json).write_text(json.dumps(dict(rows=rows, fails=fails, css=css_findings(), misses=misses), indent=1, ensure_ascii=False))
     sys.exit(1 if fails else 0)

@@ -469,6 +469,20 @@ def state_label(x):
 def m_project(x, extra=""):
     """A project as proof of a line of activity: its title, its text and its photograph. No year as structure: the year sits
     in the caption. (bleed) the photograph full bleed, the words under it, title left, text right; (side) photograph and text."""
+    if not x.get("text"):
+        # The area's text names the project; here it is shown: its photograph with the specifics in the caption (place,
+        # year, who made and funded it), then at most one row of three, each with what it shows.
+        n = note(x["note"]) if x.get("note") else ""
+        if x["layout"] == "bleed":
+            out = m_photo(x["image"], "21/9", "a", caption=x["caption"], credit=x["credit"])
+            if x.get("row"):
+                cells = "".join(frame(label, "3/2", caption=cap, own=False) for label, cap in x["row"])
+                out += mod("grid", "a, three in a row, each with what it shows",
+                           f'<div class="imgs grid-3">{cells}</div>{credit_line(credit=x["credit"], group=True)}{n}', tight=True)
+            return out
+        sid = slot("lead", "21/9", x["image"])
+        return mod("photo", "b, on the columns", f'<div class="cols"><div class="c1-12">{img(x["image"], "21/9")}'
+                   f'{credit_line(credit=x["credit"], cap=caption_html(sid, x["caption"]))}{n}</div></div>')
     words = state_label(x) + heading(x["title"], 3, "project-title")
     body = "".join(draft(t) for t in x["text"]) + (note(x["note"]) if x.get("note") else "")
     if x["layout"] == "bleed":
@@ -882,15 +896,26 @@ ABOUT_EXHIBITIONS_LONG = [   # the wording until 11 November 2026, 15:00, kept
     "We show African artists and our own photographs to European audiences: in halls and on screens, with programmes of film, talks and workshops around the work.",
     "An exhibition is curated from our network of artists, made with a venue and public funders, and can take a physical or a digital form. A collection can open as an exhibition.",
 ]
-# Shortened as a draft for Thomas (11 November 2026).
-ABOUT_EXHIBITIONS = [
+ABOUT_EXHIBITIONS_1500 = [   # the wording from 15:00 to 15:20 on 11 November 2026, kept
     "We show African artists and our own photographs to European audiences in halls and on screens, with film, talks and workshops around the work.",
     "An exhibition is curated from our network of artists, made with a venue and public funders, and can take a physical or a digital form.",
 ]
+# The area, then its proof (Thomas, 11 November 2026, 15:14 and 15:18): one text tells what exhibitions are for us and
+# names Øksnehallen inside it; the exhibition has no heading and no text of its own, and its specifics stand with its
+# pictures. Not "for example" in words: the form says it. A draft for Thomas.
+ABOUT_EXHIBITIONS = [
+    "We show African artists and our own photographs to European audiences in halls and on screens, with film, talks and workshops around the work.",
+    "Each exhibition is curated from the artists we follow and made with a venue and public funders. In 2016 Africa Reframed filled the 5,000 square metres of Øksnehallen in Copenhagen with more than 300 works by artists and designers from across the continent. The Danish Ministry of Foreign Affairs later put Namsa Leuba’s image from the show on the cover of its own evaluation.",
+]
 EXHIBITION_PROJECTS = [  # strongest first; a new exhibition is one more entry, shown first while in production or open
     dict(title="Africa Reframed at Øksnehallen", state="record", layout="bleed",
-         image="Installation view, Africa Reframed at Øksnehallen", caption="Africa Reframed at Øksnehallen, Copenhagen, 2016", credit="Photo: DGI-byen",
-         text=["In the summer of 2016 the exhibition filled the 5,000 square metres of Øksnehallen in Copenhagen with more than 300 works by artists and designers from across the continent. It was produced with DGI-byen and supported by Danida and Augustinus Fonden.",
+         image="Installation view, Africa Reframed at Øksnehallen", credit="Photo: DGI-byen",
+         caption="Africa Reframed at Øksnehallen, Copenhagen, 2016. Produced with DGI-byen; supported by Danida and Augustinus Fonden.",
+         # three more views, each with what it shows (draft captions; the facts are the earlier text's)
+         row=[("Visitors among the works", "Visitors among the works"),
+              ("Framed works on a display module", "Ten display modules in oriented strand board carried the works through the hall"),
+              ("One of the two cinemas", "One of the two cinemas, with films every day")],
+         text_1500=["In the summer of 2016 the exhibition filled the 5,000 square metres of Øksnehallen in Copenhagen with more than 300 works by artists and designers from across the continent. It was produced with DGI-byen and supported by Danida and Augustinus Fonden.",
                "The Danish Ministry of Foreign Affairs later put Namsa Leuba’s image from the show on the cover of its own evaluation. The exhibition gave Africa Reframed its name."],
          text_long=["In the summer of 2016 the exhibition filled the 5,000 square metres of Øksnehallen in Copenhagen with more than 300 works by artists and designers from across the continent: Omar Victor Diop, Namsa Leuba, Fabrice Monteiro, Dillon Marsh, Lien Botha and Tahir Carl Karmali, with furniture by Yinka Ilori and fashion by ChiChia. Shown alongside them: Bamako Nights, made by the students of CFP Bamako.",
                "It was produced with DGI-byen and supported by Danida and Augustinus Fonden. Ten display modules built in oriented strand board carried the works through the hall; two cinemas and a programme of talks and workshops ran alongside. The Danish Ministry of Foreign Affairs later put Namsa Leuba’s image from the show on the cover of its own evaluation. The exhibition gave Africa Reframed its name."],
@@ -904,6 +929,8 @@ EXHIBITION_PROJECTS = [  # strongest first; a new exhibition is one more entry, 
 ABOUT_EXHIBITION_DOOR = "A collection can open as an exhibition"   # open: now, or once a sponsored collection exists (Thomas)
 ABOUT_ARTISTS_LEAD = ("Our exhibitions are curated from the artists we have followed and published for more than a decade. "
                       "The works remain the artists’ own, under their copyright, with their galleries’ credits where they apply.")
+ABOUT_ARTISTS_LEAD_BEFORE = ABOUT_ARTISTS_LEAD   # until 15:20 on 11 November 2026; its first sentence is now in the chapter's text
+ABOUT_ARTISTS_LEAD = "The works remain the artists’ own, under their copyright, with their galleries’ credits where they apply."
 # The African Photography Network (Thomas, 10 November 2026): open, run by us since 2014 (online from May 2014, "Powered by
 # Commerce & Culture"), named in words only (no logo, no page, no menu item, never a link to the old domain, which now
 # forwards elsewhere). It shows up in two places: this section on About and the network artists' own pages. The exhibition
@@ -1469,15 +1496,20 @@ ABOUT_WORKSHOPS_LONG = [   # the wording until 11 November 2026, 15:00, kept
     "We connect African photographers with the international picture market, so that their own stories of the continent travel. Our workshops are built with photography schools, photographers’ unions and press associations, with a funder and a market partner in the same programme, so that training leads to work that sells, and to income.",
     "Photographers learn what buyers look for, how to brief and shoot for it, and how their work is licensed.",
 ]
-# Shortened as a draft for Thomas (11 November 2026).
-ABOUT_WORKSHOPS = [
+ABOUT_WORKSHOPS_1500 = [   # the wording from 15:00 to 15:20 on 11 November 2026, kept
     "We connect African photographers with the international picture market, so that their own stories of the continent travel.",
     "Our workshops are built with photography schools, photographers’ unions and press associations, with a funder and a market partner in the same programme, so that training leads to work that sells, and to income.",
 ]
+# The area, then its proof, as for Exhibitions (Thomas, 11 November 2026, 15:14 and 15:18). A draft for Thomas.
+ABOUT_WORKSHOPS = [
+    "We connect African photographers with the international picture market, so that their own stories of the continent travel.",
+    "Our workshops are built with photography schools, photographers’ unions and press associations, with a funder and a market partner in the same programme, so that training leads to work that sells. In Bamako the programme ran for six years with the school CFP Bamako and Getty Images: the students’ images were licensed by EY, NBC, Pearson and Orange, among others, and two were chosen for the campaign that launched the UN Global Goals.",
+]
 WORKSHOP_PROJECTS = [  # strongest first; a new workshop is one more entry, shown first while in production or open
     dict(title="CFP Bamako and Getty Images", state="record", layout="side",
-         image="Photography students at CFP Bamako", caption="Photography students at CFP Bamako", credit="Photo: Africa Reframed",
-         text=["Our first workshop programme ran for six years with the photography school CFP Bamako and Getty Images, funded through the Danish Embassy in Mali. Students licensed their work through Getty while still in training.",
+         image="Photography students at CFP Bamako", credit="Photo: Africa Reframed",
+         caption="Photography students at CFP Bamako. The programme was funded through the Danish Embassy in Mali.",
+         text_1500=["Our first workshop programme ran for six years with the photography school CFP Bamako and Getty Images, funded through the Danish Embassy in Mali. Students licensed their work through Getty while still in training.",
                "Their images were licensed by EY, NBC, Cambridge University Press, McKinsey & Company, Pearson, Orange and Vodacom, among others. Two were chosen for Tell Everyone, the campaign that launched the UN Global Goals."],
          text_long=["Our first workshop programme ran for six years with the photography school CFP Bamako and Getty Images, funded through the Danish Embassy in Mali. Students photographed for the world market and licensed their work through Getty while still in training, with feedback from Getty’s creative team.",
                "Their images were licensed by EY, NBC, Cambridge University Press, McKinsey & Company, Pearson, Orange and Vodacom, among others. Two of them were chosen for Tell Everyone, the campaign that launched the UN Global Goals and one of the largest ever run: the students’ own picture of Mali, carried to a global audience. An independent review for the Danish Centre for Culture and Development found that the programme “promotes positive images of Africa, moving away from editorial or ‘development’ photography”."],
@@ -1797,7 +1829,7 @@ def tpl_text(p, base):
         exhibitions = (opener("Exhibitions", ABOUT_EXHIBITIONS, "exhibitions")
                 + "".join(m_project(x) for x in by_state(EXHIBITION_PROJECTS))
                 + m_doors("c", links=[button(f"{base}partners/#sponsor", ABOUT_EXHIBITION_DOOR + " →", quiet=True)], tight=True, left=True)
-                + m_items("The artists", [(n, about_line(n, d), l, artist_card(base, n)) for n, d, l in ARTISTS_SHOWN], "d", lead=draft(ABOUT_ARTISTS_LEAD), image_ratio="4/5", cols=4, sid="artists", level=3)
+                + m_items("The artists", [(n, about_country(n), l, artist_card(base, n)) for n, d, l in ARTISTS_SHOWN], "d", lead=draft(ABOUT_ARTISTS_LEAD), image_ratio="4/5", cols=4, sid="artists", level=3)
                 + m_network(base))
         # 3 Workshops: a medium we activate. The activity, then the projects, Bamako Nights, the partners.
         workshops = (opener("Workshops", ABOUT_WORKSHOPS, "workshops")
@@ -1862,6 +1894,13 @@ def work_label(a, title, series):
     if a["group"] == "films":
         return f"Still from {title}" if title else "Film still"
     return a["name"] + (f", {title}" if title else "") + (f", from the series {series}" if series and series != "Selected works" else "")
+
+
+def about_country(name):
+    """On About, under a work shown at the exhibition: the artist's country and nothing more (Thomas, 11 November 2026,
+    15:14: the name is enough, the reader can click in). The network's rows keep their line: they have no picture."""
+    a = ARTIST_BY_NAME.get(name)
+    return a.get("country", "") if a else ""
 
 
 def about_line(name, fallback):

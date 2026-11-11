@@ -2494,7 +2494,7 @@ LAYOUT = """<!doctype html>
     </nav>
   </div>
 </header>
-{strip}<main id="main">
+<main id="main">
 {main}
 </main>
 <footer class="site-footer">
@@ -2515,7 +2515,7 @@ LAYOUT = """<!doctype html>
     </div>
   </div>
 </footer>
-<script>
+{strip}<script>
 (function(){{
   var t = document.querySelector('.menu-toggle'), m = document.getElementById('menu');
   t.addEventListener('click', function(){{
@@ -2619,7 +2619,9 @@ html:not(.is-partner) .partner-only,html:not(.is-partner) .partner-switch{displa
 .menu-toggle span{display:block;height:2px;background:var(--ink)}
 
 /* The wireframe strip */
-.wire-strip{background:var(--wire-note);color:var(--ink);font-size:var(--fs-small);padding:6px 0}
+/* The wireframe's own tools stand under the footer, after the page has ended, in a quiet grey: above the content the
+   strip stood between the header and the Opening, and its yellow read as part of the design (Thomas, 11 November 2026). */
+.wire-strip{background:#e9e7e2;color:var(--ink-soft);font-size:var(--fs-small);padding:8px 0}
 .wire-strip .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
 .strip-tools{display:flex;align-items:center;gap:14px;white-space:nowrap}
 .strip-tools a{color:var(--ink)}
@@ -2842,6 +2844,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .opening-real{display:block;width:100%;height:auto;object-fit:cover;object-position:50% 0}
 @media (min-width:1024px){.opening.across.real .opening-img{aspect-ratio:2000/1288;max-height:max(560px,calc(100vh - var(--header-h)))}}
 .opening-frame picture{display:block}
+.mod.opening.real::before{display:none}  /* the wireframe's module label does not lie on a real photograph */
 .imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
 .intro{padding-top:48px}
 .intro-num{padding-top:8px}

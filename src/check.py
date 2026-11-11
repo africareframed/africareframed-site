@@ -114,6 +114,8 @@ MEASURE_JS = r"""
   });
   const text = main.innerText;
   const strip = document.querySelector('.wire-strip');
+  // the wireframe's strip counts only while it stands above the content (it stands under the footer since 11 November 2026)
+  const stripH = (strip && (strip.compareDocumentPosition(main) & 4)) ? strip.getBoundingClientRect().height : 0;
   // The craft measures of the plan of 11 November 2026 (rules 5, 6, 16 and 19; Website – quality review, section 12).
   // Small print: the share of all the letters of the content, captions and credits included, set under 14 px.
   let letters = 0, smallLetters = 0, firstMax = 0;
@@ -124,7 +126,7 @@ MEASURE_JS = r"""
     if (r.top + scrollY < H && z > firstMax) firstMax = z;                       // the largest type of the first screen
   }
   const body = parseFloat(getComputedStyle(document.body).fontSize);
-  const top0 = strip ? strip.getBoundingClientRect().height : 0;
+  const top0 = stripH;
   let firstImage = 0;                                                            // the largest photograph's share of the first screen
   for (const e of frames) { const r = e.getBoundingClientRect(), t = r.top + scrollY - top0; const h = Math.max(0, Math.min(r.bottom + scrollY - top0, H) - Math.max(t, 0)); firstImage = Math.max(firstImage, r.width * h / (W * H)); }
   const grids = [...main.querySelectorAll('.imgs, .cards-2, .cards-3, .cards-4, .cards-5, .cards-6, .works')].filter(vis).map(g => g.querySelectorAll('.img, img').length).filter(n => n);
@@ -136,7 +138,7 @@ MEASURE_JS = r"""
     sizes, weights, total, measure, measureAt, words: words(main), frames: frames.length, nocredit, overlaid, yellow,
     small, controls: controls.length, heads,
     overflow: document.documentElement.scrollWidth - W,
-    firstLinkTop: first ? Math.round(first.getBoundingClientRect().top + scrollY - (strip ? strip.getBoundingClientRect().height : 0)) : null,
+    firstLinkTop: first ? Math.round(first.getBoundingClientRect().top + scrollY - stripH) : null,
     dashes: [...main.querySelectorAll('.num b')].filter(e => vis(e) && e.innerText.trim() === '—').length,
     placeholders: [...main.querySelectorAll('.logo:not(.has-img), .lines, .chip.ghost')].filter(vis).length,
     straight: (text.match(/["']/g) || []).length,

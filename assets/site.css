@@ -275,9 +275,10 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .opening.across h1,.opening.words h1,.opening.across .h1,.opening.words .h1{font-size:var(--fs-display);line-height:1;letter-spacing:-.03em;margin:0;max-width:none}
 .from-top{transform:scaleY(-1)}
 .opening-real{display:block;width:100%;height:auto;object-fit:cover;object-position:50% 0}
-@media (min-width:1024px){.opening.across.real .opening-img{aspect-ratio:var(--shape,2000/1288);max-height:max(520px,calc(100vh - var(--header-h) - 72px))}}
-/* The photograph ends a little above the fold: a slice of the white page and the caption show under it, so the reader
-   senses that the page goes on (Thomas, 11 November 2026, 17:24). */
+@media (min-width:1024px){.opening.across.real .opening-img{aspect-ratio:var(--shape,2000/1288);max-height:max(520px,calc(100vh - var(--header-h) - 32px))}}
+/* The photograph ends just above the fold, at the height of the window less the header and 32 px: a slice of the white
+   page and the caption's first line show under it, enough to sense that the page goes on (Thomas, 11 November 2026,
+   17:24 and 17:31). */
 .opening-frame picture{display:block}
 .mod.opening.real::before{display:none}  /* the wireframe's module label does not lie on a real photograph */
 .imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}

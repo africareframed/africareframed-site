@@ -307,11 +307,12 @@ PHOTO_AR_2002 = dict(
 # background is a pale sky, so the white of the pattern is quiet here. Nothing in it repeats the triangles, so they stay
 # on the sky and the sea and touch neither woman; the stripes fall beside the raised arms and lean as the arms do.
 PHOTO_AR_1645 = dict(
-    ar="AR-1645", place="Banjul, The Gambia", year="2015", file="assets/opening/ar-1645", size=(1920, 1209), shape="2000/1259",
+    ar="AR-1645", place="Banjul, The Gambia", year="2015", file="assets/opening/ar-1645", size=(1920, 1103), shape="2000/1149",
     alt="Two young women dance with their arms raised on a beach in Banjul",
-    # the frame: the photograph from 80 down (of 1,339 at 2,000 px wide), 2,000 x 1,259
-    wide=cut_on_photo(2000, 1259, 170, [(900, 170), (1560, 60), (1880, 180), (2260, 520)],
-                      [(1010, 170, 70), (1400, 330, 85), (1840, 800, 90), (1700, 960, 70)], "cut cut-wide"),
+    # the frame: the photograph from 190 down (of 1,339 at 2,000 px wide), 2,000 x 1,149: less sky, the women higher
+    # in the frame (Thomas, 17:24)
+    wide=cut_on_photo(2000, 1149, 170, [(860, 70), (1830, 70), (2190, 420), (2500, 800)],
+                      [(960, 110, 60), (1400, 220, 85), (1830, 700, 90), (1700, 860, 70)], "cut cut-wide"),
     # closer, at 16:9: the part from 200 to 1,900 across and from 250 down
     close=cut_on_photo(1700, 956, 110, [(560, 30), (1560, 40), (1890, 330)],
                        [(1210, 150, 70), (1600, 560, 75)], "cut cut-narrow"))
@@ -2866,7 +2867,9 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .opening.across h1,.opening.words h1,.opening.across .h1,.opening.words .h1{font-size:var(--fs-display);line-height:1;letter-spacing:-.03em;margin:0;max-width:none}
 .from-top{transform:scaleY(-1)}
 .opening-real{display:block;width:100%;height:auto;object-fit:cover;object-position:50% 0}
-@media (min-width:1024px){.opening.across.real .opening-img{aspect-ratio:var(--shape,2000/1288);max-height:max(560px,calc(100vh - var(--header-h)))}}
+@media (min-width:1024px){.opening.across.real .opening-img{aspect-ratio:var(--shape,2000/1288);max-height:max(520px,calc(100vh - var(--header-h) - 72px))}}
+/* The photograph ends a little above the fold: a slice of the white page and the caption show under it, so the reader
+   senses that the page goes on (Thomas, 11 November 2026, 17:24). */
 .opening-frame picture{display:block}
 .mod.opening.real::before{display:none}  /* the wireframe's module label does not lie on a real photograph */
 .imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}

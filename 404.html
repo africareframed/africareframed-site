@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found · Africa Reframed</title>
+<meta name="description" content="This page is not on africareframed.com.">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Africa Reframed">
+<meta property="og:title" content="Page not found">
+<meta property="og:description" content="This page is not on africareframed.com.">
+<meta property="og:url" content="https://africareframed.github.io/africareframed-site/404.html">
+<meta property="og:image" content="https://africareframed.github.io/africareframed-site/assets/share-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="/africareframed-site/assets/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="/africareframed-site/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/africareframed-site/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/africareframed-site/assets/apple-touch-icon.png">
+<script>
+(function(){
+  var K = 'ar-partner', now = Date.now(), q = new URLSearchParams(location.search), t = 0;
+  var back = q.get('src') === 'archive', off = q.get('partner') === 'off';
+  try {
+    if (back) localStorage.setItem(K, String(now));
+    if (off) localStorage.removeItem(K);
+    t = parseInt(localStorage.getItem(K) || '0', 10) || 0;
+    if (t && now - t > 30 * 864e5) { localStorage.removeItem(K); t = 0; }
+  } catch (err) {}
+  if (t) document.documentElement.classList.add('is-partner');
+  if (back || q.has('partner')) {
+    if (back) q.delete('src');
+    q.delete('partner');
+    var rest = q.toString();
+    try { history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash); } catch (err) {}
+  }
+})();
+</script>
+<link rel="stylesheet" href="/africareframed-site/assets/site.css?v=202611111043">
+</head>
+<body class="page-not-found tpl-text">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/africareframed-site/" aria-label="Africa Reframed, home">
+      <img src="/africareframed-site/assets/logo-black.svg" alt="Africa Reframed" class="brand-logo">
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="menu" id="menu" aria-label="Main">
+      <a href="/africareframed-site/themes/">Themes</a>
+      <a href="/africareframed-site/collections/">Collections</a>
+      <a href="/africareframed-site/partners/">Partners</a>
+      <a href="/africareframed-site/about/">About</a>
+      <span class="divider" aria-hidden="true"></span>
+      <a class="partner-only" href="https://archive.africareframed.com/-/galleries/archive?src=main-menu">Browse images</a>
+      <a class="partner-only" href="https://archive.africareframed.com/lightbox?src=main-menu">Lightbox</a>
+      <a href="/africareframed-site/partner-portal/">Log in</a>
+    </nav>
+  </div>
+</header>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a><a href="/africareframed-site/dev/">Development</a><a href="/africareframed-site/dev/modules/">Modules</a><button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
+<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>
+<main id="main">
+<section class="mod mod-page-head page-head" data-mod="2.3 Page head (a)"><div class="wrap"><div class="cols"><div class="c1-4"><h1>This page is not here</h1></div><div class="c6-12 head-right"><p class="statement"><span class="draft">The address may have changed. The menu above leads to the themes, the collections and the pages for partners.</span></p></div></div></div></section><section class="mod mod-doors  tight" data-mod="2.12 Doors and actions (c, the ways on)"><div class="wrap"><div class="cols"><div class="c6-12 c-offset"><p class="doors"><a class="button quiet" href="/africareframed-site/">The front page</a><a class="button quiet" href="/africareframed-site/themes/">The five themes</a><a class="button quiet" href="/africareframed-site/collections/">The collections</a></p></div></div></div></section>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="about-line">Spotlighting African innovation and African–European collaboration. An independent initiative established by Commerce &amp; Culture.</p>
+    <p class="links">
+      <a href="/africareframed-site/about/">About</a> ·
+      <a href="/africareframed-site/press/">Press</a> ·
+      <a href="/africareframed-site/contact/">Contact</a> ·
+      <a href="/africareframed-site/privacy/">Privacy</a> ·
+      <a href="/africareframed-site/request-access/">Request access</a> ·
+      <a href="https://archive.africareframed.com/terms">Terms</a> ·
+      <span>&copy; Africa Reframed</span>
+    </p>
+  </div>
+</footer>
+<script>
+(function(){
+  var t = document.querySelector('.menu-toggle'), m = document.getElementById('menu');
+  t.addEventListener('click', function(){
+    var open = t.getAttribute('aria-expanded') === 'true';
+    t.setAttribute('aria-expanded', String(!open));
+    m.classList.toggle('open', !open);
+  });
+  var b = document.querySelector('.notes-toggle');
+  if (!b) return;
+  function setClean(on){
+    document.body.classList.toggle('clean', on);
+    b.setAttribute('aria-pressed', String(on));
+    b.textContent = on ? 'Show notes' : 'Clean view';
+  }
+  try { setClean(localStorage.getItem('ar-clean') === '1'); } catch (err) {}
+  b.addEventListener('click', function(){
+    var on = !document.body.classList.contains('clean');
+    setClean(on);
+    try { localStorage.setItem('ar-clean', on ? '1' : '0'); } catch (err) {}
+  });
+  /* The grid overlay: the Grid button, ?grid in the address, or the key G. Draws the columns of the current width. */
+  var g = document.querySelector('.grid-toggle'), ov = document.querySelector('.grid-overlay');
+  if (!g || !ov) return;
+  var cols = ov.querySelector('.cols'), read = ov.querySelector('.grid-read');
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function draw(){
+    var n = parseInt(cssVar('--cols'), 10) || 12, h = '';
+    for (var i = 1; i <= n; i++) h += '<div class="col col-' + i + '">' + i + '</div>';
+    cols.innerHTML = h;
+    var first = cols.firstElementChild, w = first ? Math.round(first.getBoundingClientRect().width * 10) / 10 : 0;
+    var bp = window.innerWidth >= 1024 ? 'desktop' : window.innerWidth >= 768 ? 'tablet' : 'phone';
+    read.textContent = window.innerWidth + ' px · ' + bp + ' · ' + n + ' columns × ' + w + ' px · gutter ' + cssVar('--gutter')
+      + ' · margin ' + cssVar('--margin') + ' · content up to ' + cssVar('--content-max') + ' · header ' + cssVar('--header-h') + ' · logo ' + cssVar('--logo-w');
+  }
+  function setGrid(on){
+    document.body.classList.toggle('show-grid', on);
+    g.setAttribute('aria-pressed', String(on));
+    if (on) draw();
+  }
+  var want = /[?&]grid(=|&|$)/.test(location.search);
+  try { setGrid(want || localStorage.getItem('ar-grid') === '1'); } catch (err) { setGrid(want); }
+  g.addEventListener('click', function(){
+    var on = !document.body.classList.contains('show-grid');
+    setGrid(on);
+    try { localStorage.setItem('ar-grid', on ? '1' : '0'); } catch (err) {}
+  });
+  document.addEventListener('keydown', function(ev){
+    if (ev.key !== 'g' || ev.metaKey || ev.ctrlKey || ev.altKey || /input|textarea|select/i.test(ev.target.tagName)) return;
+    g.click();
+  });
+  window.addEventListener('resize', function(){ if (document.body.classList.contains('show-grid')) draw(); });
+})();
+</script>
+</body>
+</html>

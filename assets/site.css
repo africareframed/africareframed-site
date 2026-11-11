@@ -129,8 +129,8 @@ body.clean .mod::before{display:none}
 .e-words p{max-width:var(--measure)}
 .row-3{margin-top:24px}
 .chapter-title{font-size:var(--fs-title);font-weight:300;line-height:1.05;letter-spacing:-.02em;margin:0 0 16px}   /* a chapter of a long page: its title at the page-title size, in Light */
-/* A black section (the test at /dev/about-black/): the same modules with the ground and the ink exchanged. What black is
-   for on the site is Thomas's to decide (Quality rules, rule 18); the candidate is the exhibitions and the artists' works. */
+/* A black section: the same modules with the ground and the ink exchanged. Black holds one kind of content, the exhibitions
+   and the artists' works (Thomas, 11 November 2026; Quality rules, rule 18); it is also the ground of the footer's close. */
 .dark{background:var(--ground);color:#fff;--ink:#fff;--ink-soft:#b9b7b1;--line:#3a3a3a;--paper:#151515;--wire:#242424;--wire-line:#3c3c3c;--wash:#1e1e1e;
   margin-top:calc(var(--section)*2);padding-bottom:var(--section)}
 .dark > .mod.chapter:first-child{padding-top:var(--section)}

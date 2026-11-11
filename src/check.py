@@ -79,8 +79,12 @@ MEASURE_JS = r"""
   const frames = [...main.querySelectorAll('.img, img')].filter(e => vis(e) && !e.closest('.logo,.logos,.logo-tile'));
   const nocredit = frames.filter(e => {
     const fig = e.closest('figure, .frame') || e.parentElement;
-    const cr = fig.querySelector('.credit, figcaption');
-    return !cr;
+    // rule 15 as relaxed on 11 November 2026: a credit stands where a photograph is shown as work. Covered: a credit of its
+    // own; one credit for its grid or row (.credit.group in the same module); or a small image that is a link to the page
+    // where the credit stands.
+    const own = [...fig.querySelectorAll('.credit, figcaption')].some(c => c.innerText.trim().length > 0 && !c.classList.contains('group'));
+    const group = e.closest('.mod') && e.closest('.mod').querySelector('.credit.group');
+    return !(own || group || e.closest('a[href]'));
   }).length;
   const overlaid = frames.filter(e => { const r = e.getBoundingClientRect(); return [...e.querySelectorAll('*')].some(c => !c.matches('span') && vis(c)); }).length;
   // the yellow: any element whose ground, rule or type is a yellow
@@ -193,7 +197,7 @@ def verdict(rows):
         if m["measure"] > MEASURE[w]:
             fail(10, slug, w, f'{m["measure"]} characters in “{m["measureAt"]}…”')
         if m["nocredit"]:
-            fail(15, slug, w, f'{m["nocredit"]} of {m["frames"]} frames without a credit of their own')
+            fail(15, slug, w, f'{m["nocredit"]} of {m["frames"]} photographs shown as work without a credit')
         if m["overlaid"]:
             fail(14, slug, w, f'{m["overlaid"]} frames with something laid over them')
         ny = sum(m["yellow"].values())

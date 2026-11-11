@@ -80,11 +80,20 @@ body.clean .draft{text-decoration:none}
 .mod::before{content:attr(data-mod);box-sizing:border-box;position:absolute;left:0;top:calc(var(--section) - 22px);font-size:var(--fs-small);letter-spacing:.04em;text-transform:uppercase;color:#8a877f;background:#fff8c2;padding:1px 8px;border-radius:0;z-index:2;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mod.page-head::before,.mod.opening::before{top:8px}
 body.clean .mod::before{display:none}
-.mod.band{background:var(--wash);padding:var(--section-head) 0;margin-top:var(--section)}
+.mod.band .action{border-top:2px solid var(--ink);padding-top:24px}
+/* The yellow as a whole surface, once on a page: the way into the archive (rule 18; the 2016 folder's own drawing of a website) */
+.mod.band.archive{background:var(--accent);padding:var(--section-head) 0;margin-top:var(--section)}
+.mod.band.archive .action{border-top:0;padding-top:0}
+.mod.band.archive .button.archive{background:var(--ink);border-color:var(--ink);color:#fff}
+.mod.band.archive .button.archive:hover{background:#fff;border-color:#fff;color:var(--ink)}
+.mod.band.archive .button.quiet{border-color:var(--ink)}
+.mod.band.archive .small,.mod.band.archive .num span{color:var(--ink)}
 .mod.band::before{top:4px}
 .mod .mod{padding-top:32px}
 .mod .mod .wrap{padding:0;max-width:none}
 .mod .mod::before{top:8px}
+.mod.chapter{padding-top:calc(var(--section)*2)}
+.mod.chapter::before{top:calc(var(--section)*2 - 22px)}
 .mod.tight{padding-top:calc(var(--section)/2)}  /* grouped with the module before it: half the distance */
 .mod.tight::before{top:calc(var(--section)/2 - 22px)}
 .mod.band + .mod.band{margin-top:0}
@@ -95,6 +104,8 @@ body.clean .mod::before{display:none}
 .credit .caption{color:var(--ink);display:block}   /* one pattern: the caption, led by the AR ID; the credit on the line beneath */
 .frame{margin:0;min-width:0}
 .frame .credit,.theme-entry .credit{font-size:var(--fs-small);color:var(--ink-soft);margin:8px 0 0}
+.credit a{color:inherit}
+.credit.group{margin-top:8px}
 .imgs .frame .credit{margin-bottom:8px}
 .kicker-h{margin-top:0}
 .imgs{display:grid;gap:8px;margin-top:8px}
@@ -223,7 +234,10 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .opening-words{padding-top:160px}
 .opening-words h1{max-width:none}
 .opening-img{aspect-ratio:29/16;max-height:80vh;border-radius:0}
-.opening-img span{position:absolute;top:16px;left:16px;max-width:60%}
+.opening-img span{position:absolute;top:16px;left:auto;right:16px;max-width:60%}
+.opening-frame{position:relative}
+.cut{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cut-narrow{display:none}
 #intro{padding-top:var(--section-tight)}
 .intro{padding-top:48px}
 .intro-num{padding-top:8px}
@@ -234,6 +248,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .small-num b{font-size:var(--fs-head)}
 .theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px;margin-top:32px}
 .order{font-size:var(--fs-small);color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-top:12px}
+.theme-row .order{font-size:var(--fs-title);font-weight:300;line-height:1;color:var(--ink);margin:0 0 12px}   /* the themes numbered in Light, as the chapters of the 2019 plan */
 .count{font-size:var(--fs-small);font-weight:400;margin-top:auto}
 .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin:8px 0 32px}
 .logos.supporters{grid-template-columns:repeat(8,minmax(0,1fr));margin:12px 0 8px}
@@ -302,15 +317,15 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 
 /* Partner portal */
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
-.panel{display:flex;flex-direction:column;justify-content:flex-end;gap:8px;min-height:200px;padding:32px;border:1px solid #c9c6bf;border-radius:0;text-decoration:none}
-.panel strong{font-size:var(--fs-head);font-weight:700;line-height:1.15}
-.panel span:last-child{font-size:var(--fs-text);color:var(--ink-soft)}
-.panel.dark{background:var(--ground);border-color:var(--ground);color:#fff}
-.panel.dark strong{color:#fff}
-.panel.archive{background:var(--accent);border-color:var(--accent);color:var(--ink)}
+/* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive
+   stands on the yellow. */
+.panel{display:flex;flex-direction:column;gap:8px;border-top:2px solid var(--ink);padding:24px 0 0;text-decoration:none}
+.panel strong{font-size:var(--fs-title);font-weight:700;line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+.panel span:last-child{color:var(--ink-soft)}
+.panel.archive{background:var(--accent);border-top-color:var(--accent);padding:24px}
 .panel.archive .kicker,.panel.archive span:last-child{color:var(--ink)}
-.panel.dark .kicker,.panel.dark span:last-child{color:#bdbab3}
-.panel:hover strong{text-decoration:underline}
+.panel:hover strong{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:8px}
+.page-head.has-doors h1{font-size:var(--fs-head);line-height:1.15;letter-spacing:-.01em}
 .mini-form{display:flex;flex-direction:column;gap:4px}
 .f-label{font-size:var(--fs-small);color:var(--ink-soft);margin-top:8px}
 .field{display:block;height:38px;border:1px solid #d6d3cc;border-radius:0;background:#fff}
@@ -366,10 +381,16 @@ main input[type=checkbox]:checked{background:var(--ink);box-shadow:inset 0 0 0 4
 .tag.done{background:#e3e1dc}.tag.next{background:var(--wire-note)}.tag.later,.tag.open{border:1px solid #c9c6bf;color:var(--ink-soft)}
 
 /* Footer */
-.site-footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--ink-soft)}
+/* The close (open, quiet, close): black, the pattern at full strength in white, the logo once in white. The archive's
+   footer follows when its look is set on PhotoDeck (step 5). */
+.site-footer{background:var(--ground);color:var(--text-on-dark);overflow:hidden}
+.close{position:relative;display:flex;align-items:flex-end;min-height:320px}
+.close-words{position:relative;z-index:1;padding:64px 0 48px;max-width:calc(50% - var(--gutter))}
+.close-logo{display:block;width:var(--logo-w);height:auto;margin:0 0 32px}
+.close-pattern{position:absolute;right:0;bottom:0;width:50%;height:100%;pointer-events:none}
 .site-footer p{margin:0 0 8px;max-width:none}
-.site-footer a{color:var(--ink);display:inline-block;padding:12px 0}
-.about-line{color:var(--ink);font-size:var(--fs-text)}
+.site-footer a{color:#fff;display:inline-block;padding:12px 0}
+.about-line{color:#fff}
 
 /* The grid overlay: switched on with the Grid button in the wireframe strip, ?grid in the address or the key G.
    Columns in blue, margins in red; the readout gives the values at the current width. Not built at launch. */
@@ -411,6 +432,7 @@ body.show-grid .grid-overlay{display:block}
   .opening-words{grid-column:1/-1;order:2;padding-top:0}
   .opening .cols{row-gap:16px}
   .opening-words h1{max-width:24ch}
+  .cut-wide{display:none}.cut-narrow{display:block}
   .c5-off{grid-column:2/-1;order:1}
   .opening-img{aspect-ratio:3/2}
 }
@@ -428,6 +450,11 @@ body.show-grid .grid-overlay{display:block}
   .network-rows{columns:1}
   .work-lead img{max-height:none;width:100%}
   .collection-card{row-gap:16px}
+  #intro .doors{margin-top:16px}
+  .opening-words h1{margin-bottom:8px}
+  .close{flex-direction:column;align-items:stretch;min-height:0}
+  .close-pattern{position:static;order:-1;width:100%;height:160px}
+  .close-words{max-width:none;padding:32px 0}
   .lead-photo .img{aspect-ratio:3/2!important}  /* the lead photograph has its own crop on a phone (rule 24) */
   .photo-half{order:-1}  /* photograph and text: the photograph first on phones, whichever side it sits on desktop */
   .grid-3,.grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -441,7 +468,6 @@ body.show-grid .grid-overlay{display:block}
   .grid-2{gap:32px}
   .split{gap:24px}
   .contact-box{margin-top:0}
-  .panel{min-height:132px;padding:24px}
   .dev-list li,.dev-list li:has(.tag),.dev-list li:has(.where){grid-template-columns:1fr}
   .strip-tools{gap:10px}
   .theme-row{grid-auto-columns:78%}

@@ -35,10 +35,12 @@ MEASURE_JS = r"""
   const W = innerWidth, H = innerHeight;
   const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };
   const wire = e => !!e.closest('.wire-strip,.note,.grid-overlay,.skip,.lines,.ph-text');
+  // credit lines and captions are counted by rule 15, not as the page's words: one stands under every image by rule
+  const credit = e => !!e.closest('.credit, figcaption');
   const tl = e => { let n = 0; e.childNodes.forEach(c => { if (c.nodeType === 3) n += c.textContent.trim().length; }); return n; };
   const main = document.querySelector('main');
   const all = [...document.querySelectorAll('body *')].filter(e => vis(e) && !wire(e));
-  const tx = all.filter(e => tl(e) > 1);
+  const tx = all.filter(e => tl(e) > 1 && !credit(e));
   const sizes = {}, weights = {};
   let total = 0;
   for (const e of tx) {
@@ -72,12 +74,12 @@ MEASURE_JS = r"""
     const m = lineChars(p);
     if (m > measure) { measure = m; measureAt = p.innerText.trim().slice(0, 40); }
   }
-  const words = el => { let w = 0; const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n; while ((n = tw.nextNode())) { const p = n.parentElement; if (!p || wire(p) || !vis(p)) continue; const t = n.textContent.trim(); if (t) w += t.split(/\s+/).length; } return w; };
+  const words = el => { let w = 0; const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n; while ((n = tw.nextNode())) { const p = n.parentElement; if (!p || wire(p) || credit(p) || !vis(p)) continue; const t = n.textContent.trim(); if (t) w += t.split(/\s+/).length; } return w; };
   // images: every frame and photograph of the content, and whether a credit line of its own stands beneath it
   const frames = [...main.querySelectorAll('.img, img')].filter(e => vis(e) && !e.closest('.logo,.logos,.logo-tile'));
   const nocredit = frames.filter(e => {
     const fig = e.closest('figure, .frame') || e.parentElement;
-    const cr = fig.querySelector(':scope > .credit, :scope > figcaption .credit, :scope > figcaption');
+    const cr = fig.querySelector('.credit, figcaption');
     return !cr;
   }).length;
   const overlaid = frames.filter(e => { const r = e.getBoundingClientRect(); return [...e.querySelectorAll('*')].some(c => !c.matches('span') && vis(c)); }).length;
@@ -91,7 +93,7 @@ MEASURE_JS = r"""
     if (hit && !e.closest('.draft')) { const k = (typeof e.className === 'string' && e.className) || e.tagName; yellow[k] = (yellow[k] || 0) + 1; }
   }
   const controls = [...document.querySelectorAll('a, button, input, select, textarea, summary')].filter(e => vis(e) && !wire(e));
-  const small = controls.filter(e => { const r = e.getBoundingClientRect(); const inline = getComputedStyle(e).display === 'inline' && e.closest('main p, main li, main dd'); return r.height < 44 && !inline; })
+  const small = controls.filter(e => { const r = (e.type === 'checkbox' && e.closest('label') ? e.closest('label') : e).getBoundingClientRect(); const inline = getComputedStyle(e).display === 'inline' && e.closest('main p, main li, main dd'); return r.height < 44 && !inline; })
     .map(e => (e.innerText || e.type || e.tagName).trim().slice(0, 20) + ' ' + Math.round(e.getBoundingClientRect().height));
   // the way on: the first link or button of the content, and where its top stands
   const first = main.querySelector('a[href]');
@@ -224,6 +226,12 @@ def verdict(rows):
     extra = sorted(site_sizes - SIZES)
     if extra:
         fails.setdefault(11, []).insert(0, "the site: sizes outside the scale: " + ", ".join(f"{x:g}" for x in extra))
+    # the texts over their module's limit (rule 4): the build's own check, run over the pages
+    build.OVER.clear()
+    for p in build.PAGES:
+        build.TEMPLATES[p["tpl"]](p, "./")
+    for (kind, text), (mx, n) in sorted(build.OVER.items()):
+        fails.setdefault(4, []).append(f"{kind}: {n} words, limit {mx}: “{text[:50]}…”")
     css = css_findings()
     if css["spacing_off"]:
         fails.setdefault(9, []).append("the stylesheet: spacing off the scale: " + ", ".join(f"{k} px ×{v}" for k, v in css["spacing_off"].items()))

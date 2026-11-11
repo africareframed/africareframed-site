@@ -1828,8 +1828,9 @@ def tpl_text(p, base):
         # 2 Exhibitions: a medium we activate. The activity, then the projects, the door, the artists. The page turns here.
         exhibitions = (opener("Exhibitions", ABOUT_EXHIBITIONS, "exhibitions")
                 + "".join(m_project(x) for x in by_state(EXHIBITION_PROJECTS))
-                + m_doors("c", links=[button(f"{base}partners/#sponsor", ABOUT_EXHIBITION_DOOR + " →", quiet=True)], tight=True, left=True)
-                + m_items("The artists", [(n, about_country(n), l, artist_card(base, n)) for n, d, l in ARTISTS_SHOWN], "d", lead=draft(ABOUT_ARTISTS_LEAD), image_ratio="4/5", cols=4, sid="artists", level=3)
+                # No door here and no lead over the artists (Thomas, 11 November 2026, 15:26): the chapter shows, it does not
+                # offer, and each work carries its own © line, so the sentence on copyright said it twice.
+                + m_items("The artists", [(n, about_country(n), l, artist_card(base, n)) for n, d, l in ARTISTS_SHOWN], "d", image_ratio="4/5", cols=4, sid="artists", level=3)
                 + m_network(base))
         # 3 Workshops: a medium we activate. The activity, then the projects, Bamako Nights, the partners.
         workshops = (opener("Workshops", ABOUT_WORKSHOPS, "workshops")

@@ -425,11 +425,13 @@ main input[type=checkbox]:checked{background:var(--ink);box-shadow:inset 0 0 0 4
 /* Footer */
 /* The close (open, quiet, close): black, the pattern at full strength in white, the logo once in white. The archive's
    footer follows when its look is set on PhotoDeck (step 5). */
-.site-footer{background:var(--ground);color:var(--text-on-dark);overflow:hidden}
+.site-footer{position:relative;background:var(--ground);color:var(--text-on-dark);overflow:hidden}
 .close{position:relative;display:flex;align-items:flex-end;min-height:320px}
 .close-words{position:relative;z-index:1;padding:64px 0 48px;max-width:calc(50% - var(--gutter))}
-.close-logo{display:block;width:var(--logo-w);height:auto;margin:0 0 32px}
-.close-pattern{position:absolute;right:0;bottom:0;width:50%;height:100%;pointer-events:none}
+/* The logo mark alone, without the name beside it (Thomas, 11 November 2026, 17:42), at the height it has in the header's logo. */
+.close-logo{display:block;height:calc(var(--logo-w)*.2016);width:auto;margin:0 0 32px}
+.close-pattern{display:block;position:absolute;right:0;top:0;width:50%;height:100%;pointer-events:none}
+.close-narrow{display:none}
 .site-footer p{margin:0 0 8px;max-width:none}
 .site-footer a{color:#fff;display:inline-block;padding:12px 0}
 .about-line{color:#fff}
@@ -503,7 +505,8 @@ body.show-grid .grid-overlay{display:block}
   #intro .doors{margin-top:16px}
   .opening-words h1{margin-bottom:8px}
   .close{flex-direction:column;align-items:stretch;min-height:0}
-  .close-pattern{position:static;order:-1;width:100%;height:160px}
+  .close-wide{display:none}
+  .close-narrow{display:block;position:static;width:100%;height:160px}
   .close-words{max-width:none;padding:32px 0}
   .opening.across .opening-img,.opening.words .opening-img{aspect-ratio:16/9}  /* 16:9 on phones, so the way on stands in the first screen (rule 23) */
   #intro{padding-top:16px}

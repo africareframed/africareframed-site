@@ -229,9 +229,7 @@ def bars_svg(w, h, bar, bars, tris, cls, anchor):
 OPENING_CUT = (bars_svg(928, 512, 85, [(-30, 320), (125, 210), (280, 130), (435, 60)],
                         [(130, 412), (188, 312), (262, 452), (314, 362), (406, 472), (590, 490)], "cut cut-wide", "xMinYMax")
                + bars_svg(300, 200, 33, [(-8, 120), (52, 75), (112, 40)], [(55, 160), (103, 180), (165, 190)], "cut cut-narrow", "xMinYMax"))
-# The close: the footer on black, the pattern at full strength in white, the logo once (open, quiet, close).
-CLOSE_PATTERN = bars_svg(640, 320, 48, [(40, 110), (157, 250), (274, 170), (391, 330), (508, 80)],
-                         [(140, 260), (295, 200), (372, 270), (480, 280)], "close-pattern", "xMaxYMax")
+# The close is drawn with the Opening's geometry: see CLOSE_PATTERN under cut_on_photo.
 
 
 # 2.2 Opening: the full Opening on Home, in three versions that stand side by side at /dev/opening/ (the plan of
@@ -283,13 +281,26 @@ ECHO = ""   # the one echo between the Opening and the close (rule 19): drawn in
 # are their cut-off points, and they touch her where her headwrap and dress carry triangles of their own. Nothing lies
 # over her face (Quality rules, rule 14). Two compositions, never one scaled into the other: the frame from 1,024 px,
 # and a closer crop at 16:9 below it (an upright crop for phones is to be worked out: Thomas, 16:16).
-def cut_on_photo(w, h, bar, bars, tris, cls):
+def cut_on_photo(w, h, bar, bars, tris, cls, anchor="xMidYMin"):
     """bars: (x of the bar's right edge at the top, its length down); tris: (x of the base's left end, y of the base, side)."""
     k, tip, up = 0.57735, 0.86603 * bar, 12
     poly = "".join(f'<polygon points="{xr + k * up:.1f},{-up} {xr - bar + k * up:.1f},{-up} {xr - bar - k * b:.1f},{b:.1f} {xr - k * (b + tip):.1f},{b + tip:.1f}"/>'
                    for xr, b in bars)
     poly += "".join(f'<polygon points="{x:.1f},{y:.1f} {x + side:.1f},{y:.1f} {x + side / 2:.1f},{y - 0.86603 * side:.1f}"/>' for x, y, side in tris)
-    return f'<svg class="{cls}" viewBox="0 0 {w} {h}" preserveAspectRatio="xMidYMin slice" aria-hidden="true" fill="#fff">{poly}</svg>'
+    return f'<svg class="{cls}" viewBox="0 0 {w} {h}" preserveAspectRatio="{anchor} slice" aria-hidden="true" fill="#fff">{poly}</svg>'
+
+
+# The close (Thomas, 11 November 2026, 17:42: the footer's stripes were thin and nervous; broad strokes, as at the top).
+# The footer mirrors the Opening: there the white of the header falls into the photograph, here the white of the page
+# falls into the black. Three broad stripes at one even pitch, each longer than the last, so that their points lie on
+# one line; the third runs off the bottom edge. The black between them is wider than the stripes, so the ground stays
+# black. One triangle, the cut-off point of the first, set well clear of it. Before: five thin bars of uneven heights
+# and four small triangles, rising from the bottom.
+CLOSE_PATTERN = (cut_on_photo(720, 320, 96, [(300, 50), (520, 150), (740, 330)],
+                              [(190, 300, 70)], "close-pattern close-wide", "xMaxYMin")
+                 # on a phone the pattern is a band above the words: its own drawing, every stripe ending in its point
+                 + cut_on_photo(390, 160, 56, [(190, 10), (300, 50), (410, 90)],
+                                [(92, 140, 40)], "close-pattern close-narrow", "xMaxYMin"))
 
 
 PHOTO_AR_2002 = dict(
@@ -2520,10 +2531,10 @@ LAYOUT = """<!doctype html>
 {main}
 </main>
 <footer class="site-footer">
+  {close_pattern}
   <div class="wrap close">
-    {close_pattern}
     <div class="close-words">
-    <img src="{base}assets/logo-white.svg" alt="Africa Reframed" class="close-logo" width="240" height="48">
+    <img src="{base}assets/logo-mark-white.svg" alt="Africa Reframed" class="close-logo" width="113" height="48">
     <p class="about-line">{about_line}</p>
     <p class="links">
       <a href="{base}about/">About</a> ·
@@ -3017,11 +3028,13 @@ main input[type=checkbox]:checked{background:var(--ink);box-shadow:inset 0 0 0 4
 /* Footer */
 /* The close (open, quiet, close): black, the pattern at full strength in white, the logo once in white. The archive's
    footer follows when its look is set on PhotoDeck (step 5). */
-.site-footer{background:var(--ground);color:var(--text-on-dark);overflow:hidden}
+.site-footer{position:relative;background:var(--ground);color:var(--text-on-dark);overflow:hidden}
 .close{position:relative;display:flex;align-items:flex-end;min-height:320px}
 .close-words{position:relative;z-index:1;padding:64px 0 48px;max-width:calc(50% - var(--gutter))}
-.close-logo{display:block;width:var(--logo-w);height:auto;margin:0 0 32px}
-.close-pattern{position:absolute;right:0;bottom:0;width:50%;height:100%;pointer-events:none}
+/* The logo mark alone, without the name beside it (Thomas, 11 November 2026, 17:42), at the height it has in the header's logo. */
+.close-logo{display:block;height:calc(var(--logo-w)*.2016);width:auto;margin:0 0 32px}
+.close-pattern{display:block;position:absolute;right:0;top:0;width:50%;height:100%;pointer-events:none}
+.close-narrow{display:none}
 .site-footer p{margin:0 0 8px;max-width:none}
 .site-footer a{color:#fff;display:inline-block;padding:12px 0}
 .about-line{color:#fff}
@@ -3095,7 +3108,8 @@ body.show-grid .grid-overlay{display:block}
   #intro .doors{margin-top:16px}
   .opening-words h1{margin-bottom:8px}
   .close{flex-direction:column;align-items:stretch;min-height:0}
-  .close-pattern{position:static;order:-1;width:100%;height:160px}
+  .close-wide{display:none}
+  .close-narrow{display:block;position:static;width:100%;height:160px}
   .close-words{max-width:none;padding:32px 0}
   .opening.across .opening-img,.opening.words .opening-img{aspect-ratio:16/9}  /* 16:9 on phones, so the way on stands in the first screen (rule 23) */
   #intro{padding-top:16px}
@@ -3186,6 +3200,10 @@ def build():
     rows, links = [], {}
     SLOTS.clear()
     (ROOT / "assets" / "logo-white.svg").write_text((ROOT / "assets" / "logo-black.svg").read_text().replace('fill="#000000"', 'fill="#ffffff"').replace(", black</title>", ", white</title>"))
+    # the logo mark alone, in white, for the footer: the first four shapes of the side-by-side logo, at its height
+    mark = "".join(re.findall(r'<path d="[^"]+"></path>', (ROOT / "assets" / "logo-black.svg").read_text())[:4])
+    (ROOT / "assets" / "logo-mark-white.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 669.2 285.75" width="669.2" height="285.75">'
+                                                         f'<title>Africa Reframed logo mark, white</title><g fill="#ffffff">{mark}</g></svg>')
     for p in PAGES:
         depth = p["path"].count("/")
         base = "../" * depth if depth else "./"

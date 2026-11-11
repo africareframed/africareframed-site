@@ -67,6 +67,7 @@ MEASURE_JS = r"""
     if (!vis(p) || wire(p) || p.closest('.credit') || p.classList.contains('credit')) continue;
     if (p.querySelector('p, li')) continue;
     const s = getComputedStyle(p), lh = parseFloat(s.lineHeight) || parseFloat(s.fontSize) * 1.2;
+    if (parseFloat(s.fontSize) < 16) continue;   // small print (captions, labels) is not running text
     if (p.getBoundingClientRect().height < lh * 1.9) continue;
     const m = lineChars(p);
     if (m > measure) { measure = m; measureAt = p.innerText.trim().slice(0, 40); }
@@ -119,10 +120,15 @@ def css_findings():
     css = build.CSS
     css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
     off = {}
-    for m in re.finditer(r"(?:margin|padding|gap|row-gap|column-gap)(?:-[a-z]+)?\s*:\s*([^;}]+)", css):
-        for v in re.findall(r"(?<![\w.-])(\d+)px", m.group(1)):
-            if int(v) not in SCALE and int(v) > 3:
-                off[v] = off.get(v, 0) + 1
+    # The header is pinned to the archive's, pixel for pixel (rule 22), and the wireframe's own tools go at launch: both are
+    # left out. Values over 96 px are the geometry of a module (the Opening), not gaps.
+    for blk in re.finditer(r"([^{}]+)\{([^{}]*)\}", css):
+        if re.search(r"\.menu|\.bar\b|\.brand|\.divider|\.wire-strip|\.strip-tools|-toggle|\.grid-", blk.group(1)):
+            continue
+        for m in re.finditer(r"(?:margin|padding|gap|row-gap|column-gap)(?:-[a-z]+)?\s*:\s*([^;}]+)", blk.group(2)):
+            for v in re.findall(r"(?<![\w.-])(\d+)px", m.group(1)):
+                if int(v) not in SCALE and 3 < int(v) <= 96:
+                    off[v] = off.get(v, 0) + 1
     sizes = sorted({float(v) for v in re.findall(r"font-size\s*:\s*([\d.]+)px", css)})
     return dict(spacing_off=dict(sorted(off.items(), key=lambda x: -x[1])), font_sizes=sizes,
                 motion=len(re.findall(r"transition|animation|@keyframes", css)))

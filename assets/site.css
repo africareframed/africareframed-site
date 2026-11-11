@@ -12,7 +12,7 @@
   --cols:12; --gutter:32px; --margin:64px; --content-max:1312px;
   --page-max:calc(var(--content-max) + 2*var(--margin));
   --off-edge:calc((min(100vw,var(--page-max)) - 100vw)/2 - var(--margin));
-  --header-h:128px; --logo-w:192px; --section:96px; --section-head:64px; --section-tight:32px; --measure:32em; --measure-intro:30em;
+  --header-h:128px; --logo-w:240px; --section:96px; --section-head:64px; --section-tight:32px; --measure:32em; --measure-intro:30em;
   --fs-display:64px; --fs-title:44px; --fs-head:22px; --fs-text:17px; --fs-small:13px;
 }
 *{box-sizing:border-box}
@@ -36,6 +36,9 @@ a{color:inherit}
 .site-header{background:var(--paper);color:var(--ink)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:var(--header-h)}
 .brand{display:inline-flex;align-items:center;min-height:44px}
+/* The logo: 240 px on desktop, 192 on tablet, 160 on phones (Thomas, 11 November 2026, 16:30: at 192 it read too small).
+   At 192 its second word stood at the size of the menu's letters, so the logo did not lead the header; 240 lies inside the
+   guide's 192 to 256, and 160 is the guide's smallest size for the logo side by side (128 was under it). */
 .brand-logo{width:var(--logo-w);height:auto;display:block}
 .menu{display:flex;align-items:center;gap:24px;font-size:var(--fs-text)}
 .menu a{padding:6px 0;border-bottom:2px solid transparent;color:var(--ink);white-space:nowrap;text-decoration:none}
@@ -447,7 +450,7 @@ body.show-grid .grid-overlay{display:block}
 /* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
 @media (max-width:1023px){
   .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}
-  :root{--fs-title:32px;--fs-display:44px;--cols:8;--gutter:24px;--margin:32px;--section:80px;--section-head:56px;--section-tight:28px}
+  :root{--fs-title:32px;--fs-display:44px;--cols:8;--gutter:24px;--margin:32px;--logo-w:192px;--section:80px;--section-head:56px;--section-tight:28px}
   .cards-6{grid-template-columns:repeat(3,minmax(0,1fr))}
   .principles.five{grid-template-columns:repeat(2,minmax(0,1fr))}
   .menu-toggle{display:flex}
@@ -483,7 +486,7 @@ body.show-grid .grid-overlay{display:block}
 /* Phone (below 768 px): the guide's 4 columns, 16 px gutters and 16 px margins; one column, the title first */
 @media (max-width:767px){
   .logos.supporters{grid-template-columns:repeat(2,minmax(0,1fr))}
-  :root{--cols:4;--gutter:16px;--margin:16px;--header-h:64px;--logo-w:128px;--section:64px;--section-head:40px;--section-tight:24px}
+  :root{--cols:4;--gutter:16px;--margin:16px;--header-h:64px;--logo-w:160px;--section:64px;--section-head:40px;--section-tight:24px}
   .channels{grid-template-columns:1fr;gap:16px}
   .cards-6{grid-template-columns:repeat(2,minmax(0,1fr))}
   .mod-items .cards-4{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px}

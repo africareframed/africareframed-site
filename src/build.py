@@ -360,15 +360,16 @@ def frame(label, ratio="3/2", caption=None, credit=None, cls="", role="grid-3", 
     return f'<figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}>{img(label, ratio, cls=cls)}{below}</figure>'
 
 
-def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12", credit=None, sid=None, lead=False, echo=False):
-    role = "lead-bleed" if lead else {"a": "feature", "c": "half"}.get(variant, "lead" if span == "c1-12" else "half")
+def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12", credit=None, sid=None, lead=False, echo=False, wide=False):
+    role = "lead-bleed" if lead else "two-thirds" if wide else {"a": "feature", "c": "half"}.get(variant, "lead" if span == "c1-12" else "half")
     below = credit_line(credit=credit, cap=caption_html(slot(role, ratio, label), caption))
     if variant == "a":
         inner = f'<figure class="frame"><div class="bleed">{img(label, ratio, cls="bleed-img")}{ECHO if echo else ""}</div><div class="wrap">{below}</div></figure>'
         return mod("photo", "a, full bleed" + (", the lead" if lead else ""), inner, wrap=False, sid=sid, tight=lead, cls="lead-bleed" if lead else "")
     if variant == "c":
-        photo = f'<div class="c-half photo-half">{img(label, ratio)}{below}</div>'
-        words = f'<div class="c-half">{text}</div>'
+        # wide: the photograph over eight columns and the words in four, so that it is the large one of its story
+        photo = f'<div class="{"c-wide" if wide else "c-half"} photo-half">{img(label, ratio)}{below}</div>'
+        words = f'<div class="{"c-side" if wide else "c-half"}">{text}</div>'
         order = photo + words if side == "left" else words + photo
         return mod("photo", f"c, photograph and text, photograph {side}", f'<div class="cols">{order}</div>', sid=sid)
     return mod("photo", "b, on the columns", f'<div class="cols"><div class="{span}">{img(label, ratio)}{below}</div></div>')
@@ -1575,7 +1576,7 @@ def company_story(x, i):
         out += mod("text", "a, the story", f'<div class="cols story"><div class="c1-4">{words}</div><div class="c6-12">{body}</div></div>', tight=True)
     else:
         out = m_photo(lead, "3/2", "c", text=f'<div class="story">{words}{body}</div>', side="left" if i % 3 == 1 else "right",
-                      caption=caption, credit=credit, sid=story_id(x))
+                      caption=caption, credit=credit, sid=story_id(x), wide=True)
     cells = "".join(frame(f'{x["name"]}: {k}', "3/2", role="pair", own=False, cap=False) for k in ("the people at work", "the product"))
     out += mod("grid", "f, a pair from the shoot", f'<div class="imgs grid-pair">{cells}</div>'
                f'{credit_line("Photographer: " + x["photographer"], WTV_CREDIT, group=True)}', tight=True)
@@ -2418,7 +2419,7 @@ a{color:inherit}
 .c1-4{grid-column:1/5}.c6-12{grid-column:6/-1}.c1-12{grid-column:1/-1}.c1-8{grid-column:1/9}.c1-6{grid-column:1/7}.c7-12{grid-column:7/-1}
 .c-half{grid-column:span 6}.c-offset{grid-column:6/-1}
 .c5-off{grid-column:5/-1;margin-right:var(--off-edge)}
-.c1-9{grid-column:1/10}.c5-12{grid-column:5/-1}
+.c1-9{grid-column:1/10}.c5-12{grid-column:5/-1}.c-wide{grid-column:span 8}.c-side{grid-column:span 4}
 .bleed{width:100%;max-width:none}
 .skip{position:absolute;left:-9999px}
 .skip:focus{left:16px;top:8px;background:var(--ink);color:#fff;padding:8px 12px;z-index:20}
@@ -2517,7 +2518,7 @@ body.clean .mod::before{display:none}
 .theme-entry.row{display:grid;grid-template-columns:72px 1fr 1.3fr;gap:32px;align-items:center;padding:32px 0;border-top:1px solid var(--line)}
 .theme-entry.row .order{font-size:var(--fs-title);font-weight:300;line-height:1;margin:0;color:var(--ink)}
 .theme-entry.row h3{font-size:var(--fs-head);font-weight:700;margin:0 0 8px}
-.theme-nav .dir{display:block;font-size:var(--fs-small);color:var(--ink-soft);margin-bottom:8px}
+.theme-nav .dir{display:block;font-size:var(--fs-text);color:var(--ink-soft);margin-bottom:8px}
 .collection-card{text-decoration:none;align-items:center;margin-top:8px}
 .collection-card:hover .h-big{text-decoration:underline}
 .item .img{margin-bottom:12px}
@@ -2647,7 +2648,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .intro-num{padding-top:8px}
 .numbers{display:flex;flex-wrap:wrap;gap:16px 48px;margin:8px 0}
 .num b{display:block;font-size:var(--fs-title);font-weight:300;line-height:1;font-variant-numeric:tabular-nums}
-.num span{font-size:var(--fs-small);color:var(--ink-soft)}
+.num span{font-size:var(--fs-text);color:var(--ink-soft)}   /* what the number counts, at the text size (the plan of 11 November 2026, step 3: less small print) */
 .numbers.by-kind{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px 32px;border-top:1px solid var(--ink);padding-top:16px;margin-top:16px}
 .small-num b{font-size:var(--fs-head)}
 .theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:32px;margin-top:32px}
@@ -2825,7 +2826,9 @@ body.show-grid .grid-overlay{display:block}
   .divider{width:100%;height:1px;margin:8px 0}
   .site-header{position:relative}
   .lead-tall{grid-column:4/-1}.lead-square{grid-column:3/-1}.lead-wide{grid-column:2/-1}.works.works-wide{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .c1-9,.c5-12{grid-column:1/-1}
+  .c1-9,.c5-12,.c-wide,.c-side{grid-column:1/-1}
+  .c-wide.photo-half{order:-1}  /* the photograph first below desktop, whichever side it sits on */
+  .c-side{margin-top:24px}
   .opening.across .opening-img,.opening.words .opening-img{aspect-ratio:16/9;max-height:none}
   .opening.across .opening-words{padding-top:24px}
   .opening.words .opening-words{padding-top:32px;padding-bottom:32px;order:0}

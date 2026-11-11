@@ -2014,7 +2014,6 @@ def _tpl_modules(base):
             + m_photo("Photograph and text, wide", "3/2", "c", text=heading("The wide form", 3) + draft("The photograph over eight columns, the words in four: the large photograph of a story."), side="left", wide=True)
             + m_grid("e", label="Image", title="One large and a row of three", aside=draft("The words that belong to the set stand here, beside the large photograph: a theme’s text, a collection’s facts, a project’s words."))
             + m_grid("a", 3, "Image", title="Three in a row")
-            + m_grid("c", title="A strip of three")
             + m_themes(base, "a") + m_themes(base, "b") + m_themes(base, "c", current=t)
             + m_collection(base)
             + m_numbers(title="Numbers: a row of three")

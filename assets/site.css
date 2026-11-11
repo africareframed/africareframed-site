@@ -280,6 +280,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
    page and the caption's first line show under it, enough to sense that the page goes on (Thomas, 11 November 2026,
    17:24 and 17:31). */
 .opening-frame picture{display:block}
+.doc-photo{display:block;width:100%;height:auto}
 .mod.opening.real::before{display:none}  /* the wireframe's module label does not lie on a real photograph */
 .imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
 .intro{padding-top:48px}

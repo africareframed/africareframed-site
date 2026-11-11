@@ -463,6 +463,28 @@ def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left
     return mod("photo", "b, on the columns", f'<div class="cols"><div class="{span}">{img(label, ratio)}{below}</div></div>')
 
 
+# A document of the work (Thomas, 11 November 2026, 18:08): one photograph on Home that is not from the archive: our
+# photographers in action at a workshop, among pages of archive photographs. It is told apart by its caption: no AR ID
+# and no link into the archive, but what it shows, where and when. One only, and no pattern on it: the pattern belongs to
+# the photographs of the archive. This is the one exception to "the workshops appear on About only" (About page - build brief).
+HOME_DOCUMENT = dict(
+    file="assets/documents/workshop-01", size=(1920, 1080),
+    alt="A photographer laughs with her camera in her hands among other participants at a photography workshop",
+    caption="At one of our photography workshops",   # draft; the place and the year are added when Thomas gives them
+    note="A document, not an archive photograph: no AR ID. To add: the place and the year of the workshop (Thomas), and the "
+         "original file (this one is 2,000 px wide and soft on sharp screens). Its people are not named.")
+
+
+def m_document(base, d):
+    f = base + d["file"]
+    sid = slot("feature", "16/9", "A document of the work: photographers at a workshop")
+    pic = (f'<img class="doc-photo" src="{f}-1920.jpg" srcset="{f}-1280.jpg 1280w, {f}-1920.jpg 1920w" sizes="100vw" '
+           f'width="{d["size"][0]}" height="{d["size"][1]}" alt="{e(d["alt"])}" loading="lazy" decoding="async">')
+    below = f'<p class="credit"><span class="caption">{e(limit("caption", d["caption"]))}</span> <span>{e(CREDIT)}</span></p>{note(d["note"])}'
+    return mod("photo", "a, full bleed, a document of the work",
+               f'<figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}><div class="bleed">{pic}</div><div class="wrap">{below}</div></figure>', wrap=False)
+
+
 # 2.6 Image grid: (a) three in a row, (b) four portraits, (c) a strip of three squares, (d) six to eight mixed.
 def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None, credit=None, level=2, aside=None, cap=True):
     cell = lambda r: frame(label, r, role={"3/2": "grid-3", "4/5": "grid-4", "1/1": "strip"}[r], own=False, cap=False)
@@ -1689,7 +1711,7 @@ def tpl_home(p, base):
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
             + chapter(m_themes(base, "a"))
-            + m_photo("A photograph from the archive, full bleed · released, no minors", "21/9", "a")
+            + m_document(base, HOME_DOCUMENT)
             + chapter(m_collection(base))
             + chapter(m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"))
             + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))   # under the principles, on their left edge
@@ -2883,6 +2905,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
    page and the caption's first line show under it, enough to sense that the page goes on (Thomas, 11 November 2026,
    17:24 and 17:31). */
 .opening-frame picture{display:block}
+.doc-photo{display:block;width:100%;height:auto}
 .mod.opening.real::before{display:none}  /* the wireframe's module label does not lie on a real photograph */
 .imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
 .intro{padding-top:48px}

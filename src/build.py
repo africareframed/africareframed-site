@@ -378,7 +378,7 @@ def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left
 
 
 # 2.6 Image grid: (a) three in a row, (b) four portraits, (c) a strip of three squares, (d) six to eight mixed.
-def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None, credit=None, level=2, aside=None):
+def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None, credit=None, level=2, aside=None, cap=True):
     cell = lambda r: frame(label, r, role={"3/2": "grid-3", "4/5": "grid-4", "1/1": "strip"}[r], own=False, cap=False)
     top = heading(title, level, "project-title" if level == 3 else "") if title else ""
     top += f'<p class="small">{e(line)}</p>' if line else ""
@@ -387,7 +387,7 @@ def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None,
         # One large photograph and one row of three (rule 16: the strongest is shown larger rather than more being shown
         # smaller). The large one carries its caption; one credit stands for the four. The words that belong to the
         # evidence stand beside the large photograph in columns 1 to 4 (aside): no empty column beside it.
-        big = frame(label + ", the strongest, large", "3/2", role="two-thirds", own=False)
+        big = frame(label + ", the strongest, large", "3/2", role="two-thirds", own=False, cap=cap)
         cells = "".join(cell("3/2") for _ in range(3))
         return mod("grid", "e, one large and a row of three",
                    f'<div class="cols"><div class="c1-4 e-words">{top}{aside or ""}</div><div class="c5-12">{big}</div></div><div class="imgs grid-3 row-3">{cells}</div>{foot}')
@@ -447,11 +447,17 @@ def m_project(x, extra=""):
     body = "".join(draft(t) for t in x["text"]) + (note(x["note"]) if x.get("note") else "")
     if x["layout"] == "bleed":
         out = m_photo(x["image"], "21/9", "a", caption=x["caption"], credit=x["credit"])
-        out += mod("text", "a, the project", f'<div class="cols"><div class="c1-4">{words}</div><div class="c6-12">{body}{extra}</div></div>', tight=True)
         if x.get("gallery"):
+            # The project's words beside one large view, then a row of three (rule 16; the plan of 11 November 2026):
+            # the first four of the gallery's views, the strongest first.
             g = x["gallery"]
-            cells = "".join(frame(label, "3/2", own=False, cap=False) for label in g["labels"])
-            out += mod("grid", f'd, {len(g["labels"])} views of the project', f'<div class="imgs grid-3">{cells}</div>{credit_line(g["caption"], g["credit"], group=True)}', tight=True)
+            big = frame(g["labels"][0], "3/2", role="two-thirds", own=False, cap=False)
+            cells = "".join(frame(label, "3/2", own=False, cap=False) for label in g["labels"][1:4])
+            out += mod("grid", "e, the project: its words, one large view and a row of three",
+                       f'<div class="cols"><div class="c1-4 e-words">{words}{body}{extra}</div><div class="c5-12">{big}</div></div>'
+                       f'<div class="imgs grid-3 row-3">{cells}</div>{credit_line(g["caption"], g["credit"], group=True)}', tight=True)
+        else:
+            out += mod("text", "a, the project", f'<div class="cols"><div class="c1-4">{words}</div><div class="c6-12">{body}{extra}</div></div>', tight=True)
         return out
     return m_photo(x["image"], "3/2", "c", text=words + body + extra, side="left", caption=x["caption"], credit=x["credit"])
 
@@ -595,7 +601,7 @@ def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image
             name = f'<a href="{extra["href"]}">{e(x[0])}</a>' if extra.get("href") else e(x[0])
             return f'<div class="item">{pic}<h3>{name}</h3>{t(x[1]) if x[1] else ""}</div>'
         li = "".join(card(x) for x in items)
-        foot = credit_line(credit=credit, group=True) if 'class="frame"' in li and "card-work" not in li else ""
+        foot = credit_line(credit=credit, group=True) if 'class="frame"' in li and "card-work" not in li and credit is not False else ""
         return mod("items", "d, with images", f'{top}<div class="cards-{cols}">{li}</div>{foot}', sid=sid, tight=tight)
     if variant == "e":
         chips = "".join(f'<a class="chip" href="{h}">{e(a)}</a>' if h else f'<span class="chip">{e(a)}</span>' for a, h in items)
@@ -1535,7 +1541,7 @@ def tpl_index_themes(p, base):
 def tpl_index_collections(p, base):
     return (m_page_head(p["title"], "Each collection is a body of work with its own story and the people behind it.", statement_draft=True)
             + m_collection(base, "b", title=False)
-            + m_doors("c", links=[button(base + "partners/#sponsor", "Sponsor a collection on your theme →", quiet=True)], tight=True))
+            + m_doors("c", links=[button(base + "partners/#sponsor", "Sponsor a collection on your theme →", quiet=True)], tight=True, left=True))
 
 
 def tpl_theme(p, base):
@@ -1702,12 +1708,16 @@ def tpl_press(p, base):
     release_text = heading("The relaunch", 3, "kicker-h") + draft("The press release, from the Strategic Platform’s draft, with date and quotes from named people who agreed to them.", "p") + f'<p class="doors">{dead_button("Download the release (PDF)", quiet=True)}</p>'
     return (m_page_head(p["title"], "Stories, images for editorial use, and someone to talk to.", statement_draft=True)
             + m_photo("Press image for the relaunch", "3/2", "c", text=release_text, side="left")
-            + m_items("Fact sheet", facts, "a", is_draft=True)
+            + m_items("Fact sheet", facts, "a", is_draft=True, cls="five")
             + m_text("Track record", ["Exhibitions and collaborations since 2010, told as history: the proof behind the present."], "a")
             + m_grid("a", 3, "Press image", line="A curated set for editorial use with the credit line; no images with minors.", title="Press images",
                      link=dead_button("Download the press set", quiet=True))
-            + m_items("Story leads", [(s, "Two sentences on the series, the place and who to talk to.", "Image from the series") for s in GAMBIA_SERIES], "d")
-            + m_items("Logos and portrait", [("Logo, black on white", "", "Logo"), ("Logo, white on black", "", "Logo"), ("Thomas Damgaard", "", "Portrait")], "d", is_draft=False)
+            + m_items("Story leads", [(s, "Two sentences on the series, the place and who to talk to.", "Image from the series") for s in GAMBIA_SERIES], "d", cols=2)
+            # the logos as they are (only what exists); the portrait is a photograph and carries its own credit
+            + m_items("Logos and portrait", [
+                ("Logo, black on white", "", None, {"image": f'<div class="logo-card"><img src="{base}assets/logo-black.svg" alt="The Africa Reframed logo in black" width="320" height="64"></div>'}),
+                ("Logo, white on black", "", None, {"image": f'<div class="logo-card dark"><img src="{base}assets/logo-white.svg" alt="The Africa Reframed logo in white" width="320" height="64"></div>'}),
+                ("Thomas Damgaard", "", None, {"image": frame("Portrait of Thomas Damgaard", "3/2", role="third", cap=False)})], "d", is_draft=False, credit=False)
             + m_doors("d", kicker="Press contact", address=EMAIL_PRESS, line="We answer the same day."))
 
 
@@ -1730,7 +1740,7 @@ def tpl_text(p, base):
                 # 2 Exhibitions: a medium we activate. The activity, then the projects, the door, the artists.
                 + m_text("Exhibitions", ABOUT_EXHIBITIONS, "a", sid="exhibitions")
                 + "".join(m_project(x) for x in by_state(EXHIBITION_PROJECTS))
-                + m_doors("c", links=[button(f"{base}partners/#sponsor", ABOUT_EXHIBITION_DOOR + " →", quiet=True)], tight=True)
+                + m_doors("c", links=[button(f"{base}partners/#sponsor", ABOUT_EXHIBITION_DOOR + " →", quiet=True)], tight=True, left=True)
                 + m_items("The artists", [(n, about_line(n, d), l, artist_card(base, n)) for n, d, l in ARTISTS_SHOWN], "d", lead=draft(ABOUT_ARTISTS_LEAD), image_ratio="4/5", cols=4, sid="artists", level=3)
                 + m_network(base)
                 # 3 Workshops: a medium we activate. The activity, then the projects, Bamako Nights, the partners.
@@ -1739,20 +1749,21 @@ def tpl_text(p, base):
                 + m_items("In their words", ABOUT_INTERVIEWS, "d", image_ratio="16/9", tight=True, level=3,
                           lead=draft("Three of the programme’s photographers, on what it meant to them.")
                           + note("Short films of interviews with the photographers; played on click with a poster frame, never autoplaying (the one-motion rule)."))
-                + m_grid("d", 6, "Bamako Nights", line=BAMAKO_NIGHTS, title="Bamako Nights", credit="Students of CFP Bamako, Bamako Nights, 2011", level=3)
+                + m_grid("e", label="Bamako Nights", line=BAMAKO_NIGHTS, title="Bamako Nights", credit="Students of CFP Bamako, Bamako Nights, 2011", level=3, cap=False)
                 + m_items("Workshop partners", WORKSHOP_PARTNERS, "a", tight=True, level=3, cls="five")
                 + mod("text", "the way to the collection", f'<div class="cols"><div class="c6-12">{draft(ABOUT_WORKSHOPS_TO_COLLECTION)}'
                       f'<p class="doors">{button(base + "collections/house-collection/", "The House Collection →", quiet=True)}</p></div></div>', tight=True)
                 # 4 Who is behind it
                 + m_text("Who is behind it", ABOUT_WHO, "a", sid="who")
                 + m_items(None, ABOUT_PEOPLE, "d", image_ratio="1/1", tight=True, cols=4)
-                + m_items("Principles", PRINCIPLES + [("Fair terms", "One download, one licence, free of charge; no resale, no sublicensing.")], "a")
+                + m_items("Principles", PRINCIPLES + [("Fair terms", "One download, one licence, free of charge; no resale, no sublicensing.")], "a", cls="five")
                 + m_doors("d", kicker="Write to us", address=EMAIL_MAIN, line=f"Partnerships: {EMAIL_PARTNERS} · Press: {EMAIL_PRESS}"))
     if k == "contact":
         return (m_page_head(p["title"], "One quiet way to reach us.", statement_draft=True)
                 + m_doors("d", kicker="Write to us", address=EMAIL_MAIN, line=f"Press: {EMAIL_PRESS} · Partnerships: {EMAIL_PARTNERS} · Africa Reframed on LinkedIn."))
     return (m_page_head(p["title"], "What we collect when you request access or write to us, and why.", statement_draft=True)
-            + "".join(m_text(h, [t], "a") for h, t in PRIVACY))
+            + mod("text", "e, a list under rules", "".join(
+                f'<div class="cols"><div class="c1-4">{heading(h)}</div><div class="c6-12">{draft(limit("text section", t))}</div></div>' for h, t in PRIVACY), cls="rows"))
 
 
 def artist_card(base, name):
@@ -2534,7 +2545,12 @@ body.clean .mod::before{display:none}
 .theme-nav .order{display:none}   /* previous and next say which way; the theme's number stands on its own page */
 .e-words .facts{margin-top:24px}
 .e-words p{max-width:var(--measure)}
-.row-3{margin-top:24px}   /* air between the large photograph's caption and the row */
+.row-3{margin-top:24px}
+.rows .cols{border-top:1px solid var(--line);padding-top:24px}
+.rows .cols h2{margin:0}
+.logo-card{aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--paper)}
+.logo-card.dark{background:var(--ground);border-color:var(--ground)}
+.logo-card img{width:56%;height:auto}   /* air between the large photograph's caption and the row */
 .collection-card{text-decoration:none;align-items:center;margin-top:8px}
 .collection-card:hover .h-big{text-decoration:underline}
 .item .img{margin-bottom:12px}

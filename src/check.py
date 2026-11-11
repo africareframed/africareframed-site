@@ -81,7 +81,7 @@ MEASURE_JS = r"""
   }
   const words = el => { let w = 0; const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n; while ((n = tw.nextNode())) { const p = n.parentElement; if (!p || wire(p) || credit(p) || !vis(p)) continue; const t = n.textContent.trim(); if (t) w += t.split(/\s+/).length; } return w; };
   // images: every frame and photograph of the content, and whether a credit line of its own stands beneath it
-  const frames = [...main.querySelectorAll('.img, img')].filter(e => vis(e) && !e.closest('.logo,.logos,.logo-tile'));
+  const frames = [...main.querySelectorAll('.img, img')].filter(e => vis(e) && !e.closest('.logo,.logos,.logo-tile,.logo-card'));
   const nocredit = frames.filter(e => {
     const fig = e.closest('figure, .frame') || e.parentElement;
     // rule 15 as relaxed on 11 November 2026: a credit stands where a photograph is shown as work. Covered: a credit of its
@@ -207,7 +207,7 @@ def craft(rows):
     """The plan's measures on the key pages at 1,440 px, one line a page."""
     out = []
     for m in rows:
-        if m["width"] == "desktop" and m["tpl"] in KEY:
+        if m["width"] == "desktop":
             out.append(f'{m["slug"]:28} small {m["smallShare"]:4.0%}  jump {m["jump"]:3.1f}  first image {m["firstImage"]:4.0%}  '
                        f'images {m["frames"]:2}  largest grid {max(m["grids"] or [0])}  pattern {m["pattern"]}  run {m["maxRun"]}  screens {m["screens"]:4.1f}')
     return out
@@ -266,7 +266,7 @@ def verdict(rows):
             fail(16, slug, w, f'{max(m["grids"])} images in one grid')
         if m["pattern"] > 3:
             fail(19, slug, w, f'the pattern {m["pattern"]} times')
-        if w == "desktop" and m["tpl"] in KEY:
+        if w == "desktop":   # every page since 11 November 2026, 13:20 (Thomas: the whole site to one standard)
             if m["smallShare"] > TARGET["small"]:
                 misses.append(f'{slug}: small print {m["smallShare"]:.0%} of the letters')
             if m["jump"] < TARGET["jump"]:
@@ -313,7 +313,7 @@ if __name__ == "__main__":
             print("   ", x)
         if not a.pages and len(items) > 6:
             print(f"    … and {len(items) - 6} more")
-    print("\nThe plan’s measures (key pages, 1,440 px):")
+    print("\nThe plan’s measures (every page, 1,440 px):")
     print("\n".join(craft(rows)))
     if misses:
         print(f"Targets missed: {len(misses)}")

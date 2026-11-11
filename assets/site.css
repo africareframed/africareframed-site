@@ -127,7 +127,12 @@ body.clean .mod::before{display:none}
 .theme-nav .order{display:none}   /* previous and next say which way; the theme's number stands on its own page */
 .e-words .facts{margin-top:24px}
 .e-words p{max-width:var(--measure)}
-.row-3{margin-top:24px}   /* air between the large photograph's caption and the row */
+.row-3{margin-top:24px}
+.rows .cols{border-top:1px solid var(--line);padding-top:24px}
+.rows .cols h2{margin:0}
+.logo-card{aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--paper)}
+.logo-card.dark{background:var(--ground);border-color:var(--ground)}
+.logo-card img{width:56%;height:auto}   /* air between the large photograph's caption and the row */
 .collection-card{text-decoration:none;align-items:center;margin-top:8px}
 .collection-card:hover .h-big{text-decoration:underline}
 .item .img{margin-bottom:12px}

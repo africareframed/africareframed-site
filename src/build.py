@@ -404,6 +404,20 @@ def m_grid(variant="d", n=None, label="Image", line=None, link=None, title=None,
     return mod("grid", name, f'{top}<div class="imgs {cls}">{cells}</div>{foot}')
 
 
+def m_pair(labels, credited_by=None, credit=None):
+    """2.6 (f): a pair, two frames at half the columns each. Under a company's story it is credited by the story's lead
+    photograph (credited_by: that module's id); standing alone it carries one credit for the two."""
+    cells = "".join(frame(label, "3/2", role="pair", own=False, cap=False) for label in labels)
+    html = mod("grid", "f, a pair", f'<div class="imgs grid-pair">{cells}</div>{"" if credited_by else credit_line(credit=credit, group=True)}', tight=True)
+    return html.replace('<section class="mod ', f'<section data-credited-by="{credited_by}" class="mod ', 1) if credited_by else html
+
+
+def m_rows(items):
+    """2.4 (e): a list under rules: several short sections as one module, each a heading left and its text right."""
+    return mod("text", "e, a list under rules", "".join(
+        f'<div class="cols"><div class="c1-4">{heading(h)}</div><div class="c6-12">{draft(limit("text section", t))}</div></div>' for h, t in items), cls="rows")
+
+
 # 2.7 Theme sequence: (a) five entries in a row (Home), (b) five rows (Themes index), (c) previous and next.
 def theme_entry(t, base, i, row=False, ratio="4/5"):
     strip = (f'<div class="imgs grid-strip">{"".join(frame("Image", "1/1", role="row-strip", own=False, cap=False) for _ in range(3))}</div>' if row
@@ -1590,11 +1604,9 @@ def company_story(x, i):
     else:
         out = m_photo(lead, "3/2", "c", text=f'<div class="story">{words}{body}</div>', side="left" if i % 3 == 1 else "right",
                       caption=caption, credit=credit, sid=story_id(x), wide=True)
-    cells = "".join(frame(f'{x["name"]}: {k}', "3/2", role="pair", own=False, cap=False) for k in ("the people at work", "the product"))
     # One credit for a story (rule 15, as changed on 11 November 2026): the lead photograph's caption names the company, the
-    # place and the photographer, and its credit stands for the pair beneath it. The pair's module says which story credits it.
-    out += mod("grid", "f, a pair from the shoot", f'<div class="imgs grid-pair">{cells}</div>', tight=True).replace(
-        '<section class="mod ', f'<section data-credited-by="{story_id(x)}" class="mod ', 1)
+    # place and the photographer, and its credit stands for the pair beneath it.
+    out += m_pair([f'{x["name"]}: {k}' for k in ("the people at work", "the product")], credited_by=story_id(x))
     return out
 
 
@@ -1764,8 +1776,7 @@ def tpl_text(p, base):
         return (m_page_head(p["title"], "One quiet way to reach us.", statement_draft=True)
                 + m_doors("d", kicker="Write to us", address=EMAIL_MAIN, line=f"Press: {EMAIL_PRESS} · Partnerships: {EMAIL_PARTNERS} · Africa Reframed on LinkedIn."))
     return (m_page_head(p["title"], "What we collect when you request access or write to us, and why.", statement_draft=True)
-            + mod("text", "e, a list under rules", "".join(
-                f'<div class="cols"><div class="c1-4">{heading(h)}</div><div class="c6-12">{draft(limit("text section", t))}</div></div>' for h, t in PRIVACY), cls="rows"))
+            + m_rows(PRIVACY))
 
 
 def artist_card(base, name):
@@ -1978,20 +1989,23 @@ def _tpl_modules(base):
             + m_opening(CORE_LINE, "One line beneath the heading, at most; on Home nothing more.")
             + m_page_head("Page head", "A statement of at most 25 words under the title, in the right columns.", kicker="Kicker", meta=["279 images in the archive", "House Collection"])
             + m_page_head("Page head with doors", doors=m_doors("a", doors=[door("#", "Kicker", "First door", "A line of at most 15 words.", dark=True), door("#", "Kicker", "Second door", "A line of at most 15 words.")]))
-            + m_page_head("Page head with the lead photograph", "The page opening of the theme and collection pages.", lead=m_photo("Lead image", "21/9", "b"))
+            + m_page_head("Page head, then the lead", "The page opening of the theme and collection pages: the head, then the lead photograph, full bleed.")
+            + m_photo("Lead image", "21/9", "a", lead=True)
             + m_text("Text section", ["Title left, text right: 60 to 160 words of text in the right columns, the measure capped at about 70 characters a line."], "a")
             + m_text("With a facts box", ["The text, then the facts box in the right columns under it."], "b", box=sample_box)
             + m_text("With a contact", ["The text, then the contact as the right column’s end."], "c", contact=("Partnerships", EMAIL_PARTNERS))
             + m_text(None, ["The intro on Home: two or three sentences in columns 1–8 under the Opening, with the ways on."], "d",
                      links=[button("#", "Explore the themes", quiet=True), button("#", "How partners use the archive", quiet=True)])
+            + m_rows([("A list under rules", "Several short sections as one module, each a heading left and its text right."), ("The second", "Used on Privacy.")])
             + m_photo("Full bleed", "21/9", "a", caption="AR-ID · The caption, at most 40 words, led by the AR ID where the image is featured.")
             + m_photo("On the columns", "3/2", "b", caption="AR-ID · The caption.")
             + m_photo("Photograph and text", "3/2", "c", text=heading("Beside the photograph", 3) + draft("The text in the other half of the columns; the next one alternates."), side="left")
             + m_photo("Photograph and text", "4/5", "c", text=heading("Alternating", 3) + draft("The photograph on the right this time."), side="right")
-            + m_grid("a", 3, "Image", title="Image grid: three in a row")
-            + m_grid("b", 4, "Portrait", title="Four portraits")
+            + m_photo("Photograph and text, wide", "3/2", "c", text=heading("The wide form", 3) + draft("The photograph over eight columns, the words in four: the large photograph of a story."), side="left", wide=True)
+            + m_grid("e", label="Image", title="One large and a row of three", aside=draft("The words that belong to the set stand here, beside the large photograph: a theme’s text, a collection’s facts, a project’s words."))
+            + m_pair(["One of a pair", "The other"])
+            + m_grid("a", 3, "Image", title="Three in a row")
             + m_grid("c", title="A strip of three")
-            + m_grid("d", 8, "Image", title="Six to eight, mixed", line="Equal frames with 8 px gaps.")
             + m_themes(base, "a") + m_themes(base, "b") + m_themes(base, "c", current=t)
             + m_collection(base)
             + m_numbers(title="Numbers: a row of three")
@@ -2000,8 +2014,10 @@ def _tpl_modules(base):
             + m_partners(6)
             + m_use("a") + m_use("b") + m_use("c", "Partner news")
             + m_doors("c", links=[button("#", "The ways on", quiet=True), button("#", "A second quiet link", quiet=True)])
+            + m_doors("c", links=[button("#", "On the left edge, under a full-width module", quiet=True)], tight=True, left=True)
             + m_doors("d", kicker="Contact band", address=EMAIL_PRESS, line="A line of at most 15 words.")
             + m_items("Item list: plain", PRINCIPLES[:3], "a")
+            + m_items("Five in one row", PRINCIPLES + [("Fair terms", "One download, one licence, free of charge.")], "a", cls="five")
             + m_items("Numbered steps", ACCESS_STEPS, "b")
             + m_items("Accordion", RULES[:3], "c")
             + m_items("With images", [("Name", "Role, a line.", "Portrait"), ("Name", "Role, a line.", "Portrait"), ("Name", "Role, a line.", "Portrait")], "d", image_ratio="1/1")

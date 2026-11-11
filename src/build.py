@@ -191,7 +191,9 @@ def mod(name, variant, inner, cls="", sid=None, wrap=True, tight=False):
     return f'<section class="mod mod-{name} {cls}{" tight" if tight else ""}" data-mod="{e(label)}"{a}>{body}</section>'
 
 
-DRAFT_HEADINGS = {"How access works", "The rules for use", "The rules in short", "The archive in five themes", "The collections", "Four principles"}
+DRAFT_HEADINGS = {"How access works", "The rules in short", "The archive in five themes"}
+# Headings that say something (Quality rules, rule 7), decided on 11 November 2026 on Thomas's authority; each is built from
+# sentences already on its page, and none repeats the first sentence of the text beneath it (rule 4).
 
 
 def chapter(html):
@@ -466,8 +468,12 @@ def collection_card(c, base):
     return collection_entry(dict(c["card"], title=c["title"], href=f'collections/{c["slug"]}/'), base)
 
 
+HOME_COLLECTIONS_TITLE = "Two collections, one of them sponsored"   # true while COLLECTIONS holds these two; the build checks it
+
+
 def m_collection(base, variant="a", title=True):
-    top = f'<div class="cols"><div class="c1-4">{heading("The collections")}</div></div>' if title else ""
+    assert len(COLLECTIONS) == 2 and sum(1 for c in COLLECTIONS if c.get("sponsor")) == 1, "HOME_COLLECTIONS_TITLE no longer fits the collections"
+    top = f'<div class="cols"><div class="c1-4">{heading(HOME_COLLECTIONS_TITLE)}</div></div>' if title else ""
     n = note("A new sponsored collection appears here once it is signed, shown as in production with behind-the-scenes material; never as a plan.")
     cards = "".join(collection_card(c, base) for c in COLLECTIONS)
     return mod("collection", "b, a list of cards", f'{top}<div class="collection-list">{cards}</div>{n}')
@@ -714,7 +720,7 @@ REQUEST_FOOT = "Companies get access through a collection sponsorship; write to 
 # ---------------------------------------------------------------------------------------------
 HOUSE_COLLECTION = dict(
     slug="house-collection", title="House Collection", kicker="Collection", statement=HOUSE_STATEMENT, statement_draft=True,
-    lead="Collection image", story_title="The story", story=HOUSE_STORY, facts=HOUSE_FACTS,
+    lead="Collection image", story_title="Made by our own team, 2013 to 2018", story=HOUSE_STORY, facts=HOUSE_FACTS,
     grid_line="A spread across the five themes; released, no minors.",
     access=dict(count=("1,122", "images in the House Collection"), src="collection-house", line=f"Sponsoring a collection? Write to {EMAIL_PARTNERS}."),
     sections=["story", "grid", "places", "feature", "themes", "goals", "access", "uses"],
@@ -761,7 +767,8 @@ WTV_COLLECTION = dict(
     statement="Seven young companies in Kenya, Uganda and Rwanda turning waste into fuel, building materials, packaging and services, photographed by photographers from their own countries.",
     meta=["7 companies", "Kenya · Uganda · Rwanda", "3 photographers"],
     lead="Lead image: a founder at work, from the collection", lead_credit=WTV_CREDIT, credit=WTV_CREDIT,
-    story_title="The theme",
+    story_title="Businesses built on waste", companies_title="Seven companies in three countries",
+    photographers_title="Photographers from Nairobi, Kampala and Kigali",
     story=["Waste is a raw material. Across East Africa, young companies build businesses on it: cooking fuel from husks and sugarcane, paving from plastic, paper bags from banana trunks, and an app that gets the rubbish collected. This collection shows seven of them, the people who run them and the work they do, in their own places.",
            "The companies came through BESTSELLER FOUNDATION’s Waste to Value Challenge, launched with Intellecap in December 2019 across Kenya, Uganda, Tanzania and Rwanda. From more than 400 applications, six were chosen for an accelerator that ran from August 2020 to March 2021, with up to USD 100,000 each and support on markets, products, business planning and finance. Alongside it, the foundation invested in a seventh: Vuma Biofuels."],
     facts=[("Companies", "7, six of them from the accelerator"), ("Countries", "Kenya, Uganda, Rwanda"),
@@ -1516,7 +1523,7 @@ def tpl_home(p, base):
             + chapter(m_themes(base, "a"))
             + m_photo("A photograph from the archive, full bleed · released, no minors", "21/9", "a")
             + chapter(m_collection(base))
-            + chapter(m_items("Four principles", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"))
+            + chapter(m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"))
             + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True))
 
 
@@ -1595,13 +1602,13 @@ COLLECTION_SECTIONS = {
     "story": lambda c, base: m_text(c["story_title"], c["story"], "b",
                                     box='<dl class="facts">' + "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in c["facts"]) + "</dl>"),
     "companies": lambda c, base: (mod("items", "a, the stories’ contents",
-                                      f'<div class="cols"><div class="c1-4">{heading("The companies")}</div><div class="c6-12">{draft(c["companies_lead"])}'
+                                      f'<div class="cols"><div class="c1-4">{heading(c.get("companies_title", "The companies"))}</div><div class="c6-12">{draft(c["companies_lead"])}'
                                       f'{note("Seven stories as teasers, three photographs each from the shoot: one large and a pair. Present tense where a company’s current activity is confirmed; otherwise as photographed in 2021, until its founder confirms.")}</div></div>'
                                       + m_contents(c["companies"]), sid="companies")
                                   + "".join(company_story(x, i) for i, x in enumerate(c["companies"]))),
     "grid": lambda c, base: m_grid("e", label="Image from the collection", line=c["grid_line"], title="From the collection", credit=c.get("credit")),
     "making": lambda c, base: m_items("How it was made", c["making"], "b", lead=draft("From the first call with a founder to the last gallery.")),
-    "photographers": lambda c, base: m_items("The photographers", c["photographers"], "d", lead=draft(c["photographers_lead"]), image_ratio="4/5", sid="photographers", credit=c.get("credit")),
+    "photographers": lambda c, base: m_items(c.get("photographers_title", "The photographers"), c["photographers"], "d", lead=draft(c["photographers_lead"]), image_ratio="4/5", sid="photographers", credit=c.get("credit")),
     "bts": lambda c, base: m_grid("c", label="Behind the scenes: a photographer at work", line=c["bts"], title="Behind the scenes", level=3, credit=c.get("credit")),
     "went": lambda c, base: m_items(c.get("went_title", "Where the images went"), c["went"], "a", sid="where",
                                     lead=draft(c["went_lead"], "p", "lead") if c.get("went_lead") else None),
@@ -1609,7 +1616,7 @@ COLLECTION_SECTIONS = {
     "sponsor": lambda c, base: m_sponsor("collection", sponsor=c["sponsor"]),
     "invite": lambda c, base: m_text(c["invite"]["title"], c["invite"]["text"], "c", contact=("Partnerships", EMAIL_PARTNERS), sid="your-theme",
                                      links=[button(base + "partners/#sponsor", "How sponsoring a collection works →", quiet=True)]),
-    "places": lambda c, base: m_items("Places and series", [(k, t, f"Image from {k}") for k, t in PLACES], "d", credit=c.get("credit")),
+    "places": lambda c, base: m_items("Three countries, three cities", [(k, t, f"Image from {k}") for k, t in PLACES], "d", credit=c.get("credit")),
     "feature": lambda c, base: m_photo("A photograph from the collection, full bleed", "21/9", "a", credit=c.get("credit")),
     "themes": lambda c, base: m_items("Themes it feeds", [(t["name"], f'{base}themes/{t["slug"]}/') for t in THEMES], "e"),
     "goals": lambda c, base: m_items("Goals it serves", [(g, None) for g in ("SDG 4 – Quality Education", "SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality")], "e", tight=True,
@@ -1648,7 +1655,7 @@ def tpl_partners(p, base):
             + m_text("How access works", [ACCESS_WHO], "a", is_draft=False, sid="use")
             + m_items(None, ACCESS_STEPS, "b", tight=True)
             + m_doors("c", links=[button(base + "request-access/", "Request access", quiet=True)], tight=True)
-            + m_items("The rules for use", RULES, "c", lead=draft("The rules in plain language. The legal text is Terms on the archive.", "p", "small"), sid="using-the-images")
+            + m_items("The rules for using the images", RULES, "c", lead=draft("The rules in plain language. The legal text is Terms on the archive.", "p", "small"), sid="using-the-images")
             + m_text("Sponsor a collection", SPONSOR_TEXT, "c", contact=("Partnerships", EMAIL_PARTNERS), sid="sponsor",
                      links=[button(base + "collections/waste-to-value/", "See the Waste to Value Collection →", quiet=True)])
             # 5 who already uses the archive: partners by name and examples of use, once there are any (rule 27). The counts by

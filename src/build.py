@@ -1759,32 +1759,42 @@ PRIVACY = [("What we collect", "Your organisation, your name and role, your emai
 # The pages, each a sequence of modules in the order of the page priorities (Site map, section 6) and the inventory
 # (section 3). Nine templates; the five key pages first.
 # ---------------------------------------------------------------------------------------------
+def home_head(title, line=None):
+    """A chapter of Home: its title as About sets a chapter's (44 px Light), and under it one line of text."""
+    return f'<div class="chapter-head"><h2 class="chapter-title">{e(title)}</h2>{draft(line) if line else ""}</div>'
+
+
+def in_chapter(section, head):
+    """Put a chapter's head at the top of a module, inside its section, so that the two stand as one."""
+    assert section.count('<div class="wrap">') >= 1
+    return section.replace('<div class="wrap">', '<div class="wrap">' + head, 1)
+
+
 def tpl_home(p, base):
-    # The front page is the page of the product (Thomas, 12 November 2026, 13:16 to 13:42; tried as version E on /dev/).
-    # 1 What this is: the Opening and the intro, which also say who is behind it. 2 The archive in small: a photograph
-    # as a record, the five themes and the photographs' own keywords, answering to the pointer; the way on is Explore
-    # the themes. 3 In use: the numbers, the partners by name, one example; built only when each exists (rule 27).
-    # 4 Who makes it: a photograph from a workshop, and under it About's own statement (the archive is one of three lines
-    # of activity) with the way to About. Under the archive in small stand the four principles. Request access and
-    # sponsoring a collection are on Partners; the collections are in the menu.
+    # The front page is the page of the product (Thomas, 12 November 2026, 13:16 to 15:10; tried as version E on /dev/).
+    # The Opening and the intro say what this is and who is behind it. Then three chapters, each under its title:
+    # The archive: the archive in small (a photograph as a record, the five themes, the photographs' own keywords,
+    #   answering to the pointer); the way on is Explore the themes.
+    # Principles: behind every image and every collaboration; the four, one line each.
+    # About us: About's statement, a photograph from a workshop as a document of the work, and the way to About.
+    # In use (the numbers, the partners by name, one example) is built only when each exists (rule 27).
+    # Request access and sponsoring a collection are on Partners; the collections are in the menu.
+    # Rhythm: one section's distance between chapters; a title stands 32 px over what it opens.
     return (m_opening(CORE_LINE, base=base)
             + m_text(None, INTRO_HOME, "d", sid="intro")
             + front_mini(base)
-            # under the keywords: what stands behind every image (Thomas, 12 November 2026, 14:40). The page's rhythm (14:47):
-            # one section's distance between its parts, and half of it where two things belong together.
-            + m_items("Four principles behind every image and every collaboration", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
+            + in_chapter(m_items(None, PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"),
+                         home_head("Principles", HOME_PRINCIPLES_LINE))
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            + m_document(base, HOME_DOCUMENT)
-            + home_behind(base))
+            + in_chapter(m_document(base, HOME_DOCUMENT), home_head("About us", ABOUT_STATEMENT))
+            + m_doors("c", links=[button(base + "about/", "More about us", quiet=True)], tight=True, left=True))
 
 
-def home_behind(base):
-    """Under the workshop photograph: the archive is a part of something larger, in About's own statement, and the way to About."""
-    return mod("text", "the background in About's own statement, leading to About",
-               f'<div class="cols"><div class="c1-8">{draft(ABOUT_STATEMENT)}'
-               f'<p class="doors">{button(base + "about/", "About Africa Reframed", quiet=True)}</p></div></div>', tight=True, sid="behind")
+# Thomas, 12 November 2026, 14:58 ("Four principles behind every image and every collaboration") and 15:08 (the title
+# in one word): the title is Principles, and his sentence is the line under it.
+HOME_PRINCIPLES_LINE = "Behind every image and every collaboration."
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -1983,9 +1993,9 @@ def front_mini(base):
     rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/" data-theme="{t["slug"]}">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
     words = (f'<p class="kicker">{e(a["kicker"])}</p><p class="meta-row">{meta}</p>'
-             f'<h2 class="kicker">By theme</h2><ul class="theme-doors">{rows}</ul>'
+             f'<h3 class="kicker">By theme</h3><ul class="theme-doors">{rows}</ul>'
              f'<p class="doors">{button(base + "themes/", "Explore the themes", quiet=True)}</p>')
-    kw = "".join(f'<h3 class="kicker">{e(label)}</h3><ul class="kw-row">'
+    kw = "".join(f'<h4 class="kicker kw-label">{e(label)}</h4><ul class="kw-row">'
                  + "".join(f'<li><button type="button" class="kw{" lit" if w in first[k] else ""}" data-kw="{e(w)}"><span>{e(w)}</span></button></li>' for w in layers[k]) + "</ul>"
                  for k, label in FRONT_LAYERS)
     script = ("<script>(function(){var box=document.querySelector('.mini');if(!box)return;"
@@ -2000,8 +2010,8 @@ def front_mini(base):
               "['mouseenter','focus','click'].forEach(function(ev){b.addEventListener(ev,go)});"
               "['mouseleave','blur'].forEach(function(ev){b.addEventListener(ev,function(){b.classList.remove('hot')})})})})();</script>")
     return mod("collection", "the archive in small",
-               f'<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
-               f'<div class="kw-rows"><h2 class="kicker kw-head">Keywords on these photographs</h2>{kw}</div></div>{script}')
+               f'{home_head("The archive")}<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
+               f'<div class="kw-rows"><h3 class="kicker kw-head">Keywords on these photographs</h3>{kw}</div></div>{script}')
 
 
 def front_ways(base):
@@ -3272,15 +3282,18 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mini .theme-doors a{flex:1;padding:12px 0;font-weight:400}   /* names to choose between, not titles (Thomas, 12 November 2026, 14:25) */
 .mini .theme-doors span{font-size:var(--fs-text)}   /* a number of images is set as the numbers above the list are */
 .mini .f-words .doors{margin:0}
-#behind .doors{margin:16px 0 0}
-h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
+h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
+/* Home's three chapters open as About's do: the title at the page-title size in Light, and under it one line of text. */
+.chapter-head{margin:0 0 32px}
+.chapter-head .chapter-title{margin:0}
+.chapter-head p{margin:16px 0 0}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}
 .record-title{font-weight:700}
 .kw-rows{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:12px;align-items:baseline;margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
 .kw-rows .kw-head{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
-.kw-rows h3.kicker{grid-column:1 / 3;margin:0}
+.kw-rows .kw-label{grid-column:1 / 3;margin:0}
 .kw-row{grid-column:3 / 13;list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .switch figure > a{display:block}
 .kw{display:block;font:inherit;background:none;border:0;padding:0;cursor:pointer}   /* the button is the thing to tap; the pill is drawn inside it */
@@ -3328,12 +3341,12 @@ h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
   .feature.ways .f-left{grid-column:1 / -1;grid-row:1}
   .principles.two{grid-template-columns:1fr}
   .principles.two li:first-child,.principles.two li:last-child{grid-column:auto}
-  .kw-rows h3.kicker,.kw-row{grid-column:1 / -1}
+  .kw-rows .kw-label,.kw-row{grid-column:1 / -1}
   .kw-rows{row-gap:8px}
   .mini .theme-doors a{padding:16px 0}
   .kw{padding:8px 0}   /* 44 px to tap; the rows keep their distance through it */
   .kw-row{row-gap:0}
-  .kw-rows h3.kicker{margin-top:8px}
+  .kw-rows .kw-label{margin-top:8px}
   .feature.ways .f-words{margin-top:48px}
   .theme-large-row{grid-template-columns:repeat(2,minmax(0,1fr))}
   .theme-large span,.theme-doors a{font-size:var(--fs-text)}

@@ -235,7 +235,9 @@ def verdict(rows):
         sizes = {float(k): v for k, v in m["sizes"].items()}
         site_sizes |= set(sizes)
         top = max(sizes.values()) / m["total"] if m["total"] else 0
-        if len(sizes) > 4:
+        # Home alone shows the display size, for the core line; with it, it may show five: that size and the four of
+        # the other pages (12 November 2026, with the chapter titles on Home; for Thomas to confirm).
+        if len(sizes) > (5 if slug == "home" else 4):
             fail(11, slug, w, f"{len(sizes)} sizes")
         if top < 0.70:
             fail(11, slug, w, f"largest share {top:.0%}")

@@ -879,11 +879,11 @@ def m_form(variant="a", title=None, fields=None, aside=None, consent=None, butto
 # by Commerce & Culture."
 INTRO_HOME = [
     "Europe and Africa need each other. Shared stories make people act together, across cultures and across sectors.",
-    # The small text says how the partnerships work, so that the chapters under it follow from it (Thomas, 17:26: "It starts
-    # with real photographs…" was a claim about ourselves; this level may be longer and go into detail, on the partnerships).
-    "We work through partnerships. Companies and foundations fund new collections, photographers make them on location, and "
-    "organisations in civil society, media and public institutions put the images to use. Each partner brings something, and "
-    "all of them share the result.",
+    # The small text: one sentence on the partnerships, from which the chapter A shared resource follows. It names no
+    # process (Thomas, 17:33: a landing page does not explain everything; less, precise, for those who know). Tried and
+    # set aside the same hour: "It starts with real photographs…" (a claim about ourselves, 17:26) and four lines on who
+    # funds, makes and uses the collections (the whole process up front, 17:33).
+    "We make each new collection with partners, and share it among them.",
 ]
 # The three chapters of Home: title, and the line under it.
 HOME_CHAPTERS = dict(

@@ -1760,7 +1760,8 @@ def tpl_home(p, base):
     # as a record, the five themes and the photographs' own keywords, answering to the pointer; the way on is Explore
     # the themes. 3 In use: the numbers, the partners by name, one example; built only when each exists (rule 27).
     # 4 Who makes it: a photograph from a workshop, and under it the three lines of activity, each leading into About.
-    # 5 The close: About, and Request access. The four principles stand on About; the collections are in the menu.
+    # 5 The close: About. Request access stands under the keywords, with the archive. The four principles stand on About;
+    # the collections are in the menu.
     return (m_opening(CORE_LINE, base=base)
             + m_text(None, INTRO_HOME, "d", sid="intro")
             + front_mini(base)
@@ -1769,8 +1770,7 @@ def tpl_home(p, base):
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
             + chapter(m_document(base, HOME_DOCUMENT))
             + home_channels(base)
-            + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True),
-                                  button(base + "request-access/", "Request access", quiet=True)], tight=True, left=True))
+            + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
 
 
 def home_channels(base):
@@ -1898,16 +1898,12 @@ FRONT_RECORDS = {
                     seen=["musician", "environmental portrait"], concept=["youth"], story=["creativity and culture"], sdg=[]),
 }
 FRONT_LAYERS = [("seen", "In the picture"), ("concept", "Concept"), ("story", "Story"), ("sdg", "SDG")]   # the labels are draft
-# Draft wording for the call to join (Thomas, 13:19: the archive is built with partners across sectors, and people can
-# join; that is the call to action). The two ways are made from sentences the site already holds (ACCESS_WHO, SPONSOR_TEXT).
-FRONT_JOIN = dict(title="We build the archive with partners",
-                  text="Africa Reframed is a collaboration across sectors. Foundations and companies sponsor new collections, "
-                       "and non-profit and public organisations put the images to use. There are two ways to join.")
-# The two ways:
-FRONT_WORK = [("Use the archive", "The archive is free for selected non-profit and public partners. Tell us who you are and how you will use the images.",
-               "request-access/", "Request access"),
-              ("Expand the archive with us", "We make new collections with companies and foundations as sponsors, on a theme close to the sponsor’s work or one it wants to support.",
-               "partners/#sponsor", "Sponsor a collection")]
+# Draft wording for the call to action under the keywords (Thomas, 12 November 2026, 13:19 and 14:17: the archive is built
+# with partners across sectors, and people can join; Request access is the action; sponsoring is raised on Request access
+# and Partners, not on Home).
+FRONT_JOIN = dict(title="Built on collaboration across sectors",
+                  text="The archive grows with the partners who use it and the sponsors who fund new collections. "
+                       "Tell us who you are and how you would use the images.")
 FRONT_STRUCTURE = ("Themes come from collections",   # the heading and the last two sentences stand on the Themes and Collections pages already
                    "The archive is organised in themes and collections. Each collection is a body of work with its own story and the people behind it. "
                    "The five themes are drawn from the first of them, the House Collection, and each new collection can bring a theme of its own.")
@@ -2003,15 +1999,10 @@ def front_mini(base):
               "['mouseleave','blur'].forEach(function(ev){b.addEventListener(ev,function(){b.classList.remove('hot')})})})})();</script>")
     return mod("collection", "the archive in small",
                f'<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
-               f'<div class="kw-rows"><h2 class="kicker kw-head">Keywords on these photographs</h2>{kw}</div></div>{script}')
-
-
-def front_join(base):
-    """Version E: the call to join. The archive is built with partners; two ways in, each with its action."""
-    j = FRONT_JOIN
-    ways = "".join(f'<li><strong>{e(t)}</strong>{draft(line)}<p class="doors">{button(base + href, label, quiet=True)}</p></li>' for t, line, href, label in FRONT_WORK)
-    return mod("items", "the call to join, on trial",
-               f'<div class="cols"><div class="c1-8">{heading(j["title"])}{draft(j["text"])}</div></div><ul class="principles two">{ways}</ul>')
+               f'<div class="kw-rows"><h2 class="kicker kw-head">Keywords on these photographs</h2>{kw}</div>'
+               # the call to action belongs to the archive (Thomas, 12 November 2026, 14:17): under the keywords, one heading, one sentence, Request access
+               f'<div class="cols mini-join"><div class="c1-6">{heading(FRONT_JOIN["title"])}{draft(FRONT_JOIN["text"])}'
+               f'<p class="doors">{button(base + "request-access/", "Request access", quiet=True)}</p></div></div></div>{script}')
 
 
 def front_ways(base):
@@ -3297,6 +3288,8 @@ h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .kw.lit span{color:var(--ink);border-color:var(--ink-soft)}
 .kw.hot span,.kw:focus-visible span{color:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .kw:focus-visible{outline:none}
+.mini-join{margin-top:48px}
+.mini-join .doors{margin:16px 0 0}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
 .principles.two li:last-child{grid-column:8 / 13}

@@ -313,6 +313,8 @@ h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .kw.lit span{color:var(--ink);border-color:var(--ink-soft)}
 .kw.hot span,.kw:focus-visible span{color:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .kw:focus-visible{outline:none}
+.mini-join{margin-top:48px}
+.mini-join .doors{margin:16px 0 0}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
 .principles.two li:last-child{grid-column:8 / 13}

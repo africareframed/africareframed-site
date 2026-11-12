@@ -1799,12 +1799,23 @@ def tpl_home(p, base):
 #     archive is organised, by theme and by collection, in words. The sponsored collection is named there and has no
 #     feature of its own on the front page; it has its place on Collections and on its own page.
 # B and C were set aside when A was chosen (11:48); their code stays for reference and their pages are no longer built.
-FRONT_VERSIONS = [("d", "D · The archive, then how it is organised"), ("a", "A · The collection and its themes"),
-                  ("a-ground", "A · The House Collection on a ground")]
+#   E the archive, with its themes (Thomas, 12:14): D set the themes and the collections side by side under "Two ways
+#     into the archive", which was too literal and made the hierarchy hard to read. E is the block of "A on a ground",
+#     the photograph with the themes listed beside it on the grey band, but it is called the archive, it says that it is
+#     online for partners now, and its action is Request access. Under it a short text says how the archive is organised,
+#     and leads on to the collections. The hierarchy: the archive, its themes, then where the themes come from.
+#     Request access as the block's action departs from the page priorities ("Request access stays quiet"); Thomas
+#     proposed it, since the other honest action, Open in the archive, leads a stranger to the login wall.
+# D's page is no longer built.
+FRONT_VERSIONS = [("e", "E · The archive, with its themes"), ("a-ground", "A · The House Collection on a ground"),
+                  ("a", "A · The collection and its themes")]
 # Draft wording for version D, all of it for Thomas to approve.
-FRONT_ARCHIVE = dict(kicker="Available to partners now", title="The archive",
+FRONT_ARCHIVE = dict(kicker="Online for partners now", title="The archive",
                      line="1,122 photographs of modern life in Mali, Kenya and The Gambia, ready to use in reports, exhibitions and channels.",
                      meta=["1,122 images", "21 shoots", "3 countries"])
+FRONT_STRUCTURE = ("Themes come from collections",   # the heading and the last two sentences stand on the Themes and Collections pages already
+                   "The archive is organised in themes and collections. Each collection is a body of work with its own story and the people behind it. "
+                   "The five themes are drawn from the first of them, the House Collection, and each new collection can bring a theme of its own.")
 FRONT_WAYS = dict(title="Two ways into the archive",
                   themes="Themes run across the archive. These five are drawn from the House Collection.",
                   collections="Each collection is a body of work with its own story and the people behind it.")
@@ -1833,17 +1844,25 @@ def front_feature(c, base, flip=False, themes=False, ground=False):
                cls="on-ground" if ground else "")
 
 
-def front_archive(base):
-    """Version D: the archive as something to use now, one photograph and a few words."""
+def front_archive(base, themes=False):
+    """The archive as something to use now: one photograph and a few words (D); with its themes and Request access, on a ground (E)."""
     a, pick = FRONT_ARCHIVE, COLLECTION_PHOTOS["house-collection"]
     photo = (f'<img class="feature-photo" src="{base}assets/trial/{pick["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(pick["alt"])}" loading="lazy" decoding="async">')
     cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{pick["ar"]}</a> · {e(pick["place"])}, {pick["year"]}</span> '
            f'<span>{e(CREDIT)}</span></p>')
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
-    words = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="h-big">{e(a["title"])}</h2>{draft(a["line"])}<p class="meta-row">{meta}</p>'
-             f'<p><a class="textlink" href="{base}partners/">How partners use the archive</a></p>')
+    if themes:
+        rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
+        words = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="h-big">{e(a["title"])}</h2>{draft(a["line"])}<p class="meta-row">{meta}</p>'
+                 f'<p class="kicker">By theme</p><ul class="theme-doors">{rows}</ul>'
+                 f'<p class="doors">{button(base + "request-access/", "Request access", quiet=True)}'
+                 f'<a class="textlink" href="{base}partners/">How partners use the archive</a></p>')
+    else:
+        words = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="h-big">{e(a["title"])}</h2>{draft(a["line"])}<p class="meta-row">{meta}</p>'
+                 f'<p><a class="textlink" href="{base}partners/">How partners use the archive</a></p>')
     return mod("collection", "the archive as a feature of the front page, on trial",
-               f'<div class="feature"><figure class="frame f-photo">{photo}{cap}</figure><div class="f-words">{words}</div></div>')
+               f'<div class="feature"><figure class="frame f-photo">{photo}{cap}</figure><div class="f-words">{words}</div></div>',
+               cls="on-ground" if themes else "")
 
 
 def front_ways(base):
@@ -1880,11 +1899,12 @@ def tpl_front(p, base, v):
     close = (chapter(m_document(base, HOME_DOCUMENT))
              + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
              + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
-    if v == "d":
-        # the intro without its buttons and numbers: the archive block under it carries the numbers, and the block after that the ways on
+    if v == "e":
+        # the intro without its buttons and numbers: the archive block under it carries the numbers and the ways on
         top = (m_opening(CORE_LINE, base=base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
                + m_text(None, INTRO_HOME, "d", sid="intro"))
-        middle = chapter(front_archive(base)) + chapter(front_ways(base))
+        middle = (chapter(front_archive(base, themes=True))
+                  + m_text(FRONT_STRUCTURE[0], [FRONT_STRUCTURE[1]], "a", links=[button(base + "collections/", "See the collections", quiet=True)]))
     elif v == "a":
         middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
     elif v == "a-ground":
@@ -3108,7 +3128,9 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .feature .f-words{grid-column:8 / 13;grid-row:1}
 .feature.flip .f-photo{grid-column:7 / 13}
 .feature.flip .f-words{grid-column:1 / 6}
-.mod.on-ground{background:var(--wash);padding-top:var(--section);padding-bottom:var(--section)}
+/* a section on a ground: sections are spaced by padding, which a ground would fill, so here the distance is a margin */
+.mod.on-ground,.mod.chapter.on-ground{background:var(--wash);margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
+.mod.on-ground::before{top:calc(var(--section) - 22px)}
 .feature.ways{margin-top:24px}
 .feature.ways .f-left{grid-column:1 / 6;grid-row:1}
 .f-left .kicker{margin-top:0}
@@ -3116,6 +3138,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .theme-doors li span{text-align:right}
 .feature-photo,.feature .img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .f-words .kicker{margin-top:0}
+.f-words .doors{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;margin:0}
 .feature-link{display:block}
 .f-words h2 a{color:inherit;text-decoration:none}
 .f-words h2 a:hover{text-decoration:underline}
@@ -3463,7 +3486,7 @@ def strip_html(base):
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
             f'<a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a>'
-            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/front-d/">Front page</a><a href="{base}dev/signs/">Collection card</a><a href="{base}dev/images/">Images</a>'
+            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/front-e/">Front page</a><a href="{base}dev/signs/">Collection card</a><a href="{base}dev/images/">Images</a>'
             f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
             f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
             f'<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>\n')

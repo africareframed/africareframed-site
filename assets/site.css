@@ -287,7 +287,9 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .feature .f-words{grid-column:8 / 13;grid-row:1}
 .feature.flip .f-photo{grid-column:7 / 13}
 .feature.flip .f-words{grid-column:1 / 6}
-.mod.on-ground{background:var(--wash);padding-top:var(--section);padding-bottom:var(--section)}
+/* a section on a ground: sections are spaced by padding, which a ground would fill, so here the distance is a margin */
+.mod.on-ground,.mod.chapter.on-ground{background:var(--wash);margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
+.mod.on-ground::before{top:calc(var(--section) - 22px)}
 .feature.ways{margin-top:24px}
 .feature.ways .f-left{grid-column:1 / 6;grid-row:1}
 .f-left .kicker{margin-top:0}
@@ -295,6 +297,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .theme-doors li span{text-align:right}
 .feature-photo,.feature .img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .f-words .kicker{margin-top:0}
+.f-words .doors{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;margin:0}
 .feature-link{display:block}
 .f-words h2 a{color:inherit;text-decoration:none}
 .f-words h2 a:hover{text-decoration:underline}

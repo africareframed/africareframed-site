@@ -291,15 +291,22 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mod.on-ground,.mod.chapter.on-ground{background:var(--wash);margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
 .mod.on-ground::before{top:calc(var(--section) - 22px)}
 .feature.second{margin-top:var(--section)}
-/* E: the archive's box. Its title at the page-title size; the themes lighter than it; the photograph that changes; the keywords. */
-.archive-box .feature .f-left{grid-column:1 / 7;grid-row:1}
+/* E: the archive's box. The photograph that changes beside the words; the title at 44 Light; the themes as item names (17 Bold); the keywords; two ways to work with us. */
 .box-title{font-size:var(--fs-title);font-weight:300;line-height:1.05;letter-spacing:-.02em;margin:0 0 16px}
-.theme-doors.light a{font-weight:400}
-.theme-doors.light a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
-.switch{display:grid;margin:48px 0 48px}
+.archive-box .meta-row{margin:0 0 32px}
+.archive-box .theme-doors a{font-size:var(--fs-text)}
+.archive-box .theme-doors a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
+.archive-box .f-words .doors{margin:0}
+.switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}
-.switch-photo{display:block;width:100%;height:auto;aspect-ratio:2/1;object-fit:cover}
+.box-tags{margin-top:48px}
+.box-work{margin-top:48px;border-top:1px solid var(--line);padding-top:32px}
+.box-work h3{margin:0 0 8px}
+.box-work p{max-width:var(--measure)}
+.box-work .doors{margin:16px 0 0}
+h2.kicker{font-weight:400}
+.statement-big + .doors{margin:32px 0 0}
 .tag-cloud{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .tag-cloud li{font-size:var(--fs-small);color:var(--ink);border:1px solid var(--ink-soft);border-radius:999px;padding:4px 12px;line-height:1.4}
 .front-channels{margin-top:48px}
@@ -320,7 +327,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .theme-doors a{font-size:var(--fs-head);font-weight:700;line-height:1.15;text-decoration:none;color:var(--ink)}
 .theme-doors a:hover{text-decoration:underline}
 .theme-doors span{font-size:var(--fs-small);color:var(--ink-soft);white-space:nowrap}
-.statement-big{font-size:var(--fs-title);font-weight:300;line-height:1.15;letter-spacing:-.02em;margin:0;max-width:none}
+.statement-big{font-size:var(--fs-title);font-weight:300;line-height:1.15;letter-spacing:-.02em;margin:0;max-width:none;text-wrap:balance}
 .statement-big a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.14em}
 .theme-large-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--gutter);margin-top:24px}
 .theme-large{display:block;text-decoration:none;color:var(--ink)}
@@ -334,7 +341,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 @media (max-width:1023px){
   .feature .f-photo,.feature.flip .f-photo{grid-column:1 / -1;grid-row:1}
   .feature .f-words,.feature.flip .f-words{grid-column:1 / -1;grid-row:2;margin-top:24px}
-  .feature.ways .f-left,.archive-box .feature .f-left{grid-column:1 / -1;grid-row:1}
+  .feature.ways .f-left{grid-column:1 / -1;grid-row:1}
+  .box-work .f-words{margin-top:32px}
   .feature.ways .f-words{margin-top:48px}
   .theme-large-row{grid-template-columns:repeat(2,minmax(0,1fr))}
   .theme-large span,.theme-doors a{font-size:var(--fs-text)}

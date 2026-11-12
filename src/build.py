@@ -1813,6 +1813,15 @@ def tpl_home(p, base):
 # theme; and under it a cloud of the archive's own keywords. The theme names are lighter than the box's title, so that
 # they read as the contents of the archive. The small photograph beside the words is out: with it, the photograph that
 # changes stood below the fold while the pointer was on the list.
+# E, fourth state (Thomas, 13:01): the photograph that changes stands beside the themes again, at half width, so that the
+# list and the photograph are seen on one screen ("a small machine"). The box's button is Explore the themes; Request
+# access moves down, under the keywords, where the box ends on two short texts: use the archive, and expand it with us.
+# The white section under the box no longer names the archive, exhibitions and workshops: it says who is behind Africa
+# Reframed and leads to About. The page's optical hierarchy is brought down to four sizes with one job each:
+# 64 px Bold for the core line, once; 44 px Light where a part of the page opens (The archive; who is behind it);
+# 17 px for all text, Bold for the name of an item (a theme, a way to work with us, a principle); 13 px for labels,
+# captions, counts and keywords. Nothing on the page is set at 22 px: the intro's first sentence is text here, and the
+# heading over the principles is a label, like the labels over the themes and the keywords.
 # E reworked (Thomas, 12:27): the text "Themes come from collections" hung under the box and is out. The grey box is
 # larger and holds two rows: the archive with its themes, and, reversed, its collections with a second photograph; both
 # belong to the archive, so both stand inside its box. Its ways on are Request access and Explore the themes. Under
@@ -1829,6 +1838,11 @@ FRONT_ARCHIVE = dict(kicker="Online for partners now", title="The archive",
 FRONT_KEYWORDS = ["education", "studying", "shared learning", "girls’ education", "mathematics", "vocational training", "skills", "small business",
                   "entrepreneurship", "commerce", "young professional", "remote working", "mobile technology", "digital", "social media",
                   "teamwork", "smallholder farming", "tree nursery", "street art", "urban culture"]
+# Draft wording for the end of the archive's box, made from sentences the site already holds (ACCESS_WHO, SPONSOR_TEXT).
+FRONT_WORK = [("Use the archive", "The archive is free for selected non-profit and public partners. Tell us who you are and how you will use the images.",
+               "request-access/", "Request access"),
+              ("Expand the archive with us", "We make new collections with companies and foundations as sponsors, on a theme close to the sponsor’s work or one it wants to support.",
+               "partners/#sponsor", "Sponsor a collection")]
 FRONT_STRUCTURE = ("Themes come from collections",   # the heading and the last two sentences stand on the Themes and Collections pages already
                    "The archive is organised in themes and collections. Each collection is a body of work with its own story and the people behind it. "
                    "The five themes are drawn from the first of them, the House Collection, and each new collection can bring a theme of its own.")
@@ -1868,27 +1882,28 @@ def front_archive(base, themes=False):
            f'<span>{e(CREDIT)}</span></p>')
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
     if themes:
-        # E: the archive in words with its themes; one large photograph that changes with the theme; the keywords
+        # E: the photograph that changes, and beside it the archive in words with its themes; the keywords; two ways to work with us
         rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/" data-theme="{t["slug"]}">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
-        left = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="box-title">{e(a["title"])}</h2>{draft(a["line"])}<p class="meta-row">{meta}</p>'
-                f'<p class="doors">{button(base + "request-access/", "Request access", quiet=True)}'
-                f'<a class="textlink" href="{base}themes/">Explore the themes</a></p>')
-        right = f'<p class="kicker">By theme</p><ul class="theme-doors light">{rows}</ul>'
+        words = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="box-title">{e(a["title"])}</h2><p class="meta-row">{meta}</p>'
+                 f'<p class="kicker">By theme</p><ul class="theme-doors">{rows}</ul>'
+                 f'<p class="doors">{button(base + "themes/", "Explore the themes", quiet=True)}</p>')
 
         def shot(key, pk, href, on=False):
             c = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pk["ar"], "image")}">{pk["ar"]}</a> · {e(pk["place"])}, {pk["year"]}</span> '
                  f'<span>{e(CREDIT)}</span></p>')
             return (f'<figure class="frame{" on" if on else ""}" data-shot="{key}"><a href="{href}" tabindex="-1" aria-hidden="true">'
-                    f'<img class="switch-photo" src="{base}assets/trial/{pk["ar"].lower()}-wide.jpg" width="1760" height="880" alt="{e(pk["alt"])}" loading="lazy" decoding="async"></a>{c}</figure>')
+                    f'<img class="feature-photo" src="{base}assets/trial/{pk["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(pk["alt"])}" loading="lazy" decoding="async"></a>{c}</figure>')
         shots = shot("archive", pick, f"{base}themes/", on=True) + "".join(shot(t["slug"], THEME_PHOTOS[t["slug"]], f'{base}themes/{t["slug"]}/') for t in THEMES)
         tags = "".join(f"<li>{e(k)}</li>" for k in FRONT_KEYWORDS)
+        work = "".join(f'<div class="{"f-photo" if i == 0 else "f-words"}"><h3>{e(t)}</h3>{draft(line)}<p class="doors">{button(base + href, label, quiet=True)}</p></div>'
+                       for i, (t, line, href, label) in enumerate(FRONT_WORK))
         script = ("<script>(function(){var box=document.querySelector('.archive-box');if(!box)return;var shots=box.querySelectorAll('[data-shot]'),links=box.querySelectorAll('[data-theme]');"
                   "function show(k){shots.forEach(function(f){f.classList.toggle('on',f.dataset.shot===k)});links.forEach(function(a){a.classList.toggle('on',a.dataset.theme===k)})}"
                   "links.forEach(function(a){['mouseenter','focus'].forEach(function(ev){a.addEventListener(ev,function(){show(a.dataset.theme)})})})})();</script>")
         return mod("collection", "the archive as a feature of the front page, on trial",
-                   f'<div class="archive-box"><div class="feature"><div class="f-left">{left}</div><div class="f-words">{right}</div></div>'
-                   f'<div class="switch">{shots}</div>'
-                   f'<p class="kicker">Keywords in the archive</p><ul class="tag-cloud">{tags}</ul></div>{script}',
+                   f'<div class="archive-box"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
+                   f'<div class="box-tags"><p class="kicker">Keywords in the archive</p><ul class="tag-cloud">{tags}</ul></div>'
+                   f'<div class="feature box-work">{work}</div></div>{script}',
                    cls="on-ground")
     words = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="h-big">{e(a["title"])}</h2>{draft(a["line"])}<p class="meta-row">{meta}</p>'
              f'<p><a class="textlink" href="{base}partners/">How partners use the archive</a></p>')
@@ -1901,6 +1916,13 @@ def front_about(base):
     li = "".join(f'<li><a href="{base}about/#{sid}"><strong>{e(name)}</strong>{draft(line, "span", "channel-line")}</a></li>' for sid, name, line in ABOUT_CHANNELS)
     return mod("text", "what Africa Reframed does, on trial",
                f'<div class="cols"><div class="c1-9"><p class="statement-big draft">{e(ABOUT_STATEMENT)}</p></div></div><ul class="channels front-channels">{li}</ul>')
+
+
+def front_behind(base):
+    """Who is behind Africa Reframed, in About's own first sentence, and the way to About."""
+    return mod("text", "who is behind it, on trial",
+               f'<div class="cols"><div class="c1-9"><p class="statement-big draft">{e(ABOUT_WHO[0])}</p>'
+               f'<p class="doors">{button(base + "about/", "About Africa Reframed", quiet=True)}</p></div></div>')
 
 
 def front_ways(base):
@@ -1940,11 +1962,13 @@ def tpl_front(p, base, v):
     if v == "e":
         # the intro without its buttons and numbers: the archive block under it carries the numbers and the ways on
         top = (m_opening(CORE_LINE, base=base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
-               + m_text(None, INTRO_HOME, "d", sid="intro"))
-        middle = chapter(front_archive(base, themes=True)) + chapter(front_about(base))
-        close = (m_document(base, HOME_DOCUMENT)   # the statement above opens the chapter; the photograph follows it at a section's distance
-                 + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
-                 + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
+               + m_text(None, INTRO_HOME, "d", sid="intro").replace('<p class="lead">', "<p>", 1))   # text, not the 22 px intro: four sizes on the page
+        middle = chapter(front_archive(base, themes=True)) + chapter(front_behind(base))
+        # the statement above opens the chapter and carries the way to About; the photograph follows at a section's distance; the principles close the page
+        hd = "<h2>Four principles behind every image</h2>"
+        items = m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
+        assert items.count(hd) == 1
+        close = m_document(base, HOME_DOCUMENT) + items.replace(hd, hd.replace("<h2>", '<h2 class="kicker">'))
     elif v == "a":
         middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
     elif v == "a-ground":
@@ -3172,15 +3196,22 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mod.on-ground,.mod.chapter.on-ground{background:var(--wash);margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
 .mod.on-ground::before{top:calc(var(--section) - 22px)}
 .feature.second{margin-top:var(--section)}
-/* E: the archive's box. Its title at the page-title size; the themes lighter than it; the photograph that changes; the keywords. */
-.archive-box .feature .f-left{grid-column:1 / 7;grid-row:1}
+/* E: the archive's box. The photograph that changes beside the words; the title at 44 Light; the themes as item names (17 Bold); the keywords; two ways to work with us. */
 .box-title{font-size:var(--fs-title);font-weight:300;line-height:1.05;letter-spacing:-.02em;margin:0 0 16px}
-.theme-doors.light a{font-weight:400}
-.theme-doors.light a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
-.switch{display:grid;margin:48px 0 48px}
+.archive-box .meta-row{margin:0 0 32px}
+.archive-box .theme-doors a{font-size:var(--fs-text)}
+.archive-box .theme-doors a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
+.archive-box .f-words .doors{margin:0}
+.switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}
-.switch-photo{display:block;width:100%;height:auto;aspect-ratio:2/1;object-fit:cover}
+.box-tags{margin-top:48px}
+.box-work{margin-top:48px;border-top:1px solid var(--line);padding-top:32px}
+.box-work h3{margin:0 0 8px}
+.box-work p{max-width:var(--measure)}
+.box-work .doors{margin:16px 0 0}
+h2.kicker{font-weight:400}
+.statement-big + .doors{margin:32px 0 0}
 .tag-cloud{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .tag-cloud li{font-size:var(--fs-small);color:var(--ink);border:1px solid var(--ink-soft);border-radius:999px;padding:4px 12px;line-height:1.4}
 .front-channels{margin-top:48px}
@@ -3201,7 +3232,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .theme-doors a{font-size:var(--fs-head);font-weight:700;line-height:1.15;text-decoration:none;color:var(--ink)}
 .theme-doors a:hover{text-decoration:underline}
 .theme-doors span{font-size:var(--fs-small);color:var(--ink-soft);white-space:nowrap}
-.statement-big{font-size:var(--fs-title);font-weight:300;line-height:1.15;letter-spacing:-.02em;margin:0;max-width:none}
+.statement-big{font-size:var(--fs-title);font-weight:300;line-height:1.15;letter-spacing:-.02em;margin:0;max-width:none;text-wrap:balance}
 .statement-big a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.14em}
 .theme-large-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--gutter);margin-top:24px}
 .theme-large{display:block;text-decoration:none;color:var(--ink)}
@@ -3215,7 +3246,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 @media (max-width:1023px){
   .feature .f-photo,.feature.flip .f-photo{grid-column:1 / -1;grid-row:1}
   .feature .f-words,.feature.flip .f-words{grid-column:1 / -1;grid-row:2;margin-top:24px}
-  .feature.ways .f-left,.archive-box .feature .f-left{grid-column:1 / -1;grid-row:1}
+  .feature.ways .f-left{grid-column:1 / -1;grid-row:1}
+  .box-work .f-words{margin-top:32px}
   .feature.ways .f-words{margin-top:48px}
   .theme-large-row{grid-template-columns:repeat(2,minmax(0,1fr))}
   .theme-large span,.theme-doors a{font-size:var(--fs-text)}

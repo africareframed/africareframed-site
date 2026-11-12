@@ -290,6 +290,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 /* a section on a ground: sections are spaced by padding, which a ground would fill, so here the distance is a margin */
 .mod.on-ground,.mod.chapter.on-ground{background:var(--wash);margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
 .mod.on-ground::before{top:calc(var(--section) - 22px)}
+.feature.second{margin-top:var(--section)}
+.front-channels{margin-top:48px}
 .feature.ways{margin-top:24px}
 .feature.ways .f-left{grid-column:1 / 6;grid-row:1}
 .f-left .kicker{margin-top:0}

@@ -1807,6 +1807,11 @@ def tpl_home(p, base):
 #     Request access as the block's action departs from the page priorities ("Request access stays quiet"); Thomas
 #     proposed it, since the other honest action, Open in the archive, leads a stranger to the login wall.
 # D's page is no longer built.
+# E reworked (Thomas, 12:27): the text "Themes come from collections" hung under the box and is out. The grey box is
+# larger and holds two rows: the archive with its themes, and, reversed, its collections with a second photograph; both
+# belong to the archive, so both stand inside its box. Its ways on are Request access and Explore the themes. Under
+# the box Africa Reframed says what it does, in About's own words (the archive, exhibitions, workshops), which opens
+# the close: the workshop photograph, the four principles, and the way to About.
 FRONT_VERSIONS = [("e", "E · The archive, with its themes"), ("a-ground", "A · The House Collection on a ground"),
                   ("a", "A · The collection and its themes")]
 # Draft wording for version D, all of it for Thomas to approve.
@@ -1856,13 +1861,31 @@ def front_archive(base, themes=False):
         words = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="h-big">{e(a["title"])}</h2>{draft(a["line"])}<p class="meta-row">{meta}</p>'
                  f'<p class="kicker">By theme</p><ul class="theme-doors">{rows}</ul>'
                  f'<p class="doors">{button(base + "request-access/", "Request access", quiet=True)}'
-                 f'<a class="textlink" href="{base}partners/">How partners use the archive</a></p>')
+                 f'<a class="textlink" href="{base}themes/">Explore the themes</a></p>')
     else:
         words = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="h-big">{e(a["title"])}</h2>{draft(a["line"])}<p class="meta-row">{meta}</p>'
                  f'<p><a class="textlink" href="{base}partners/">How partners use the archive</a></p>')
+    second = ""
+    if themes:
+        # the second row, reversed: the collections, with a second photograph from the archive
+        p2 = THEME_PHOTOS["city-life"]
+        photo2 = (f'<img class="feature-photo" src="{base}assets/trial/{p2["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(p2["alt"])}" loading="lazy" decoding="async">')
+        cap2 = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + p2["ar"], "image")}">{p2["ar"]}</a> · {e(p2["place"])}, {p2["year"]}</span> '
+                f'<span>{e(CREDIT)}</span></p>')
+        co = "".join(f'<li><a href="{base}collections/{c["slug"]}/">{e(c["title"])}</a><span>{e(c["card"]["kicker"])}</span></li>' for c in COLLECTIONS)
+        words2 = (f'<p class="kicker">By collection</p>{draft(FRONT_WAYS["collections"])}<ul class="theme-doors">{co}</ul>'
+                  f'<p><a class="textlink" href="{base}collections/">See the collections</a></p>')
+        second = f'<div class="feature flip second"><figure class="frame f-photo">{photo2}{cap2}</figure><div class="f-words">{words2}</div></div>'
     return mod("collection", "the archive as a feature of the front page, on trial",
-               f'<div class="feature"><figure class="frame f-photo">{photo}{cap}</figure><div class="f-words">{words}</div></div>',
+               f'<div class="feature"><figure class="frame f-photo">{photo}{cap}</figure><div class="f-words">{words}</div></div>{second}',
                cls="on-ground" if themes else "")
+
+
+def front_about(base):
+    """What Africa Reframed does, in About's own words: the statement, and the three lines of activity, each leading to About."""
+    li = "".join(f'<li><a href="{base}about/#{sid}"><strong>{e(name)}</strong>{draft(line, "span", "channel-line")}</a></li>' for sid, name, line in ABOUT_CHANNELS)
+    return mod("text", "what Africa Reframed does, on trial",
+               f'<div class="cols"><div class="c1-9"><p class="statement-big draft">{e(ABOUT_STATEMENT)}</p></div></div><ul class="channels front-channels">{li}</ul>')
 
 
 def front_ways(base):
@@ -1903,8 +1926,10 @@ def tpl_front(p, base, v):
         # the intro without its buttons and numbers: the archive block under it carries the numbers and the ways on
         top = (m_opening(CORE_LINE, base=base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
                + m_text(None, INTRO_HOME, "d", sid="intro"))
-        middle = (chapter(front_archive(base, themes=True))
-                  + m_text(FRONT_STRUCTURE[0], [FRONT_STRUCTURE[1]], "a", links=[button(base + "collections/", "See the collections", quiet=True)]))
+        middle = chapter(front_archive(base, themes=True)) + chapter(front_about(base))
+        close = (m_document(base, HOME_DOCUMENT)   # the statement above opens the chapter; the photograph follows it at a section's distance
+                 + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
+                 + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
     elif v == "a":
         middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
     elif v == "a-ground":
@@ -3131,6 +3156,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 /* a section on a ground: sections are spaced by padding, which a ground would fill, so here the distance is a margin */
 .mod.on-ground,.mod.chapter.on-ground{background:var(--wash);margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
 .mod.on-ground::before{top:calc(var(--section) - 22px)}
+.feature.second{margin-top:var(--section)}
+.front-channels{margin-top:48px}
 .feature.ways{margin-top:24px}
 .feature.ways .f-left{grid-column:1 / 6;grid-row:1}
 .f-left .kicker{margin-top:0}

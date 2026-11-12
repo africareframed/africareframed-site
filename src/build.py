@@ -533,11 +533,17 @@ def m_rows(items):
 
 
 # 2.7 Theme sequence: (a) five entries in a row (Home), (b) five rows (Themes index), (c) previous and next.
-# Signs for what an image stands for, on trial on /dev/signs/ only (Thomas, 12 November 2026, 08:10 and 08:12). Three
-# kinds of image, three treatments: a single photograph is whole and untouched; a theme, a cut through the archive, has
-# one corner cut at the identity's angle; a collection, a body of work made and presented, stands on a mount: a black
-# ground showing along two edges, with the stripes running behind the photograph (the mount of the 2016 folder).
-# Each sign means one thing everywhere, and nothing lies on the photograph. Home and every other page are unchanged.
+# The collection card, on trial on /dev/signs/ only (Thomas, 12 November 2026, 08:10 to 08:25). A collection is not one
+# picture: it has layers, and it is a part of the collected storytelling of Africa Reframed; the collections explain the
+# bigger picture together. The card's graphics should hint at that, however quietly, with the identity's own means.
+# Three versions stand on the test page, with a switch between them:
+#   A layers: behind the photograph, two more sheets of its own shape, the nearer one black with a stripe running behind
+#     the photograph, the farther one an outline (the echoed frame of the 2016 folder);
+#   B one ground: all the collections' photographs stand on one black ground that runs off the window's edge, and the
+#     stripes cross it behind them all, so that each card shows a part of one field;
+#   C the mount: each photograph on its own black ground, showing beside and beneath it (the first version).
+# The cut corner for themes was tried and dropped the same morning: the numbers already say that the themes are a
+# series, and the cut was too weak a sign and disturbed the quiet (Thomas, 08:25). Home and every other page are unchanged.
 SIGNS = None
 SIGNS_TRIAL = dict(
     themes={"learning": ("AR-1961", "Two learners at a shared desk in a classroom in Banjul"),
@@ -550,7 +556,7 @@ SIGNS_TRIAL = dict(
 
 def sign_theme(t, base):
     ar, alt = SIGNS["themes"][t["slug"]]
-    return (f'<figure class="frame"><img class="theme-photo cut-corner" src="{base}assets/trial/{ar.lower()}-theme.jpg" width="640" height="800" '
+    return (f'<figure class="frame"><img class="theme-photo" src="{base}assets/trial/{ar.lower()}-theme.jpg" width="640" height="800" '
             f'alt="{e(alt)}" loading="lazy" decoding="async"></figure>')
 
 
@@ -2166,12 +2172,16 @@ def tpl_signs(p, base):
         home = tpl_home(p, base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
     finally:
         SIGNS = None
-    top = (m_page_head("Signs", "A copy of Home with two signs on trial: a theme’s image has one corner cut; a collection’s image stands on a mount. "
-                                "A single photograph stays whole.", kicker="Development")
-           + '<p class="wrap signs-switch"><button type="button" id="signs-toggle" aria-pressed="true">Signs: on</button> '
-             '<span>Press to see the same page without them. The photographs are stand-ins chosen for this test, not the final picks.</span></p>'
-           + "<script>document.getElementById('signs-toggle').addEventListener('click',function(){var off=document.body.classList.toggle('no-signs');"
-             "this.setAttribute('aria-pressed',String(!off));this.textContent='Signs: '+(off?'off':'on')});</script>")
+    kinds = [("sign-a", "A · Layers"), ("sign-b", "B · One ground"), ("sign-c", "C · The mount"), ("no-signs", "Plain")]
+    buttons = "".join(f'<button type="button" data-sign="{k}" aria-pressed="{"true" if i == 0 else "false"}">{e(t)}</button>' for i, (k, t) in enumerate(kinds))
+    top = (m_page_head("The collection card", "A copy of Home with three versions of the collection card on trial. A collection has layers and is a part "
+                                              "of one larger story; the card should hint at that.", kicker="Development")
+           + f'<p class="wrap signs-switch">{buttons}<span>The switch changes the two collection cards further down this page. '
+             'The photographs are stand-ins chosen for this test, not the final picks.</span></p>'
+           + "<script>(function(){var b=document.querySelectorAll('.signs-switch button'),k=['sign-a','sign-b','sign-c','no-signs'];"
+             "function set(x){k.forEach(function(c){document.body.classList.remove(c)});document.body.classList.add(x);"
+             "b.forEach(function(n){n.setAttribute('aria-pressed',String(n.dataset.sign===x))})}"
+             "b.forEach(function(n){n.addEventListener('click',function(){set(n.dataset.sign)})});set('sign-a')})();</script>")
     return top + home
 
 
@@ -2960,18 +2970,31 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
    17:24 and 17:31). */
 .opening-frame picture{display:block}
 .doc-photo{display:block;width:100%;height:auto}
-/* Signs, on trial on /dev/signs/ (see SIGNS). The cut: the lower right corner, at the stripes' angle. The mount: a black
-   ground 12% beside and 6% beneath the photograph. */
+/* The collection card, on trial on /dev/signs/ (see SIGNS): A layers, B one ground, C the mount. */
 .theme-photo{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
-.cut-corner{--cut:72px;clip-path:polygon(0 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)*.57735) 100%,0 100%)}
-.mount{position:relative;background:var(--ground);padding:0 12% 6% 0;overflow:hidden}
-.mount-pattern{position:absolute;inset:0;width:100%;height:100%}
-.mount-photo,.mount .img{position:relative;display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
-.no-signs .cut-corner{clip-path:none}
-.no-signs .mount{background:none;padding:0}
-.no-signs .mount-pattern{display:none}
-.signs-switch{display:flex;gap:16px;align-items:center;font-size:var(--fs-small);color:var(--ink-soft);margin-bottom:32px}
+.mount{position:relative;z-index:0}
+.mount-pattern{display:none;position:absolute}
+.mount-photo,.mount .img{position:relative;z-index:2;display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.sign-c .mount{background:var(--ground);padding:0 12% 6% 0;overflow:hidden}
+.sign-c .mount-pattern{display:block;z-index:1;inset:0;width:100%;height:100%}
+.sign-a .mount{padding:0 32px 32px 0}
+.sign-a .mount-pattern{display:block;z-index:1;left:16px;top:16px;width:calc(100% - 32px);height:calc(100% - 32px);background:var(--ground)}
+.sign-a .mount::after{content:"";position:absolute;z-index:0;left:32px;top:32px;right:0;bottom:0;border:2px solid var(--ground)}
+@media (min-width:768px){
+  .sign-b .collection-list{position:relative;isolation:isolate;padding:32px 0}
+  .sign-b .collection-list::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc(50% - 50vw);right:calc(50% + var(--gutter)/2);
+    background:var(--ground) repeating-linear-gradient(120deg,transparent 0 330px,#fff 330px 400px)}
+  .sign-b .collection-list .collection-card,.sign-b .collection-list .collection-card + .collection-card{margin-top:0;padding-top:0;border-top:0}
+  .sign-b .collection-list .collection-card + .collection-card{margin-top:32px}
+}
+@media (max-width:767px){   /* on a phone the words stand between the photographs, so B falls back to the mount */
+  .sign-b .mount{background:var(--ground);padding:0 12% 6% 0;overflow:hidden}
+  .sign-b .mount-pattern{display:block;z-index:1;inset:0;width:100%;height:100%}
+}
+.signs-switch{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:var(--fs-small);color:var(--ink-soft);margin-bottom:32px}
+.signs-switch span{margin-left:8px}
 .signs-switch button{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--ink);padding:8px 16px;cursor:pointer}
+.signs-switch button[aria-pressed="true"]{background:var(--ink);color:#fff}
 .mod.opening.real::before{display:none}  /* the wireframe's module label does not lie on a real photograph */
 .imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
 .intro{padding-top:48px}
@@ -3264,7 +3287,7 @@ def strip_html(base):
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
             f'<a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a>'
-            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/signs/">Signs</a><a href="{base}dev/images/">Images</a>'
+            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/signs/">Collection card</a><a href="{base}dev/images/">Images</a>'
             f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
             f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
             f'<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>\n')
@@ -3338,8 +3361,8 @@ def build():
                    desc="Three versions of the Opening of the Africa Reframed site, side by side; generated by the build, removed at launch.")
         (dev_dir / "opening").mkdir(exist_ok=True)
         (dev_dir / "opening" / "index.html").write_text(render(opn, tpl_opening("../../"), "../../"))
-        sgn = dict(path="dev/signs/", title="Signs", slug="signs", tpl="signs", nav=None,
-                   desc="A copy of Home with two signs on trial; generated by the build, removed at launch.")
+        sgn = dict(path="dev/signs/", title="The collection card", slug="signs", tpl="signs", nav=None,
+                   desc="A copy of Home with three versions of the collection card on trial; generated by the build, removed at launch.")
         CUR.update(slug="signs", n=0)
         (dev_dir / "signs").mkdir(exist_ok=True)
         (dev_dir / "signs" / "index.html").write_text(render(sgn, tpl_signs(sgn, "../../"), "../../"))

@@ -1760,7 +1760,7 @@ PRIVACY = [("What we collect", "Your organisation, your name and role, your emai
 # (section 3). Nine templates; the five key pages first.
 # ---------------------------------------------------------------------------------------------
 def home_head(title, line=None):
-    """A chapter of Home: its title as About sets a chapter's (44 px Light), and under it one line of text."""
+    """A chapter of Home: its title at 44 px Bold, and under it one line of text."""
     return f'<div class="chapter-head"><h2 class="chapter-title">{e(title)}</h2>{draft(line) if line else ""}</div>'
 
 
@@ -3288,9 +3288,11 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mini .theme-doors span{font-size:var(--fs-text)}   /* a number of images is set as the numbers above the list are */
 .mini .f-words .doors{margin:0}
 h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
-/* Home's three chapters open as About's do: the title at the page-title size in Light, and under it one line of text. */
+/* Home's three chapters open under a title at the page-title size, in Bold as the core line is (Thomas, 12 November 2026,
+   15:32: bold, simple and clear; the Light read as finicky). About's chapters are still in Light: there the page's own
+   title is 44 px Bold, so its chapters need their own answer when About is taken up. */
 .chapter-head{margin:0 0 32px}
-.chapter-head .chapter-title{margin:0}
+.chapter-head .chapter-title{margin:0;font-weight:700}
 .chapter-head p{margin:16px 0 0}
 #behind .chapter-head{margin:0}
 #behind .doors{margin:16px 0 0}

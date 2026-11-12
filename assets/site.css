@@ -317,7 +317,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .kw-row{grid-column:3 / 13;list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .switch figure > a{display:block}
 .kw{display:block;font:inherit;background:none;border:0;padding:0;cursor:pointer}   /* the button is the thing to tap; the pill is drawn inside it */
-.kw span{display:block;font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.kw span{display:block;font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);border:1px solid var(--line);padding:4px 12px}   /* rectangular, as everything on the site is: the identity is cut straight (Thomas, 12 November 2026, 20:48) */
 .kw.lit span{color:var(--paper);background:var(--ink);border-color:var(--ink)}   /* the keywords the photograph carries are inverted: black, white type (Thomas, 12 November 2026, 14:31; the yellow tried at 14:25 keeps its one job) */
 .kw.hot span,.kw:focus-visible span{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}   /* the one under the pointer: a ring */
 .kw:focus-visible{outline:none}

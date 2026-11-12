@@ -1788,16 +1788,19 @@ def tpl_home(p, base):
 #   C large pictures, names only: the five themes as upright photographs with a name and nothing else (after Den
 #     Kongelige Samling's palaces); then the collection cards as on the live page.
 # The live front page is unchanged. All wording made for the trial is a draft.
-#   A2 is A with the yellow door into the archive under the House Collection (Thomas, 11:48: A is the best; it steers
-#     with the least; the yellow band of the theme pages could stand here too). The door stands under the House
-#     Collection only: the sponsored collection is open by request, and Request access stays quiet (page priorities).
-FRONT_VERSIONS = [("a", "A · The collection and its themes"), ("a2", "A2 · With the door into the archive"),
+# Thomas, 11:48 and 11:58: A is the best; it steers with the least, and the page at once reads as an archive. The front
+# page's purpose is discovery; its two preferred ways on are a collection's own page and About. A yellow door into the
+# archive under the House Collection was tried (A2) and taken out: it did not work as intended, and "Open in the archive"
+# leads a stranger to the login wall. In A the photograph stands on half the width, so that the words have room.
+#   A on a ground is A with the House Collection on a tinted band across the window, so that the two collections read
+#     as two different sections (Thomas, 11:58: perhaps the sections could be boxed, or stand on different grounds).
+FRONT_VERSIONS = [("a", "A · The collection and its themes"), ("a-ground", "A · The House Collection on a ground"),
                   ("b", "B · The themes in a sentence"), ("c", "C · Large pictures, names only")]
 FRONT_STATEMENT = "1,122 photographs of modern life, in five themes:"   # draft; the theme names follow as links
 
 
-def front_feature(c, base, flip=False, themes=False):
-    """A collection as a feature of the front page: one large photograph on eight columns, and its words on four."""
+def front_feature(c, base, flip=False, themes=False, ground=False):
+    """A collection as a feature of the front page: one photograph on half the width, and its words on five columns."""
     card, slug = c["card"], c["slug"]
     pick = COLLECTION_PHOTOS.get(slug)
     photo = (f'<img class="feature-photo" src="{base}assets/trial/{pick["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(pick["alt"])}" loading="lazy" decoding="async">'
@@ -1814,7 +1817,8 @@ def front_feature(c, base, flip=False, themes=False):
     words = (f'<p class="kicker">{e(card["kicker"])}</p><h2 class="h-big"><a href="{there}">{e(c["title"])}</a></h2>{draft(limit("card line", card["line"]))}'
              f'<p class="meta-row">{meta}</p>{doors}<p><a class="textlink" href="{base}collections/{slug}/">Open the collection</a></p>')
     return mod("collection", "a feature of the front page, on trial",
-               f'<div class="feature{" flip" if flip else ""}"><figure class="frame f-photo">{photo}{cap}</figure><div class="f-words">{words}</div></div>')
+               f'<div class="feature{" flip" if flip else ""}"><figure class="frame f-photo">{photo}{cap}</figure><div class="f-words">{words}</div></div>',
+               cls="on-ground" if ground else "")
 
 
 def front_statement(base):
@@ -1840,10 +1844,8 @@ def tpl_front(p, base, v):
              + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
     if v == "a":
         middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
-    elif v == "a2":
-        h = HOUSE_COLLECTION
-        door = m_doors("b", count=h["access"]["count"], main=button(archive("/-/galleries/archive", h["access"]["src"]), "Open in the archive →"), tight=True)
-        middle = chapter(front_feature(h, base, themes=True)) + door + chapter(front_feature(WTV_COLLECTION, base, flip=True))
+    elif v == "a-ground":
+        middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True, ground=True)) + front_feature(WTV_COLLECTION, base, flip=True)
     elif v == "b":
         middle = chapter(front_statement(base)) + chapter(front_feature(HOUSE_COLLECTION, base)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
     else:
@@ -3059,10 +3061,11 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .doc-photo{display:block;width:100%;height:auto}
 /* The front page on trial (see FRONT_VERSIONS). */
 .feature{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:start}
-.feature .f-photo{grid-column:1 / 9;grid-row:1;margin:0}
-.feature .f-words{grid-column:9 / 13;grid-row:1}
-.feature.flip .f-photo{grid-column:5 / 13}
-.feature.flip .f-words{grid-column:1 / 5}
+.feature .f-photo{grid-column:1 / 7;grid-row:1;margin:0}
+.feature .f-words{grid-column:8 / 13;grid-row:1}
+.feature.flip .f-photo{grid-column:7 / 13}
+.feature.flip .f-words{grid-column:1 / 6}
+.mod.on-ground{background:var(--wash);padding-top:var(--section);padding-bottom:var(--section)}
 .feature-photo,.feature .img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .f-words .kicker{margin-top:0}
 .feature-link{display:block}

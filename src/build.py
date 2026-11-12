@@ -33,6 +33,10 @@ e = html.escape
 # Content that already exists (with sources)
 # ---------------------------------------------------------------------------------------------
 CORE_LINE = "Visual storytelling for a new partnership between Europe and Africa."          # Strategic Platform, Brand and language
+# Home's bold line since 12 November 2026 (Thomas's sentence of 14:58, chosen for the top at 17:13). It is meant to take the
+# core line's place; the Strategic Platform still holds the line above and is to be changed there (it is not open to this
+# thread for editing). About's statement is this sentence with its tail.
+HOME_LINE = "We build partnerships around visual storytelling to bring contemporary Africa into view in Europe."
 ABOUT_LINE = ("Spotlighting African innovation and African–European collaboration. "
               "An independent initiative established by Commerce & Culture.")             # Strategic Platform, Brand and language
 NUMBERS = [("1,122", "images"), ("3", "countries")]   # the number of themes is not a fixed fact (Thomas, 11 November 2026)                        # Website brief, Home; AR Metadata, 2 Nov 2026
@@ -119,6 +123,12 @@ LIMITS = {"headline": 12, "page title": 6, "kicker": 4, "statement": 25, "headin
           "caption": 40, "door kicker": 2, "door title": 4, "door line": 15, "item title": 6, "item line": 40,
           "card line": 25, "action line": 20, "theme statement": 20, "company story": 90, "thank-you": 40}
 OVER = {}
+# A limit that is bent, with its reason (rule 4 is a steering rule: a break needs a reason, written down). The text is named
+# word for word, so the bend covers that one line and nothing else.
+BENT = {
+    "We build partnerships around visual storytelling to bring contemporary Africa into view in Europe.":
+        "Home's bold line, 14 words against a headline's 12: Thomas's own sentence (12 November 2026, 14:58 and 17:13); it stands on three lines at desktop width, as the line before it did.",
+}
 
 
 def n_words(text):
@@ -128,7 +138,7 @@ def n_words(text):
 def limit(kind, text):
     """Checks a text against its module's limit; returns the text unchanged."""
     n = n_words(text)
-    if text and n > LIMITS[kind]:
+    if text and n > LIMITS[kind] and text not in BENT:
         OVER[(kind, re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", text)).strip()[:80])] = (LIMITS[kind], n)
     return text
 
@@ -861,12 +871,28 @@ def m_form(variant="a", title=None, fields=None, aside=None, consent=None, butto
 # Draft copy (step 2): written from The engine – brief, the page priorities and the guide’s Words section, within the
 # lengths in Website – modules; marked as draft on the page until Thomas approves it. Sources in comments.
 # ---------------------------------------------------------------------------------------------
-INTRO_HOME = [  # page priorities, Home 2: who it is for and who is behind it; one idea per sentence, the modules below carry the facts
-    "Africa Reframed is a partner archive of photographs of modern life in Mali, Kenya and The Gambia.",
-    "Organisations working with Africa use the images in their reports, exhibitions and channels. An independent initiative established by Commerce & Culture.",
+# Home's top in three levels, each with one job (Website – copy, section 2): the bold line says what we do (HOME_LINE);
+# the lead says why it matters, in the Strategic Platform's own stance (The model, 1) and its belief about shared stories
+# (Point of view, 1); the small text brings the reader down to what exists and leads into the first chapter. Who is
+# behind it is not said here (Thomas, 17:11): it stands in the footer and on About. Until 12 November 2026 the two read
+# "Africa Reframed is a partner archive of photographs of modern life in Mali, Kenya and The Gambia." and "Organisations
+# working with Africa use the images in their reports, exhibitions and channels. An independent initiative established
+# by Commerce & Culture."
+INTRO_HOME = [
+    "Europe and Africa need each other. Shared stories make people act together, across cultures and across sectors.",
+    "It starts with real photographs: an archive for partners in business, civil society and public institutions.",
 ]
+# The three chapters of Home: title, and the line under it.
+HOME_CHAPTERS = dict(
+    archive=("A shared resource", "New collections are made with sponsors, and every partner can use the whole archive."),
+    principles=("Principles", "Behind every image and every collaboration."),   # Thomas, 14:58 and 15:08
+    about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African photographers "
+                                   "with the international picture market."),   # made from About's two lines of activity
+)
 PRINCIPLES = [  # engine brief, For design: the principles a company needs before it puts its name on the work
-    ("Real images", "Every photograph is made by a photographer on location. Our images are never AI-generated and never altered."),
+    # "and what they show is never altered" (12 November 2026): the Strategic Platform's AI rule allows normal editing of
+    # exposure, colour and crop, so "never altered" alone promised more than we do.
+    ("Real images", "Every photograph is made by a photographer on location. Our images are never AI-generated, and what they show is never altered."),
     ("Consent", "The people in the images agreed to be photographed and to the uses the archive allows."),
     ("Credited, fairly paid photographers", "The photographers are paid for their work, and every image carries its credit line."),
     ("Editorial independence", "Sponsors get name and stage, never editorial control over what the images show."),
@@ -1781,11 +1807,11 @@ def tpl_home(p, base):
     # In use (the numbers, the partners by name, one example) is built only when each exists (rule 27).
     # Request access and sponsoring a collection are on Partners; the collections are in the menu.
     # Rhythm: one section's distance between chapters; a title stands 32 px over what it opens.
-    return (m_opening(CORE_LINE, base=base)
+    return (m_opening(HOME_LINE, base=base)
             + m_text(None, INTRO_HOME, "d", sid="intro")
             + front_mini(base)
             + in_chapter(m_items(None, PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"),
-                         home_head("Principles", HOME_PRINCIPLES_LINE))
+                         home_head(*HOME_CHAPTERS["principles"]))
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
@@ -1793,13 +1819,10 @@ def tpl_home(p, base):
             # About us begins under it: title, statement, button, together (Thomas, 15:16 and 15:19).
             + m_document(base, HOME_DOCUMENT)
             + mod("text", "the chapter About us: About's statement and the way to About",
-                  f'<div class="cols"><div class="c1-8">{home_head("About us", ABOUT_STATEMENT)}'
+                  f'<div class="cols"><div class="c1-8">{home_head(*HOME_CHAPTERS["about"])}'
                   f'<p class="doors">{button(base + "about/", "More about us", quiet=True)}</p></div></div>', sid="behind"))
 
 
-# Thomas, 12 November 2026, 14:58 ("Four principles behind every image and every collaboration") and 15:08 (the title
-# in one word): the title is Principles, and his sentence is the line under it.
-HOME_PRINCIPLES_LINE = "Behind every image and every collaboration."
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -1891,7 +1914,7 @@ FRONT_VERSIONS = [("a-ground", "A · The House Collection on a ground"),
 # Draft wording for version D, all of it for Thomas to approve.
 FRONT_ARCHIVE = dict(kicker="Online for partners now", title="The archive",
                      line="1,122 photographs of modern life in Mali, Kenya and The Gambia, ready to use in reports, exhibitions and channels.",
-                     meta=["1,122 images", "21 shoots", "3 countries"])
+                     meta=["1,122 images", "3 countries"])   # "21 shoots" was our own workshop word
 # The photographs of the archive in small: Thomas's choice of 12 November 2026 (16:46), two for each theme, so that a theme
 # shows another photograph the second time it is pointed at. AR-1072 and AR-1341 changed places on his word (16:51) so
 # that each pair agrees with the archive's own story keywords. Title, description and keywords are as they stand in the
@@ -2043,7 +2066,7 @@ def front_mini(base):
               "['mouseenter','focus','click'].forEach(function(ev){b.addEventListener(ev,go)});"
               "['mouseleave','blur'].forEach(function(ev){b.addEventListener(ev,function(){b.classList.remove('hot')})})})})();</script>")
     return mod("collection", "the archive in small",
-               f'{home_head("The archive")}<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
+               f'{home_head(*HOME_CHAPTERS["archive"])}<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
                f'<div class="kw-rows"><h3 class="kicker kw-head">Keywords on these photographs</h3>{kw}</div></div>{script}')
 
 
@@ -2617,7 +2640,7 @@ def _tpl_modules(base):
 # ---------------------------------------------------------------------------------------------
 PAGES = [
     dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None,
-         desc="Visual storytelling for a new partnership between Europe and Africa: a partner archive of real images from Mali, Kenya and The Gambia."),
+         desc="We build partnerships around visual storytelling to bring contemporary Africa into view in Europe. A partner archive of real photographs, with exhibitions and workshops."),
     dict(path="themes/", title="Themes", slug="themes", tpl="themes", nav="themes",
          desc="Five themes, read in order: people learn, put their skills to work, live connected lives in modern cities, and make culture."),
     *[dict(path=f"themes/{t['slug']}/", title=t["name"], slug=t["slug"], tpl="theme", nav="themes", theme=t,

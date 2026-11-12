@@ -298,6 +298,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mini .theme-doors a{flex:1;padding:12px 0;font-weight:400}   /* names to choose between, not titles (Thomas, 12 November 2026, 14:25) */
 .mini .theme-doors span{font-size:var(--fs-text)}   /* a number of images is set as the numbers above the list are */
 .mini .f-words .doors{margin:0}
+.mod-text .cols .c1-8 > p + .doors{margin:16px 0 0}
 h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
@@ -313,6 +314,7 @@ h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .kw.lit span{color:var(--paper);background:var(--ink);border-color:var(--ink)}   /* the keywords the photograph carries are inverted: black, white type (Thomas, 12 November 2026, 14:31; the yellow tried at 14:25 keeps its one job) */
 .kw.hot span,.kw:focus-visible span{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}   /* the one under the pointer: a ring */
 .kw:focus-visible{outline:none}
+#principles .principles{margin-bottom:0}   /* Home: one section's distance to the photograph, as above the heading */
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
 .principles.two li:last-child{grid-column:8 / 13}

@@ -1759,27 +1759,27 @@ def tpl_home(p, base):
     # 1 What this is: the Opening and the intro, which also say who is behind it. 2 The archive in small: a photograph
     # as a record, the five themes and the photographs' own keywords, answering to the pointer; the way on is Explore
     # the themes. 3 In use: the numbers, the partners by name, one example; built only when each exists (rule 27).
-    # 4 Who makes it: a photograph from a workshop, and under it the three lines of activity, each leading into About.
-    # 5 The close: About. Under the archive in small stand the four principles and one button, Collaborate with us, to
-    # Partners, where Request access and sponsoring a collection are. The collections are in the menu.
+    # 4 Who makes it: a photograph from a workshop, and under it About's own statement (the archive is one of three lines
+    # of activity) with the way to About. Under the archive in small stand the four principles. Request access and
+    # sponsoring a collection are on Partners; the collections are in the menu.
     return (m_opening(CORE_LINE, base=base)
             + m_text(None, INTRO_HOME, "d", sid="intro")
             + front_mini(base)
-            # under the keywords: what stands behind every image, and the way to work with us (Thomas, 12 November 2026, 14:40)
-            + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles", tight=True)
-            + m_doors("c", links=[button(base + "partners/", "Collaborate with us", quiet=True)], tight=True, left=True)
+            # under the keywords: what stands behind every image (Thomas, 12 November 2026, 14:40). The page's rhythm (14:47):
+            # one section's distance between its parts, and half of it where two things belong together.
+            + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            + chapter(m_document(base, HOME_DOCUMENT))
-            + home_channels(base)
-            + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
+            + m_document(base, HOME_DOCUMENT)
+            + home_behind(base))
 
 
-def home_channels(base):
-    """Under the workshop photograph: the three lines of activity in About's own words, each leading into About."""
-    li = "".join(f'<li><a href="{base}about/#{sid}"><strong>{e(name)}</strong>{draft(line, "span", "channel-line")}</a></li>' for sid, name, line in ABOUT_CHANNELS)
-    return mod("items", "a, the three lines of activity, leading to About", f'<ul class="channels">{li}</ul>', tight=True)
+def home_behind(base):
+    """Under the workshop photograph: the archive is a part of something larger, in About's own statement, and the way to About."""
+    return mod("text", "the background in About's own statement, leading to About",
+               f'<div class="cols"><div class="c1-8">{draft(ABOUT_STATEMENT)}'
+               f'<p class="doors">{button(base + "about/", "About Africa Reframed", quiet=True)}</p></div></div>', tight=True)
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -3267,6 +3267,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mini .theme-doors a{flex:1;padding:12px 0;font-weight:400}   /* names to choose between, not titles (Thomas, 12 November 2026, 14:25) */
 .mini .theme-doors span{font-size:var(--fs-text)}   /* a number of images is set as the numbers above the list are */
 .mini .f-words .doors{margin:0}
+.mod-text .cols .c1-8 > p + .doors{margin:16px 0 0}
 h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
@@ -3282,6 +3283,7 @@ h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .kw.lit span{color:var(--paper);background:var(--ink);border-color:var(--ink)}   /* the keywords the photograph carries are inverted: black, white type (Thomas, 12 November 2026, 14:31; the yellow tried at 14:25 keeps its one job) */
 .kw.hot span,.kw:focus-visible span{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}   /* the one under the pointer: a ring */
 .kw:focus-visible{outline:none}
+#principles .principles{margin-bottom:0}   /* Home: one section's distance to the photograph, as above the heading */
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
 .principles.two li:last-child{grid-column:8 / 13}

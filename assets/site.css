@@ -281,6 +281,37 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
    17:24 and 17:31). */
 .opening-frame picture{display:block}
 .doc-photo{display:block;width:100%;height:auto}
+/* The front page on trial (see FRONT_VERSIONS). */
+.feature{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:start}
+.feature .f-photo{grid-column:1 / 9;grid-row:1;margin:0}
+.feature .f-words{grid-column:9 / 13;grid-row:1}
+.feature.flip .f-photo{grid-column:5 / 13}
+.feature.flip .f-words{grid-column:1 / 5}
+.feature-photo,.feature .img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.f-words .kicker{margin-top:0}
+.f-words .theme-doors{list-style:none;margin:0 0 24px;padding:0}
+.theme-doors li{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-top:1px solid var(--line);padding:12px 0}
+.theme-doors li:last-child{border-bottom:1px solid var(--line)}
+.theme-doors a{font-size:var(--fs-head);font-weight:700;line-height:1.15;text-decoration:none;color:var(--ink)}
+.theme-doors a:hover{text-decoration:underline}
+.theme-doors span{font-size:var(--fs-small);color:var(--ink-soft);white-space:nowrap}
+.statement-big{font-size:var(--fs-title);font-weight:300;line-height:1.15;letter-spacing:-.02em;margin:0;max-width:none}
+.statement-big a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.14em}
+.theme-large-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--gutter);margin-top:24px}
+.theme-large{display:block;text-decoration:none;color:var(--ink)}
+.theme-large img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
+.theme-large span{display:block;margin-top:12px;font-size:var(--fs-head);font-weight:700;line-height:1.15}
+.variant-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;flex-wrap:wrap;gap:4px 20px;align-items:center;background:#e9e7e2;color:var(--ink-soft);
+  font-size:var(--fs-small);padding:10px var(--margin)}
+.variant-bar span{font-weight:700;color:var(--ink)}
+.variant-bar a{color:var(--ink)}
+.variant-bar a[aria-current="page"]{font-weight:700;text-decoration:none;border-bottom:2px solid var(--ink)}
+@media (max-width:1023px){
+  .feature .f-photo,.feature.flip .f-photo{grid-column:1 / -1;grid-row:1}
+  .feature .f-words,.feature.flip .f-words{grid-column:1 / -1;grid-row:2;margin-top:24px}
+  .theme-large-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .theme-large span,.theme-doors a{font-size:var(--fs-text)}
+}
 /* The collection card, on trial on /dev/signs/: A layers, B one ground, C the mount. On the live pages the card is plain. */
 .theme-photo{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .mount{--layer:16px;position:relative;z-index:0}

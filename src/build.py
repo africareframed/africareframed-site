@@ -1775,6 +1775,74 @@ def tpl_home(p, base):
             + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))   # under the principles, on their left edge
 
 
+# The front page on trial: three versions of its middle, on /dev/front-a/, -b/ and -c/ (Thomas, 12 November 2026, 11:15 to
+# 11:26). The front page is an entrance that makes a short case: what this is, what is inside, how it is made. Its top (the
+# Opening and the intro) and its close (the workshop photograph and the four principles) are the live page's; the middle
+# is what is tried. Two findings stand behind the three versions: on the live page the middle is a directory (five
+# small thumbnails under large numerals, then two cards), and none of the reference sites shows its parts that way: they
+# show one featured item for each part, a list in words, or large pictures with a name only.
+#   A the collection and its themes: the House Collection as one large photograph, its five themes beside it as doors in
+#     words; then the sponsored collection as a feature of its own. No thumbnails, no numerals.
+#   B the themes in a sentence: one statement in large type names the five themes, each a link (after Faurschou's home
+#     page); then the two collections as features.
+#   C large pictures, names only: the five themes as upright photographs with a name and nothing else (after Den
+#     Kongelige Samling's palaces); then the collection cards as on the live page.
+# The live front page is unchanged. All wording made for the trial is a draft.
+FRONT_VERSIONS = [("a", "A · The collection and its themes"), ("b", "B · The themes in a sentence"), ("c", "C · Large pictures, names only")]
+FRONT_STATEMENT = "1,122 photographs of modern life, in five themes:"   # draft; the theme names follow as links
+
+
+def front_feature(c, base, flip=False, themes=False):
+    """A collection as a feature of the front page: one large photograph on eight columns, and its words on four."""
+    card, slug = c["card"], c["slug"]
+    pick = COLLECTION_PHOTOS.get(slug)
+    photo = (f'<img class="feature-photo" src="{base}assets/trial/{pick["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(pick["alt"])}" loading="lazy" decoding="async">'
+             if pick else img(card["image"], "3/2"))
+    cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{pick["ar"]}</a> · {e(pick["place"])}, {pick["year"]}</span> '
+           f'<span>{e(CREDIT)}</span></p>') if pick else ""
+    meta = "".join(f"<span>{e(m)}</span>" for m in card["meta"])
+    doors = ""
+    if themes:
+        rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
+        doors = f'<p class="kicker">By theme</p><ul class="theme-doors">{rows}</ul>'
+    words = (f'<p class="kicker">{e(card["kicker"])}</p><h2 class="h-big">{e(c["title"])}</h2>{draft(limit("card line", card["line"]))}'
+             f'<p class="meta-row">{meta}</p>{doors}<p><a class="textlink" href="{base}collections/{slug}/">Open the collection</a></p>')
+    return mod("collection", "a feature of the front page, on trial",
+               f'<div class="feature{" flip" if flip else ""}"><figure class="frame f-photo">{photo}{cap}</figure><div class="f-words">{words}</div></div>')
+
+
+def front_statement(base):
+    links = ", ".join(f'<a href="{base}themes/{t["slug"]}/">{e(t["name"].lower())}</a>' for t in THEMES)
+    return mod("text", "a statement that names the themes, on trial",
+               f'<div class="cols"><div class="c1-9"><p class="statement-big draft">{e(FRONT_STATEMENT)} {links}.</p></div></div>')
+
+
+def front_themes_large(base):
+    cells = "".join(f'<a class="theme-large" href="{base}themes/{t["slug"]}/"><img src="{base}assets/themes/{THEME_PHOTOS[t["slug"]]["ar"].lower()}-upright.jpg" '
+                    f'width="800" height="1000" alt="{e(THEME_PHOTOS[t["slug"]]["alt"])}" loading="lazy" decoding="async"><span>{e(t["name"])}</span></a>' for t in THEMES)
+    return mod("themes", "large pictures, names only, on trial",
+               f'<div class="cols"><div class="c1-12">{heading("The first five themes")}</div></div><div class="theme-large-row">{cells}</div>')
+
+
+def tpl_front(p, base, v):
+    top = (m_opening(CORE_LINE, base=base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
+           + m_text(None, INTRO_HOME, "d", links=[button(base + "themes/", "Explore the themes", quiet=True),
+                                                  button(base + "partners/", "How partners use the archive", quiet=True)], sid="intro",
+                    meta=[f"{n} {t}" for n, t in NUMBERS]))
+    close = (chapter(m_document(base, HOME_DOCUMENT))
+             + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
+             + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
+    if v == "a":
+        middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
+    elif v == "b":
+        middle = chapter(front_statement(base)) + chapter(front_feature(HOUSE_COLLECTION, base)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
+    else:
+        middle = chapter(front_themes_large(base)) + chapter(m_collection(base))
+    bar = "".join(f'<a href="{base}dev/front-{k}/"{" aria-current=" + chr(34) + "page" + chr(34) if k == v else ""}>{e(t)}</a>' for k, t in FRONT_VERSIONS)
+    bar = f'<nav class="variant-bar" aria-label="Versions of the front page on trial"><span>The front page on trial</span>{bar}<a href="{base}">The live front page</a></nav>'
+    return top + middle + close + bar
+
+
 def tpl_index_themes(p, base):
     return (m_page_head(p["title"], THEMES_LEAD, statement_draft=True) + m_themes(base, "b")
             + m_text(THEMES_SOURCE[0], [THEMES_SOURCE[1]], "a",
@@ -2979,6 +3047,37 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
    17:24 and 17:31). */
 .opening-frame picture{display:block}
 .doc-photo{display:block;width:100%;height:auto}
+/* The front page on trial (see FRONT_VERSIONS). */
+.feature{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:start}
+.feature .f-photo{grid-column:1 / 9;grid-row:1;margin:0}
+.feature .f-words{grid-column:9 / 13;grid-row:1}
+.feature.flip .f-photo{grid-column:5 / 13}
+.feature.flip .f-words{grid-column:1 / 5}
+.feature-photo,.feature .img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.f-words .kicker{margin-top:0}
+.f-words .theme-doors{list-style:none;margin:0 0 24px;padding:0}
+.theme-doors li{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-top:1px solid var(--line);padding:12px 0}
+.theme-doors li:last-child{border-bottom:1px solid var(--line)}
+.theme-doors a{font-size:var(--fs-head);font-weight:700;line-height:1.15;text-decoration:none;color:var(--ink)}
+.theme-doors a:hover{text-decoration:underline}
+.theme-doors span{font-size:var(--fs-small);color:var(--ink-soft);white-space:nowrap}
+.statement-big{font-size:var(--fs-title);font-weight:300;line-height:1.15;letter-spacing:-.02em;margin:0;max-width:none}
+.statement-big a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.14em}
+.theme-large-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--gutter);margin-top:24px}
+.theme-large{display:block;text-decoration:none;color:var(--ink)}
+.theme-large img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
+.theme-large span{display:block;margin-top:12px;font-size:var(--fs-head);font-weight:700;line-height:1.15}
+.variant-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;flex-wrap:wrap;gap:4px 20px;align-items:center;background:#e9e7e2;color:var(--ink-soft);
+  font-size:var(--fs-small);padding:10px var(--margin)}
+.variant-bar span{font-weight:700;color:var(--ink)}
+.variant-bar a{color:var(--ink)}
+.variant-bar a[aria-current="page"]{font-weight:700;text-decoration:none;border-bottom:2px solid var(--ink)}
+@media (max-width:1023px){
+  .feature .f-photo,.feature.flip .f-photo{grid-column:1 / -1;grid-row:1}
+  .feature .f-words,.feature.flip .f-words{grid-column:1 / -1;grid-row:2;margin-top:24px}
+  .theme-large-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .theme-large span,.theme-doors a{font-size:var(--fs-text)}
+}
 /* The collection card, on trial on /dev/signs/: A layers, B one ground, C the mount. On the live pages the card is plain. */
 .theme-photo{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .mount{--layer:16px;position:relative;z-index:0}
@@ -3298,7 +3397,7 @@ def strip_html(base):
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
             f'<a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a>'
-            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/signs/">Collection card</a><a href="{base}dev/images/">Images</a>'
+            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/front-a/">Front page</a><a href="{base}dev/signs/">Collection card</a><a href="{base}dev/images/">Images</a>'
             f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
             f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
             f'<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>\n')
@@ -3372,6 +3471,12 @@ def build():
                    desc="Three versions of the Opening of the Africa Reframed site, side by side; generated by the build, removed at launch.")
         (dev_dir / "opening").mkdir(exist_ok=True)
         (dev_dir / "opening" / "index.html").write_text(render(opn, tpl_opening("../../"), "../../"))
+        for k, t in FRONT_VERSIONS:
+            fr = dict(path=f"dev/front-{k}/", title=f"The front page, version {k.upper()}", slug=None, tpl="front", nav=None,
+                      desc="A version of the front page on trial; generated by the build, removed at launch.")
+            CUR.update(slug=None, n=0)
+            (dev_dir / f"front-{k}").mkdir(exist_ok=True)
+            (dev_dir / f"front-{k}" / "index.html").write_text(render(fr, tpl_front(fr, "../../", k), "../../"))
         sgn = dict(path="dev/signs/", title="The collection card", slug="signs", tpl="signs", nav=None,
                    desc="A copy of Home with three versions of the collection card on trial; generated by the build, removed at launch.")
         CUR.update(slug="signs", n=0)

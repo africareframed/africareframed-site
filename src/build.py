@@ -1788,7 +1788,11 @@ def tpl_home(p, base):
 #   C large pictures, names only: the five themes as upright photographs with a name and nothing else (after Den
 #     Kongelige Samling's palaces); then the collection cards as on the live page.
 # The live front page is unchanged. All wording made for the trial is a draft.
-FRONT_VERSIONS = [("a", "A · The collection and its themes"), ("b", "B · The themes in a sentence"), ("c", "C · Large pictures, names only")]
+#   A2 is A with the yellow door into the archive under the House Collection (Thomas, 11:48: A is the best; it steers
+#     with the least; the yellow band of the theme pages could stand here too). The door stands under the House
+#     Collection only: the sponsored collection is open by request, and Request access stays quiet (page priorities).
+FRONT_VERSIONS = [("a", "A · The collection and its themes"), ("a2", "A2 · With the door into the archive"),
+                  ("b", "B · The themes in a sentence"), ("c", "C · Large pictures, names only")]
 FRONT_STATEMENT = "1,122 photographs of modern life, in five themes:"   # draft; the theme names follow as links
 
 
@@ -1805,7 +1809,9 @@ def front_feature(c, base, flip=False, themes=False):
     if themes:
         rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
         doors = f'<p class="kicker">By theme</p><ul class="theme-doors">{rows}</ul>'
-    words = (f'<p class="kicker">{e(card["kicker"])}</p><h2 class="h-big">{e(c["title"])}</h2>{draft(limit("card line", card["line"]))}'
+    there = f'{base}collections/{slug}/'   # the photograph and the title lead to the collection's own page, where its story is told
+    photo = f'<a href="{there}" class="feature-link" tabindex="-1" aria-hidden="true">{photo}</a>'
+    words = (f'<p class="kicker">{e(card["kicker"])}</p><h2 class="h-big"><a href="{there}">{e(c["title"])}</a></h2>{draft(limit("card line", card["line"]))}'
              f'<p class="meta-row">{meta}</p>{doors}<p><a class="textlink" href="{base}collections/{slug}/">Open the collection</a></p>')
     return mod("collection", "a feature of the front page, on trial",
                f'<div class="feature{" flip" if flip else ""}"><figure class="frame f-photo">{photo}{cap}</figure><div class="f-words">{words}</div></div>')
@@ -1834,6 +1840,10 @@ def tpl_front(p, base, v):
              + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
     if v == "a":
         middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
+    elif v == "a2":
+        h = HOUSE_COLLECTION
+        door = m_doors("b", count=h["access"]["count"], main=button(archive("/-/galleries/archive", h["access"]["src"]), "Open in the archive →"), tight=True)
+        middle = chapter(front_feature(h, base, themes=True)) + door + chapter(front_feature(WTV_COLLECTION, base, flip=True))
     elif v == "b":
         middle = chapter(front_statement(base)) + chapter(front_feature(HOUSE_COLLECTION, base)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
     else:
@@ -3055,6 +3065,9 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .feature.flip .f-words{grid-column:1 / 5}
 .feature-photo,.feature .img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .f-words .kicker{margin-top:0}
+.feature-link{display:block}
+.f-words h2 a{color:inherit;text-decoration:none}
+.f-words h2 a:hover{text-decoration:underline}
 .f-words .theme-doors{list-style:none;margin:0 0 24px;padding:0}
 .theme-doors li{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-top:1px solid var(--line);padding:12px 0}
 .theme-doors li:last-child{border-bottom:1px solid var(--line)}

@@ -550,8 +550,7 @@ SIGNS_TRIAL = dict(
             "work-and-enterprise": ("AR-1973", "A young mechanic at the open bonnet of a pickup in Banjul"),
             "everyday-digital": ("AR-2101", "A woman with a laptop on a bench under trees in Nairobi"),
             "city-life": ("AR-1267", "A young photographer on a rooftop above the skyline of Nairobi"),
-            "creativity-and-culture": ("AR-2002", "A woman in a wax-print top and headwrap in front of a wax-print fabric in Banjul")},
-    collections={"house-collection": ("AR-2046", "A taxi driver at the wheel of a yellow taxi in Banjul")})
+            "creativity-and-culture": ("AR-2002", "A woman in a wax-print top and headwrap in front of a wax-print fabric in Banjul")})
 
 
 def sign_theme(t, base):
@@ -560,12 +559,23 @@ def sign_theme(t, base):
             f'alt="{e(alt)}" loading="lazy" decoding="async"></figure>')
 
 
-def sign_mount(slug, label, base):
-    """A collection's photograph on its mount; a collection without a chosen photograph keeps its grey box, on the mount."""
-    pick = SIGNS["collections"].get(slug)
-    inside = (f'<img class="mount-photo" src="{base}assets/trial/{pick[0].lower()}-card.jpg" width="1440" height="960" alt="{e(pick[1])}" loading="lazy" decoding="async">'
+# The collection card's layers, on every page since 12 November 2026, 08:33 (Thomas: version A, "let's try it on the live
+# website"). Behind the photograph stand two more sheets of its own shape: the nearer one black, with a stripe running
+# behind the photograph, the farther one an outline. A collection is not one picture; there is more underneath. The
+# stripe in the card is part of this sign and never stands alone, so it is not counted as a place of the pattern (rule 19).
+# A collection without a chosen photograph keeps its grey box, on the same layers.
+COLLECTION_PHOTOS = {   # on trial, not the final pick
+    "house-collection": dict(ar="AR-2046", place="Banjul, The Gambia", year="2015", alt="A taxi driver at the wheel of a yellow taxi in Banjul")}
+
+
+def card_photo(slug, label, base):
+    sid = slot("half", "3/2", label)
+    pick = COLLECTION_PHOTOS.get(slug)
+    if pick and sid:
+        PICKS[sid] = dict(ar=pick["ar"], place=pick["place"], year=pick["year"])
+    inside = (f'<img class="mount-photo" src="{base}assets/trial/{pick["ar"].lower()}-card.jpg" width="1440" height="960" alt="{e(pick["alt"])}" loading="lazy" decoding="async">'
               if pick else img(label, "3/2"))
-    return f'<figure class="frame"><div class="mount">{MOUNT_PATTERN}{inside}</div></figure>'
+    return f'<figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}><div class="mount">{MOUNT_PATTERN}{inside}</div></figure>'
 
 
 def theme_entry(t, base, i, row=False, ratio="4/5"):
@@ -648,7 +658,7 @@ def m_project(x, extra=""):
 def collection_entry(x, base):
     """A collection in the archive (the collection card, 2.8), as proof of the archive."""
     meta = "".join(f"<span>{e(m)}</span>" for m in x["meta"])
-    photo = sign_mount(x.get("slug"), x["image"], base) if SIGNS else frame(x["image"], "3/2", role="half", own=False, cap=False)
+    photo = card_photo(x.get("slug"), x["image"], base)
     return (f'<a class="collection-card cols" href="{base}{x["href"]}"><div class="c-half">{photo}</div>'
             f'<div class="c-half">{state_label(x) if x.get("state") else ""}<p class="kicker">{e(x["kicker"])}</p><h3 class="h-big">{e(x["title"])}</h3>{draft(limit("card line", x["line"]))}'
             f'<p class="meta-row">{meta}</p><span class="textlink">Open the collection</span></div></a>')
@@ -1025,7 +1035,7 @@ ABOUT_ARCHIVE = [
     "It is free for the non-profit and public partners we approve; companies take part by sponsoring a collection. Every download is a licence for one stated use, so we know where the images go. The archive grows by collections.",
 ]
 ARCHIVE_COLLECTIONS = [  # the collections in the archive; a sponsored collection is one more entry, shown first while in production
-    dict(title="House Collection", state="record", kicker="The first collection", href="collections/house-collection/",
+    dict(title="House Collection", state="record", kicker="The first collection", href="collections/house-collection/", slug="house-collection",
          line="1,122 photographs made by our team in Bamako, Nairobi and Banjul, alongside our workshops.",
          meta=["1,122 images", "Mali · Kenya · The Gambia"], image="A photograph from the House Collection, from the picks once cleared"),
 ]
@@ -2972,24 +2982,29 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .doc-photo{display:block;width:100%;height:auto}
 /* The collection card, on trial on /dev/signs/ (see SIGNS): A layers, B one ground, C the mount. */
 .theme-photo{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
-.mount{position:relative;z-index:0}
-.mount-pattern{display:none;position:absolute}
+.mount{--layer:16px;position:relative;z-index:0;padding:0 calc(var(--layer)*2) calc(var(--layer)*2) 0}
+.mount-pattern{display:block;position:absolute;z-index:1;left:var(--layer);top:var(--layer);width:calc(100% - var(--layer)*2);height:calc(100% - var(--layer)*2);background:var(--ground)}
+.mount::after{content:"";position:absolute;z-index:0;left:calc(var(--layer)*2);top:calc(var(--layer)*2);right:0;bottom:0;border:2px solid var(--ground)}
 .mount-photo,.mount .img{position:relative;z-index:2;display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+/* the test page's other versions (B one ground, C the mount) and the plain card */
 .sign-c .mount{background:var(--ground);padding:0 12% 6% 0;overflow:hidden}
-.sign-c .mount-pattern{display:block;z-index:1;inset:0;width:100%;height:100%}
-.sign-a .mount{padding:0 32px 32px 0}
-.sign-a .mount-pattern{display:block;z-index:1;left:16px;top:16px;width:calc(100% - 32px);height:calc(100% - 32px);background:var(--ground)}
-.sign-a .mount::after{content:"";position:absolute;z-index:0;left:32px;top:32px;right:0;bottom:0;border:2px solid var(--ground)}
+.sign-c .mount-pattern{left:0;top:0;width:100%;height:100%;background:none}
+.sign-c .mount::after,.no-signs .mount::after,.no-signs .mount-pattern{display:none}
+.no-signs .mount{padding:0}
 @media (min-width:768px){
+  .sign-b .mount{padding:0}
+  .sign-b .mount-pattern,.sign-b .mount::after{display:none}
   .sign-b .collection-list{position:relative;isolation:isolate;padding:32px 0}
   .sign-b .collection-list::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc(50% - 50vw);right:calc(50% + var(--gutter)/2);
     background:var(--ground) repeating-linear-gradient(120deg,transparent 0 330px,#fff 330px 400px)}
   .sign-b .collection-list .collection-card,.sign-b .collection-list .collection-card + .collection-card{margin-top:0;padding-top:0;border-top:0}
   .sign-b .collection-list .collection-card + .collection-card{margin-top:32px}
 }
-@media (max-width:767px){   /* on a phone the words stand between the photographs, so B falls back to the mount */
-  .sign-b .mount{background:var(--ground);padding:0 12% 6% 0;overflow:hidden}
-  .sign-b .mount-pattern{display:block;z-index:1;inset:0;width:100%;height:100%}
+@media (max-width:767px){
+  .mount{--layer:10px}
+  .sign-b .mount{background:var(--ground);padding:0 12% 6% 0;overflow:hidden}   /* on a phone B falls back to the mount */
+  .sign-b .mount-pattern{left:0;top:0;width:100%;height:100%;background:none}
+  .sign-b .mount::after{display:none}
 }
 .signs-switch{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:var(--fs-small);color:var(--ink-soft);margin-bottom:32px}
 .signs-switch span{margin-left:8px}

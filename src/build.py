@@ -3067,8 +3067,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .theme-large{display:block;text-decoration:none;color:var(--ink)}
 .theme-large img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
 .theme-large span{display:block;margin-top:12px;font-size:var(--fs-head);font-weight:700;line-height:1.15}
-.variant-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;flex-wrap:wrap;gap:4px 20px;align-items:center;background:#e9e7e2;color:var(--ink-soft);
-  font-size:var(--fs-small);padding:10px var(--margin)}
+.variant-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;flex-wrap:wrap;gap:4px 24px;align-items:center;background:#e9e7e2;color:var(--ink-soft);
+  font-size:var(--fs-small);padding:8px var(--margin)}
 .variant-bar span{font-weight:700;color:var(--ink)}
 .variant-bar a{color:var(--ink)}
 .variant-bar a[aria-current="page"]{font-weight:700;text-decoration:none;border-bottom:2px solid var(--ink)}

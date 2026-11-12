@@ -879,15 +879,13 @@ def m_form(variant="a", title=None, fields=None, aside=None, consent=None, butto
 # by Commerce & Culture."
 INTRO_HOME = [
     "Europe and Africa need each other. Shared stories make people act together, across cultures and across sectors.",
-    # The small text: one sentence on the partnerships, from which the chapter A shared resource follows. It names no
-    # process (Thomas, 17:33: a landing page does not explain everything; less, precise, for those who know). Tried and
-    # set aside the same hour: "It starts with real photographs…" (a claim about ourselves, 17:26) and four lines on who
-    # funds, makes and uses the collections (the whole process up front, 17:33).
-    "We make each new collection with partners, and share it among them.",
+    # No small text since 18:02 (Thomas): the bold line and the lead stand alone. Tried and set aside on 12 November 2026:
+    # "It starts with real photographs…" (a claim about ourselves), four lines on who funds, makes and uses the collections
+    # (the whole process up front), and "We make each new collection with partners, and share it among them."
 ]
 # The three chapters of Home: title, and the line under it.
 HOME_CHAPTERS = dict(
-    archive=("A shared resource", None),   # no line under it since 17:26: the small text directly above now says how the archive is shared
+    archive=("The archive", None),   # "A shared resource" went with the sentence that set it up (Thomas, 18:02); the title names the chapter again
     principles=("Principles", "Behind every image and every collaboration."),   # Thomas, 14:58 and 15:08
     about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African photographers "
                                    "with the international picture market."),   # made from About's two lines of activity

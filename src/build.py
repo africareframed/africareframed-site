@@ -1822,6 +1822,16 @@ def tpl_home(p, base):
 # 17 px for all text, Bold for the name of an item (a theme, a way to work with us, a principle); 13 px for labels,
 # captions, counts and keywords. Nothing on the page is set at 22 px: the intro's first sentence is text here, and the
 # heading over the principles is a label, like the labels over the themes and the keywords.
+# E, fifth state (Thomas, 13:16 and 13:19): the front page as the page of the product. No grey box, no section about us:
+# who is behind it stands in the intro and in the footer, and About is in the menu. Under the intro stands the archive in
+# small (front_mini): one photograph as a record with its title, six photographs in all; the five themes; and the
+# keywords those six photographs carry in the archive, in the layers of the Keywording Guide. Pointing at a theme shows
+# its photograph and lights that photograph's keywords; pointing at a keyword shows the next photograph that carries it
+# and lights the others it carries. Then the call to join (front_join): the archive is built with partners, and there
+# are two ways in. Then the workshop photograph, the principles and a quiet way to About.
+# Type: Light at 44 px is gone (it had no job in rule 11, which keeps Light for the intro and the big number). The page
+# shows 64 Bold once; 22 for the intro's first sentence (Light, as on every page) and, in Bold, for headings and the
+# themes' names; 17 for text, Bold for an item's name; 13 for labels, captions, counts and keywords.
 # E reworked (Thomas, 12:27): the text "Themes come from collections" hung under the box and is out. The grey box is
 # larger and holds two rows: the archive with its themes, and, reversed, its collections with a second photograph; both
 # belong to the archive, so both stand inside its box. Its ways on are Request access and Explore the themes. Under
@@ -1833,12 +1843,41 @@ FRONT_VERSIONS = [("e", "E · The archive, with its themes"), ("a-ground", "A ·
 FRONT_ARCHIVE = dict(kicker="Online for partners now", title="The archive",
                      line="1,122 photographs of modern life in Mali, Kenya and The Gambia, ready to use in reports, exhibitions and channels.",
                      meta=["1,122 images", "21 shoots", "3 countries"])
-# Keywords for the cloud: all from the fixed list of concept keywords in the AR Archive - Keywording Guide (7a); none invented.
-# They are words, not links: a search in the archive opens the login wall to a reader without an account.
-FRONT_KEYWORDS = ["education", "studying", "shared learning", "girls’ education", "mathematics", "vocational training", "skills", "small business",
-                  "entrepreneurship", "commerce", "young professional", "remote working", "mobile technology", "digital", "social media",
-                  "teamwork", "smallholder farming", "tree nursery", "street art", "urban culture"]
-# Draft wording for the end of the archive's box, made from sentences the site already holds (ACCESS_WHO, SPONSOR_TEXT).
+# The six photographs of the archive in small: title, description and keywords as they stand in the master files (read
+# from the files' own metadata on 12 November 2026; nothing here is written for the website). The keywords are a choice
+# from each file's 20 to 34, by layer of the Keywording Guide: "seen" from the findability keywords (7), "concept" from
+# the fixed list (7a), "story" from the story themes (8), "sdg" (10). Left out: synonyms (12a), the verticals (a working
+# hypothesis), themes that are not public (next generation), and the technical words every image shares.
+FRONT_RECORDS = {
+    "AR-2046": dict(title="Taxi driver at the wheel of a yellow taxi",
+                    desc="A taxi driver in a striped headscarf sits at the wheel of a yellow taxi in Banjul, The Gambia, her arm resting on the open window, and looks at the camera.",
+                    seen=["taxi driver", "driving", "environmental portrait"], concept=["youth"], story=["mobility and transport", "work and livelihood"],
+                    sdg=["SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality"]),
+    "AR-2034": dict(title="Two students with folders, arm in arm",
+                    desc="Two students in white shirts lean their heads together and smile at the camera, folders and a pen in hand, outside a terracotta building in Banjul, The Gambia.",
+                    seen=["students", "campus", "smiling"], concept=["education", "learning", "youth"], story=[], sdg=[]),
+    "AR-1973": dict(title="Young woman with a dipstick and rag, smiling",
+                    desc="A young woman in denim dungarees leans on the front of a red pickup with a dipstick and rag and smiles at the camera in Banjul, The Gambia.",
+                    seen=["garage", "smiling"], concept=["skills", "job", "youth"], story=["skills and craft", "mobility and transport", "work and livelihood"],
+                    sdg=["SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality"]),
+    "AR-2101": dict(title="Woman with a laptop smiling at the camera",
+                    desc="A woman in glasses and a dark cardigan smiles at the camera with a laptop open on her knee on a blue bench under trees in Nairobi, Kenya.",
+                    seen=["laptop", "campus", "smiling"], concept=["digital", "remote working"], story=["everyday technology", "work and livelihood"], sdg=[]),
+    "AR-1267": dict(title="Photographer smiling above the city skyline",
+                    desc="A young photographer in a tweed cap smiles as she leans on a painted rooftop wall in Nairobi, Kenya, her camera around her neck and high-rise buildings behind her.",
+                    seen=["photographer", "rooftop", "smiling", "environmental portrait"], concept=["street art", "urban culture", "youth"],
+                    story=["urban life", "creativity and culture"], sdg=[]),
+    "AR-1316": dict(title="Young man playing an electric guitar",
+                    desc="A young man in a light-blue jumper plays an electric guitar against a wooden wall in Nairobi, Kenya, and looks at the camera.",
+                    seen=["musician", "environmental portrait"], concept=["youth"], story=["creativity and culture"], sdg=[]),
+}
+FRONT_LAYERS = [("seen", "In the picture"), ("concept", "Concept"), ("story", "Story"), ("sdg", "SDG")]   # the labels are draft
+# Draft wording for the call to join (Thomas, 13:19: the archive is built with partners across sectors, and people can
+# join; that is the call to action). The two ways are made from sentences the site already holds (ACCESS_WHO, SPONSOR_TEXT).
+FRONT_JOIN = dict(title="We build the archive with partners",
+                  text="Africa Reframed is a collaboration across sectors. Foundations and companies sponsor new collections, "
+                       "and non-profit and public organisations put the images to use. There are two ways to join.")
+# The two ways:
 FRONT_WORK = [("Use the archive", "The archive is free for selected non-profit and public partners. Tell us who you are and how you will use the images.",
                "request-access/", "Request access"),
               ("Expand the archive with us", "We make new collections with companies and foundations as sponsors, on a theme close to the sponsor’s work or one it wants to support.",
@@ -1882,29 +1921,7 @@ def front_archive(base, themes=False):
            f'<span>{e(CREDIT)}</span></p>')
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
     if themes:
-        # E: the photograph that changes, and beside it the archive in words with its themes; the keywords; two ways to work with us
-        rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/" data-theme="{t["slug"]}">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
-        words = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="box-title">{e(a["title"])}</h2><p class="meta-row">{meta}</p>'
-                 f'<p class="kicker">By theme</p><ul class="theme-doors">{rows}</ul>'
-                 f'<p class="doors">{button(base + "themes/", "Explore the themes", quiet=True)}</p>')
-
-        def shot(key, pk, href, on=False):
-            c = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pk["ar"], "image")}">{pk["ar"]}</a> · {e(pk["place"])}, {pk["year"]}</span> '
-                 f'<span>{e(CREDIT)}</span></p>')
-            return (f'<figure class="frame{" on" if on else ""}" data-shot="{key}"><a href="{href}" tabindex="-1" aria-hidden="true">'
-                    f'<img class="feature-photo" src="{base}assets/trial/{pk["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(pk["alt"])}" loading="lazy" decoding="async"></a>{c}</figure>')
-        shots = shot("archive", pick, f"{base}themes/", on=True) + "".join(shot(t["slug"], THEME_PHOTOS[t["slug"]], f'{base}themes/{t["slug"]}/') for t in THEMES)
-        tags = "".join(f"<li>{e(k)}</li>" for k in FRONT_KEYWORDS)
-        work = "".join(f'<div class="{"f-photo" if i == 0 else "f-words"}"><h3>{e(t)}</h3>{draft(line)}<p class="doors">{button(base + href, label, quiet=True)}</p></div>'
-                       for i, (t, line, href, label) in enumerate(FRONT_WORK))
-        script = ("<script>(function(){var box=document.querySelector('.archive-box');if(!box)return;var shots=box.querySelectorAll('[data-shot]'),links=box.querySelectorAll('[data-theme]');"
-                  "function show(k){shots.forEach(function(f){f.classList.toggle('on',f.dataset.shot===k)});links.forEach(function(a){a.classList.toggle('on',a.dataset.theme===k)})}"
-                  "links.forEach(function(a){['mouseenter','focus'].forEach(function(ev){a.addEventListener(ev,function(){show(a.dataset.theme)})})})})();</script>")
-        return mod("collection", "the archive as a feature of the front page, on trial",
-                   f'<div class="archive-box"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
-                   f'<div class="box-tags"><p class="kicker">Keywords in the archive</p><ul class="tag-cloud">{tags}</ul></div>'
-                   f'<div class="feature box-work">{work}</div></div>{script}',
-                   cls="on-ground")
+        return front_mini(base)
     words = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="h-big">{e(a["title"])}</h2>{draft(a["line"])}<p class="meta-row">{meta}</p>'
              f'<p><a class="textlink" href="{base}partners/">How partners use the archive</a></p>')
     return mod("collection", "the archive as a feature of the front page, on trial",
@@ -1918,11 +1935,55 @@ def front_about(base):
                f'<div class="cols"><div class="c1-9"><p class="statement-big draft">{e(ABOUT_STATEMENT)}</p></div></div><ul class="channels front-channels">{li}</ul>')
 
 
-def front_behind(base):
-    """Who is behind Africa Reframed, in About's own first sentence, and the way to About."""
-    return mod("text", "who is behind it, on trial",
-               f'<div class="cols"><div class="c1-9"><p class="statement-big draft">{e(ABOUT_WHO[0])}</p>'
-               f'<p class="doors">{button(base + "about/", "About Africa Reframed", quiet=True)}</p></div></div>')
+def front_mini(base):
+    """Version E: the archive in small. Six photographs as records, the five themes, and the keywords the six carry."""
+    a = FRONT_ARCHIVE
+    shown = [("archive", COLLECTION_PHOTOS["house-collection"], f"{base}themes/")] + [(t["slug"], THEME_PHOTOS[t["slug"]], f'{base}themes/{t["slug"]}/') for t in THEMES]
+    layers = {k: [] for k, _ in FRONT_LAYERS}
+    for _, pk, _ in shown:                                   # each layer's keywords, in the order the photographs bring them
+        for k in layers:
+            layers[k] += [w for w in FRONT_RECORDS[pk["ar"]][k] if w not in layers[k]]
+    first = FRONT_RECORDS[shown[0][1]["ar"]]
+
+    def shot(key, pk, href, on=False):
+        r = FRONT_RECORDS[pk["ar"]]
+        kws = "|".join(w for k, _ in FRONT_LAYERS for w in r[k])
+        c = (f'<p class="credit"><span class="caption record-title">{e(r["title"])}</span>'
+             f'<span class="caption"><a href="{archive("/-/galleries/archive?search=" + pk["ar"], "image")}">{pk["ar"]}</a> · {e(pk["place"])}, {pk["year"]}</span> '
+             f'<span>{e(CREDIT)}</span></p>')
+        return (f'<figure class="frame{" on" if on else ""}" data-shot="{key}" data-kws="{e(kws)}"><a href="{href}" tabindex="-1" aria-hidden="true">'
+                f'<img class="feature-photo" src="{base}assets/trial/{pk["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(r["desc"])}" loading="lazy" decoding="async"></a>{c}</figure>')
+    shots = "".join(shot(key, pk, href, on=(i == 0)) for i, (key, pk, href) in enumerate(shown))
+    rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/" data-theme="{t["slug"]}">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
+    meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
+    words = (f'<p class="kicker">{e(a["kicker"])}</p><p class="meta-row">{meta}</p>'
+             f'<h2 class="kicker">By theme</h2><ul class="theme-doors">{rows}</ul>'
+             f'<p class="doors">{button(base + "themes/", "Explore the themes", quiet=True)}</p>')
+    kw = "".join(f'<h3 class="kicker">{e(label)}</h3><ul class="kw-row">'
+                 + "".join(f'<li><button type="button" class="kw{" lit" if w in first[k] else ""}" data-kw="{e(w)}">{e(w)}</button></li>' for w in layers[k]) + "</ul>"
+                 for k, label in FRONT_LAYERS)
+    script = ("<script>(function(){var box=document.querySelector('.mini');if(!box)return;"
+              "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),links=box.querySelectorAll('[data-theme]'),kws=box.querySelectorAll('[data-kw]'),cur=0;"
+              "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
+              "function show(i,hot){cur=i;shots.forEach(function(f,n){f.classList.toggle('on',n===i)});"
+              "links.forEach(function(a){a.classList.toggle('on',a.dataset.theme===shots[i].dataset.shot)});"
+              "kws.forEach(function(b){b.classList.toggle('lit',has[i].indexOf(b.dataset.kw)>-1);b.classList.toggle('hot',b.dataset.kw===hot)})}"
+              "links.forEach(function(a){['mouseenter','focus'].forEach(function(ev){a.addEventListener(ev,function(){"
+              "for(var n=0;n<shots.length;n++)if(shots[n].dataset.shot===a.dataset.theme)show(n)})})});"
+              "kws.forEach(function(b){function go(){var k=b.dataset.kw,t=cur;for(var n=1;n<=shots.length;n++){var j=(cur+n)%shots.length;if(has[j].indexOf(k)>-1){t=j;break}}show(t,k)}"
+              "['mouseenter','focus','click'].forEach(function(ev){b.addEventListener(ev,go)});"
+              "['mouseleave','blur'].forEach(function(ev){b.addEventListener(ev,function(){b.classList.remove('hot')})})})})();</script>")
+    return mod("collection", "the archive in small, on trial",
+               f'<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
+               f'<div class="kw-rows"><h2 class="kicker kw-head">Keywords on these photographs</h2>{kw}</div></div>{script}')
+
+
+def front_join(base):
+    """Version E: the call to join. The archive is built with partners; two ways in, each with its action."""
+    j = FRONT_JOIN
+    ways = "".join(f'<li><strong>{e(t)}</strong>{draft(line)}<p class="doors">{button(base + href, label, quiet=True)}</p></li>' for t, line, href, label in FRONT_WORK)
+    return mod("items", "the call to join, on trial",
+               f'<div class="cols"><div class="c1-8">{heading(j["title"])}{draft(j["text"])}</div></div><ul class="principles two">{ways}</ul>')
 
 
 def front_ways(base):
@@ -1962,13 +2023,12 @@ def tpl_front(p, base, v):
     if v == "e":
         # the intro without its buttons and numbers: the archive block under it carries the numbers and the ways on
         top = (m_opening(CORE_LINE, base=base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
-               + m_text(None, INTRO_HOME, "d", sid="intro").replace('<p class="lead">', "<p>", 1))   # text, not the 22 px intro: four sizes on the page
-        middle = chapter(front_archive(base, themes=True)) + chapter(front_behind(base))
-        # the statement above opens the chapter and carries the way to About; the photograph follows at a section's distance; the principles close the page
-        hd = "<h2>Four principles behind every image</h2>"
-        items = m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
-        assert items.count(hd) == 1
-        close = m_document(base, HOME_DOCUMENT) + items.replace(hd, hd.replace("<h2>", '<h2 class="kicker">'))
+               + m_text(None, INTRO_HOME, "d", sid="intro"))
+        # the archive in small follows the intro at a section's distance, as its proof; the call to join and the close are chapters
+        middle = front_mini(base) + chapter(front_join(base))
+        close = (chapter(m_document(base, HOME_DOCUMENT))
+                 + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
+                 + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
     elif v == "a":
         middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
     elif v == "a-ground":
@@ -3196,24 +3256,26 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mod.on-ground,.mod.chapter.on-ground{background:var(--wash);margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
 .mod.on-ground::before{top:calc(var(--section) - 22px)}
 .feature.second{margin-top:var(--section)}
-/* E: the archive's box. The photograph that changes beside the words; the title at 44 Light; the themes as item names (17 Bold); the keywords; two ways to work with us. */
-.box-title{font-size:var(--fs-title);font-weight:300;line-height:1.05;letter-spacing:-.02em;margin:0 0 16px}
-.archive-box .meta-row{margin:0 0 32px}
-.archive-box .theme-doors a{font-size:var(--fs-text)}
-.archive-box .theme-doors a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
-.archive-box .f-words .doors{margin:0}
+/* E: the archive in small. The photograph that changes, as a record; the themes; the keywords by layer; then the call to join. */
+.mini .meta-row{margin:0 0 32px}
+.mini .theme-doors a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
+.mini .f-words .doors{margin:0}
+h2.kicker,h3.kicker{font-weight:400}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}
-.box-tags{margin-top:48px}
-.box-work{margin-top:48px;border-top:1px solid var(--line);padding-top:32px}
-.box-work h3{margin:0 0 8px}
-.box-work p{max-width:var(--measure)}
-.box-work .doors{margin:16px 0 0}
-h2.kicker{font-weight:400}
-.statement-big + .doors{margin:32px 0 0}
-.tag-cloud{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.tag-cloud li{font-size:var(--fs-small);color:var(--ink);border:1px solid var(--ink-soft);border-radius:999px;padding:4px 12px;line-height:1.4}
+.record-title{font-weight:700}
+.kw-rows{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:12px;align-items:baseline;margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
+.kw-rows .kw-head{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.kw-rows h3.kicker{grid-column:1 / 3;margin:0}
+.kw-row{grid-column:3 / 13;list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.kw{font:inherit;font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);background:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer}
+.kw.lit{color:var(--ink);border-color:var(--ink-soft)}
+.kw.hot,.kw:focus-visible{color:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);outline:none}
+.principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
+.principles.two li:first-child{grid-column:1 / 7}
+.principles.two li:last-child{grid-column:8 / 13}
+.principles.two .doors{margin:16px 0 0}
 .front-channels{margin-top:48px}
 .feature.ways{margin-top:24px}
 .feature.ways .f-left{grid-column:1 / 6;grid-row:1}
@@ -3247,7 +3309,11 @@ h2.kicker{font-weight:400}
   .feature .f-photo,.feature.flip .f-photo{grid-column:1 / -1;grid-row:1}
   .feature .f-words,.feature.flip .f-words{grid-column:1 / -1;grid-row:2;margin-top:24px}
   .feature.ways .f-left{grid-column:1 / -1;grid-row:1}
-  .box-work .f-words{margin-top:32px}
+  .principles.two{grid-template-columns:1fr}
+  .principles.two li:first-child,.principles.two li:last-child{grid-column:auto}
+  .kw-rows h3.kicker,.kw-row{grid-column:1 / -1}
+  .kw-rows{row-gap:8px}
+  .kw-rows h3.kicker{margin-top:8px}
   .feature.ways .f-words{margin-top:48px}
   .theme-large-row{grid-template-columns:repeat(2,minmax(0,1fr))}
   .theme-large span,.theme-doors a{font-size:var(--fs-text)}
@@ -3541,7 +3607,7 @@ body.show-grid .grid-overlay{display:block}
   .theme-row{grid-auto-columns:78%}
 }
 @media (max-width:480px){
-  .cards-4,.cards-5,.principles,.contents{grid-template-columns:1fr}
+  .cards-4,.cards-5,.principles,.principles.two,.contents{grid-template-columns:1fr}
   .wire-strip .wrap{align-items:flex-start}
   .strip-tools{flex-wrap:wrap;row-gap:4px}
 }

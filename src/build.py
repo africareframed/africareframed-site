@@ -1794,8 +1794,20 @@ def tpl_home(p, base):
 # leads a stranger to the login wall. In A the photograph stands on half the width, so that the words have room.
 #   A on a ground is A with the House Collection on a tinted band across the window, so that the two collections read
 #     as two different sections (Thomas, 11:58: perhaps the sections could be boxed, or stand on different grounds).
-FRONT_VERSIONS = [("a", "A · The collection and its themes"), ("a-ground", "A · The House Collection on a ground"),
-                  ("b", "B · The themes in a sentence"), ("c", "C · Large pictures, names only")]
+#   D the archive, then how it is organised (Thomas, 12:06, from the user's side): a reader does not know what a "House
+#     Collection" is. The first block is the archive itself, as something to use now; the block under it shows how the
+#     archive is organised, by theme and by collection, in words. The sponsored collection is named there and has no
+#     feature of its own on the front page; it has its place on Collections and on its own page.
+# B and C were set aside when A was chosen (11:48); their code stays for reference and their pages are no longer built.
+FRONT_VERSIONS = [("d", "D · The archive, then how it is organised"), ("a", "A · The collection and its themes"),
+                  ("a-ground", "A · The House Collection on a ground")]
+# Draft wording for version D, all of it for Thomas to approve.
+FRONT_ARCHIVE = dict(kicker="Available to partners now", title="The archive",
+                     line="1,122 photographs of modern life in Mali, Kenya and The Gambia, ready to use in reports, exhibitions and channels.",
+                     meta=["1,122 images", "21 shoots", "3 countries"])
+FRONT_WAYS = dict(title="Two ways into the archive",
+                  themes="Themes run across the archive. These five are drawn from the House Collection.",
+                  collections="Each collection is a body of work with its own story and the people behind it.")
 FRONT_STATEMENT = "1,122 photographs of modern life, in five themes:"   # draft; the theme names follow as links
 
 
@@ -1821,6 +1833,32 @@ def front_feature(c, base, flip=False, themes=False, ground=False):
                cls="on-ground" if ground else "")
 
 
+def front_archive(base):
+    """Version D: the archive as something to use now, one photograph and a few words."""
+    a, pick = FRONT_ARCHIVE, COLLECTION_PHOTOS["house-collection"]
+    photo = (f'<img class="feature-photo" src="{base}assets/trial/{pick["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(pick["alt"])}" loading="lazy" decoding="async">')
+    cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{pick["ar"]}</a> · {e(pick["place"])}, {pick["year"]}</span> '
+           f'<span>{e(CREDIT)}</span></p>')
+    meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
+    words = (f'<p class="kicker">{e(a["kicker"])}</p><h2 class="h-big">{e(a["title"])}</h2>{draft(a["line"])}<p class="meta-row">{meta}</p>'
+             f'<p><a class="textlink" href="{base}partners/">How partners use the archive</a></p>')
+    return mod("collection", "the archive as a feature of the front page, on trial",
+               f'<div class="feature"><figure class="frame f-photo">{photo}{cap}</figure><div class="f-words">{words}</div></div>')
+
+
+def front_ways(base):
+    """Version D: how the archive is organised, in words: by theme and by collection."""
+    w = FRONT_WAYS
+    th = "".join(f'<li><a href="{base}themes/{t["slug"]}/">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
+    co = "".join(f'<li><a href="{base}collections/{c["slug"]}/">{e(c["title"])}</a><span>{e(c["card"]["kicker"])}</span></li>' for c in COLLECTIONS)
+    left = (f'<p class="kicker">By theme</p>{draft(w["themes"])}<ul class="theme-doors">{th}</ul>'
+            f'<p><a class="textlink" href="{base}themes/">All themes</a></p>')
+    right = (f'<p class="kicker">By collection</p>{draft(w["collections"])}<ul class="theme-doors">{co}</ul>'
+             f'<p><a class="textlink" href="{base}collections/">All collections</a></p>')
+    head = f'<div class="cols"><div class="c1-12">{heading(w["title"])}</div></div>'
+    return mod("doors", "how the archive is organised, on trial", f'{head}<div class="feature ways"><div class="f-left">{left}</div><div class="f-words">{right}</div></div>')
+
+
 def front_statement(base):
     links = ", ".join(f'<a href="{base}themes/{t["slug"]}/">{e(t["name"].lower())}</a>' for t in THEMES)
     return mod("text", "a statement that names the themes, on trial",
@@ -1842,7 +1880,12 @@ def tpl_front(p, base, v):
     close = (chapter(m_document(base, HOME_DOCUMENT))
              + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
              + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
-    if v == "a":
+    if v == "d":
+        # the intro without its buttons and numbers: the archive block under it carries the numbers, and the block after that the ways on
+        top = (m_opening(CORE_LINE, base=base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
+               + m_text(None, INTRO_HOME, "d", sid="intro"))
+        middle = chapter(front_archive(base)) + chapter(front_ways(base))
+    elif v == "a":
         middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
     elif v == "a-ground":
         middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True, ground=True)) + front_feature(WTV_COLLECTION, base, flip=True)
@@ -3066,6 +3109,11 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .feature.flip .f-photo{grid-column:7 / 13}
 .feature.flip .f-words{grid-column:1 / 6}
 .mod.on-ground{background:var(--wash);padding-top:var(--section);padding-bottom:var(--section)}
+.feature.ways{margin-top:24px}
+.feature.ways .f-left{grid-column:1 / 6;grid-row:1}
+.f-left .kicker{margin-top:0}
+.f-left .theme-doors,.feature.ways .f-words .theme-doors{list-style:none;margin:16px 0 24px;padding:0}
+.theme-doors li span{text-align:right}
 .feature-photo,.feature .img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .f-words .kicker{margin-top:0}
 .feature-link{display:block}
@@ -3091,6 +3139,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 @media (max-width:1023px){
   .feature .f-photo,.feature.flip .f-photo{grid-column:1 / -1;grid-row:1}
   .feature .f-words,.feature.flip .f-words{grid-column:1 / -1;grid-row:2;margin-top:24px}
+  .feature.ways .f-left{grid-column:1 / -1;grid-row:1}
+  .feature.ways .f-words{margin-top:48px}
   .theme-large-row{grid-template-columns:repeat(2,minmax(0,1fr))}
   .theme-large span,.theme-doors a{font-size:var(--fs-text)}
 }
@@ -3413,7 +3463,7 @@ def strip_html(base):
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
             f'<a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a>'
-            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/front-a/">Front page</a><a href="{base}dev/signs/">Collection card</a><a href="{base}dev/images/">Images</a>'
+            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/front-d/">Front page</a><a href="{base}dev/signs/">Collection card</a><a href="{base}dev/images/">Images</a>'
             f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
             f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
             f'<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>\n')

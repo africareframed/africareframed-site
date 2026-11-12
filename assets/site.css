@@ -288,6 +288,11 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .feature.flip .f-photo{grid-column:7 / 13}
 .feature.flip .f-words{grid-column:1 / 6}
 .mod.on-ground{background:var(--wash);padding-top:var(--section);padding-bottom:var(--section)}
+.feature.ways{margin-top:24px}
+.feature.ways .f-left{grid-column:1 / 6;grid-row:1}
+.f-left .kicker{margin-top:0}
+.f-left .theme-doors,.feature.ways .f-words .theme-doors{list-style:none;margin:16px 0 24px;padding:0}
+.theme-doors li span{text-align:right}
 .feature-photo,.feature .img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .f-words .kicker{margin-top:0}
 .feature-link{display:block}
@@ -313,6 +318,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 @media (max-width:1023px){
   .feature .f-photo,.feature.flip .f-photo{grid-column:1 / -1;grid-row:1}
   .feature .f-words,.feature.flip .f-words{grid-column:1 / -1;grid-row:2;margin-top:24px}
+  .feature.ways .f-left{grid-column:1 / -1;grid-row:1}
+  .feature.ways .f-words{margin-top:48px}
   .theme-large-row{grid-template-columns:repeat(2,minmax(0,1fr))}
   .theme-large span,.theme-doors a{font-size:var(--fs-text)}
 }

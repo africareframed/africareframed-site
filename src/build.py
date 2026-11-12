@@ -345,7 +345,7 @@ def opening_photo(base, t=None):
     pic = (f'<picture><source media="(max-width:1023px)" srcset="{f}-close-800.jpg 800w, {f}-close-1200.jpg 1200w, {f}-close-2000.jpg 2000w" sizes="100vw">'
            f'<img class="opening-img opening-real" src="{f}-wide-1920.jpg" srcset="{f}-wide-1920.jpg 1920w, {f}-wide-2880.jpg 2880w, {f}-wide-3840.jpg 3840w" sizes="100vw" '
            f'width="{t["size"][0]}" height="{t["size"][1]}" style="--shape:{t["shape"]}" alt="{e(t["alt"])}" fetchpriority="high"></picture>')
-    cap = f'<a href="{archive("/-/galleries/archive?search=" + t["ar"], "image")}">{t["ar"]}</a> · {e(t["place"])}, {t["year"]}'
+    cap = f'<a href="{archive("/-/galleries/archive?search=" + t["ar"], "image")}">{t["ar"]}</a> · {e(t["place"])}'   # no year (Thomas, 12 November 2026, 15:39)
     return pic + t["wide"] + t["close"], cap
 
 
@@ -1892,34 +1892,61 @@ FRONT_VERSIONS = [("a-ground", "A · The House Collection on a ground"),
 FRONT_ARCHIVE = dict(kicker="Online for partners now", title="The archive",
                      line="1,122 photographs of modern life in Mali, Kenya and The Gambia, ready to use in reports, exhibitions and channels.",
                      meta=["1,122 images", "21 shoots", "3 countries"])
-# The six photographs of the archive in small: title, description and keywords as they stand in the master files (read
-# from the files' own metadata on 12 November 2026; nothing here is written for the website). The keywords are a choice
-# from each file's 20 to 34, by layer of the Keywording Guide: "seen" from the findability keywords (7), "concept" from
-# the fixed list (7a), "story" from the story themes (8), "sdg" (10). Left out: synonyms (12a), the verticals (a working
-# hypothesis), themes that are not public (next generation), and the technical words every image shares.
+# The photographs of the archive in small: Thomas's choice of 12 November 2026 (16:46), two for each theme, so that a theme
+# shows another photograph the second time it is pointed at. AR-1072 and AR-1341 changed places on his word (16:51) so
+# that each pair agrees with the archive's own story keywords. Title, description and keywords are as they stand in the
+# master files (read from the files' own metadata on 12 November 2026; nothing here is written for the website). The
+# keywords are a choice from each file's 23 to 44, by layer of the Keywording Guide: "seen" from the findability keywords
+# (7), "concept" from the fixed list (7a), "story" from the story themes (8), "sdg" (10). Left out: synonyms (12a), the
+# verticals (a working hypothesis), themes that are not public, the technical words, and "smiling", which nearly all
+# ten carry. No year is shown (Thomas, 15:39).
 FRONT_RECORDS = {
-    "AR-2046": dict(title="Taxi driver at the wheel of a yellow taxi",
+    "AR-1350": dict(title="Teacher holding a ruler and set square", place="Bamako, Mali",
+                    desc="A teacher in a printed dress smiles at the camera with a large ruler and set square in front of a blackboard in a classroom in Bamako, Mali.",
+                    seen=["teacher"], concept=["youth", "education", "learning"], story=["teaching and learning"], sdg=["SDG 4 – Quality Education"]),
+    "AR-1628": dict(title="Trainee chef smiling beside a woman at the counter", place="Banjul, The Gambia",
+                    desc="A trainee in chef's whites smiles at the camera as she prepares vegetables with a cook in a training kitchen in Banjul, The Gambia.",
+                    seen=["trainee chef"], concept=["youth", "education", "learning", "vocational training", "skills", "job"], story=["skills and craft"],
+                    sdg=["SDG 4 – Quality Education"]),
+    "AR-2046": dict(title="Taxi driver at the wheel of a yellow taxi", place="Banjul, The Gambia",
                     desc="A taxi driver in a striped headscarf sits at the wheel of a yellow taxi in Banjul, The Gambia, her arm resting on the open window, and looks at the camera.",
-                    seen=["taxi driver", "driving", "environmental portrait"], concept=["youth"], story=["mobility and transport", "work and livelihood"],
+                    seen=["taxi driver"], concept=["youth"], story=["work and livelihood", "mobility and transport"],
                     sdg=["SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality"]),
-    "AR-2034": dict(title="Two students with folders, arm in arm",
-                    desc="Two students in white shirts lean their heads together and smile at the camera, folders and a pen in hand, outside a terracotta building in Banjul, The Gambia.",
-                    seen=["students", "campus", "smiling"], concept=["education", "learning", "youth"], story=[], sdg=[]),
-    "AR-1973": dict(title="Young woman with a dipstick and rag, smiling",
-                    desc="A young woman in denim dungarees leans on the front of a red pickup with a dipstick and rag and smiles at the camera in Banjul, The Gambia.",
-                    seen=["garage", "smiling"], concept=["skills", "job", "youth"], story=["skills and craft", "mobility and transport", "work and livelihood"],
-                    sdg=["SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality"]),
-    "AR-2101": dict(title="Woman with a laptop smiling at the camera",
-                    desc="A woman in glasses and a dark cardigan smiles at the camera with a laptop open on her knee on a blue bench under trees in Nairobi, Kenya.",
-                    seen=["laptop", "campus", "smiling"], concept=["digital", "remote working"], story=["everyday technology", "work and livelihood"], sdg=[]),
-    "AR-1267": dict(title="Photographer smiling above the city skyline",
-                    desc="A young photographer in a tweed cap smiles as she leans on a painted rooftop wall in Nairobi, Kenya, her camera around her neck and high-rise buildings behind her.",
-                    seen=["photographer", "rooftop", "smiling", "environmental portrait"], concept=["street art", "urban culture", "youth"],
-                    story=["urban life", "creativity and culture"], sdg=[]),
-    "AR-1316": dict(title="Young man playing an electric guitar",
-                    desc="A young man in a light-blue jumper plays an electric guitar against a wooden wall in Nairobi, Kenya, and looks at the camera.",
-                    seen=["musician", "environmental portrait"], concept=["youth"], story=["creativity and culture"], sdg=[]),
+    "AR-1044": dict(title="Young man leaning on a vice in a metal workshop", place="Bamako, Mali",
+                    desc="A young man in a red polo shirt leans on a bench vice and smiles at the camera in a blue-walled metal workshop in Bamako, Mali, with tools and parts on the shelves behind him.",
+                    seen=["metalworker"], concept=["youth", "skills", "job", "small business"], story=["skills and craft", "work and livelihood"],
+                    sdg=["SDG 8 – Decent Work and Economic Growth"]),
+    "AR-1137": dict(title="Woman with a laptop and phone in the driver's seat", place="Nairobi, Kenya",
+                    desc="A woman types on a laptop on her lap with a mobile phone tucked to her ear, sitting in the driver's seat of a car with the door open, in Nairobi, Kenya.",
+                    seen=["laptop", "mobile phone"], concept=["digital", "mobile technology"], story=["work and livelihood", "everyday technology"], sdg=[]),
+    "AR-1381": dict(title="Older woman smiling at a smartphone, close-up", place="Bamako, Mali",
+                    desc="An older woman in a printed head wrap smiles at a smartphone in her hand in Bamako, Mali.",
+                    seen=["mobile phone"], concept=["digital", "mobile technology"], story=["everyday technology"], sdg=[]),
+    "AR-1852": dict(title="Young woman smiling with shopping bags", place="Banjul, The Gambia",
+                    desc="A young woman in an orange headscarf smiles as she carries paper bags of vegetables past potted palms in Banjul, The Gambia.",
+                    seen=["shopping"], concept=["youth"], story=["urban life"], sdg=[]),
+    "AR-1072": dict(title="Young man reading his mobile phone by a graffiti wall", place="Nairobi, Kenya",
+                    desc="A young man in a navy jacket leans against a wall of colourful graffiti on a rooftop in Nairobi, Kenya, and smiles at his mobile phone.",
+                    seen=["mobile phone", "graffiti", "rooftop"], concept=["youth", "digital", "mobile technology", "urban culture"],
+                    story=["everyday technology", "urban life"], sdg=[]),
+    "AR-1341": dict(title="Young woman lying among printed fabrics on a bed", place="Bamako, Mali",
+                    desc="A young woman lies on a bed among printed fabrics and clothes and smiles at the camera in a bedroom in Bamako, Mali.",
+                    seen=["wax print"], concept=["youth"], story=["urban life", "creativity and culture"], sdg=[]),
+    "AR-1265": dict(title="Photographer checking her camera on a rooftop", place="Nairobi, Kenya",
+                    desc="A young woman in a tweed cap checks the screen of her camera on a rooftop in Nairobi, Kenya, with the city's high-rise skyline behind her.",
+                    seen=["rooftop", "photographer"], concept=["youth"], story=["urban life", "creativity and culture"], sdg=[]),
 }
+HOME_PAIRS = {"learning": ["AR-1350", "AR-1628"], "work-and-enterprise": ["AR-2046", "AR-1044"], "everyday-digital": ["AR-1137", "AR-1381"],
+              "city-life": ["AR-1852", "AR-1072"], "creativity-and-culture": ["AR-1341", "AR-1265"]}
+HOME_REST = "AR-2046"   # the photograph shown before anything is pointed at
+# The rows of keywords, each on one line at desktop width (the module is locked to one window: Thomas, 14:47): 31 in all.
+FRONT_ROWS = dict(
+    seen=["teacher", "trainee chef", "taxi driver", "metalworker", "laptop", "mobile phone", "shopping", "graffiti", "rooftop", "wax print", "photographer"],
+    concept=["youth", "education", "learning", "vocational training", "skills", "job", "small business", "digital", "mobile technology", "urban culture"],
+    story=["teaching and learning", "skills and craft", "work and livelihood", "mobility and transport", "everyday technology", "urban life", "creativity and culture"],
+    sdg=["SDG 4 – Quality Education", "SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality"])
+assert all(w in FRONT_ROWS[k] for r in FRONT_RECORDS.values() for k in FRONT_ROWS for w in r[k]), "a record carries a keyword that no row shows"
+assert all(any(w in r[k] for r in FRONT_RECORDS.values()) for k in FRONT_ROWS for w in FRONT_ROWS[k]), "a row shows a keyword that no record carries"
 FRONT_LAYERS = [("seen", "In the picture"), ("concept", "Concept"), ("story", "Story"), ("sdg", "SDG")]   # the labels are draft
 FRONT_STRUCTURE = ("Themes come from collections",   # the heading and the last two sentences stand on the Themes and Collections pages already
                    "The archive is organised in themes and collections. Each collection is a body of work with its own story and the people behind it. "
@@ -1975,42 +2002,43 @@ def front_about(base):
 
 
 def front_mini(base):
-    """Version E: the archive in small. Six photographs as records, the five themes, and the keywords the six carry."""
+    """The archive in small: ten photographs as records, two for each of the five themes, and the keywords they carry."""
     a = FRONT_ARCHIVE
-    shown = [("archive", COLLECTION_PHOTOS["house-collection"], f"{base}themes/")] + [(t["slug"], THEME_PHOTOS[t["slug"]], f'{base}themes/{t["slug"]}/') for t in THEMES]
-    layers = {k: [] for k, _ in FRONT_LAYERS}
-    for _, pk, _ in shown:                                   # each layer's keywords, in the order the photographs bring them
-        for k in layers:
-            layers[k] += [w for w in FRONT_RECORDS[pk["ar"]][k] if w not in layers[k]]
-    first = FRONT_RECORDS[shown[0][1]["ar"]]
+    order = [HOME_REST] + [ar for t in THEMES for ar in HOME_PAIRS[t["slug"]] if ar != HOME_REST]   # the one at rest first: it is the first to load
+    theme_of = {ar: slug for slug, pair in HOME_PAIRS.items() for ar in pair}
+    first = FRONT_RECORDS[HOME_REST]
 
-    def shot(key, pk, href, on=False):
-        r = FRONT_RECORDS[pk["ar"]]
+    def shot(ar, on=False):
+        r = FRONT_RECORDS[ar]
         kws = "|".join(w for k, _ in FRONT_LAYERS for w in r[k])
         c = (f'<p class="credit"><span class="caption record-title">{e(r["title"])}</span>'
-             f'<span class="caption"><a href="{archive("/-/galleries/archive?search=" + pk["ar"], "image")}">{pk["ar"]}</a> · {e(pk["place"])}, {pk["year"]}</span> '
+             f'<span class="caption"><a href="{archive("/-/galleries/archive?search=" + ar, "image")}">{ar}</a> · {e(r["place"])}</span> '
              f'<span>{e(CREDIT)}</span></p>')
-        f = f'{base}assets/home/{pk["ar"].lower()}'
-        return (f'<figure class="frame{" on" if on else ""}" data-shot="{key}" data-kws="{e(kws)}"><a href="{href}" tabindex="-1" aria-hidden="true">'
+        f = f'{base}assets/home/{ar.lower()}'
+        return (f'<figure class="frame{" on" if on else ""}" data-shot="{ar}" data-of="{theme_of[ar]}" data-kws="{e(kws)}">'
+                f'<a href="{base}themes/{theme_of[ar]}/" tabindex="-1" aria-hidden="true">'
                 f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 46vw, 92vw" '
                 f'width="1280" height="853" alt="{e(r["desc"])}" loading="lazy" decoding="async"></a>{c}</figure>')
-    shots = "".join(shot(key, pk, href, on=(i == 0)) for i, (key, pk, href) in enumerate(shown))
+    shots = "".join(shot(ar, on=(i == 0)) for i, ar in enumerate(order))
     rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/" data-theme="{t["slug"]}">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
     words = (f'<p class="kicker">{e(a["kicker"])}</p><p class="meta-row">{meta}</p>'
              f'<h3 class="kicker">By theme</h3><ul class="theme-doors">{rows}</ul>'
              f'<p class="doors">{button(base + "themes/", "Explore the themes", quiet=True)}</p>')
     kw = "".join(f'<h4 class="kicker kw-label">{e(label)}</h4><ul class="kw-row">'
-                 + "".join(f'<li><button type="button" class="kw{" lit" if w in first[k] else ""}" data-kw="{e(w)}"><span>{e(w)}</span></button></li>' for w in layers[k]) + "</ul>"
+                 + "".join(f'<li><button type="button" class="kw{" lit" if w in first[k] else ""}" data-kw="{e(w)}"><span>{e(w)}</span></button></li>' for w in FRONT_ROWS[k]) + "</ul>"
                  for k, label in FRONT_LAYERS)
+    # Pointing at a theme shows the photograph of its pair that was not shown last; pointing at a keyword shows the next
+    # photograph that carries it. The change is a cut (rule 20).
     script = ("<script>(function(){var box=document.querySelector('.mini');if(!box)return;"
-              "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),links=box.querySelectorAll('[data-theme]'),kws=box.querySelectorAll('[data-kw]'),cur=0;"
+              "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),links=box.querySelectorAll('[data-theme]'),kws=box.querySelectorAll('[data-kw]'),cur=0,turn={};"
               "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
               "function show(i,hot){cur=i;shots.forEach(function(f,n){f.classList.toggle('on',n===i)});"
-              "links.forEach(function(a){a.classList.toggle('on',a.dataset.theme===shots[i].dataset.shot)});"
+              "links.forEach(function(a){a.classList.toggle('on',a.dataset.theme===shots[i].dataset.of)});"
               "kws.forEach(function(b){b.classList.toggle('lit',has[i].indexOf(b.dataset.kw)>-1);b.classList.toggle('hot',b.dataset.kw===hot)})}"
-              "links.forEach(function(a){['mouseenter','focus'].forEach(function(ev){a.addEventListener(ev,function(){"
-              "for(var n=0;n<shots.length;n++)if(shots[n].dataset.shot===a.dataset.theme)show(n)})})});"
+              "links.forEach(function(a){var t=a.dataset.theme,pair=[];shots.forEach(function(f,n){if(f.dataset.of===t)pair.push(n)});turn[t]=0;"
+              "['mouseenter','focus'].forEach(function(ev){a.addEventListener(ev,function(){"
+              "var i=pair[turn[t]%pair.length];if(i===cur&&pair.length>1){turn[t]++;i=pair[turn[t]%pair.length]}turn[t]++;show(i)})})});"
               "kws.forEach(function(b){function go(){var k=b.dataset.kw,t=cur;for(var n=1;n<=shots.length;n++){var j=(cur+n)%shots.length;if(has[j].indexOf(k)>-1){t=j;break}}show(t,k)}"
               "['mouseenter','focus','click'].forEach(function(ev){b.addEventListener(ev,go)});"
               "['mouseleave','blur'].forEach(function(ev){b.addEventListener(ev,function(){b.classList.remove('hot')})})})})();</script>")

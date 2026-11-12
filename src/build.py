@@ -2001,7 +2001,8 @@ def front_mini(base):
                f'<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
                f'<div class="kw-rows"><h2 class="kicker kw-head">Keywords on these photographs</h2>{kw}</div>'
                # the call to action belongs to the archive (Thomas, 12 November 2026, 14:17): under the keywords, one heading, one sentence, Request access
-               f'<div class="cols mini-join"><div class="c1-6">{heading(FRONT_JOIN["title"])}{draft(FRONT_JOIN["text"])}'
+               # (14:25: it did not stand as a block. It now stands under a rule, as the three lines of activity do, on the two columns of the photograph and the themes.)
+               f'<div class="feature mini-join"><div class="f-photo">{heading(FRONT_JOIN["title"])}</div><div class="f-words">{draft(FRONT_JOIN["text"])}'
                f'<p class="doors">{button(base + "request-access/", "Request access", quiet=True)}</p></div></div></div>{script}')
 
 
@@ -3270,7 +3271,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mini .meta-row{margin:0 0 32px}
 .mini .theme-doors a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
 .mini .theme-doors li{padding:0}   /* the name fills its row: the whole row answers to the pointer and to a finger */
-.mini .theme-doors a{flex:1;padding:12px 0}
+.mini .theme-doors a{flex:1;padding:12px 0;font-weight:400}   /* names to choose between, not titles (Thomas, 12 November 2026, 14:25) */
 .mini .theme-doors span{font-size:var(--fs-text)}   /* a number of images is set as the numbers above the list are */
 .mini .f-words .doors{margin:0}
 h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
@@ -3285,11 +3286,12 @@ h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .switch figure > a{display:block}
 .kw{display:block;font:inherit;background:none;border:0;padding:0;cursor:pointer}   /* the button is the thing to tap; the pill is drawn inside it */
 .kw span{display:block;font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
-.kw.lit span{color:var(--ink);border-color:var(--ink-soft)}
+.kw.lit span{color:var(--ink);background:var(--accent);border-color:var(--accent)}   /* the keywords the photograph carries light up in the archive's yellow (Thomas, 12 November 2026, 14:25) */
 .kw.hot span,.kw:focus-visible span{color:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .kw:focus-visible{outline:none}
-.mini-join{margin-top:48px}
-.mini-join .doors{margin:16px 0 0}
+.mini-join{margin-top:48px;border-top:2px solid var(--ink);padding-top:16px}
+.mini-join h2{margin:0}
+.mini .mini-join .doors{margin:16px 0 0}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
 .principles.two li:last-child{grid-column:8 / 13}

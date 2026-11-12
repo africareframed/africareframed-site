@@ -1776,7 +1776,7 @@ def tpl_home(p, base):
     # The archive: the archive in small (a photograph as a record, the five themes, the photographs' own keywords,
     #   answering to the pointer); the way on is Explore the themes.
     # Principles: behind every image and every collaboration; the four, one line each.
-    # About us: About's statement, a photograph from a workshop as a document of the work, and the way to About.
+    # About us: a photograph from a workshop as a document of the work, About's statement under it, and the way to About.
     # In use (the numbers, the partners by name, one example) is built only when each exists (rule 27).
     # Request access and sponsoring a collection are on Partners; the collections are in the menu.
     # Rhythm: one section's distance between chapters; a title stands 32 px over what it opens.
@@ -1788,8 +1788,11 @@ def tpl_home(p, base):
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            + in_chapter(m_document(base, HOME_DOCUMENT), home_head("About us", ABOUT_STATEMENT))
-            + m_doors("c", links=[button(base + "about/", "More about us", quiet=True)], tight=True, left=True))
+            # the statement stands under the photograph, with its button (Thomas, 15:16): the text and the way on belong together
+            + in_chapter(m_document(base, HOME_DOCUMENT), home_head("About us"))
+            + mod("text", "About's statement and the way to About",
+                  f'<div class="cols"><div class="c1-8">{draft(ABOUT_STATEMENT)}'
+                  f'<p class="doors">{button(base + "about/", "More about us", quiet=True)}</p></div></div>', tight=True, sid="behind"))
 
 
 # Thomas, 12 November 2026, 14:58 ("Four principles behind every image and every collaboration") and 15:08 (the title
@@ -3287,6 +3290,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .chapter-head{margin:0 0 32px}
 .chapter-head .chapter-title{margin:0}
 .chapter-head p{margin:16px 0 0}
+#behind .doors{margin:16px 0 0}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}

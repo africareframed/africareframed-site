@@ -281,20 +281,18 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
    17:24 and 17:31). */
 .opening-frame picture{display:block}
 .doc-photo{display:block;width:100%;height:auto}
-/* The collection card, on trial on /dev/signs/ (see SIGNS): A layers, B one ground, C the mount. */
-.theme-photo{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
-.mount{--layer:16px;position:relative;z-index:0;padding:0 calc(var(--layer)*2) calc(var(--layer)*2) 0}
-.mount-pattern{display:block;position:absolute;z-index:1;left:var(--layer);top:var(--layer);width:calc(100% - var(--layer)*2);height:calc(100% - var(--layer)*2);background:var(--ground)}
-.mount::after{content:"";position:absolute;z-index:0;left:calc(var(--layer)*2);top:calc(var(--layer)*2);right:0;bottom:0;border:2px solid var(--ground)}
+/* The collection card, on trial on /dev/signs/: A layers, B one ground, C the mount. On the live pages the card is plain. */
+.theme-photo{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.mount{--layer:16px;position:relative;z-index:0}
+.mount-pattern{display:none;position:absolute;z-index:1}
 .mount-photo,.mount .img{position:relative;z-index:2;display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.sign-a .mount{padding:0 calc(var(--layer)*2) calc(var(--layer)*2) 0}
+.sign-a .mount-pattern{display:block;left:var(--layer);top:var(--layer);width:calc(100% - var(--layer)*2);height:calc(100% - var(--layer)*2);background:var(--ground)}
+.sign-a .mount::after{content:"";position:absolute;z-index:0;left:calc(var(--layer)*2);top:calc(var(--layer)*2);right:0;bottom:0;border:2px solid var(--ground)}
 /* the test page's other versions (B one ground, C the mount) and the plain card */
 .sign-c .mount{background:var(--ground);padding:0 12% 6% 0;overflow:hidden}
-.sign-c .mount-pattern{left:0;top:0;width:100%;height:100%;background:none}
-.sign-c .mount::after,.no-signs .mount::after,.no-signs .mount-pattern{display:none}
-.no-signs .mount{padding:0}
+.sign-c .mount-pattern{display:block;left:0;top:0;width:100%;height:100%}
 @media (min-width:768px){
-  .sign-b .mount{padding:0}
-  .sign-b .mount-pattern,.sign-b .mount::after{display:none}
   .sign-b .collection-list{position:relative;isolation:isolate;padding:32px 0}
   .sign-b .collection-list::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc(50% - 50vw);right:calc(50% + var(--gutter)/2);
     background:var(--ground) repeating-linear-gradient(120deg,transparent 0 330px,#fff 330px 400px)}
@@ -304,8 +302,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 @media (max-width:767px){
   .mount{--layer:10px}
   .sign-b .mount{background:var(--ground);padding:0 12% 6% 0;overflow:hidden}   /* on a phone B falls back to the mount */
-  .sign-b .mount-pattern{left:0;top:0;width:100%;height:100%;background:none}
-  .sign-b .mount::after{display:none}
+  .sign-b .mount-pattern{display:block;left:0;top:0;width:100%;height:100%}
 }
 .signs-switch{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:var(--fs-small);color:var(--ink-soft);margin-bottom:32px}
 .signs-switch span{margin-left:8px}

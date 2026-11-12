@@ -303,7 +303,7 @@ CLOSE_PATTERN = (cut_on_photo(720, 320, 96, [(300, 50), (520, 150), (740, 330)],
                                 [(92, 140, 40)], "close-pattern close-narrow", "xMaxYMin"))
 
 
-# The mount's ground (see SIGNS): two broad stripes across the whole mount, at the identity's angle. The photograph covers
+# The mount's ground (the collection card on trial): two broad stripes across the whole mount, at the identity's angle. The photograph covers
 # most of them, so one stripe shows beside the photograph and again beneath it, and the other in the corner: the stripes
 # run behind the photograph.
 MOUNT_PATTERN = cut_on_photo(1000, 647, 90, [(1090, 700), (1290, 700)], [], "mount-pattern", "xMidYMid")
@@ -484,11 +484,11 @@ HOME_DOCUMENT = dict(
 def m_document(base, d):
     f = base + d["file"]
     sid = slot("feature", "16/9", "A document of the work: photographers at a workshop")
-    pic = (f'<img class="doc-photo" src="{f}-1920.jpg" srcset="{f}-1280.jpg 1280w, {f}-1920.jpg 1920w" sizes="100vw" '
+    pic = (f'<img class="doc-photo" src="{f}-1920.jpg" srcset="{f}-1280.jpg 1280w, {f}-1920.jpg 1920w" sizes="(min-width:1440px) 1312px, 92vw" '
            f'width="{d["size"][0]}" height="{d["size"][1]}" alt="{e(d["alt"])}" loading="lazy" decoding="async">')
     below = f'<p class="credit"><span class="caption">{e(limit("caption", d["caption"]))}</span> <span>{e(CREDIT)}</span></p>{note(d["note"])}'
-    return mod("photo", "a, full bleed, a document of the work",
-               f'<figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}><div class="bleed">{pic}</div><div class="wrap">{below}</div></figure>', wrap=False)
+    return mod("photo", "b, on the columns, a document of the work",
+               f'<div class="cols"><div class="c1-12"><figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}>{pic}{below}</figure></div></div>')
 
 
 # 2.6 Image grid: (a) three in a row, (b) four portraits, (c) a strip of three squares, (d) six to eight mixed.
@@ -533,37 +533,38 @@ def m_rows(items):
 
 
 # 2.7 Theme sequence: (a) five entries in a row (Home), (b) five rows (Themes index), (c) previous and next.
-# The collection card, on trial on /dev/signs/ only (Thomas, 12 November 2026, 08:10 to 08:25). A collection is not one
-# picture: it has layers, and it is a part of the collected storytelling of Africa Reframed; the collections explain the
-# bigger picture together. The card's graphics should hint at that, however quietly, with the identity's own means.
-# Three versions stand on the test page, with a switch between them:
-#   A layers: behind the photograph, two more sheets of its own shape, the nearer one black with a stripe running behind
-#     the photograph, the farther one an outline (the echoed frame of the 2016 folder);
-#   B one ground: all the collections' photographs stand on one black ground that runs off the window's edge, and the
-#     stripes cross it behind them all, so that each card shows a part of one field;
-#   C the mount: each photograph on its own black ground, showing beside and beneath it (the first version).
-# The cut corner for themes was tried and dropped the same morning: the numbers already say that the themes are a
-# series, and the cut was too weak a sign and disturbed the quiet (Thomas, 08:25). Home and every other page are unchanged.
-SIGNS = None
-SIGNS_TRIAL = dict(
-    themes={"learning": ("AR-1961", "Two learners at a shared desk in a classroom in Banjul"),
-            "work-and-enterprise": ("AR-1973", "A young mechanic at the open bonnet of a pickup in Banjul"),
-            "everyday-digital": ("AR-2101", "A woman with a laptop on a bench under trees in Nairobi"),
-            "city-life": ("AR-1267", "A young photographer on a rooftop above the skyline of Nairobi"),
-            "creativity-and-culture": ("AR-2002", "A woman in a wax-print top and headwrap in front of a wax-print fabric in Banjul")})
+# The themes' photographs on Home, on trial (Thomas, 12 November 2026, 08:25 and 08:57: bring the real elements into the
+# landing page; the first stand-ins looked messy, with no room to breathe). Chosen as a set, not one by one: daylight,
+# with a thread of light blue and terracotta, and shown whole at 3:2 so that each keeps the air its photographer gave it.
+# Not the final picks. The Themes page and the theme pages keep their grey boxes until the picks are made.
+THEME_PHOTOS = {
+    "learning": dict(ar="AR-2034", place="Banjul, The Gambia", year="2015", alt="Two students with folders smile outside a terracotta building in Banjul"),
+    "work-and-enterprise": dict(ar="AR-1973", place="Banjul, The Gambia", year="2015", alt="A young mechanic at the open bonnet of a pickup in Banjul"),
+    "everyday-digital": dict(ar="AR-2101", place="Nairobi, Kenya", year="2018", alt="A woman with a laptop on a bench under trees in Nairobi"),
+    "city-life": dict(ar="AR-1267", place="Nairobi, Kenya", year="2014", alt="A young photographer on a rooftop above the skyline of Nairobi"),
+    "creativity-and-culture": dict(ar="AR-1316", place="Nairobi, Kenya", year="2014", alt="A young man plays an electric guitar against a wooden wall in Nairobi"),
+}
+
+# The collection card on trial on /dev/signs/ (Thomas, 12 November 2026, 08:10 to 08:57). A collection is not one picture:
+# it has layers, and it is a part of the collected storytelling of Africa Reframed. Three versions stand on the test page,
+# with a switch: A layers (two more sheets of the photograph's shape behind it), B one ground (all collections on one
+# black ground that the stripes cross), C the mount (each photograph on its own black ground). A stood on every page
+# for half an hour on 12 November and was taken off again: in doubt whether any of them helps or only confuses the
+# layout (Thomas, 08:57). The live cards are plain; the question is taken up again when the landing page is whole.
+# The cut corner for themes was tried and dropped the same morning.
 
 
-def sign_theme(t, base):
-    ar, alt = SIGNS["themes"][t["slug"]]
-    return (f'<figure class="frame"><img class="theme-photo" src="{base}assets/trial/{ar.lower()}-theme.jpg" width="640" height="800" '
-            f'alt="{e(alt)}" loading="lazy" decoding="async"></figure>')
+def theme_photo(t, base):
+    pick = THEME_PHOTOS[t["slug"]]
+    sid = slot("theme", "3/2", "Theme image")
+    if sid:
+        PICKS[sid] = dict(ar=pick["ar"], place=pick["place"], year=pick["year"])
+    return (f'<figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}><img class="theme-photo" src="{base}assets/themes/{pick["ar"].lower()}.jpg" '
+            f'width="960" height="640" alt="{e(pick["alt"])}" loading="lazy" decoding="async"></figure>')
 
 
-# The collection card's layers, on every page since 12 November 2026, 08:33 (Thomas: version A, "let's try it on the live
-# website"). Behind the photograph stand two more sheets of its own shape: the nearer one black, with a stripe running
-# behind the photograph, the farther one an outline. A collection is not one picture; there is more underneath. The
-# stripe in the card is part of this sign and never stands alone, so it is not counted as a place of the pattern (rule 19).
-# A collection without a chosen photograph keeps its grey box, on the same layers.
+# The collection card's photograph. The markup carries the layers of the test page (see above), which only show there;
+# on the live pages the card is plain. A collection without a chosen photograph keeps its grey box.
 COLLECTION_PHOTOS = {   # on trial, not the final pick
     "house-collection": dict(ar="AR-2046", place="Banjul, The Gambia", year="2015", alt="A taxi driver at the wheel of a yellow taxi in Banjul")}
 
@@ -579,10 +580,11 @@ def card_photo(slug, label, base):
 
 
 def theme_entry(t, base, i, row=False, ratio="4/5"):
-    strip = (frame(f'Image for {t["name"]}', "3/2", role="row", own=False, cap=False) if row
-             else frame("Theme image", ratio, role="theme-nav" if ratio == "5/2" else "theme", own=False, cap=False))
-    if SIGNS and not row and ratio == "4/5":
-        strip = sign_theme(t, base)
+    if not row and ratio == "4/5" and CUR["slug"] in ("home", "signs") and t["slug"] in THEME_PHOTOS:
+        strip = theme_photo(t, base)
+    else:
+        strip = (frame(f'Image for {t["name"]}', "3/2", role="row", own=False, cap=False) if row
+                 else frame("Theme image", ratio, role="theme-nav" if ratio == "5/2" else "theme", own=False, cap=False))
     return (f'<a class="theme-entry{" row" if row else ""}" href="{base}themes/{t["slug"]}/">'
             f'<span class="order">{i}</span>{"" if row else strip}<div><h3>{e(t["name"])}</h3><p>{e(limit("theme statement", t["statement"]))}</p>'
             f'<span class="count">{t["count"]} images</span></div>{strip if row else ""}</a>')
@@ -1765,9 +1767,11 @@ def tpl_home(p, base):
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
             + chapter(m_themes(base, "a"))
-            + m_document(base, HOME_DOCUMENT)
             + chapter(m_collection(base))
-            + chapter(m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"))
+            # The work behind the images, one chapter: the document of the work, on the columns, and under it the four
+            # principles (Thomas, 12 November 2026, 08:57: the photograph above the principles, inside the page's margins).
+            + chapter(m_document(base, HOME_DOCUMENT))
+            + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
             + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))   # under the principles, on their left edge
 
 
@@ -2176,12 +2180,7 @@ def tpl_type(base):
 
 
 def tpl_signs(p, base):
-    global SIGNS
-    SIGNS = SIGNS_TRIAL
-    try:
-        home = tpl_home(p, base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
-    finally:
-        SIGNS = None
+    home = tpl_home(p, base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
     kinds = [("sign-a", "A · Layers"), ("sign-b", "B · One ground"), ("sign-c", "C · The mount"), ("no-signs", "Plain")]
     buttons = "".join(f'<button type="button" data-sign="{k}" aria-pressed="{"true" if i == 0 else "false"}">{e(t)}</button>' for i, (k, t) in enumerate(kinds))
     top = (m_page_head("The collection card", "A copy of Home with three versions of the collection card on trial. A collection has layers and is a part "
@@ -2189,7 +2188,7 @@ def tpl_signs(p, base):
            + f'<p class="wrap signs-switch">{buttons}<span>The switch changes the two collection cards further down this page. '
              'The photographs are stand-ins chosen for this test, not the final picks.</span></p>'
            + "<script>(function(){var b=document.querySelectorAll('.signs-switch button'),k=['sign-a','sign-b','sign-c','no-signs'];"
-             "function set(x){k.forEach(function(c){document.body.classList.remove(c)});document.body.classList.add(x);"
+             "function set(x){k.forEach(function(c){document.body.classList.remove(c)});if(x!=='no-signs')document.body.classList.add(x);"
              "b.forEach(function(n){n.setAttribute('aria-pressed',String(n.dataset.sign===x))})}"
              "b.forEach(function(n){n.addEventListener('click',function(){set(n.dataset.sign)})});set('sign-a')})();</script>")
     return top + home
@@ -2980,20 +2979,18 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
    17:24 and 17:31). */
 .opening-frame picture{display:block}
 .doc-photo{display:block;width:100%;height:auto}
-/* The collection card, on trial on /dev/signs/ (see SIGNS): A layers, B one ground, C the mount. */
-.theme-photo{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
-.mount{--layer:16px;position:relative;z-index:0;padding:0 calc(var(--layer)*2) calc(var(--layer)*2) 0}
-.mount-pattern{display:block;position:absolute;z-index:1;left:var(--layer);top:var(--layer);width:calc(100% - var(--layer)*2);height:calc(100% - var(--layer)*2);background:var(--ground)}
-.mount::after{content:"";position:absolute;z-index:0;left:calc(var(--layer)*2);top:calc(var(--layer)*2);right:0;bottom:0;border:2px solid var(--ground)}
+/* The collection card, on trial on /dev/signs/: A layers, B one ground, C the mount. On the live pages the card is plain. */
+.theme-photo{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.mount{--layer:16px;position:relative;z-index:0}
+.mount-pattern{display:none;position:absolute;z-index:1}
 .mount-photo,.mount .img{position:relative;z-index:2;display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.sign-a .mount{padding:0 calc(var(--layer)*2) calc(var(--layer)*2) 0}
+.sign-a .mount-pattern{display:block;left:var(--layer);top:var(--layer);width:calc(100% - var(--layer)*2);height:calc(100% - var(--layer)*2);background:var(--ground)}
+.sign-a .mount::after{content:"";position:absolute;z-index:0;left:calc(var(--layer)*2);top:calc(var(--layer)*2);right:0;bottom:0;border:2px solid var(--ground)}
 /* the test page's other versions (B one ground, C the mount) and the plain card */
 .sign-c .mount{background:var(--ground);padding:0 12% 6% 0;overflow:hidden}
-.sign-c .mount-pattern{left:0;top:0;width:100%;height:100%;background:none}
-.sign-c .mount::after,.no-signs .mount::after,.no-signs .mount-pattern{display:none}
-.no-signs .mount{padding:0}
+.sign-c .mount-pattern{display:block;left:0;top:0;width:100%;height:100%}
 @media (min-width:768px){
-  .sign-b .mount{padding:0}
-  .sign-b .mount-pattern,.sign-b .mount::after{display:none}
   .sign-b .collection-list{position:relative;isolation:isolate;padding:32px 0}
   .sign-b .collection-list::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc(50% - 50vw);right:calc(50% + var(--gutter)/2);
     background:var(--ground) repeating-linear-gradient(120deg,transparent 0 330px,#fff 330px 400px)}
@@ -3003,8 +3000,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 @media (max-width:767px){
   .mount{--layer:10px}
   .sign-b .mount{background:var(--ground);padding:0 12% 6% 0;overflow:hidden}   /* on a phone B falls back to the mount */
-  .sign-b .mount-pattern{left:0;top:0;width:100%;height:100%;background:none}
-  .sign-b .mount::after{display:none}
+  .sign-b .mount-pattern{display:block;left:0;top:0;width:100%;height:100%}
 }
 .signs-switch{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:var(--fs-small);color:var(--ink-soft);margin-bottom:32px}
 .signs-switch span{margin-left:8px}

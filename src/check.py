@@ -104,9 +104,7 @@ MEASURE_JS = r"""
     if (!e.closest('main')) continue;
     const s = getComputedStyle(e);
     const hit = isY(s.backgroundColor) || isY(s.color) || (parseFloat(s.borderBottomWidth) > 0 && isY(s.borderBottomColor)) || (parseFloat(s.borderLeftWidth) > 0 && isY(s.borderLeftColor));
-    // (Thomas, 12 November 2026, 14:25) on Home the keywords a photograph carries light up in yellow: the yellow still means
-    // the archive, here its own data; they are not counted as a second use.
-    if (hit && !e.closest('.draft') && !e.closest('.kw-rows')) { const k = (typeof e.className === 'string' && e.className) || e.tagName; yellow[k] = (yellow[k] || 0) + 1; }
+    if (hit && !e.closest('.draft')) { const k = (typeof e.className === 'string' && e.className) || e.tagName; yellow[k] = (yellow[k] || 0) + 1; }
   }
   const controls = [...document.querySelectorAll('a, button, input, select, textarea, summary')].filter(e => vis(e) && !wire(e));
   const small = controls.filter(e => { const r = (e.type === 'checkbox' && e.closest('label') ? e.closest('label') : e).getBoundingClientRect(); const inline = getComputedStyle(e).display === 'inline' && e.closest('main p, main li, main dd'); return r.height < 44 && !inline; })

@@ -3286,8 +3286,8 @@ h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .switch figure > a{display:block}
 .kw{display:block;font:inherit;background:none;border:0;padding:0;cursor:pointer}   /* the button is the thing to tap; the pill is drawn inside it */
 .kw span{display:block;font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
-.kw.lit span{color:var(--ink);background:var(--accent);border-color:var(--accent)}   /* the keywords the photograph carries light up in the archive's yellow (Thomas, 12 November 2026, 14:25) */
-.kw.hot span,.kw:focus-visible span{color:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.kw.lit span{color:var(--paper);background:var(--ink);border-color:var(--ink)}   /* the keywords the photograph carries are inverted: black, white type (Thomas, 12 November 2026, 14:31; the yellow tried at 14:25 keeps its one job) */
+.kw.hot span,.kw:focus-visible span{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}   /* the one under the pointer: a ring */
 .kw:focus-visible{outline:none}
 .mini-join{margin-top:48px;border-top:2px solid var(--ink);padding-top:16px}
 .mini-join h2{margin:0}

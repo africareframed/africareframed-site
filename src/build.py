@@ -1779,7 +1779,7 @@ def home_behind(base):
     """Under the workshop photograph: the archive is a part of something larger, in About's own statement, and the way to About."""
     return mod("text", "the background in About's own statement, leading to About",
                f'<div class="cols"><div class="c1-8">{draft(ABOUT_STATEMENT)}'
-               f'<p class="doors">{button(base + "about/", "About Africa Reframed", quiet=True)}</p></div></div>', tight=True)
+               f'<p class="doors">{button(base + "about/", "About Africa Reframed", quiet=True)}</p></div></div>', tight=True, sid="behind")
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -3267,7 +3267,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mini .theme-doors a{flex:1;padding:12px 0;font-weight:400}   /* names to choose between, not titles (Thomas, 12 November 2026, 14:25) */
 .mini .theme-doors span{font-size:var(--fs-text)}   /* a number of images is set as the numbers above the list are */
 .mini .f-words .doors{margin:0}
-.mod-text .cols .c1-8 > p + .doors{margin:16px 0 0}
+#behind .doors{margin:16px 0 0}
 h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */

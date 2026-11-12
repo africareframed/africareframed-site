@@ -1016,8 +1016,13 @@ COLLECTIONS = [HOUSE_COLLECTION, WTV_COLLECTION]   # the order on Collections an
 # projects, strongest first; dates only in captions or inside a sentence, never as structure. A project in production or open
 # is shown first with its label; nothing else carries a state. Calibres are never mixed: artists, students, our team.
 # Afghan Tales and Commerce & Culture's other work stay off the site. Every line is draft until Thomas approves it.
-ABOUT_STATEMENT = ("We bring contemporary Africa into view in Europe: through an archive of photographs, "
-                   "exhibitions of its artists, and workshops with its photographers.")
+# 12 November 2026, 14:58 (Thomas): the statement opens on the partnerships, which is what we do; until then it read
+# "We bring contemporary Africa into view in Europe: through an archive of photographs, exhibitions of its artists, and
+# workshops with its photographers." One wording on About and on Home (rule 30).
+# (The statement's limit is 25 words, rule 4: with the new opening the three lines are named without their qualifiers,
+# which About's three lines of activity carry directly under it.)
+ABOUT_STATEMENT = ("We build partnerships around visual storytelling to bring contemporary Africa into view in Europe: "
+                   "through an archive of photographs, exhibitions and workshops.")
 STATES = {"in production": "In production", "now": "Now", "record": ""}   # the order projects are shown in, top first
 ABOUT_CHANNELS = [  # (anchor, name, one line): the three lines of activity under the head, in the order of the sections
     ("archive", "The archive", "Photographs of contemporary Africa, open to the organisations we approve and growing with every collection."),
@@ -1767,7 +1772,7 @@ def tpl_home(p, base):
             + front_mini(base)
             # under the keywords: what stands behind every image (Thomas, 12 November 2026, 14:40). The page's rhythm (14:47):
             # one section's distance between its parts, and half of it where two things belong together.
-            + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
+            + m_items("Four principles behind every image and every collaboration", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)

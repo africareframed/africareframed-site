@@ -294,8 +294,11 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 /* E: the archive in small. The photograph that changes, as a record; the themes; the keywords by layer; then the call to join. */
 .mini .meta-row{margin:0 0 32px}
 .mini .theme-doors a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
+.mini .theme-doors li{padding:0}   /* the name fills its row: the whole row answers to the pointer and to a finger */
+.mini .theme-doors a{flex:1;padding:12px 0}
+.mini .theme-doors span{font-size:var(--fs-text)}   /* a number of images is set as the numbers above the list are */
 .mini .f-words .doors{margin:0}
-h2.kicker,h3.kicker{font-weight:400}
+h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}
@@ -304,9 +307,12 @@ h2.kicker,h3.kicker{font-weight:400}
 .kw-rows .kw-head{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .kw-rows h3.kicker{grid-column:1 / 3;margin:0}
 .kw-row{grid-column:3 / 13;list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.kw{font:inherit;font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);background:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer}
-.kw.lit{color:var(--ink);border-color:var(--ink-soft)}
-.kw.hot,.kw:focus-visible{color:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);outline:none}
+.switch figure > a{display:block}
+.kw{display:block;font:inherit;background:none;border:0;padding:0;cursor:pointer}   /* the button is the thing to tap; the pill is drawn inside it */
+.kw span{display:block;font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.kw.lit span{color:var(--ink);border-color:var(--ink-soft)}
+.kw.hot span,.kw:focus-visible span{color:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.kw:focus-visible{outline:none}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
 .principles.two li:last-child{grid-column:8 / 13}
@@ -348,6 +354,9 @@ h2.kicker,h3.kicker{font-weight:400}
   .principles.two li:first-child,.principles.two li:last-child{grid-column:auto}
   .kw-rows h3.kicker,.kw-row{grid-column:1 / -1}
   .kw-rows{row-gap:8px}
+  .mini .theme-doors a{padding:16px 0}
+  .kw{padding:8px 0}   /* 44 px to tap; the rows keep their distance through it */
+  .kw-row{row-gap:0}
   .kw-rows h3.kicker{margin-top:8px}
   .feature.ways .f-words{margin-top:48px}
   .theme-large-row{grid-template-columns:repeat(2,minmax(0,1fr))}

@@ -41,7 +41,9 @@ MEASURE_JS = r"""
   const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };
   const wire = e => !!e.closest('.wire-strip,.note,.grid-overlay,.skip,.lines,.ph-text');
   // credit lines and captions are counted by rule 15, not as the page's words: one stands under every image by rule
-  const credit = e => !!e.closest('.credit, figcaption');
+  // (12 November 2026) the keywords of the photographs on Home (.kw-rows) are a part of the photograph's record, as its
+  // caption is: they stand under the image as the archive's own data, and are not counted as the page's words either.
+  const credit = e => !!e.closest('.credit, figcaption, .kw-rows');
   const tl = e => { let n = 0; e.childNodes.forEach(c => { if (c.nodeType === 3) n += c.textContent.trim().length; }); return n; };
   const main = document.querySelector('main');
   const all = [...document.querySelectorAll('body *')].filter(e => vis(e) && !wire(e));

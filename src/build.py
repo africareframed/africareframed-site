@@ -1755,6 +1755,31 @@ PRIVACY = [("What we collect", "Your organisation, your name and role, your emai
 # (section 3). Nine templates; the five key pages first.
 # ---------------------------------------------------------------------------------------------
 def tpl_home(p, base):
+    # The front page is the page of the product (Thomas, 12 November 2026, 13:16 to 13:42; tried as version E on /dev/).
+    # 1 What this is: the Opening and the intro, which also say who is behind it. 2 The archive in small: a photograph
+    # as a record, the five themes and the photographs' own keywords, answering to the pointer; the way on is Explore
+    # the themes. 3 In use: the numbers, the partners by name, one example; built only when each exists (rule 27).
+    # 4 Who makes it: a photograph from a workshop, and under it the three lines of activity, each leading into About.
+    # 5 The close: About, and Request access. The four principles stand on About; the collections are in the menu.
+    return (m_opening(CORE_LINE, base=base)
+            + m_text(None, INTRO_HOME, "d", sid="intro")
+            + front_mini(base)
+            + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
+                        note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
+            + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
+            + chapter(m_document(base, HOME_DOCUMENT))
+            + home_channels(base)
+            + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True),
+                                  button(base + "request-access/", "Request access", quiet=True)], tight=True, left=True))
+
+
+def home_channels(base):
+    """Under the workshop photograph: the three lines of activity in About's own words, each leading into About."""
+    li = "".join(f'<li><a href="{base}about/#{sid}"><strong>{e(name)}</strong>{draft(line, "span", "channel-line")}</a></li>' for sid, name, line in ABOUT_CHANNELS)
+    return mod("items", "a, the three lines of activity, leading to About", f'<ul class="channels">{li}</ul>', tight=True)
+
+
+def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
     # 1 What this is: the Opening. 2 Who it is for and who is behind it, with the ways on. 3 In use: the numbers (exist),
     # partners and an example (from the closed preview). 4 The five themes. 5 The collections. 6 The principles.
     return (m_opening(CORE_LINE, base=base)
@@ -1837,7 +1862,8 @@ def tpl_home(p, base):
 # belong to the archive, so both stand inside its box. Its ways on are Request access and Explore the themes. Under
 # the box Africa Reframed says what it does, in About's own words (the archive, exhibitions, workshops), which opens
 # the close: the workshop photograph, the four principles, and the way to About.
-FRONT_VERSIONS = [("e", "E · The archive, with its themes"), ("a-ground", "A · The House Collection on a ground"),
+# E went live as the front page on 12 November 2026 (tpl_home); its trial page is no longer built.
+FRONT_VERSIONS = [("a-ground", "A · The House Collection on a ground"),
                   ("a", "A · The collection and its themes")]
 # Draft wording for version D, all of it for Thomas to approve.
 FRONT_ARCHIVE = dict(kicker="Online for partners now", title="The archive",
@@ -1951,8 +1977,10 @@ def front_mini(base):
         c = (f'<p class="credit"><span class="caption record-title">{e(r["title"])}</span>'
              f'<span class="caption"><a href="{archive("/-/galleries/archive?search=" + pk["ar"], "image")}">{pk["ar"]}</a> · {e(pk["place"])}, {pk["year"]}</span> '
              f'<span>{e(CREDIT)}</span></p>')
+        f = f'{base}assets/home/{pk["ar"].lower()}'
         return (f'<figure class="frame{" on" if on else ""}" data-shot="{key}" data-kws="{e(kws)}"><a href="{href}" tabindex="-1" aria-hidden="true">'
-                f'<img class="feature-photo" src="{base}assets/trial/{pk["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(r["desc"])}" loading="lazy" decoding="async"></a>{c}</figure>')
+                f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 46vw, 92vw" '
+                f'width="1280" height="853" alt="{e(r["desc"])}" loading="lazy" decoding="async"></a>{c}</figure>')
     shots = "".join(shot(key, pk, href, on=(i == 0)) for i, (key, pk, href) in enumerate(shown))
     rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/" data-theme="{t["slug"]}">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
@@ -1960,7 +1988,7 @@ def front_mini(base):
              f'<h2 class="kicker">By theme</h2><ul class="theme-doors">{rows}</ul>'
              f'<p class="doors">{button(base + "themes/", "Explore the themes", quiet=True)}</p>')
     kw = "".join(f'<h3 class="kicker">{e(label)}</h3><ul class="kw-row">'
-                 + "".join(f'<li><button type="button" class="kw{" lit" if w in first[k] else ""}" data-kw="{e(w)}">{e(w)}</button></li>' for w in layers[k]) + "</ul>"
+                 + "".join(f'<li><button type="button" class="kw{" lit" if w in first[k] else ""}" data-kw="{e(w)}"><span>{e(w)}</span></button></li>' for w in layers[k]) + "</ul>"
                  for k, label in FRONT_LAYERS)
     script = ("<script>(function(){var box=document.querySelector('.mini');if(!box)return;"
               "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),links=box.querySelectorAll('[data-theme]'),kws=box.querySelectorAll('[data-kw]'),cur=0;"
@@ -1973,7 +2001,7 @@ def front_mini(base):
               "kws.forEach(function(b){function go(){var k=b.dataset.kw,t=cur;for(var n=1;n<=shots.length;n++){var j=(cur+n)%shots.length;if(has[j].indexOf(k)>-1){t=j;break}}show(t,k)}"
               "['mouseenter','focus','click'].forEach(function(ev){b.addEventListener(ev,go)});"
               "['mouseleave','blur'].forEach(function(ev){b.addEventListener(ev,function(){b.classList.remove('hot')})})})})();</script>")
-    return mod("collection", "the archive in small, on trial",
+    return mod("collection", "the archive in small",
                f'<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
                f'<div class="kw-rows"><h2 class="kicker kw-head">Keywords on these photographs</h2>{kw}</div></div>{script}')
 
@@ -2020,16 +2048,7 @@ def tpl_front(p, base, v):
     close = (chapter(m_document(base, HOME_DOCUMENT))
              + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
              + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
-    if v == "e":
-        # the intro without its buttons and numbers: the archive block under it carries the numbers and the ways on
-        top = (m_opening(CORE_LINE, base=base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
-               + m_text(None, INTRO_HOME, "d", sid="intro"))
-        # the archive in small follows the intro at a section's distance, as its proof; the call to join and the close are chapters
-        middle = front_mini(base) + chapter(front_join(base))
-        close = (chapter(m_document(base, HOME_DOCUMENT))
-                 + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles")
-                 + m_doors("c", links=[button(base + "about/", "About Africa Reframed", quiet=True)], tight=True, left=True))
-    elif v == "a":
+    if v == "a":
         middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True)) + chapter(front_feature(WTV_COLLECTION, base, flip=True))
     elif v == "a-ground":
         middle = chapter(front_feature(HOUSE_COLLECTION, base, themes=True, ground=True)) + front_feature(WTV_COLLECTION, base, flip=True)
@@ -2447,7 +2466,7 @@ def tpl_type(base):
 
 
 def tpl_signs(p, base):
-    home = tpl_home(p, base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
+    home = tpl_home_cards(p, base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
     kinds = [("sign-a", "A · Layers"), ("sign-b", "B · One ground"), ("sign-c", "C · The mount"), ("no-signs", "Plain")]
     buttons = "".join(f'<button type="button" data-sign="{k}" aria-pressed="{"true" if i == 0 else "false"}">{e(t)}</button>' for i, (k, t) in enumerate(kinds))
     top = (m_page_head("The collection card", "A copy of Home with three versions of the collection card on trial. A collection has layers and is a part "
@@ -3259,8 +3278,11 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 /* E: the archive in small. The photograph that changes, as a record; the themes; the keywords by layer; then the call to join. */
 .mini .meta-row{margin:0 0 32px}
 .mini .theme-doors a.on{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.2em}
+.mini .theme-doors li{padding:0}   /* the name fills its row: the whole row answers to the pointer and to a finger */
+.mini .theme-doors a{flex:1;padding:12px 0}
+.mini .theme-doors span{font-size:var(--fs-text)}   /* a number of images is set as the numbers above the list are */
 .mini .f-words .doors{margin:0}
-h2.kicker,h3.kicker{font-weight:400}
+h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}
@@ -3269,9 +3291,12 @@ h2.kicker,h3.kicker{font-weight:400}
 .kw-rows .kw-head{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .kw-rows h3.kicker{grid-column:1 / 3;margin:0}
 .kw-row{grid-column:3 / 13;list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.kw{font:inherit;font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);background:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer}
-.kw.lit{color:var(--ink);border-color:var(--ink-soft)}
-.kw.hot,.kw:focus-visible{color:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);outline:none}
+.switch figure > a{display:block}
+.kw{display:block;font:inherit;background:none;border:0;padding:0;cursor:pointer}   /* the button is the thing to tap; the pill is drawn inside it */
+.kw span{display:block;font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.kw.lit span{color:var(--ink);border-color:var(--ink-soft)}
+.kw.hot span,.kw:focus-visible span{color:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.kw:focus-visible{outline:none}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
 .principles.two li:last-child{grid-column:8 / 13}
@@ -3313,6 +3338,9 @@ h2.kicker,h3.kicker{font-weight:400}
   .principles.two li:first-child,.principles.two li:last-child{grid-column:auto}
   .kw-rows h3.kicker,.kw-row{grid-column:1 / -1}
   .kw-rows{row-gap:8px}
+  .mini .theme-doors a{padding:16px 0}
+  .kw{padding:8px 0}   /* 44 px to tap; the rows keep their distance through it */
+  .kw-row{row-gap:0}
   .kw-rows h3.kicker{margin-top:8px}
   .feature.ways .f-words{margin-top:48px}
   .theme-large-row{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -3637,7 +3665,7 @@ def strip_html(base):
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
             f'<a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a>'
-            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/front-e/">Front page</a><a href="{base}dev/signs/">Collection card</a><a href="{base}dev/images/">Images</a>'
+            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/front-a/">Front page</a><a href="{base}dev/signs/">Collection card</a><a href="{base}dev/images/">Images</a>'
             f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
             f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
             f'<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>\n')

@@ -281,6 +281,18 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
    17:24 and 17:31). */
 .opening-frame picture{display:block}
 .doc-photo{display:block;width:100%;height:auto}
+/* Signs, on trial on /dev/signs/ (see SIGNS). The cut: the lower right corner, at the stripes' angle. The mount: a black
+   ground 12% beside and 6% beneath the photograph. */
+.theme-photo{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
+.cut-corner{--cut:72px;clip-path:polygon(0 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)*.57735) 100%,0 100%)}
+.mount{position:relative;background:var(--ground);padding:0 12% 6% 0;overflow:hidden}
+.mount-pattern{position:absolute;inset:0;width:100%;height:100%}
+.mount-photo,.mount .img{position:relative;display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.no-signs .cut-corner{clip-path:none}
+.no-signs .mount{background:none;padding:0}
+.no-signs .mount-pattern{display:none}
+.signs-switch{display:flex;gap:16px;align-items:center;font-size:var(--fs-small);color:var(--ink-soft);margin-bottom:32px}
+.signs-switch button{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--ink);padding:8px 16px;cursor:pointer}
 .mod.opening.real::before{display:none}  /* the wireframe's module label does not lie on a real photograph */
 .imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
 .intro{padding-top:48px}

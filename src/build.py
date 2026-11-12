@@ -303,6 +303,12 @@ CLOSE_PATTERN = (cut_on_photo(720, 320, 96, [(300, 50), (520, 150), (740, 330)],
                                 [(92, 140, 40)], "close-pattern close-narrow", "xMaxYMin"))
 
 
+# The mount's ground (see SIGNS): two broad stripes across the whole mount, at the identity's angle. The photograph covers
+# most of them, so one stripe shows beside the photograph and again beneath it, and the other in the corner: the stripes
+# run behind the photograph.
+MOUNT_PATTERN = cut_on_photo(1000, 647, 90, [(1090, 700), (1290, 700)], [], "mount-pattern", "xMidYMid")
+
+
 PHOTO_AR_2002 = dict(
     ar="AR-2002", place="Banjul, The Gambia", year="2015", file="assets/opening/ar-2002", size=(1920, 1237), shape="2000/1288",   # the year is the file's capture date
     alt="A woman in a wax-print top and headwrap, her arms folded, in front of a wax-print fabric in Banjul",
@@ -527,9 +533,40 @@ def m_rows(items):
 
 
 # 2.7 Theme sequence: (a) five entries in a row (Home), (b) five rows (Themes index), (c) previous and next.
+# Signs for what an image stands for, on trial on /dev/signs/ only (Thomas, 12 November 2026, 08:10 and 08:12). Three
+# kinds of image, three treatments: a single photograph is whole and untouched; a theme, a cut through the archive, has
+# one corner cut at the identity's angle; a collection, a body of work made and presented, stands on a mount: a black
+# ground showing along two edges, with the stripes running behind the photograph (the mount of the 2016 folder).
+# Each sign means one thing everywhere, and nothing lies on the photograph. Home and every other page are unchanged.
+SIGNS = None
+SIGNS_TRIAL = dict(
+    themes={"learning": ("AR-1961", "Two learners at a shared desk in a classroom in Banjul"),
+            "work-and-enterprise": ("AR-1973", "A young mechanic at the open bonnet of a pickup in Banjul"),
+            "everyday-digital": ("AR-2101", "A woman with a laptop on a bench under trees in Nairobi"),
+            "city-life": ("AR-1267", "A young photographer on a rooftop above the skyline of Nairobi"),
+            "creativity-and-culture": ("AR-2002", "A woman in a wax-print top and headwrap in front of a wax-print fabric in Banjul")},
+    collections={"house-collection": ("AR-2046", "A taxi driver at the wheel of a yellow taxi in Banjul")})
+
+
+def sign_theme(t, base):
+    ar, alt = SIGNS["themes"][t["slug"]]
+    return (f'<figure class="frame"><img class="theme-photo cut-corner" src="{base}assets/trial/{ar.lower()}-theme.jpg" width="640" height="800" '
+            f'alt="{e(alt)}" loading="lazy" decoding="async"></figure>')
+
+
+def sign_mount(slug, label, base):
+    """A collection's photograph on its mount; a collection without a chosen photograph keeps its grey box, on the mount."""
+    pick = SIGNS["collections"].get(slug)
+    inside = (f'<img class="mount-photo" src="{base}assets/trial/{pick[0].lower()}-card.jpg" width="1440" height="960" alt="{e(pick[1])}" loading="lazy" decoding="async">'
+              if pick else img(label, "3/2"))
+    return f'<figure class="frame"><div class="mount">{MOUNT_PATTERN}{inside}</div></figure>'
+
+
 def theme_entry(t, base, i, row=False, ratio="4/5"):
     strip = (frame(f'Image for {t["name"]}', "3/2", role="row", own=False, cap=False) if row
              else frame("Theme image", ratio, role="theme-nav" if ratio == "5/2" else "theme", own=False, cap=False))
+    if SIGNS and not row and ratio == "4/5":
+        strip = sign_theme(t, base)
     return (f'<a class="theme-entry{" row" if row else ""}" href="{base}themes/{t["slug"]}/">'
             f'<span class="order">{i}</span>{"" if row else strip}<div><h3>{e(t["name"])}</h3><p>{e(limit("theme statement", t["statement"]))}</p>'
             f'<span class="count">{t["count"]} images</span></div>{strip if row else ""}</a>')
@@ -605,14 +642,15 @@ def m_project(x, extra=""):
 def collection_entry(x, base):
     """A collection in the archive (the collection card, 2.8), as proof of the archive."""
     meta = "".join(f"<span>{e(m)}</span>" for m in x["meta"])
-    return (f'<a class="collection-card cols" href="{base}{x["href"]}"><div class="c-half">{frame(x["image"], "3/2", role="half", own=False, cap=False)}</div>'
+    photo = sign_mount(x.get("slug"), x["image"], base) if SIGNS else frame(x["image"], "3/2", role="half", own=False, cap=False)
+    return (f'<a class="collection-card cols" href="{base}{x["href"]}"><div class="c-half">{photo}</div>'
             f'<div class="c-half">{state_label(x) if x.get("state") else ""}<p class="kicker">{e(x["kicker"])}</p><h3 class="h-big">{e(x["title"])}</h3>{draft(limit("card line", x["line"]))}'
             f'<p class="meta-row">{meta}</p><span class="textlink">Open the collection</span></div></a>')
 
 
 # 2.8 Collection card: (a) one card at the full width, (b) a list of cards. The cards come from COLLECTIONS.
 def collection_card(c, base):
-    return collection_entry(dict(c["card"], title=c["title"], href=f'collections/{c["slug"]}/'), base)
+    return collection_entry(dict(c["card"], title=c["title"], href=f'collections/{c["slug"]}/', slug=c["slug"]), base)
 
 
 HOME_COLLECTIONS_TITLE = "Two collections, one of them sponsored"   # true while COLLECTIONS holds these two; the build checks it
@@ -2121,6 +2159,22 @@ def tpl_type(base):
     return out
 
 
+def tpl_signs(p, base):
+    global SIGNS
+    SIGNS = SIGNS_TRIAL
+    try:
+        home = tpl_home(p, base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
+    finally:
+        SIGNS = None
+    top = (m_page_head("Signs", "A copy of Home with two signs on trial: a theme’s image has one corner cut; a collection’s image stands on a mount. "
+                                "A single photograph stays whole.", kicker="Development")
+           + '<p class="wrap signs-switch"><button type="button" id="signs-toggle" aria-pressed="true">Signs: on</button> '
+             '<span>Press to see the same page without them. The photographs are stand-ins chosen for this test, not the final picks.</span></p>'
+           + "<script>document.getElementById('signs-toggle').addEventListener('click',function(){var off=document.body.classList.toggle('no-signs');"
+             "this.setAttribute('aria-pressed',String(!off));this.textContent='Signs: '+(off?'off':'on')});</script>")
+    return top + home
+
+
 def tpl_opening(base):
     """/dev/opening/: the three versions of the Opening, each at its real size. Home is built with OPENING_VERSION."""
     names = [("across", "The photograph across the window as the first screen, with the pattern drawn on it; the headline at 64 px beneath it"),
@@ -2906,6 +2960,18 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
    17:24 and 17:31). */
 .opening-frame picture{display:block}
 .doc-photo{display:block;width:100%;height:auto}
+/* Signs, on trial on /dev/signs/ (see SIGNS). The cut: the lower right corner, at the stripes' angle. The mount: a black
+   ground 12% beside and 6% beneath the photograph. */
+.theme-photo{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
+.cut-corner{--cut:72px;clip-path:polygon(0 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)*.57735) 100%,0 100%)}
+.mount{position:relative;background:var(--ground);padding:0 12% 6% 0;overflow:hidden}
+.mount-pattern{position:absolute;inset:0;width:100%;height:100%}
+.mount-photo,.mount .img{position:relative;display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.no-signs .cut-corner{clip-path:none}
+.no-signs .mount{background:none;padding:0}
+.no-signs .mount-pattern{display:none}
+.signs-switch{display:flex;gap:16px;align-items:center;font-size:var(--fs-small);color:var(--ink-soft);margin-bottom:32px}
+.signs-switch button{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--ink);padding:8px 16px;cursor:pointer}
 .mod.opening.real::before{display:none}  /* the wireframe's module label does not lie on a real photograph */
 .imgs.grid-pair{grid-template-columns:repeat(2,minmax(0,1fr))}
 .intro{padding-top:48px}
@@ -3198,7 +3264,7 @@ def strip_html(base):
     return (f'<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · '
             f'grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools">'
             f'<a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a>'
-            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/images/">Images</a>'
+            f'<a href="{base}dev/">Development</a><a href="{base}dev/modules/">Modules</a><a href="{base}dev/type/">Type</a><a href="{base}dev/opening/">Opening</a><a href="{base}dev/signs/">Signs</a><a href="{base}dev/images/">Images</a>'
             f'<button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button>'
             f'<button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>\n'
             f'<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>\n')
@@ -3272,6 +3338,11 @@ def build():
                    desc="Three versions of the Opening of the Africa Reframed site, side by side; generated by the build, removed at launch.")
         (dev_dir / "opening").mkdir(exist_ok=True)
         (dev_dir / "opening" / "index.html").write_text(render(opn, tpl_opening("../../"), "../../"))
+        sgn = dict(path="dev/signs/", title="Signs", slug="signs", tpl="signs", nav=None,
+                   desc="A copy of Home with two signs on trial; generated by the build, removed at launch.")
+        CUR.update(slug="signs", n=0)
+        (dev_dir / "signs").mkdir(exist_ok=True)
+        (dev_dir / "signs" / "index.html").write_text(render(sgn, tpl_signs(sgn, "../../"), "../../"))
 
     # The page for a wrong address (Quality rules, rule 25). Its links are absolute, since it answers at any depth.
     root_path = urlparse(SITE_URL).path

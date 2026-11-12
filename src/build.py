@@ -36,7 +36,9 @@ CORE_LINE = "Visual storytelling for a new partnership between Europe and Africa
 # Home's bold line since 12 November 2026 (Thomas's sentence of 14:58, chosen for the top at 17:13). It is meant to take the
 # core line's place; the Strategic Platform still holds the line above and is to be changed there (it is not open to this
 # thread for editing). About's statement is this sentence with its tail.
-HOME_LINE = "We build partnerships around visual storytelling to bring contemporary Africa into view in Europe."
+# 17:26: shortened by Thomas for a line that is easy to scan; the partnerships moved into the small text under the lead.
+# Until then: "We build partnerships around visual storytelling to bring contemporary Africa into view in Europe."
+HOME_LINE = "We craft visual storytelling to bring contemporary Africa into view in Europe."
 ABOUT_LINE = ("Spotlighting African innovation and African–European collaboration. "
               "An independent initiative established by Commerce & Culture.")             # Strategic Platform, Brand and language
 NUMBERS = [("1,122", "images"), ("3", "countries")]   # the number of themes is not a fixed fact (Thomas, 11 November 2026)                        # Website brief, Home; AR Metadata, 2 Nov 2026
@@ -125,10 +127,7 @@ LIMITS = {"headline": 12, "page title": 6, "kicker": 4, "statement": 25, "headin
 OVER = {}
 # A limit that is bent, with its reason (rule 4 is a steering rule: a break needs a reason, written down). The text is named
 # word for word, so the bend covers that one line and nothing else.
-BENT = {
-    "We build partnerships around visual storytelling to bring contemporary Africa into view in Europe.":
-        "Home's bold line, 14 words against a headline's 12: Thomas's own sentence (12 November 2026, 14:58 and 17:13); it stands on three lines at desktop width, as the line before it did.",
-}
+BENT = {}   # none now: Home's bold line was bent at 17:35 on 12 November 2026 (14 words) and came back inside the limit at 17:26's wording (12)
 
 
 def n_words(text):
@@ -880,11 +879,15 @@ def m_form(variant="a", title=None, fields=None, aside=None, consent=None, butto
 # by Commerce & Culture."
 INTRO_HOME = [
     "Europe and Africa need each other. Shared stories make people act together, across cultures and across sectors.",
-    "It starts with real photographs: an archive for partners in business, civil society and public institutions.",
+    # The small text says how the partnerships work, so that the chapters under it follow from it (Thomas, 17:26: "It starts
+    # with real photographs…" was a claim about ourselves; this level may be longer and go into detail, on the partnerships).
+    "We work through partnerships. Companies and foundations fund new collections, photographers make them on location, and "
+    "organisations in civil society, media and public institutions put the images to use. Each partner brings something, and "
+    "all of them share the result.",
 ]
 # The three chapters of Home: title, and the line under it.
 HOME_CHAPTERS = dict(
-    archive=("A shared resource", "New collections are made with sponsors, and every partner can use the whole archive."),
+    archive=("A shared resource", None),   # no line under it since 17:26: the small text directly above now says how the archive is shared
     principles=("Principles", "Behind every image and every collaboration."),   # Thomas, 14:58 and 15:08
     about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African photographers "
                                    "with the international picture market."),   # made from About's two lines of activity
@@ -2640,7 +2643,7 @@ def _tpl_modules(base):
 # ---------------------------------------------------------------------------------------------
 PAGES = [
     dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None,
-         desc="We build partnerships around visual storytelling to bring contemporary Africa into view in Europe. A partner archive of real photographs, with exhibitions and workshops."),
+         desc="We craft visual storytelling to bring contemporary Africa into view in Europe. A partner archive of real photographs, with exhibitions and workshops."),
     dict(path="themes/", title="Themes", slug="themes", tpl="themes", nav="themes",
          desc="Five themes, read in order: people learn, put their skills to work, live connected lives in modern cities, and make culture."),
     *[dict(path=f"themes/{t['slug']}/", title=t["name"], slug=t["slug"], tpl="theme", nav="themes", theme=t,

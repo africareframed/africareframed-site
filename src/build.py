@@ -1760,11 +1760,14 @@ def tpl_home(p, base):
     # as a record, the five themes and the photographs' own keywords, answering to the pointer; the way on is Explore
     # the themes. 3 In use: the numbers, the partners by name, one example; built only when each exists (rule 27).
     # 4 Who makes it: a photograph from a workshop, and under it the three lines of activity, each leading into About.
-    # 5 The close: About. Request access stands under the keywords, with the archive. The four principles stand on About;
-    # the collections are in the menu.
+    # 5 The close: About. Under the archive in small stand the four principles and one button, Collaborate with us, to
+    # Partners, where Request access and sponsoring a collection are. The collections are in the menu.
     return (m_opening(CORE_LINE, base=base)
             + m_text(None, INTRO_HOME, "d", sid="intro")
             + front_mini(base)
+            # under the keywords: what stands behind every image, and the way to work with us (Thomas, 12 November 2026, 14:40)
+            + m_items("Four principles behind every image", PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles", tight=True)
+            + m_doors("c", links=[button(base + "partners/", "Collaborate with us", quiet=True)], tight=True, left=True)
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
@@ -1898,12 +1901,6 @@ FRONT_RECORDS = {
                     seen=["musician", "environmental portrait"], concept=["youth"], story=["creativity and culture"], sdg=[]),
 }
 FRONT_LAYERS = [("seen", "In the picture"), ("concept", "Concept"), ("story", "Story"), ("sdg", "SDG")]   # the labels are draft
-# Draft wording for the call to action under the keywords (Thomas, 12 November 2026, 13:19 and 14:17: the archive is built
-# with partners across sectors, and people can join; Request access is the action; sponsoring is raised on Request access
-# and Partners, not on Home).
-FRONT_JOIN = dict(title="Built on collaboration across sectors",
-                  text="The archive grows with the partners who use it and the sponsors who fund new collections. "
-                       "Tell us who you are and how you would use the images.")
 FRONT_STRUCTURE = ("Themes come from collections",   # the heading and the last two sentences stand on the Themes and Collections pages already
                    "The archive is organised in themes and collections. Each collection is a body of work with its own story and the people behind it. "
                    "The five themes are drawn from the first of them, the House Collection, and each new collection can bring a theme of its own.")
@@ -1999,11 +1996,7 @@ def front_mini(base):
               "['mouseleave','blur'].forEach(function(ev){b.addEventListener(ev,function(){b.classList.remove('hot')})})})})();</script>")
     return mod("collection", "the archive in small",
                f'<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
-               f'<div class="kw-rows"><h2 class="kicker kw-head">Keywords on these photographs</h2>{kw}</div>'
-               # the call to action belongs to the archive (Thomas, 12 November 2026, 14:17): under the keywords, one heading, one sentence, Request access
-               # (14:25: it did not stand as a block. It now stands under a rule, as the three lines of activity do, on the two columns of the photograph and the themes.)
-               f'<div class="feature mini-join"><div class="f-photo">{heading(FRONT_JOIN["title"])}</div><div class="f-words">{draft(FRONT_JOIN["text"])}'
-               f'<p class="doors">{button(base + "request-access/", "Request access", quiet=True)}</p></div></div></div>{script}')
+               f'<div class="kw-rows"><h2 class="kicker kw-head">Keywords on these photographs</h2>{kw}</div></div>{script}')
 
 
 def front_ways(base):
@@ -3289,9 +3282,6 @@ h2.kicker,h3.kicker{font-weight:400;line-height:1.15}
 .kw.lit span{color:var(--paper);background:var(--ink);border-color:var(--ink)}   /* the keywords the photograph carries are inverted: black, white type (Thomas, 12 November 2026, 14:31; the yellow tried at 14:25 keeps its one job) */
 .kw.hot span,.kw:focus-visible span{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}   /* the one under the pointer: a ring */
 .kw:focus-visible{outline:none}
-.mini-join{margin-top:48px;border-top:2px solid var(--ink);padding-top:16px}
-.mini-join h2{margin:0}
-.mini .mini-join .doors{margin:16px 0 0}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
 .principles.two li:last-child{grid-column:8 / 13}

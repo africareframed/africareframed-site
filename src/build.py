@@ -1800,11 +1800,12 @@ def in_chapter(section, head):
 def tpl_home(p, base):
     # The front page is the page of the product (Thomas, 12 November 2026, 13:16 to 15:10; tried as version E on /dev/).
     # The Opening, the bold line and the lead say what this is and why it matters. Then two chapters, each under its title,
-    # with a photograph between them:
+    # and a photograph:
     # The archive: the archive in small (a photograph as a record, the five themes, the photographs' own keywords,
     #   answering to the pointer); the way on is Explore the themes.
-    # A photograph from a workshop, as a document of the work.
-    # Principles: behind every image and every collaboration; the four, one line each. They close the page.
+    # Principles: behind every image and every collaboration; the four, one line each.
+    # A photograph from a workshop, as a document of the work, closes the page (Principles stood under it for a few minutes
+    # on 13 November 2026 and went back over it: Thomas, 04:42).
     # The chapter on who is behind it (More than an archive, with the way to About) was taken out on 13 November 2026
     # (Thomas, 04:38): About is in the menu and the footer.
     # In use (the numbers, the partners by name, one example) is built only when each exists (rule 27).
@@ -1813,12 +1814,12 @@ def tpl_home(p, base):
     return (m_opening(HOME_LINE, base=base)
             + m_text(None, INTRO_HOME, "d", sid="intro")
             + front_mini(base)
+            + in_chapter(m_items(None, PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"),
+                         home_head(*HOME_CHAPTERS["principles"]))
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            + m_document(base, HOME_DOCUMENT)
-            + in_chapter(m_items(None, PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"),
-                         home_head(*HOME_CHAPTERS["principles"])))
+            + m_document(base, HOME_DOCUMENT))
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page

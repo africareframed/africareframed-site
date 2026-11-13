@@ -2001,7 +2001,7 @@ def in_chapter(section, head):
     return section.replace('<div class="wrap">', '<div class="wrap">' + head, 1)
 
 
-def tpl_home(p, base):
+def tpl_home(p, base, record=False):
     # The front page is the page of the product (Thomas, 12 November 2026, 13:16 to 15:10; tried as version E on /dev/).
     # The Opening, the bold line and the lead say what this is and why it matters. Then two chapters, each under its title,
     # and a photograph. Since 13 November 2026, 11:50, the page has one form three times: a text block in the right half
@@ -2023,7 +2023,7 @@ def tpl_home(p, base):
             # who has just read why the work matters asks who is behind it; and in the archive the button into the House
             # Collection, which is what the archive launches with and the better place to explore the themes from.
             + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[f'<a class="textlink" href="{base}about/">About Africa Reframed</a>']))
-            + front_mini(base)
+            + (front_archive_record(base) if record else front_mini(base))
             + home_partnerships(base)
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
@@ -2338,6 +2338,15 @@ REC_SCRIPT = ("<script>(function(){[].slice.call(document.querySelectorAll('.rec
               "var l=of(tabs[best].dataset.theme);if(l.indexOf(cur)<0)show(l[0],true)},140)},{passive:true})}"
               "function warm(){[].slice.call(box.querySelectorAll('img[loading=lazy]')).forEach(function(i){i.loading='eager'})}"
               "['pointerenter','focusin','touchstart'].forEach(function(ev){box.addEventListener(ev,warm,{once:true,passive:true})})})})();</script>")
+
+
+def front_archive_record(base):
+    """The archive's chapter on Home with the record in place of the board of keywords: on trial at /dev/home/."""
+    title, line, detail = HOME_CHAPTERS["archive"]
+    old = "Ten photographs stand below, with the keywords they carry in the archive."
+    assert old in detail
+    head = nb(home_head(title, line, detail.replace(old, "One photograph from each theme stands below, with the keywords it carries in the archive.")))
+    return mod("collection", "the archive in small, as a record", f'{head}{front_record(base, "themes", tags=True)}{REC_SCRIPT}')
 
 
 def tpl_archive_trial(p, base):
@@ -3894,16 +3903,28 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 /* The theme switch on a collection's page. The names stand in a row of five under a rule (fifths: the one row that leaves
    the columns); the chosen one carries the heavy rule. One panel shows; without scripts all five stand under each other. */
 .theme-switch{margin-top:48px}
-.theme-tabs{list-style:none;margin:0 0 48px;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gutter)}
-.theme-tabs a{display:block;padding:12px 0 8px;text-decoration:none;color:var(--ink);box-shadow:inset 0 1px 0 var(--ink-soft);min-height:44px}
+/* On the columns (Thomas, 13 November 2026, 19:03; measured at 18:20): each name takes two of the twelve columns, so the
+   names start on columns 1, 3, 5, 7 and 9 and the fourth stands on the half line, over what the row chooses. In fifths
+   they started on 1, 3.4, 5.8, 8.2 and 10.6, a column off the half beneath them. One thin rule runs the full width and
+   the chosen name carries the heavy one. Below the desktop, where the grid has eight columns, the five stand in fifths. */
+.theme-tabs{list-style:none;margin:0 0 48px;padding:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);box-shadow:inset 0 1px 0 var(--ink-soft)}
+.theme-tabs li{grid-column:span 2}
+.theme-tabs a{display:block;padding:12px 0 8px;text-decoration:none;color:var(--ink);min-height:44px}
 .theme-tabs a.on{box-shadow:inset 0 4px 0 var(--ink)}
 .theme-tabs strong{display:block;font-weight:700;line-height:1.25}
 .theme-tabs .count{display:block;font-size:var(--fs-small);color:var(--ink-soft)}
 .theme-tabs a:hover strong,.theme-tabs a:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
-.theme-tabs.two{grid-template-columns:1fr 1fr;margin:0}
+.theme-tabs.two{grid-template-columns:1fr 1fr;margin:0;box-shadow:none}
+.theme-tabs.two li{grid-column:auto}
+.theme-tabs.two a{box-shadow:inset 0 1px 0 var(--ink-soft)}
+.theme-tabs.two a.on{box-shadow:inset 0 4px 0 var(--ink)}
+@media (min-width:768px) and (max-width:1023px){
+  .theme-tabs{grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gutter)}
+  .theme-tabs li{grid-column:auto}
+}
 /* The archive in small, as a record (on trial at /dev/archive/). */
 .rec-mod .rec-tabs{margin-bottom:32px}
-.rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);box-shadow:inset 0 1px 0 var(--ink-soft);min-height:44px}
+.rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}
 .rec-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
 .rec-tabs button:hover strong,.rec-tabs button:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
 .rec-mod .feature{align-items:stretch}
@@ -3960,7 +3981,10 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .theme-pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
 .theme-pair .frame{margin:0}
 @media (max-width:767px){
-  .theme-tabs,.theme-tabs.two{grid-template-columns:1fr}
+  .theme-tabs,.theme-tabs.two{grid-template-columns:1fr;box-shadow:none}
+  .theme-tabs li{grid-column:auto}
+  .theme-tabs a,.rec-tabs button{box-shadow:inset 0 1px 0 var(--ink-soft)}
+  .theme-tabs a.on,.rec-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
   .theme-tabs{margin-bottom:32px}
   .theme-tabs.two{margin-bottom:0}
   .theme-tabs a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0}
@@ -4282,6 +4306,12 @@ def build():
         CUR.update(slug=None, n=0)
         (dev_dir / "archive").mkdir(exist_ok=True)
         (dev_dir / "archive" / "index.html").write_text(render(arc, tpl_archive_trial(arc, "../../"), "../../"))
+        hmt = dict(path="dev/home/", title="Home, with the archive as a record, on trial", slug=None, tpl="front", nav=None,
+                   desc="A copy of Home with the simpler archive module, on trial; generated by the build, removed at launch.")
+        CUR.update(slug=None, n=0)
+        (dev_dir / "home").mkdir(exist_ok=True)
+        home_main = tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record=True).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
+        (dev_dir / "home" / "index.html").write_text(render(hmt, home_main, "../../"))
         sgn = dict(path="dev/signs/", title="The collection card", slug="signs", tpl="signs", nav=None,
                    desc="A copy of Home with three versions of the collection card on trial; generated by the build, removed at launch.")
         CUR.update(slug="signs", n=0)

@@ -509,16 +509,28 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 /* The theme switch on a collection's page. The names stand in a row of five under a rule (fifths: the one row that leaves
    the columns); the chosen one carries the heavy rule. One panel shows; without scripts all five stand under each other. */
 .theme-switch{margin-top:48px}
-.theme-tabs{list-style:none;margin:0 0 48px;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gutter)}
-.theme-tabs a{display:block;padding:12px 0 8px;text-decoration:none;color:var(--ink);box-shadow:inset 0 1px 0 var(--ink-soft);min-height:44px}
+/* On the columns (Thomas, 13 November 2026, 19:03; measured at 18:20): each name takes two of the twelve columns, so the
+   names start on columns 1, 3, 5, 7 and 9 and the fourth stands on the half line, over what the row chooses. In fifths
+   they started on 1, 3.4, 5.8, 8.2 and 10.6, a column off the half beneath them. One thin rule runs the full width and
+   the chosen name carries the heavy one. Below the desktop, where the grid has eight columns, the five stand in fifths. */
+.theme-tabs{list-style:none;margin:0 0 48px;padding:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);box-shadow:inset 0 1px 0 var(--ink-soft)}
+.theme-tabs li{grid-column:span 2}
+.theme-tabs a{display:block;padding:12px 0 8px;text-decoration:none;color:var(--ink);min-height:44px}
 .theme-tabs a.on{box-shadow:inset 0 4px 0 var(--ink)}
 .theme-tabs strong{display:block;font-weight:700;line-height:1.25}
 .theme-tabs .count{display:block;font-size:var(--fs-small);color:var(--ink-soft)}
 .theme-tabs a:hover strong,.theme-tabs a:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
-.theme-tabs.two{grid-template-columns:1fr 1fr;margin:0}
+.theme-tabs.two{grid-template-columns:1fr 1fr;margin:0;box-shadow:none}
+.theme-tabs.two li{grid-column:auto}
+.theme-tabs.two a{box-shadow:inset 0 1px 0 var(--ink-soft)}
+.theme-tabs.two a.on{box-shadow:inset 0 4px 0 var(--ink)}
+@media (min-width:768px) and (max-width:1023px){
+  .theme-tabs{grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gutter)}
+  .theme-tabs li{grid-column:auto}
+}
 /* The archive in small, as a record (on trial at /dev/archive/). */
 .rec-mod .rec-tabs{margin-bottom:32px}
-.rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);box-shadow:inset 0 1px 0 var(--ink-soft);min-height:44px}
+.rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}
 .rec-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
 .rec-tabs button:hover strong,.rec-tabs button:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
 .rec-mod .feature{align-items:stretch}
@@ -575,7 +587,10 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .theme-pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
 .theme-pair .frame{margin:0}
 @media (max-width:767px){
-  .theme-tabs,.theme-tabs.two{grid-template-columns:1fr}
+  .theme-tabs,.theme-tabs.two{grid-template-columns:1fr;box-shadow:none}
+  .theme-tabs li{grid-column:auto}
+  .theme-tabs a,.rec-tabs button{box-shadow:inset 0 1px 0 var(--ink-soft)}
+  .theme-tabs a.on,.rec-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
   .theme-tabs{margin-bottom:32px}
   .theme-tabs.two{margin-bottom:0}
   .theme-tabs a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0}

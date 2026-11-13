@@ -3046,8 +3046,8 @@ CSS = """/* DM Sans, served from this site (SIL Open Font License 1.1: assets/fo
 @font-face{font-family:"DM Sans";font-style:normal;font-display:swap;font-weight:100 1000;src:url(fonts/dm-sans-latin.woff2) format("woff2");
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 :root{
-  --ground:#151515; --paper:#ffffff; --ink:#151515; --ink-soft:#5c5a55;
-  --text-on-dark:#e3e3e3; --accent:#eacb84; --line:#e6e4df; --wash:#f6f5f2;
+  --ground:#000000; --paper:#ffffff; --ink:#000000; --ink-soft:#5c5a55;   /* one black, pure black (Thomas, 13 November 2026; design guide, Colour): type, the logo and the close */
+  --text-on-dark:#ffffff; --accent:#eacb84; --line:#e6e4df; --wash:#f6f5f2;
   --wire-note:#fef98b;  /* the strip and notes of the wireframe; gone at launch */
   --wire:#ecebe7; --wire-line:#cfccc5; --bar:#e3e1dc;
   --font:"DM Sans",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
@@ -3173,7 +3173,7 @@ body.clean .mod::before{display:none}
 .chapter-title{font-size:var(--fs-title);font-weight:300;line-height:1.05;letter-spacing:-.02em;margin:0 0 16px}   /* a chapter of a long page: its title at the page-title size, in Light */
 /* A black section: the same modules with the ground and the ink exchanged. Black holds one kind of content, the exhibitions
    and the artists' works (Thomas, 11 November 2026; Quality rules, rule 18); it is also the ground of the footer's close. */
-.dark{background:var(--ground);color:#fff;--ink:#fff;--ink-soft:#b9b7b1;--line:#3a3a3a;--paper:#151515;--wire:#242424;--wire-line:#3c3c3c;--wash:#1e1e1e;
+.dark{background:var(--ground);color:#fff;--ink:#fff;--ink-soft:#b9b7b1;--line:#3a3a3a;--paper:#000000;--wire:#242424;--wire-line:#3c3c3c;--wash:#1e1e1e;
   margin-top:calc(var(--section)*2);padding-bottom:var(--section)}
 .dark > .mod.chapter:first-child{padding-top:var(--section)}
 .dark > .mod.chapter:first-child::before{top:calc(var(--section) - 22px)}
@@ -3710,7 +3710,7 @@ def share_image():
     except ImportError:
         return out
     logo = Image.open(ROOT / "assets" / "logo.png").convert("RGBA")
-    canvas = Image.new("RGB", (1200, 627), (21, 21, 21))
+    canvas = Image.new("RGB", (1200, 627), (0, 0, 0))   # pure black, as everywhere (13 November 2026)
     w = 640
     h = round(logo.height * w / logo.width)
     logo = logo.resize((w, h))

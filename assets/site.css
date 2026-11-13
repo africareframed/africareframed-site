@@ -507,6 +507,7 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 
 /* Partner portal */
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
+@media (min-width:768px){.door-panels.three{grid-template-columns:repeat(3,1fr)}}
 /* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive
    stands on the yellow. */
 .panel{display:flex;flex-direction:column;gap:8px;border-top:2px solid var(--ink);padding:24px 0 0;text-decoration:none}

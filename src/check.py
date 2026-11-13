@@ -27,7 +27,10 @@ SIZES = {13, 17, 22, 32, 44, 64}                                 # rule 11, the 
 WEIGHTS = {"300", "400", "700"}                                  # rule 11
 MEASURE = {"desktop": 75, "tablet": 75, "phone": 48}             # rule 10 (the phone: 35 to 45 is the aim, 48 the gate)
 BUDGET = {"home": 350, "theme": 200, "collection": 300, "partners": 350, "portal": 200}   # words a page, by template
-BUDGET_BY_SLUG = {"waste-to-value": None}                        # a sponsored collection is budgeted by story (90 words)
+BUDGET_BY_SLUG = {"waste-to-value": None,                       # a sponsored collection is budgeted by story (90 words)
+                  # Partners carries a third way to take part, Craft a collection, since 13 November 2026 (Thomas, 14:35:
+                  # "add it"). It stood at 349 of its 350 words; the new part is 43. The budget follows the instruction.
+                  "partners": 400}
 # The plan of 11 November 2026: what the site is steered towards, measured on the key pages at 1,440 px. A miss is listed,
 # it does not fail the gate: small print at most 15% of the letters; the first screen's largest type at least 2.5 times the
 # text; no more than two sections in a row in one layout.

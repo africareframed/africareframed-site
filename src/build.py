@@ -170,9 +170,16 @@ def lines(n=3):
     return '<div class="lines" aria-hidden="true">' + "<i></i>" * n + "</div>"
 
 
+# Wording Thomas has approved word for word, with the time. A text listed here is no longer marked as a draft wherever it
+# is shown; a text that changes by one letter is a draft again. Filled further down, where the texts are defined.
+APPROVED = set()
+
+
 def draft(text, tag="p", cls=""):
     """Draft copy: written now from the masters, marked as a draft until Thomas approves it. Never placeholder text."""
     c = f' class="{cls}"' if cls else ""
+    if text in APPROVED:
+        return f'<{tag}{c}>{e(text)}</{tag}>'
     return f'<{tag}{c}><span class="draft">{e(text)}</span></{tag}>'
 
 
@@ -816,7 +823,7 @@ def door(href, kicker, title, line, dark=False):
 
 def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None, tight=False, left=False):
     if variant == "a":
-        return mod("doors", "a, two doors", f'<div class="door-panels">{"".join(doors)}</div>', sid=sid, tight=tight)
+        return mod("doors", "a, the doors", f'<div class="door-panels{" three" if len(doors) == 3 else ""}">{"".join(doors)}</div>', sid=sid, tight=tight)
     if variant == "b":
         c = f'<div class="num"><b>{count[0]}</b><span>{e(count[1])}</span></div>'
         if count2 and (count2[0] != "—" or SHOW_EMPTY):
@@ -986,6 +993,11 @@ HOME_CHAPTERS = dict(
     # about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African
     # photographers with the international picture market."), with the button More about us: off Home since 13 November 2026.
 )
+# Approved by Thomas on 13 November 2026, 14:35 ("Approval of the draft wording from 13:00 - yes"): the wording put to him at
+# 13:00, quoted to him word for word. Home's first block was named there as unchanged and not quoted, so it stays a draft.
+PARTNERS_STATEMENT = "The archive is shared: what one partner makes possible, every partner can use."
+APPROVED.update([HOME_CHAPTERS["archive"][1], HOME_CHAPTERS["archive"][2], HOME_CHAPTERS["partnerships"][2],
+                 THEMES_LEAD, PARTNERS_STATEMENT])
 PRINCIPLES = [  # engine brief, For design: the principles a company needs before it puts its name on the work
     # "and what they show is never altered" (12 November 2026): the Strategic Platform's AI rule allows normal editing of
     # exposure, colour and crop, so "never altered" alone promised more than we do.
@@ -1015,6 +1027,10 @@ PLACES = [  # collection page 5: places and series (Keywording Guide 9, 11b; the
 SPONSOR_TEXT = [  # Partners 4: sponsor a collection, in general terms (brief, Partners; engine brief)
     "We make new collections with companies and foundations as sponsors. The theme is close to the sponsor’s work, or one it wants to support, never its own operations.",
     "The sponsor is named on the collection’s page and the theme page, and gets the whole archive for its own channels, for good.",
+]
+CRAFT_TEXT = [  # Partners 5: craft a collection (13 November 2026, 14:40). Draft, from Home's panel, the principles and About's network.
+    "Photographers and other creators make the collections on location, on commission. The work is paid, and every image carries its credit line.",
+    f"Photographers who want to join our network can write to {EMAIL_MAIN}.",
 ]
 ACCESS_STEPS = [  # Partners 2: how access works (AR Archive – Status, 3 and 6 November 2026)
     ("Request access", "Tell us who you are and how you will use the images. We reply within a working day."),
@@ -1151,6 +1167,7 @@ COLLECTIONS = [HOUSE_COLLECTION, WTV_COLLECTION]   # the order on Collections an
 # visual storytelling to bring contemporary Africa into view in Europe: through an archive of photographs, exhibitions and workshops."
 ABOUT_STATEMENT = ("Europe and Africa need each other. Their relationships have to be seen to be trusted, "
                    "so we build partnerships around visual storytelling.")
+APPROVED.add(ABOUT_STATEMENT)   # Thomas, 13 November 2026, 14:35
 STATES = {"in production": "In production", "now": "Now", "record": ""}   # the order projects are shown in, top first
 ABOUT_CHANNELS = [  # (anchor, name, one line): the three lines of activity under the head, in the order of the sections
     ("archive", "The archive", "Photographs of contemporary Africa, open to the organisations we approve and growing with every collection."),
@@ -2416,10 +2433,15 @@ def tpl_partners(p, base):
     # collection sponsorship.", and the page had no opening sentence.
     # The doors carry no line of their own since then: who may use the images stands directly under them, in How access
     # works, and what a sponsor gets in Sponsor a collection; and the page keeps inside its budget of 350 words (rule 4).
+    # The third way, Craft it (Thomas, 13 November 2026, 14:35: "add it"): Home names three ways to take part and Partners
+    # held two. Its text is built from what the site already says: Home's panel (on location, credited, paid), the principle
+    # Credited, fairly paid photographers, and About's network (open, since 2014; photographers who want to join can write).
+    # No guidelines for creators are promised: they are still to be set up (Thomas, 10:58). Draft.
     doors = [door("#use", "Always free", "Use the images", "", dark=True),
-             door("#sponsor", "By collection", "Sponsor a collection", "")]
+             door("#sponsor", "By collection", "Sponsor a collection", ""),
+             door("#craft", "On commission", "Craft a collection", "")]
     # 1 the two doors; 2 how access works; 3 using the images; 4 sponsor a collection; 5 who already uses the archive; 6 request access, contact.
-    return (m_page_head(p["title"], "The archive is shared: what one partner makes possible, every partner can use.",
+    return (m_page_head(p["title"], PARTNERS_STATEMENT,
                         statement_draft=True, doors=m_doors("a", doors=doors))
             + m_text("How access works", [ACCESS_WHO], "a", is_draft=False, sid="use")
             + m_items(None, ACCESS_STEPS, "b", tight=True)
@@ -2427,6 +2449,8 @@ def tpl_partners(p, base):
             + m_items("The rules for using the images", RULES, "c", lead=draft("The rules in plain language. The legal text is Terms on the archive.", "p", "small"), sid="using-the-images")
             + m_text("Sponsor a collection", SPONSOR_TEXT, "c", contact=("Partnerships", EMAIL_PARTNERS), sid="sponsor",
                      links=[button(base + "collections/waste-to-value/", "See the Waste to Value Collection →", quiet=True)])
+            + m_text("Craft a collection", CRAFT_TEXT, "c", sid="craft",
+                     links=[button(base + "about/#network", "The African Photography Network →", quiet=True)])
             # 5 who already uses the archive: partners by name and examples of use, once there are any (rule 27). The counts by
             # type and by country are not in the page priorities and are out (Thomas, 11 November 2026).
             + m_partners(10, "Partners by name") + m_use("b", "In use", tight=True))
@@ -3725,6 +3749,7 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 
 /* Partner portal */
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
+@media (min-width:768px){.door-panels.three{grid-template-columns:repeat(3,1fr)}}
 /* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive
    stands on the yellow. */
 .panel{display:flex;flex-direction:column;gap:8px;border-top:2px solid var(--ink);padding:24px 0 0;text-decoration:none}

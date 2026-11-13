@@ -3510,7 +3510,10 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .mod.turn > .wrap > *{position:relative;z-index:1}
 .mod.turn > .wrap > .turn-pattern{position:absolute;z-index:0;left:var(--margin);top:calc(-1 * var(--section));overflow:visible;pointer-events:none;
   width:calc((100% - 2 * var(--margin) - 11 * var(--gutter)) / 12 * 5 + 4 * var(--gutter));height:auto;aspect-ratio:528 / 400}
-.mod.turn > .wrap > .turn-pattern.way-out{left:auto;right:var(--margin);top:auto;bottom:calc(-1 * var(--section));height:var(--section);aspect-ratio:auto;overflow:visible;clip-path:inset(-40px -200px 0 -200px);transform:rotate(180deg)}
+/* The way out keeps clear of the panels (Thomas, 13 November 2026, 11:36: the white must not touch the white of the cards):
+   a strip of the ground, 24 px, stays between the panels and the bars, and the ground under the panels is a step deeper. */
+.mod.on-ground.turn{--out:calc(var(--section) + 32px);padding-bottom:var(--out)}
+.mod.turn > .wrap > .turn-pattern.way-out{left:auto;right:var(--margin);top:auto;bottom:calc(-1 * var(--out));height:calc(var(--out) - 24px);aspect-ratio:auto;overflow:visible;clip-path:inset(-40px -200px 0 -200px);transform:rotate(180deg)}
 .mod.turn .chapter-head.cols .doors{margin:16px 0 0}
 .panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
 .panels li{background:var(--paper);padding:24px 24px 32px;max-width:none}
@@ -3772,7 +3775,7 @@ body.show-grid .grid-overlay{display:block}
 /* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
 @media (max-width:1023px){
   .mod.turn > .wrap > .turn-pattern{left:0;width:100%;height:calc(var(--section) - 16px);aspect-ratio:auto;overflow:hidden}
-  .mod.turn > .wrap > .turn-pattern.way-out{left:0;right:auto;height:calc(var(--section) - 16px);clip-path:inset(-40px 0 0 0)}   /* no title column here: a short band along the top edge */
+  .mod.turn > .wrap > .turn-pattern.way-out{left:0;right:auto;height:calc(var(--out) - 24px);clip-path:inset(-40px 0 0 0)}   /* no title column here: a short band along the top edge */
   .panels{grid-template-columns:1fr;gap:16px}
   .action > *,.action > .doors{grid-column:1 / -1}
   .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}

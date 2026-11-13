@@ -367,7 +367,7 @@ def m_page_head(title, statement=None, kicker=None, meta=None, doors=None, lead=
     m = ('<p class="meta-row">' + "".join(item(x) for x in meta) + "</p>") if meta else ""
     s = (draft(statement, "p", "statement") if statement_draft else f'<p class="statement">{e(statement)}</p>') if statement else ""
     variant = "b, with doors" if doors else "c, with the lead photograph" if lead else "a"
-    inner = f'<div class="cols"><div class="c1-4">{k}<h1>{e(title)}</h1></div><div class="c6-12 head-right">{s}{m}</div></div>'
+    inner = f'<div class="cols"><div class="c1-4">{k}<h1>{e(title)}</h1></div><div class="c7-12 head-right">{s}{m}</div></div>'
     if doors:
         inner += doors
     if lead:
@@ -396,7 +396,7 @@ def m_text(title, paras, variant="a", box=None, contact=None, links=None, is_dra
     if variant == "c" and contact:
         right += f'<div class="contact-box"><p class="kicker">{e(contact[0])}</p><p class="h-big"><a href="mailto:{contact[1]}">{contact[1]}</a></p></div>'
     names = {"a": "a, title left, text right", "b": "b, with a facts box", "c": "c, with a contact"}
-    inner = f'<div class="cols"><div class="c1-4">{heading(title, level)}</div><div class="c6-12">{right}</div></div>'
+    inner = f'<div class="cols"><div class="c1-4">{heading(title, level)}</div><div class="c7-12">{right}</div></div>'
     return mod("text", names[variant], inner, sid=sid)
 
 
@@ -438,14 +438,15 @@ def slot(role, ratio, label):
 
 
 def caption_html(sid, caption=None):
-    """The caption of a photograph shown as work: the AR ID, linked into the archive, then the caption or the place and year."""
+    """The caption of a photograph shown as work: the AR ID, linked into the archive, then the caption or the place. No year:
+    the archive is in use now and is not dated (Thomas, 13 November 2026, for these public pages)."""
     if caption:
         return e(limit("caption", caption))
     pick = PICKS.get(sid)
     if pick:
         return (f'<a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{e(pick["ar"])}</a> · '
-                + e(limit("caption", pick.get("text") or f'{pick["place"]}, {pick["year"]}')))
-    return "AR ID · Place, year"
+                + e(limit("caption", pick.get("text") or pick["place"])))
+    return "AR ID · Place"
 
 
 def credit_line(caption=None, credit=None, own=True, group=False, cap=None):
@@ -538,7 +539,7 @@ def m_pair(labels, credited_by=None, credit=None):
 def m_rows(items):
     """2.4 (e): a list under rules: several short sections as one module, each a heading left and its text right."""
     return mod("text", "e, a list under rules", "".join(
-        f'<div class="cols"><div class="c1-4">{heading(h)}</div><div class="c6-12">{draft(limit("text section", t))}</div></div>' for h, t in items), cls="rows")
+        f'<div class="cols"><div class="c1-4">{heading(h)}</div><div class="c7-12">{draft(limit("text section", t))}</div></div>' for h, t in items), cls="rows")
 
 
 # 2.7 Theme sequence: (a) five entries in a row (Home), (b) five rows (Themes index), (c) previous and next.
@@ -615,7 +616,7 @@ def m_themes(base, variant="a", current=None):
     cards = "".join(theme_entry(t, base, i) for i, t in enumerate(THEMES, 1))
     # up to five stand in one row; from six they stand in two even rows, so a new theme needs no new design
     n = len(THEMES)
-    return mod("themes", "a, in a row", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead}</div></div>'
+    return mod("themes", "a, in a row", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c7-12">{lead}</div></div>'
                f'<div class="theme-row" style="--theme-cols:{n if n <= 5 else -(-n // 2)}">{cards}</div>')
 
 
@@ -661,7 +662,7 @@ def m_project(x, extra=""):
                        f'<div class="cols"><div class="c1-4 e-words">{words}{body}{extra}</div><div class="c5-12">{big}</div></div>'
                        f'<div class="imgs grid-3 row-3">{cells}</div>{credit_line(g["caption"], g["credit"], group=True)}', tight=True)
         else:
-            out += mod("text", "a, the project", f'<div class="cols"><div class="c1-4">{words}</div><div class="c6-12">{body}{extra}</div></div>', tight=True)
+            out += mod("text", "a, the project", f'<div class="cols"><div class="c1-4">{words}</div><div class="c7-12">{body}{extra}</div></div>', tight=True)
         return out
     return m_photo(x["image"], "3/2", "c", text=words + body + extra, side="left", caption=x["caption"], credit=x["credit"], wide=True)
 
@@ -700,7 +701,7 @@ def numbers_row(values=NUMBERS, asof="as of 2 November 2026"):
 def m_numbers(values=NUMBERS, asof="as of 2 November 2026", variant="a", title=None, note_text=None, tight=False, sid=None):
     if not exists(values) and not SHOW_EMPTY:
         return ""
-    top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{note(note_text) if note_text else ""}</div></div>' if title else ""
+    top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c7-12">{note(note_text) if note_text else ""}</div></div>' if title else ""
     if variant == "c":
         rows = "".join(f'<div class="num small-num"><b>{n}</b><span>{e(t)}</span></div>' for n, t in values)
         return mod("numbers", "c, counts in a row", f'{top}<div class="numbers by-kind">{rows}</div>', tight=tight, sid=sid)
@@ -712,7 +713,7 @@ def m_partners(n=6, title="In use by", tight=False):
     if not PARTNERS_NAMED and not SHOW_EMPTY:
         return ""
     logos = '<div class="logos">' + '<span class="logo">Partner logo</span>' * n + "</div>"
-    return mod("partners", "", f'<div class="cols"><div class="c1-4">{heading(title) if title else ""}</div><div class="c6-12">'
+    return mod("partners", "", f'<div class="cols"><div class="c1-4">{heading(title) if title else ""}</div><div class="c7-12">'
                + note("Partners and sponsors by name, with their consent, from the closed preview. Until there are any, this module is left out of the live page.")
                + f'</div></div>{logos}', tight=tight)
 
@@ -750,15 +751,15 @@ def m_use(variant="a", title="In use", tight=False):
         return ""
     n = note("Images in use, reported back by partners with their consent. Shown once there are any; until then left out of the live page.")
     if variant == "a":
-        inner = (f'<div class="cols"><div class="c1-4">{heading(title) if title else ""}</div><div class="c6-12">{n}</div></div>'
+        inner = (f'<div class="cols"><div class="c1-4">{heading(title) if title else ""}</div><div class="c7-12">{n}</div></div>'
                  f'<div class="cols"><div class="c-half">{frame("The use: a page, a slide, a post or an exhibition wall", "3/2", caption="AR-ID · the caption")}</div>'
                  f'<div class="c-half"><p class="small">Partner · publication · use · month, year</p>{lines(2)}</div></div>')
         return mod("use", "a, one example", inner, tight=tight)
     if variant == "c":
-        return mod("use", "c, partner news", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">'
+        return mod("use", "c, partner news", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c7-12">'
                    + note("News for partners and the numbers as they grow; aggregates and consented examples only. Shown once there is something to show.")
                    + f'</div></div><div class="cards-3">{use_card("news") * 3}</div>', tight=tight)
-    return mod("use", "b, three in a row", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{n}</div></div>'
+    return mod("use", "b, three in a row", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c7-12">{n}</div></div>'
                f'<div class="cards-3">{use_card() * 3}</div>', tight=tight)
 
 
@@ -780,15 +781,15 @@ def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=No
         inner = f'<div class="action">{c}<p class="doors">{main}{quiet or ""}</p></div>' + (draft(limit("action line", line), "p", "small") if line else "")
         return mod("doors", "b, the action band", inner, cls="band archive" if 'class="button archive"' in (main or "") else "band", sid=sid, tight=tight)
     if variant == "d":
-        inner = f'<div class="cols"><div class="c1-4">{heading(kicker)}</div><div class="c6-12"><p class="h-big"><a href="mailto:{address}">{address}</a></p>{draft(line, "p", "small") if line else ""}</div></div>'
+        inner = f'<div class="cols"><div class="c1-4">{heading(kicker)}</div><div class="c7-12"><p class="h-big"><a href="mailto:{address}">{address}</a></p>{draft(line, "p", "small") if line else ""}</div></div>'
         return mod("doors", "d, the contact band", inner, cls="band", sid=sid, tight=tight)
-    return mod("doors", "c, the ways on", f'<div class="cols"><div class="{"c1-12" if left else "c6-12 c-offset"}"><p class="doors">{"".join(links)}</p></div></div>', sid=sid, tight=tight)
+    return mod("doors", "c, the ways on", f'<div class="cols"><div class="{"c1-12" if left else "c7-12 c-offset"}"><p class="doors">{"".join(links)}</p></div></div>', sid=sid, tight=tight)
 
 
 # 2.13 Item list: (a) plain under rules, (b) numbered steps, (c) accordion, (d) with images, (e) chips.
 def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image_ratio="3/2", image_label="Image", tight=False, cols=3, level=2, cls="", credit=None):
     h = heading(title, level, "project-title" if level == 3 else "") if title else ""
-    top = f'<div class="cols"><div class="c1-4">{h}</div><div class="c6-12">{lead or ""}</div></div>' if title else ""
+    top = f'<div class="cols"><div class="c1-4">{h}</div><div class="c7-12">{lead or ""}</div></div>' if title else ""
     t = (lambda s: draft(s)) if is_draft else (lambda s: f"<p>{e(s)}</p>")
     if variant != "e":
         for x in items:
@@ -798,7 +799,7 @@ def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image
         return mod("items", "b, numbered steps", f'{top}<ol class="steps">{li}</ol>', sid=sid, tight=tight)
     if variant == "c":
         li = "".join(f'<details class="acc"><summary>{e(a)}<span class="plus" aria-hidden="true"></span></summary>{t(b)}</details>' for a, b in items)
-        return mod("items", "c, accordion", f'{top}<div class="cols"><div class="c6-12 c-offset">{li}</div></div>', sid=sid, tight=tight)
+        return mod("items", "c, accordion", f'{top}<div class="cols"><div class="c7-12 c-offset">{li}</div></div>', sid=sid, tight=tight)
     if variant == "d":
         def card(x):
             extra = x[3] if len(x) > 3 and x[3] else {}
@@ -810,7 +811,7 @@ def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image
         return mod("items", "d, with images", f'{top}<div class="cards-{cols}">{li}</div>{foot}', sid=sid, tight=tight)
     if variant == "e":
         chips = "".join(f'<a class="chip" href="{h}">{e(a)}</a>' if h else f'<span class="chip">{e(a)}</span>' for a, h in items)
-        top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}<div class="chips">{chips}</div></div></div>'
+        top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c7-12">{lead or ""}<div class="chips">{chips}</div></div></div>'
         return mod("items", "e, chips", top, sid=sid, tight=tight)
     li = "".join(f'<li><strong>{e(a)}</strong>{t(b)}</li>' for a, b in items)
     return mod("items", "a, plain under rules", f'{top}<ul class="principles {cls}">{li}</ul>', sid=sid, tight=tight)
@@ -820,16 +821,16 @@ def m_items(title, items, variant="a", lead=None, is_draft=True, sid=None, image
 def m_sponsor(variant="theme", tight=False, sponsor=None):
     if variant == "collection" and sponsor:
         inner = (f'<div class="cols"><div class="c1-4"><p class="kicker">Made possible by</p><h2>{e(sponsor["name"])}</h2></div>'
-                 f'<div class="c6-12">{'<div class="logos"><span class="logo">Sponsor logo</span></div>' if SHOW_EMPTY else ""}{draft(sponsor["text"])}{note(sponsor["note"])}</div></div>')
+                 f'<div class="c7-12">{'<div class="logos"><span class="logo">Sponsor logo</span></div>' if SHOW_EMPTY else ""}{draft(sponsor["text"])}{note(sponsor["note"])}</div></div>')
         return mod("sponsor", "collection page", inner, tight=tight)
     if variant == "collection":
         inner = (f'<div class="cols"><div class="c1-4"><p class="kicker">Collection</p><h2>Africa Reframed / [Full collection name]</h2></div>'
-                 f'<div class="c6-12"><div class="logos"><span class="logo">Sponsor logo</span></div>{lines(3)}<p class="small">The sponsor’s contact</p></div></div>'
+                 f'<div class="c7-12"><div class="logos"><span class="logo">Sponsor logo</span></div>{lines(3)}<p class="small">The sponsor’s contact</p></div></div>'
                  + note("The sponsor’s statement (at most 80 words) and contact, after the work. Only once a collection is sponsored."))
         return mod("sponsor", "collection page", inner, tight=tight)
     if not sponsor and not SHOW_EMPTY:
         return ""
-    inner = (f'<div class="cols"><div class="c6-12 c-offset"><p class="kicker">Made possible by</p><div class="logos"><span class="logo">Sponsor logo</span></div>'
+    inner = (f'<div class="cols"><div class="c7-12 c-offset"><p class="kicker">Made possible by</p><div class="logos"><span class="logo">Sponsor logo</span></div>'
              f'<p class="small">Founding Partner (working title) · <a href="#">About the collection</a></p></div></div>'
              + note("Shown under the theme’s statement only once a sponsor has funded the theme. Until then nothing is shown here."))
     return mod("sponsor", "theme page", inner, tight=tight)
@@ -853,10 +854,10 @@ def m_form(variant="a", title=None, fields=None, aside=None, consent=None, butto
         for ft, fl, fs in forms:
             fl_html = "".join(field(l, k, f"{sid or 'f'}-{i}") for i, (l, k) in enumerate(fs))
             cards += f'<div class="card"><h3>{e(ft)}</h3>{draft(fl, "p", "small") if fl else ""}<form class="mini-form">{fl_html}{dead_button("Send")}</form></div>'
-        top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}</div></div>' if title else ""
+        top = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c7-12">{lead or ""}</div></div>' if title else ""
         return mod("form", "b, three short forms", f'{top}<div class="cards-3">{cards}</div>', sid=sid, tight=tight)
     if variant == "c":
-        inner = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c6-12">{lead or ""}{dead_button(button_label, quiet=True)}</div></div>'
+        inner = f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c7-12">{lead or ""}{dead_button(button_label, quiet=True)}</div></div>'
         return mod("form", "c, a single quiet action", inner, sid=sid, tight=tight)
     rows = "".join(field(l, k, f"f{i}") for i, (l, k) in enumerate(fields))
     if consent:
@@ -1787,8 +1788,17 @@ PRIVACY = [("What we collect", "Your organisation, your name and role, your emai
 # (section 3). Nine templates; the five key pages first.
 # ---------------------------------------------------------------------------------------------
 def home_head(title, line=None):
-    """A chapter of Home: its title at 44 px Bold, and under it one line of text."""
-    return f'<div class="chapter-head"><h2 class="chapter-title">{e(title)}</h2>{draft(line) if line else ""}</div>'
+    """A chapter of Home: its title at 44 px Bold; with a sentence, the sentence stands beside it from column 7."""
+    if line:
+        return (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
+                f'<div class="c7-12">{draft(line, "p", "lead")}</div></div>')
+    return f'<div class="chapter-head"><h2 class="chapter-title">{e(title)}</h2></div>'
+
+
+def on_the_line(intro):
+    """Home's lead stands in the right half under the bold line (design guide, Layout: the one exception to the three arrangements)."""
+    assert intro.count('<div class="c1-8">') == 1
+    return intro.replace('<div class="c1-8">', '<div class="c7-12">', 1)
 
 
 def in_chapter(section, head):
@@ -1812,7 +1822,7 @@ def tpl_home(p, base):
     # Request access and sponsoring a collection are on Partners; the collections are in the menu.
     # Rhythm: one section's distance between the parts; a title stands 32 px over what it opens.
     return (m_opening(HOME_LINE, base=base)
-            + m_text(None, INTRO_HOME, "d", sid="intro")
+            + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro"))
             + front_mini(base)
             + in_chapter(m_items(None, PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"),
                          home_head(*HOME_CHAPTERS["principles"]))
@@ -1983,7 +1993,7 @@ def front_feature(c, base, flip=False, themes=False, ground=False):
     pick = COLLECTION_PHOTOS.get(slug)
     photo = (f'<img class="feature-photo" src="{base}assets/trial/{pick["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(pick["alt"])}" loading="lazy" decoding="async">'
              if pick else img(card["image"], "3/2"))
-    cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{pick["ar"]}</a> · {e(pick["place"])}, {pick["year"]}</span> '
+    cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{pick["ar"]}</a> · {e(pick["place"])}</span> '
            f'<span>{e(CREDIT)}</span></p>') if pick else ""
     meta = "".join(f"<span>{e(m)}</span>" for m in card["meta"])
     doors = ""
@@ -2003,7 +2013,7 @@ def front_archive(base, themes=False):
     """The archive as something to use now: one photograph and a few words (D); with its themes and Request access, on a ground (E)."""
     a, pick = FRONT_ARCHIVE, COLLECTION_PHOTOS["house-collection"]
     photo = (f'<img class="feature-photo" src="{base}assets/trial/{pick["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(pick["alt"])}" loading="lazy" decoding="async">')
-    cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{pick["ar"]}</a> · {e(pick["place"])}, {pick["year"]}</span> '
+    cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{pick["ar"]}</a> · {e(pick["place"])}</span> '
            f'<span>{e(CREDIT)}</span></p>')
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
     if themes:
@@ -2168,7 +2178,7 @@ def company_story(x, i):
     lead = f'{x["name"]}: the lead photograph from the shoot'
     if i % 3 == 0:
         out = m_photo(lead, "21/9", "a", caption=caption, credit=credit, sid=story_id(x))
-        out += mod("text", "a, the story", f'<div class="cols story"><div class="c1-4">{words}</div><div class="c6-12">{body}</div></div>', tight=True)
+        out += mod("text", "a, the story", f'<div class="cols story"><div class="c1-4">{words}</div><div class="c7-12">{body}</div></div>', tight=True)
     else:
         out = m_photo(lead, "3/2", "c", text=f'<div class="story">{words}{body}</div>', side="left" if i % 3 == 1 else "right",
                       caption=caption, credit=credit, sid=story_id(x), wide=True)
@@ -2179,7 +2189,7 @@ def company_story(x, i):
 
 def cs_quotes(rows, title):
     q = "".join(f'<figure class="quote"><blockquote>{draft("“" + a + "”")}</blockquote><figcaption class="small">{e(b)}</figcaption></figure>' for a, b in rows)
-    inner = (f'<div class="cols"><div class="c1-4">{heading(title, 3, "project-title")}</div><div class="c6-12 quotes">{q}'
+    inner = (f'<div class="cols"><div class="c1-4">{heading(title, 3, "project-title")}</div><div class="c7-12 quotes">{q}'
              f'{note("From the founders’ emails; on the live page only once each has agreed, after launch.")}</div></div>')
     return mod("text", "a, in their words", inner, tight=True)
 
@@ -2193,7 +2203,7 @@ COLLECTION_SECTIONS = {
     "story": lambda c, base: (m_text(c["story_title"], c["story"], "a") if "grid" in c["sections"] else
                               m_text(c["story_title"], c["story"], "b", box=facts_html(c))),
     "companies": lambda c, base: (mod("items", "a, the stories’ contents",
-                                      f'<div class="cols"><div class="c1-4">{heading(c.get("companies_title", "The companies"))}</div><div class="c6-12">{draft(c["companies_lead"])}'
+                                      f'<div class="cols"><div class="c1-4">{heading(c.get("companies_title", "The companies"))}</div><div class="c7-12">{draft(c["companies_lead"])}'
                                       f'{note("Seven stories as teasers, one photograph each. Present tense where a company’s current activity is confirmed; otherwise as photographed in 2021, until its founder confirms.")}</div></div>'
                                       + m_contents(c["companies"]), sid="companies")
                                   + "".join(company_story(x, i) for i, x in enumerate(c["companies"]))),
@@ -2319,9 +2329,9 @@ def tpl_text(p, base):
         # 1 The archive: always on. The activity, then the proof: its collections, where its images have been, the way in.
         the_archive = (opener("The archive", ABOUT_ARCHIVE, "archive")
                 + mod("collection", "a, the collections in the archive", "".join(collection_entry(x, base) for x in by_state(ARCHIVE_COLLECTIONS)))
-                + mod("text", "the register", f'<div class="cols"><div class="c6-12">{register}'
+                + mod("text", "the register", f'<div class="cols"><div class="c7-12">{register}'
                       f'<p class="doors">{button(base + "partners/#use", "How partners use the archive →", quiet=True)}</p></div></div>', tight=True)
-                + mod("text", "the hinge", f'<div class="cols"><div class="c6-12">{draft(ABOUT_HINGE, "p", "hinge")}</div></div>'))
+                + mod("text", "the hinge", f'<div class="cols"><div class="c7-12">{draft(ABOUT_HINGE, "p", "hinge")}</div></div>'))
         # 2 Exhibitions: a medium we activate. The activity, then the projects, the door, the artists. The page turns here.
         exhibitions = (opener("Exhibitions", ABOUT_EXHIBITIONS, "exhibitions")
                 + "".join(m_project(x) for x in by_state(EXHIBITION_PROJECTS))
@@ -2337,7 +2347,7 @@ def tpl_text(p, base):
                           + note("Short films of interviews with the photographers; played on click with a poster frame, never autoplaying (the one-motion rule)."))
                 + m_grid("e", label="Bamako Nights", line=BAMAKO_NIGHTS, title="Bamako Nights", credit="Students of CFP Bamako, Bamako Nights, 2011", level=3, cap=False)
                 + m_items("Workshop partners", WORKSHOP_PARTNERS, "a", level=3, cls="five")
-                + mod("text", "the way to the collection", f'<div class="cols"><div class="c6-12">{draft(ABOUT_WORKSHOPS_TO_COLLECTION)}'
+                + mod("text", "the way to the collection", f'<div class="cols"><div class="c7-12">{draft(ABOUT_WORKSHOPS_TO_COLLECTION)}'
                       f'<p class="doors">{button(base + "collections/house-collection/", "The House Collection →", quiet=True)}</p></div></div>', tight=True))
         # 4 Who is behind it
         who = (opener("Who is behind it", ABOUT_WHO, "who")
@@ -2380,7 +2390,7 @@ def m_network(base):
     li = "".join(f'<li><strong>{name(n)}</strong>{draft(about_line(n, d), "span")}</li>' for n, d in ARTISTS_NETWORK)
     join = f'Photographers who want to join can <a href="{base}contact/">write to us</a>.'
     return mod("items", "a, rows of text, the network",
-               f'<div class="cols" id="network"><div class="c1-4">{heading(NETWORK, 3, "project-title")}</div><div class="c6-12">'
+               f'<div class="cols" id="network"><div class="c1-4">{heading(NETWORK, 3, "project-title")}</div><div class="c7-12">'
                f'<p class="network-lead">{e(NETWORK_LEAD)} {join}</p>'
                f'<ul class="network-rows">{li}</ul>'
                + note("Rows of text, no images (Thomas, 10 November 2026). Each name links to the artist’s own page once it is made (Artist pages – template).")
@@ -2456,7 +2466,7 @@ def tpl_artist(p, base):
            # On white (Thomas, 11 November 2026, 14:57): on black these pages confused. Black stays for the Exhibitions
            # chapter on About.
            + mod("photo", "b, the lead work, whole", lead_html, tight=True)
-           + mod("text", "b, with a facts box (artist)", f'<div class="cols"><div class="c1-6 artist-text">{text}{note(a["note"]) if a.get("note") else ""}</div><div class="c8-12">{box}</div></div>'))
+           + mod("text", "b, with a facts box (artist)", f'<div class="cols"><div class="c1-6 artist-text">{text}{note(a["note"]) if a.get("note") else ""}</div><div class="c7-12">{box}</div></div>'))
     for sr in a["series"]:
         shown = [x for x in sr["works"] if x[0] != lead["file"]]
         # a row of mostly horizontal works (wider than 1.1:1) takes three to a row, so each carries the weight of an upright work,
@@ -2512,7 +2522,7 @@ def tpl_type(base):
     out = m_page_head("Type", "Six sizes and three weights, each with one job. A page shows four at most: the page title, the heading and the intro, the text, the small print.",
                       kicker="Development")
     out += mod("text", "the scale", f'<div class="type-rows">{rows}</div>')
-    out += mod("text", "the choice", f'<div class="cols"><div class="c1-4">{heading("The Home headline: 64 px")}</div><div class="c6-12">'
+    out += mod("text", "the choice", f'<div class="cols"><div class="c1-4">{heading("The Home headline: 64 px")}</div><div class="c7-12">'
                f'<p>Since 11 November 2026 Home is built with its headline at the display size. The three versions of the Opening '
                f'stand side by side at <a href="{base}dev/opening/">/dev/opening/</a>.</p></div></div>', tight=True)
     return out
@@ -3056,10 +3066,12 @@ CSS = """/* DM Sans, served from this site (SIL Open Font License 1.1: assets/fo
 html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:var(--fs-text);line-height:1.55}
 a{color:inherit}
 .wrap{max-width:var(--page-max);margin:0 auto;padding:0 var(--margin)}
-/* The 12-column grid as a utility: children name their columns (c1-4: columns 1 to 4; c6-12: 6 to 12; c5-off: from column 5 off the right edge of the page) */
+/* The 12-column grid as a utility: children name their columns (c1-4: columns 1 to 4; c7-12: 7 to 12; c5-off: from column 5 off the right edge of the page).
+   One right-hand line, at the half (design guide, Layout; 13 November 2026): a title stands from column 1, everything on the right from column 7.
+   Nothing starts at column 6 or 8; c6-12 is no longer used. */
 .cols{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--gutter)}
 .c1-4{grid-column:1/5}.c6-12{grid-column:6/-1}.c1-12{grid-column:1/-1}.c1-8{grid-column:1/9}.c1-6{grid-column:1/7}.c7-12{grid-column:7/-1}
-.c-half{grid-column:span 6}.c-offset{grid-column:6/-1}
+.c-half{grid-column:span 6}.c-offset{grid-column:7/-1}
 .c5-off{grid-column:5/-1;margin-right:var(--off-edge)}
 .c1-9{grid-column:1/10}.c5-12{grid-column:5/-1}.c-wide{grid-column:span 8}.c-side{grid-column:span 4}
 .bleed{width:100%;max-width:none}
@@ -3170,7 +3182,7 @@ body.clean .mod::before{display:none}
 .e-words .facts{margin-top:24px}
 .e-words p{max-width:var(--measure)}
 .row-3{margin-top:24px}
-.chapter-title{font-size:var(--fs-title);font-weight:300;line-height:1.05;letter-spacing:-.02em;margin:0 0 16px}   /* a chapter of a long page: its title at the page-title size, in Light */
+.chapter-title{font-size:var(--fs-title);font-weight:700;line-height:1.05;letter-spacing:-.02em;margin:0 0 16px}   /* a chapter: its title at the page-title size, in Bold on every page (13 November 2026) */
 /* A black section: the same modules with the ground and the ink exchanged. Black holds one kind of content, the exhibitions
    and the artists' works (Thomas, 11 November 2026; Quality rules, rule 18); it is also the ground of the footer's close. */
 .dark{background:var(--ground);color:#fff;--ink:#fff;--ink-soft:#b9b7b1;--line:#3a3a3a;--paper:#000000;--wire:#242424;--wire-line:#3c3c3c;--wash:#1e1e1e;
@@ -3321,7 +3333,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 /* The front page on trial (see FRONT_VERSIONS). */
 .feature{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:start}
 .feature .f-photo{grid-column:1 / 7;grid-row:1;margin:0}
-.feature .f-words{grid-column:8 / 13;grid-row:1}
+.feature .f-words{grid-column:7 / 13;grid-row:1}
 .feature.flip .f-photo{grid-column:7 / 13}
 .feature.flip .f-words{grid-column:1 / 6}
 /* a section on a ground: sections are spaced by padding, which a ground would fill, so here the distance is a margin */
@@ -3336,12 +3348,11 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mini .theme-doors span{font-size:var(--fs-text)}   /* a number of images is set as the numbers above the list are */
 .mini .f-words .doors{margin:0}
 h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
-/* Home's three chapters open under a title at the page-title size, in Bold as the core line is (Thomas, 12 November 2026,
-   15:32: bold, simple and clear; the Light read as finicky). About's chapters are still in Light: there the page's own
-   title is 44 px Bold, so its chapters need their own answer when About is taken up. */
+/* A chapter's head on Home. With a sentence it is the chapter arrangement: the title on the left, the sentence at the intro
+   size from column 7, both on one top line. Without one the title stands alone across the row (design guide, Layout). */
 .chapter-head{margin:0 0 32px}
-.chapter-head .chapter-title{margin:0;font-weight:700}
-.chapter-head p{margin:16px 0 0}
+.chapter-head .chapter-title{margin:0}
+.chapter-head.cols .lead{margin:0;padding-top:8px}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}
@@ -3626,7 +3637,7 @@ body.show-grid .grid-overlay{display:block}
   .opening.across .opening-img,.opening.words .opening-img{aspect-ratio:16/9;max-height:none}
   .opening.across .opening-words{padding-top:24px}
   .opening.words .opening-words{padding-top:32px;padding-bottom:32px;order:0}
-  .c1-4{grid-column:1/4}.c6-12,.c-offset{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12,.c8-12{grid-column:5/-1}.c-half{grid-column:span 4}
+  .c1-4{grid-column:1/4}.c6-12{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12,.c8-12,.c-offset{grid-column:5/-1}.c-half{grid-column:span 4}
   .grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
   .wire-strip .wrap{flex-wrap:wrap}

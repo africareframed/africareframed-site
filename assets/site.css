@@ -19,10 +19,12 @@
 html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:var(--fs-text);line-height:1.55}
 a{color:inherit}
 .wrap{max-width:var(--page-max);margin:0 auto;padding:0 var(--margin)}
-/* The 12-column grid as a utility: children name their columns (c1-4: columns 1 to 4; c6-12: 6 to 12; c5-off: from column 5 off the right edge of the page) */
+/* The 12-column grid as a utility: children name their columns (c1-4: columns 1 to 4; c7-12: 7 to 12; c5-off: from column 5 off the right edge of the page).
+   One right-hand line, at the half (design guide, Layout; 13 November 2026): a title stands from column 1, everything on the right from column 7.
+   Nothing starts at column 6 or 8; c6-12 is no longer used. */
 .cols{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--gutter)}
 .c1-4{grid-column:1/5}.c6-12{grid-column:6/-1}.c1-12{grid-column:1/-1}.c1-8{grid-column:1/9}.c1-6{grid-column:1/7}.c7-12{grid-column:7/-1}
-.c-half{grid-column:span 6}.c-offset{grid-column:6/-1}
+.c-half{grid-column:span 6}.c-offset{grid-column:7/-1}
 .c5-off{grid-column:5/-1;margin-right:var(--off-edge)}
 .c1-9{grid-column:1/10}.c5-12{grid-column:5/-1}.c-wide{grid-column:span 8}.c-side{grid-column:span 4}
 .bleed{width:100%;max-width:none}
@@ -133,7 +135,7 @@ body.clean .mod::before{display:none}
 .e-words .facts{margin-top:24px}
 .e-words p{max-width:var(--measure)}
 .row-3{margin-top:24px}
-.chapter-title{font-size:var(--fs-title);font-weight:300;line-height:1.05;letter-spacing:-.02em;margin:0 0 16px}   /* a chapter of a long page: its title at the page-title size, in Light */
+.chapter-title{font-size:var(--fs-title);font-weight:700;line-height:1.05;letter-spacing:-.02em;margin:0 0 16px}   /* a chapter: its title at the page-title size, in Bold on every page (13 November 2026) */
 /* A black section: the same modules with the ground and the ink exchanged. Black holds one kind of content, the exhibitions
    and the artists' works (Thomas, 11 November 2026; Quality rules, rule 18); it is also the ground of the footer's close. */
 .dark{background:var(--ground);color:#fff;--ink:#fff;--ink-soft:#b9b7b1;--line:#3a3a3a;--paper:#000000;--wire:#242424;--wire-line:#3c3c3c;--wash:#1e1e1e;
@@ -284,7 +286,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 /* The front page on trial (see FRONT_VERSIONS). */
 .feature{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:start}
 .feature .f-photo{grid-column:1 / 7;grid-row:1;margin:0}
-.feature .f-words{grid-column:8 / 13;grid-row:1}
+.feature .f-words{grid-column:7 / 13;grid-row:1}
 .feature.flip .f-photo{grid-column:7 / 13}
 .feature.flip .f-words{grid-column:1 / 6}
 /* a section on a ground: sections are spaced by padding, which a ground would fill, so here the distance is a margin */
@@ -299,12 +301,11 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mini .theme-doors span{font-size:var(--fs-text)}   /* a number of images is set as the numbers above the list are */
 .mini .f-words .doors{margin:0}
 h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
-/* Home's three chapters open under a title at the page-title size, in Bold as the core line is (Thomas, 12 November 2026,
-   15:32: bold, simple and clear; the Light read as finicky). About's chapters are still in Light: there the page's own
-   title is 44 px Bold, so its chapters need their own answer when About is taken up. */
+/* A chapter's head on Home. With a sentence it is the chapter arrangement: the title on the left, the sentence at the intro
+   size from column 7, both on one top line. Without one the title stands alone across the row (design guide, Layout). */
 .chapter-head{margin:0 0 32px}
-.chapter-head .chapter-title{margin:0;font-weight:700}
-.chapter-head p{margin:16px 0 0}
+.chapter-head .chapter-title{margin:0}
+.chapter-head.cols .lead{margin:0;padding-top:8px}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}
@@ -589,7 +590,7 @@ body.show-grid .grid-overlay{display:block}
   .opening.across .opening-img,.opening.words .opening-img{aspect-ratio:16/9;max-height:none}
   .opening.across .opening-words{padding-top:24px}
   .opening.words .opening-words{padding-top:32px;padding-bottom:32px;order:0}
-  .c1-4{grid-column:1/4}.c6-12,.c-offset{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12,.c8-12{grid-column:5/-1}.c-half{grid-column:span 4}
+  .c1-4{grid-column:1/4}.c6-12{grid-column:4/-1}.c1-8{grid-column:1/7}.c1-6{grid-column:1/5}.c7-12,.c8-12,.c-offset{grid-column:5/-1}.c-half{grid-column:span 4}
   .grid-4,.grid-mixed{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid-overlay .col.col-5{background:rgba(40,110,220,.10)}.grid-overlay .col.col-2{background:rgba(40,110,220,.16)}
   .wire-strip .wrap{flex-wrap:wrap}

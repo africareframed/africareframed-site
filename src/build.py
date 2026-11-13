@@ -940,10 +940,10 @@ INTRO_HOME = [
 # Home's third chapter, three roles and no steps (draft, from the Partners page's own sentences): a landing page explains no
 # process, so each role has one line. Twice on 12 November this content was cut from Home as a paragraph and as a pair inside
 # the archive's box; here it stands third, after the product, as three short items in place of the principles.
-HOME_PARTNERSHIPS = [
-    ("Use it", "Non-profit and public organisations use the images free, in their own reports, campaigns and classrooms."),
-    ("Sponsor it", "Companies and foundations fund a new collection on a theme close to their own work."),
-    ("Make it", "Photographers on location are commissioned, credited and paid."),
+HOME_PARTNERSHIPS = [   # who (a label), the role, one line
+    ("Organisations", "Use it", "Non-profit and public organisations use the images free, in their own reports, campaigns and classrooms."),
+    ("Companies and foundations", "Sponsor it", "Companies and foundations fund a new collection on a theme close to their own work."),
+    ("Photographers", "Make it", "Photographers on location are commissioned, credited and paid."),
 ]
 # The principles' own sentence and its detail, on About since 13 November 2026 (they stood on Home beside Principles).
 PRINCIPLES_LINE = "Behind every image and every collaboration."
@@ -955,7 +955,12 @@ HOME_CHAPTERS = dict(
     # The third chapter is Partnerships since 13 November 2026, 10:30 (Thomas, 10:23 and 10:28): Home's three beats are why
     # (to About), what (to the House Collection) and how to take part (to Partners). The principles stand on About, in the
     # archive's chapter. The sentence is Thomas's idea of 12 November (the archive is built on collaboration across sectors).
-    partnerships=("Partnerships", "The archive is built on collaboration across sectors."),
+    # Since 10:45 (Thomas, 10:42): a text block like the first one, the sentence with a small text and the link to Partners
+    # beneath it, and the three roles as cards. The small text is a draft; "a shared resource" is Thomas's phrase of 12 November.
+    partnerships=("Partnerships", "The archive is built on collaboration across sectors.",
+                  "A picture that Europe can trust cannot come from one voice. So the archive is a shared resource: what one "
+                  "partner makes possible, every partner can use. Each takes part on the same terms, and it grows with every "
+                  "new collection."),
     # about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African
     # photographers with the international picture market."), with the button More about us: off Home since 13 November 2026.
 )
@@ -1868,6 +1873,36 @@ def nb(html):
     return html.replace("AI-generated", '<span class="nb">AI-generated</span>')
 
 
+# The turn (design guide, Pattern; first built here on 13 November 2026, 10:45): the pale ground of the part where a page turns
+# to its second matter, with the white of the part above entering it as stripes. Three bars at 60 degrees start on the top
+# edge of the ground, in the title column, run down to the left and end in a horizontal cut at uneven heights; a few small
+# triangles fall from them. The 2019 measure: a 48 px bar on a 117 px pitch. About a seventh of the area it stands in
+# (528 by 400 px: columns 1 to 5, the head of the part). What stands on the ground covers it: the title stands over it,
+# the white panels stand in front of it. Drawn for the page; one white, never an opacity.
+def turn_pattern():
+    k = 0.5774                                           # 1 / tan 60: how far a bar moves left for each px it falls
+    bars = [(150, 250), (267, 372), (384, 176)]         # where each bar starts on the top edge, and how far it falls
+    tris = [(330, 236, 24), (392, 262, 24), (300, 292, 12), (446, 214, 12), (356, 318, 24), (428, 318, 12),
+            (470, 268, 24), (404, 366, 12), (318, 362, 12), (486, 340, 12)]   # x of the left corner, y of the base, side
+    shapes = "".join(f'<path d="M{x} 0h48L{round(x + 48 - k * h, 1)} {h}h-48z"/>' for x, h in bars)
+    shapes += "".join(f'<path d="M{x} {y}h{t}l-{t / 2} -{round(t * 0.866, 1)}z"/>' for x, y, t in tris)
+    return (f'<svg class="turn-pattern" viewBox="0 0 528 400" preserveAspectRatio="xMinYMin slice" aria-hidden="true" focusable="false">'
+            f'<g fill="#ffffff">{shapes}</g></svg>')
+
+
+def home_partnerships(base):
+    """Home's third chapter, on the pale ground: a text block with its way on, and the three roles as white panels."""
+    title, line, detail = HOME_CHAPTERS["partnerships"]
+    head = (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
+            f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}'
+            f'<p class="doors"><a class="textlink" href="{base}partners/">How partners take part</a></p></div></div>')
+    for who, role, text in HOME_PARTNERSHIPS:
+        limit("item title", role); limit("item line", text)
+    cards = "".join(f'<li><p class="kicker">{e(who)}</p><h3>{e(role)}</h3>{draft(text)}</li>' for who, role, text in HOME_PARTNERSHIPS)
+    return mod("items", "the turn: three roles in white panels on the pale ground", turn_pattern() + head + f'<ul class="panels">{cards}</ul>',
+               cls="on-ground turn", sid="partnerships")
+
+
 def on_the_line(intro):
     """Home's lead stands in the right half under the bold line (design guide, Layout: the one exception to the three arrangements)."""
     assert intro.count('<div class="c1-8">') == 1
@@ -1900,8 +1935,7 @@ def tpl_home(p, base):
             # Collection, which is what the archive launches with and the better place to explore the themes from.
             + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[f'<a class="textlink" href="{base}about/">About Africa Reframed</a>']))
             + front_mini(base)
-            + in_chapter(m_items(None, HOME_PARTNERSHIPS, "a", sid="partnerships", cls="three"), home_head(*HOME_CHAPTERS["partnerships"]))
-            + m_doors("c", links=[f'<a class="textlink" href="{base}partners/">How partners take part</a>'], tight=True, left=True)
+            + home_partnerships(base)
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
@@ -3453,7 +3487,18 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .kw.lit span{color:var(--paper);background:var(--ink);border-color:var(--ink)}   /* the keywords the photograph carries are inverted: black, white type (Thomas, 12 November 2026, 14:31; the yellow tried at 14:25 keeps its one job) */
 .kw.hot span,.kw:focus-visible span{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}   /* the one under the pointer: a ring */
 .kw:focus-visible{outline:none}
-#partnerships .principles{margin-bottom:0}   /* Home: the way on stands under the three roles */
+/* The turn: the pale ground, the white entering it from above in the title column, and white panels on it (design guide, Pattern) */
+.mod.turn{overflow:hidden}
+.mod.turn > .wrap{position:relative}
+.mod.turn > .wrap > *{position:relative;z-index:1}
+.mod.turn > .wrap > .turn-pattern{position:absolute;z-index:0;left:var(--margin);top:calc(-1 * var(--section));overflow:visible;pointer-events:none;
+  width:calc((100% - 2 * var(--margin) - 11 * var(--gutter)) / 12 * 5 + 4 * var(--gutter));height:auto;aspect-ratio:528 / 400}
+.mod.turn .chapter-head.cols .doors{margin:16px 0 0}
+.panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
+.panels li{background:var(--paper);padding:24px 24px 32px;max-width:none}
+.panels h3{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}
+.panels p{margin:0}
+.panels .kicker{margin:0 0 32px}
 .principles.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
@@ -3708,6 +3753,8 @@ body.show-grid .grid-overlay{display:block}
 
 /* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
 @media (max-width:1023px){
+  .mod.turn > .wrap > .turn-pattern{left:0;width:100%;height:calc(var(--section) - 16px);aspect-ratio:auto;overflow:hidden}   /* no title column here: a short band along the top edge */
+  .panels{grid-template-columns:1fr;gap:16px}
   .action > *,.action > .doors{grid-column:1 / -1}
   .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}
   :root{--fs-title:32px;--fs-display:44px;--cols:8;--gutter:24px;--margin:32px;--logo-w:192px;--section:80px;--section-head:56px;--section-tight:28px}

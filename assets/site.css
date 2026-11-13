@@ -324,7 +324,18 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .kw.lit span{color:var(--paper);background:var(--ink);border-color:var(--ink)}   /* the keywords the photograph carries are inverted: black, white type (Thomas, 12 November 2026, 14:31; the yellow tried at 14:25 keeps its one job) */
 .kw.hot span,.kw:focus-visible span{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}   /* the one under the pointer: a ring */
 .kw:focus-visible{outline:none}
-#partnerships .principles{margin-bottom:0}   /* Home: the way on stands under the three roles */
+/* The turn: the pale ground, the white entering it from above in the title column, and white panels on it (design guide, Pattern) */
+.mod.turn{overflow:hidden}
+.mod.turn > .wrap{position:relative}
+.mod.turn > .wrap > *{position:relative;z-index:1}
+.mod.turn > .wrap > .turn-pattern{position:absolute;z-index:0;left:var(--margin);top:calc(-1 * var(--section));overflow:visible;pointer-events:none;
+  width:calc((100% - 2 * var(--margin) - 11 * var(--gutter)) / 12 * 5 + 4 * var(--gutter));height:auto;aspect-ratio:528 / 400}
+.mod.turn .chapter-head.cols .doors{margin:16px 0 0}
+.panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
+.panels li{background:var(--paper);padding:24px 24px 32px;max-width:none}
+.panels h3{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}
+.panels p{margin:0}
+.panels .kicker{margin:0 0 32px}
 .principles.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
@@ -579,6 +590,8 @@ body.show-grid .grid-overlay{display:block}
 
 /* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
 @media (max-width:1023px){
+  .mod.turn > .wrap > .turn-pattern{left:0;width:100%;height:calc(var(--section) - 16px);aspect-ratio:auto;overflow:hidden}   /* no title column here: a short band along the top edge */
+  .panels{grid-template-columns:1fr;gap:16px}
   .action > *,.action > .doors{grid-column:1 / -1}
   .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}
   :root{--fs-title:32px;--fs-display:44px;--cols:8;--gutter:24px;--margin:32px;--logo-w:192px;--section:80px;--section-head:56px;--section-tight:28px}

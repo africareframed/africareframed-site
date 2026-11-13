@@ -1889,15 +1889,21 @@ def nb(html):
 # each shorter than the last, their points on one line, as in the close; one triangle set clear of them. The bars end in a
 # point, as the Opening's and the close's do. What stands on the ground covers the pattern: the title stands over it, the
 # white panels in front of it. Drawn for the page; one white, never an opacity.
-def turn_pattern():
+# The way out (Thomas, 13 November 2026, 11:13): a hint of the same bars leaving the pale ground through its bottom edge, on
+# the right, so that the ground also joins the white beneath it. It is the same drawing turned half round and shown only in
+# the band under the panels: the bars are seen to pass behind the panels, never across or between them.
+def turn_pattern(way_out=False):
     k, bar, up = 0.57735, 104, 12
     tip = 0.86603 * bar
     bars = [(-30, 210), (200, 110), (430, 10)]          # the bar's left edge on the top edge, and how far it falls before its point
+    if way_out:                                         # leaving: the bars run on behind the panels, so no point and no triangle shows
+        bars = [(xl, 400) for xl, _ in bars]
     poly = "".join(f'<polygon points="{xl - k * up:.1f},{-up} {xl + bar - k * up:.1f},{-up} {xl + bar + k * b:.1f},{b:.1f} {xl + k * (b + tip):.1f},{b + tip:.1f}"/>'
                    for xl, b in bars)
     x, y, side = 356, 330, 56                           # one triangle, clear of the points
-    poly += f'<polygon points="{x},{y} {x + side},{y} {x + side / 2},{y - 0.86603 * side:.1f}"/>'
-    return (f'<svg class="turn-pattern" viewBox="0 0 528 400" preserveAspectRatio="xMinYMin slice" aria-hidden="true" focusable="false">'
+    if not way_out:
+        poly += f'<polygon points="{x},{y} {x + side},{y} {x + side / 2},{y - 0.86603 * side:.1f}"/>'
+    return (f'<svg class="turn-pattern{" way-out" if way_out else ""}" viewBox="0 0 528 400" preserveAspectRatio="xMinYMin slice" aria-hidden="true" focusable="false">'
             f'<g fill="#ffffff">{poly}</g></svg>')
 
 
@@ -1910,7 +1916,7 @@ def home_partnerships(base):
     for terms, role, text in HOME_PARTNERSHIPS:
         limit("item title", role); limit("item line", text)
     cards = "".join(f'<li><p class="kicker">{e(terms)}</p><h3>{e(role)}</h3>{draft(text)}</li>' for terms, role, text in HOME_PARTNERSHIPS)
-    return mod("items", "the turn: three roles in white panels on the pale ground", turn_pattern() + head + f'<ul class="panels">{cards}</ul>',
+    return mod("items", "the turn: three roles in white panels on the pale ground", turn_pattern() + turn_pattern(way_out=True) + head + f'<ul class="panels">{cards}</ul>',
                cls="on-ground turn", sid="partnerships")
 
 
@@ -3504,6 +3510,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .mod.turn > .wrap > *{position:relative;z-index:1}
 .mod.turn > .wrap > .turn-pattern{position:absolute;z-index:0;left:var(--margin);top:calc(-1 * var(--section));overflow:visible;pointer-events:none;
   width:calc((100% - 2 * var(--margin) - 11 * var(--gutter)) / 12 * 5 + 4 * var(--gutter));height:auto;aspect-ratio:528 / 400}
+.mod.turn > .wrap > .turn-pattern.way-out{left:auto;right:var(--margin);top:auto;bottom:calc(-1 * var(--section));height:var(--section);aspect-ratio:auto;overflow:visible;clip-path:inset(-40px -200px 0 -200px);transform:rotate(180deg)}
 .mod.turn .chapter-head.cols .doors{margin:16px 0 0}
 .panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
 .panels li{background:var(--paper);padding:24px 24px 32px;max-width:none}
@@ -3764,7 +3771,8 @@ body.show-grid .grid-overlay{display:block}
 
 /* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
 @media (max-width:1023px){
-  .mod.turn > .wrap > .turn-pattern{left:0;width:100%;height:calc(var(--section) - 16px);aspect-ratio:auto;overflow:hidden}   /* no title column here: a short band along the top edge */
+  .mod.turn > .wrap > .turn-pattern{left:0;width:100%;height:calc(var(--section) - 16px);aspect-ratio:auto;overflow:hidden}
+  .mod.turn > .wrap > .turn-pattern.way-out{left:0;right:auto;height:calc(var(--section) - 16px);clip-path:inset(-40px 0 0 0)}   /* no title column here: a short band along the top edge */
   .panels{grid-template-columns:1fr;gap:16px}
   .action > *,.action > .doors{grid-column:1 / -1}
   .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}

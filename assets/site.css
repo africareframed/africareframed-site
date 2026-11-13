@@ -305,7 +305,8 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
    size from column 7, both on one top line. Without one the title stands alone across the row (design guide, Layout). */
 .chapter-head{margin:0 0 32px}
 .chapter-head .chapter-title{margin:0}
-.chapter-head.cols .lead{margin:0;padding-top:8px}
+.chapter-head.cols .lead{margin:0 0 12px;padding-top:8px}
+.chapter-head.cols .lead:last-child,.chapter-head.cols p:last-child{margin-bottom:0}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}

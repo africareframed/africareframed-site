@@ -880,14 +880,23 @@ def m_form(variant="a", title=None, fields=None, aside=None, consent=None, butto
 # by Commerce & Culture."
 INTRO_HOME = [
     "Europe and Africa need each other. Shared stories make people act together, across cultures and across sectors.",
-    # No small text since 18:02 (Thomas): the bold line and the lead stand alone. Tried and set aside on 12 November 2026:
+    # A text block again since 13 November 2026, 09:54 (Thomas): with the lead in the right half there is room for a block,
+    # the sentence at the intro size and its detail at the text size beneath (design guide, Layout: text is an object).
+    # Draft. It stays with why the work matters, as the lead does, and names people, not our process: the first sentence is
+    # the Strategic Platform's (the relationships have to be seen to be trusted).
+    "Relationships have to be seen to be trusted. We make the pictures that let them be seen: students, tradespeople, "
+    "founders and young professionals, in their own cities, today.",
+    # Between 12 November, 18:02, and 13 November the bold line and the lead stood alone. Tried and set aside on 12 November 2026:
     # "It starts with real photographs…" (a claim about ourselves), four lines on who funds, makes and uses the collections
     # (the whole process up front), and "We make each new collection with partners, and share it among them."
 ]
 # The three chapters of Home: title, and the line under it.
 HOME_CHAPTERS = dict(
     archive=("The archive", None),   # "A shared resource" went with the sentence that set it up (Thomas, 18:02); the title names the chapter again
-    principles=("Principles", "Behind every image and every collaboration."),   # Thomas, 14:58 and 15:08
+    # Thomas, 12 November, 14:58 and 15:08, for the sentence; its detail beneath since 13 November 2026, 09:54 (draft): what the
+    # principles are for, from the engine brief (what a company needs before it puts its name on the work).
+    principles=("Principles", "Behind every image and every collaboration.",
+                "An organisation that uses our images puts its own name beside them. These four are what it can rely on."),
     # about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African
     # photographers with the international picture market."), with the button More about us: off Home since 13 November 2026.
 )
@@ -1787,11 +1796,11 @@ PRIVACY = [("What we collect", "Your organisation, your name and role, your emai
 # The pages, each a sequence of modules in the order of the page priorities (Site map, section 6) and the inventory
 # (section 3). Nine templates; the five key pages first.
 # ---------------------------------------------------------------------------------------------
-def home_head(title, line=None):
+def home_head(title, line=None, detail=None):
     """A chapter of Home: its title at 44 px Bold; with a sentence, the sentence stands beside it from column 7."""
     if line:
         return (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
-                f'<div class="c7-12">{draft(line, "p", "lead")}</div></div>')
+                f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail) if detail else ""}</div></div>')
     return f'<div class="chapter-head"><h2 class="chapter-title">{e(title)}</h2></div>'
 
 
@@ -3352,7 +3361,8 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
    size from column 7, both on one top line. Without one the title stands alone across the row (design guide, Layout). */
 .chapter-head{margin:0 0 32px}
 .chapter-head .chapter-title{margin:0}
-.chapter-head.cols .lead{margin:0;padding-top:8px}
+.chapter-head.cols .lead{margin:0 0 12px;padding-top:8px}
+.chapter-head.cols .lead:last-child,.chapter-head.cols p:last-child{margin-bottom:0}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}

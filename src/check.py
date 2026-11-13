@@ -257,10 +257,7 @@ def verdict(rows):
         # the other pages (12 November 2026, with the chapter titles on Home; for Thomas to confirm).
         if len(sizes) > (5 if slug == "home" else 4):
             fail(11, slug, w, f"{len(sizes)} sizes")
-        # (13 November 2026) Home is the display page: few words, the bold line at 64 px and two sentences at the intro size
-        # (its lead, and the sentence beside Principles, which the chapter arrangement sets at that size). Its text size
-        # carries 68% of its words at desktop width, so Home's floor is 65%; every other page keeps 70%. For Thomas to confirm.
-        if top < (0.65 if slug == "home" else 0.70):
+        if top < 0.70:
             fail(11, slug, w, f"largest share {top:.0%}")
         if set(m["weights"]) - WEIGHTS:
             fail(11, slug, w, "weights " + ", ".join(sorted(set(m["weights"]) - WEIGHTS)))

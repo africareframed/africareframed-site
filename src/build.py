@@ -2023,7 +2023,7 @@ def tpl_home(p, base, record=False):
             # who has just read why the work matters asks who is behind it; and in the archive the button into the House
             # Collection, which is what the archive launches with and the better place to explore the themes from.
             + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[f'<a class="textlink" href="{base}about/">About Africa Reframed</a>']))
-            + (front_archive_band(base) if record == "band" else front_archive_field(base) if record == "field" else front_archive_record(base) if record else front_mini(base))
+            + (front_archive_square(base) if record == "square" else front_archive_band(base) if record == "band" else front_archive_field(base) if record == "field" else front_archive_record(base) if record else front_mini(base))
             + home_partnerships(base)
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
@@ -2457,6 +2457,49 @@ def front_archive_band(base):
     return mod("collection", "the archive in small, as a band", f'{nb(home_head(*HOME_CHAPTERS["archive"]))}{front_band(base)}')
 
 
+# The archive in small, as a square of keywords (the fifth version, on trial; Thomas, 13 November 2026, 22:07). Two columns:
+# the photograph in one, and in the other every theme and keyword as the small boxes, with no labels and no rows; those the
+# photograph carries are black, the others white, as in the first module. It can be looked at as an image. A click on a
+# word brings a photograph that carries it: some boxes stay black, some change, and a new photograph stands beside them.
+# A small game, all in one window. The themes come first, in bold; each layer after them starts on a new line.
+def front_square(base):
+    order = [ar for t in THEMES for ar in HOME_PAIRS[t["slug"]]]
+    theme_of = {ar: t for t in THEMES for ar in HOME_PAIRS[t["slug"]]}
+    shots = ""
+    for i, ar in enumerate(order):
+        r, t = FRONT_RECORDS[ar], theme_of[ar]
+        kws = "|".join(["theme:" + t["slug"]] + [w for k, _ in FRONT_LAYERS for w in r[k]])
+        f = f'{base}assets/home/{ar.lower()}'
+        cap = (f'<p class="credit"><span class="caption"><span class="record-title">{e(r["title"])}</span>'
+               f'<a href="{archive("/-/galleries/archive?search=" + ar, "image")}">{ar}</a> · {e(r["place"])}</span> <span>{e(CREDIT)}</span></p>')
+        shots += (f'<figure class="frame{" on" if i == 0 else ""}" data-shot="{ar}" data-kws="{e(kws)}">'
+                  f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 46vw, 92vw" '
+                  f'width="1280" height="853" alt="{e(r["desc"])}" loading="lazy" decoding="async">{cap}</figure>')
+    first, t0 = FRONT_RECORDS[order[0]], theme_of[order[0]]
+    def tag(word, key, lit, cls=""):
+        return f'<li><button type="button" class="kw{cls}{" lit" if lit else ""}" data-kw="{e(key)}"><span>{e(word)}</span></button></li>'
+    groups = ["".join(tag(t["name"], "theme:" + t["slug"], t is t0, " theme") for t in THEMES)]
+    groups += ["".join(tag(w, w, w in first[k]) for w in FRONT_ROWS[k]) for k, _ in FRONT_LAYERS]
+    field = '<li class="brk" aria-hidden="true"></li>'.join(groups)
+    way = f'<p class="doors rec-way">{button(base + HOUSE_AT, "Explore the House Collection", quiet=True)}</p>'
+    script = ("<script>(function(){[].slice.call(document.querySelectorAll('.sq-mod')).forEach(function(box){"
+              "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),kws=[].slice.call(box.querySelectorAll('[data-kw]')),n=shots.length,cur=0;"
+              "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
+              "function show(i){cur=(i%n+n)%n;shots.forEach(function(f,k){f.classList.toggle('on',k===cur)});"
+              "kws.forEach(function(b){b.classList.toggle('lit',has[cur].indexOf(b.dataset.kw)>-1)})}"
+              "box.querySelector('.switch').addEventListener('click',function(ev){if(ev.target.closest('a'))return;show(cur+1)});"
+              "kws.forEach(function(b){b.addEventListener('click',function(){var k=b.dataset.kw;for(var j=1;j<=n;j++){var q=(cur+j)%n;if(has[q].indexOf(k)>-1){show(q);return}}})});"
+              "function warm(){[].slice.call(box.querySelectorAll('img[loading=lazy]')).forEach(function(i){i.loading='eager'})}"
+              "['pointerenter','focusin','touchstart'].forEach(function(ev){box.addEventListener(ev,warm,{once:true,passive:true})})})})();</script>")
+    return (f'<div class="sq-mod"><div class="feature"><div class="switch f-photo">{shots}</div>'
+            f'<div class="f-words"><ul class="sq-field" aria-label="Themes and keywords on these photographs">{field}</ul>{way}</div></div></div>{script}')
+
+
+def front_archive_square(base):
+    """The archive's chapter on Home with the square of keywords: on trial at /dev/home-square/."""
+    return mod("collection", "the archive in small, as a square of keywords", f'{nb(home_head(*HOME_CHAPTERS["archive"]))}{front_square(base)}')
+
+
 def front_archive_field(base):
     """The archive's chapter on Home with the field: on trial at /dev/home-field/."""
     title, line, detail = HOME_CHAPTERS["archive"]
@@ -2482,12 +2525,14 @@ def tpl_archive_trial(p, base):
              + '<p class="wrap trial-note">Choose a theme: one photograph from it appears with its record. On a phone the five names are a row to slide. '
                'Three themes, chosen to differ. Versions 1 and 2 differ in one thing only: how the keywords are set. '
                'Version 3 is another idea: a photograph over a field of words. Click the photograph, or point at a word. '
-               'Version 4 sets the photographs in a band, with a slice of the one before and of the one after.</p>')
+               'Version 4 sets the photographs in a band, with a slice of the one before and of the one after. '
+               'Version 5 is two columns: the photograph, and a square of keywords to click.</p>')
     a = mod("collection", "the archive as a record, keywords as words", f'<p class="kicker trial-label">Version 1 · the keywords as plain words</p>{head}{front_record(base, "themes")}')
     b = mod("collection", "the archive as a record, keywords as tags", f'<p class="kicker trial-label">Version 2 · the keywords as tags, outlined</p>{head}{front_record(base, "themes", tags=True)}')
     c = mod("collection", "the archive as a field", f'<p class="kicker trial-label">Version 3 · a photograph over a field of words</p>{nb(home_head(*HOME_CHAPTERS["archive"]))}{front_field(base)}')
     d = mod("collection", "the archive as a band", f'<p class="kicker trial-label">Version 4 · a band of photographs over the field of words</p>{nb(home_head(*HOME_CHAPTERS["archive"]))}{front_band(base)}')
-    return intro + a + b + c + d + REC_SCRIPT
+    f5 = mod("collection", "the archive as a square of keywords", f'<p class="kicker trial-label">Version 5 · the photograph beside a square of keywords</p>{nb(home_head(*HOME_CHAPTERS["archive"]))}{front_square(base)}')
+    return intro + a + b + c + d + f5 + REC_SCRIPT
 
 
 def front_ways(base):
@@ -4116,6 +4161,18 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .strip-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
   .strip-mod .kw.theme.lit span{color:var(--ink)}
 }
+/* The archive in small, as a square of keywords (the fifth version, on trial): the photograph in the left half, and in the
+   right half every theme and keyword as the small boxes, the photograph's own in black; the way on at the foot. */
+.sq-mod .feature{align-items:stretch}
+.sq-mod .f-photo{cursor:pointer;align-self:start}
+.sq-mod .f-words{display:flex;flex-direction:column;justify-content:space-between;padding-bottom:calc(8px + 3 * 1.45 * var(--fs-small))}   /* the caption's three lines */
+.sq-field{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.sq-field .brk{flex:0 0 100%;max-width:none;height:0;margin-top:-8px}   /* a list item is held to the measure elsewhere; this one breaks the line */
+.sq-mod .record-title{display:block;font-weight:700;color:var(--ink)}
+.sq-mod .rec-way{margin:24px 0 0}
+@media (max-width:1023px){
+  .sq-mod .f-words{padding-bottom:0;margin-top:16px}
+}
 .rec-mod .rec-tabs{margin-bottom:32px}
 .rec-tabs.three li{grid-column:span 3}   /* three names: on columns 1, 4 and 7, the third on the half line */
 .rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}
@@ -4506,6 +4563,11 @@ def build():
         (dev_dir / "home").mkdir(exist_ok=True)
         home_main = tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record=True).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
         (dev_dir / "home" / "index.html").write_text(render(hmt, home_main, "../../"))
+        hms = dict(path="dev/home-square/", title="Home, with the archive as a square of keywords, on trial", slug=None, tpl="front", nav=None,
+                   desc="A copy of Home with the fifth version of the archive module, on trial; generated by the build, removed at launch.")
+        CUR.update(slug=None, n=0)
+        (dev_dir / "home-square").mkdir(exist_ok=True)
+        (dev_dir / "home-square" / "index.html").write_text(render(hms, tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record="square"), "../../"))
         hmb = dict(path="dev/home-band/", title="Home, with the archive as a band, on trial", slug=None, tpl="front", nav=None,
                    desc="A copy of Home with the fourth version of the archive module, on trial; generated by the build, removed at launch.")
         CUR.update(slug=None, n=0)

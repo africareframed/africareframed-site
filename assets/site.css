@@ -595,6 +595,18 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .strip-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
   .strip-mod .kw.theme.lit span{color:var(--ink)}
 }
+/* The archive in small, as a square of keywords (the fifth version, on trial): the photograph in the left half, and in the
+   right half every theme and keyword as the small boxes, the photograph's own in black; the way on at the foot. */
+.sq-mod .feature{align-items:stretch}
+.sq-mod .f-photo{cursor:pointer;align-self:start}
+.sq-mod .f-words{display:flex;flex-direction:column;justify-content:space-between;padding-bottom:calc(8px + 3 * 1.45 * var(--fs-small))}   /* the caption's three lines */
+.sq-field{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.sq-field .brk{flex:0 0 100%;max-width:none;height:0;margin-top:-8px}   /* a list item is held to the measure elsewhere; this one breaks the line */
+.sq-mod .record-title{display:block;font-weight:700;color:var(--ink)}
+.sq-mod .rec-way{margin:24px 0 0}
+@media (max-width:1023px){
+  .sq-mod .f-words{padding-bottom:0;margin-top:16px}
+}
 .rec-mod .rec-tabs{margin-bottom:32px}
 .rec-tabs.three li{grid-column:span 3}   /* three names: on columns 1, 4 and 7, the third on the half line */
 .rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}

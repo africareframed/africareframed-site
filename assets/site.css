@@ -535,6 +535,8 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .rec-rows dt{font-size:var(--fs-small);line-height:1.45;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
 .rec-rows dd{margin:0}
 .rec-rows dd span{display:block}
+.rec-rows.tags dd{display:flex;flex-wrap:wrap;gap:8px}
+.rec-rows.tags dd span{font-size:var(--fs-small);line-height:1.4;color:var(--paper);background:var(--ink);border:1px solid var(--ink);padding:4px 12px}
 .rec-ctl{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin:24px 0 0}
 .rec-count{font-size:var(--fs-small);color:var(--ink-soft)}
 .rec-steps{display:flex;gap:24px}
@@ -543,6 +545,15 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .rec-way .doors{margin:0}
 .trial-label{margin:0 0 32px;color:var(--ink)}
 .trial-note{color:var(--ink-soft);margin-top:0}
+@media (max-width:767px){
+  /* on a phone the five names are one row to slide: the next name shows at the edge, and the row runs to the window's edge */
+  .theme-tabs.rec-tabs{display:flex;grid-template-columns:none;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+    margin:0 calc(-1 * var(--margin)) 24px 0;-webkit-overflow-scrolling:touch}
+  .theme-tabs.rec-tabs::-webkit-scrollbar{display:none}
+  .rec-tabs li{flex:0 0 60%;scroll-snap-align:start}
+  .rec-tabs li:last-child{margin-right:40%}
+  .rec-tabs button{display:block}
+}
 @media (max-width:1023px){
   /* below the desktop the control stands between the photograph and its record, so the picture stays in view when it is
      tapped, and the record takes its own height */

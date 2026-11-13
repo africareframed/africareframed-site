@@ -2283,8 +2283,11 @@ def front_mini(base):
 # boxes. It is the archive's own image page in small. Two controls on trial: "themes", a row of the five names over the
 # module, as on the House Collection's page (choosing a theme shows a photograph from it); and "steps", previous and next
 # in words. Home itself is untouched until Thomas has compared them.
-def front_record(base, control="themes"):
-    order = [ar for t in THEMES for ar in HOME_PAIRS[t["slug"]]]          # the themes' story order
+def front_record(base, control="themes", tags=False, one=True):
+    """one: one photograph for each theme, the first of each pair Thomas chose (17:42: the limited examples; a second
+    photograph behind a second click would stay unseen). tags: the keywords as the small black tags of the earlier module,
+    only those this photograph carries; else as plain words."""
+    order = [ar for t in THEMES for ar in (HOME_PAIRS[t["slug"]][:1] if one else HOME_PAIRS[t["slug"]])]   # the themes' story order
     theme_of = {ar: t for t in THEMES for ar in HOME_PAIRS[t["slug"]]}
     shots, recs = "", ""
     for i, ar in enumerate(order):
@@ -2298,13 +2301,12 @@ def front_record(base, control="themes"):
         # a layer this photograph carries no keyword in is left out, never shown as an empty row
         rows = "".join(f'<div><dt>{e(label)}</dt><dd>' + "".join(f"<span>{e(w)}</span>" for w in r[k]) + "</dd></div>" for k, label in FRONT_LAYERS if r[k])
         recs += (f'<div class="rec{" on" if on else ""}" data-rec="{ar}"><p class="kicker">{e(t["name"])}</p>'
-                 f'<h3 class="rec-title">{e(r["title"])}</h3><dl class="rec-rows">{rows}</dl></div>')
-    tabs = ""
+                 f'<h3 class="rec-title">{e(r["title"])}</h3><dl class="rec-rows{" tags" if tags else ""}">{rows}</dl></div>')
+    tabs, ctl = "", ""
     if control == "themes":
         tabs = ('<ul class="theme-tabs rec-tabs">' + "".join(
             f'<li><button type="button" data-theme="{t["slug"]}" aria-pressed="{"true" if i == 0 else "false"}"{" class=" + chr(34) + "on" + chr(34) if i == 0 else ""}>'
             f'<strong>{e(t["name"])}</strong><span class="count">{t["count"]} images</span></button></li>' for i, t in enumerate(THEMES)) + "</ul>")
-        ctl = '<p class="rec-ctl"><button type="button" class="textlink rec-step" data-step="theme">Another photograph from this theme</button></p>'
     else:
         ctl = (f'<p class="rec-ctl"><span class="rec-count"><span class="rec-n">1</span> of {len(order)} shown here · 1,122 in the archive</span>'
                '<span class="rec-steps"><button type="button" class="textlink rec-step" data-step="-1">Previous</button>'
@@ -2314,28 +2316,39 @@ def front_record(base, control="themes"):
             f'<div class="f-words"><div class="rec-stack">{recs}</div>{ctl}</div></div>{way}</div>')
 
 
+# Choosing a theme shows its photograph; choosing is a cut. On a phone the five names are one row that is slid sideways with
+# the finger, the next name showing at the edge: the name that comes to rest is the chosen one, and a tap chooses too. The
+# reader's finger moves the row; nothing moves by itself (rule 20). A click on the photograph goes to the next theme.
 REC_SCRIPT = ("<script>(function(){[].slice.call(document.querySelectorAll('.rec-mod')).forEach(function(box){"
               "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),recs=[].slice.call(box.querySelectorAll('[data-rec]')),"
-              "tabs=[].slice.call(box.querySelectorAll('[data-theme]')),n=box.querySelector('.rec-n'),cur=0,byTheme=box.dataset.control==='themes';"
-              "function show(i){cur=(i+shots.length)%shots.length;shots.forEach(function(f,k){f.classList.toggle('on',k===cur)});"
+              "tabs=[].slice.call(box.querySelectorAll('[data-theme]')),strip=box.querySelector('.rec-tabs'),n=box.querySelector('.rec-n'),cur=0;"
+              "function slides(){return strip&&strip.scrollWidth>strip.clientWidth+4}"
+              "function show(i,fromSlide){cur=(i+shots.length)%shots.length;shots.forEach(function(f,k){f.classList.toggle('on',k===cur)});"
               "recs.forEach(function(r,k){r.classList.toggle('on',k===cur)});var t=shots[cur].dataset.of;"
-              "tabs.forEach(function(a){var on=a.dataset.theme===t;a.classList.toggle('on',on);a.setAttribute('aria-pressed',String(on))});if(n)n.textContent=cur+1}"
+              "tabs.forEach(function(a){var on=a.dataset.theme===t;a.classList.toggle('on',on);a.setAttribute('aria-pressed',String(on));"
+              "if(on&&!fromSlide&&slides())strip.scrollLeft=a.parentNode.offsetLeft-strip.firstElementChild.offsetLeft});if(n)n.textContent=cur+1}"
               "function of(t){var l=[];shots.forEach(function(f,k){if(f.dataset.of===t)l.push(k)});return l}"
-              "function other(){var l=of(shots[cur].dataset.of);show(l[(l.indexOf(cur)+1)%l.length])}"
               "tabs.forEach(function(a){a.addEventListener('click',function(){var l=of(a.dataset.theme),j=l.indexOf(cur);show(j>-1?l[(j+1)%l.length]:l[0])})});"
-              "[].slice.call(box.querySelectorAll('[data-step]')).forEach(function(b){b.addEventListener('click',function(){if(b.dataset.step==='theme')other();else show(cur+Number(b.dataset.step))})});"
-              "box.querySelector('.switch').addEventListener('click',function(ev){if(ev.target.closest('a'))return;if(byTheme)other();else show(cur+1)});"
+              "[].slice.call(box.querySelectorAll('[data-step]')).forEach(function(b){b.addEventListener('click',function(){show(cur+Number(b.dataset.step))})});"
+              "box.querySelector('.switch').addEventListener('click',function(ev){if(ev.target.closest('a'))return;show(cur+1)});"
+              "if(strip){var tm;strip.addEventListener('scroll',function(){clearTimeout(tm);tm=setTimeout(function(){if(!slides())return;"
+              "var x=strip.getBoundingClientRect().left,best=0,d=1e9;tabs.forEach(function(a,k){var q=Math.abs(a.getBoundingClientRect().left-x);if(q<d){d=q;best=k}});"
+              "var l=of(tabs[best].dataset.theme);if(l.indexOf(cur)<0)show(l[0],true)},140)},{passive:true})}"
               "function warm(){[].slice.call(box.querySelectorAll('img[loading=lazy]')).forEach(function(i){i.loading='eager'})}"
               "['pointerenter','focusin','touchstart'].forEach(function(ev){box.addEventListener(ev,warm,{once:true,passive:true})})})})();</script>")
 
 
 def tpl_archive_trial(p, base):
-    head = nb(home_head(*HOME_CHAPTERS["archive"]))
-    intro = (m_page_head("The archive on Home", "Two simpler versions of the archive in small, on trial. Home itself is unchanged.", kicker="Development")
-             + '<p class="wrap trial-note">Each version stands as it would on Home, under the archive’s text block. '
-               'A: choose a theme. B: step through the photographs.</p>')
-    a = mod("collection", "the archive as a record, A: choose a theme", f'<p class="kicker trial-label">Version A · choose a theme</p>{head}{front_record(base, "themes")}')
-    b = mod("collection", "the archive as a record, B: step through", f'<p class="kicker trial-label">Version B · step through the photographs</p>{head}{front_record(base, "steps")}')
+    title, line, detail = HOME_CHAPTERS["archive"]
+    old = "Ten photographs stand below, with the keywords they carry in the archive."
+    assert old in detail
+    # with one photograph for each theme the approved sentence no longer holds; its replacement is a draft for Thomas
+    head = nb(home_head(title, line, detail.replace(old, "One photograph from each theme stands below, with the keywords it carries in the archive.")))
+    intro = (m_page_head("The archive on Home", "A simpler archive in small, on trial. Home itself is unchanged.", kicker="Development")
+             + '<p class="wrap trial-note">Choose a theme: one photograph from it appears with its record. On a phone the five names are a row to slide. '
+               'The two versions differ in one thing only: how the keywords are set.</p>')
+    a = mod("collection", "the archive as a record, keywords as words", f'<p class="kicker trial-label">Version 1 · the keywords as plain words</p>{head}{front_record(base, "themes")}')
+    b = mod("collection", "the archive as a record, keywords as tags", f'<p class="kicker trial-label">Version 2 · the keywords as tags</p>{head}{front_record(base, "themes", tags=True)}')
     return intro + a + b + REC_SCRIPT
 
 
@@ -3905,6 +3918,8 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .rec-rows dt{font-size:var(--fs-small);line-height:1.45;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
 .rec-rows dd{margin:0}
 .rec-rows dd span{display:block}
+.rec-rows.tags dd{display:flex;flex-wrap:wrap;gap:8px}
+.rec-rows.tags dd span{font-size:var(--fs-small);line-height:1.4;color:var(--paper);background:var(--ink);border:1px solid var(--ink);padding:4px 12px}
 .rec-ctl{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin:24px 0 0}
 .rec-count{font-size:var(--fs-small);color:var(--ink-soft)}
 .rec-steps{display:flex;gap:24px}
@@ -3913,6 +3928,15 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .rec-way .doors{margin:0}
 .trial-label{margin:0 0 32px;color:var(--ink)}
 .trial-note{color:var(--ink-soft);margin-top:0}
+@media (max-width:767px){
+  /* on a phone the five names are one row to slide: the next name shows at the edge, and the row runs to the window's edge */
+  .theme-tabs.rec-tabs{display:flex;grid-template-columns:none;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+    margin:0 calc(-1 * var(--margin)) 24px 0;-webkit-overflow-scrolling:touch}
+  .theme-tabs.rec-tabs::-webkit-scrollbar{display:none}
+  .rec-tabs li{flex:0 0 60%;scroll-snap-align:start}
+  .rec-tabs li:last-child{margin-right:40%}
+  .rec-tabs button{display:block}
+}
 @media (max-width:1023px){
   /* below the desktop the control stands between the photograph and its record, so the picture stays in view when it is
      tapped, and the record takes its own height */

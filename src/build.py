@@ -427,6 +427,31 @@ ROLES = {    # how an image is shown -> (in words, its width in px on a 1,440 px
 }
 
 
+# Photographs placed in a page's slots (13 November 2026). A slot is named by its page, how the image is shown there, and
+# which of that kind it is on the page, so that a slot keeps its photograph when sections above it move. The first set is
+# the House Collection's, placed when Home began to send its readers there (Thomas, 10:06): its lead, and one large
+# photograph with a row of three from the ten Thomas chose for Home on 12 November. A first set, for Thomas to change.
+PLACED = {}        # (page slug, role, which of that role on the page) -> a record: ar, place, alt, file, w, h, more (wider files)
+PLACED_AT = {}     # slot id -> its record, filled as the page is built
+
+
+def place(slug, role, which, ar, place_, alt, file, w, h, more=(), pos=None):
+    PLACED[(slug, role, which)] = dict(ar=ar, place=place_, alt=alt, file=file, w=w, h=h, more=more, pos=pos)
+
+
+def placed_img(sid, ratio, cls="", sizes="100vw", eager=False):
+    """The photograph placed in a slot, or nothing: then the grey box of an image still to choose is shown."""
+    r = PLACED_AT.get(sid)
+    if not r:
+        return ""
+    base = CUR.get("base", "")
+    srcset = ", ".join(f'{base}{f} {fw}w' for f, fw in ((r["file"], r["w"]),) + tuple(r["more"]))
+    style = f'aspect-ratio:{ratio};' if ratio else ""
+    style += f'object-position:{r["pos"]};' if r["pos"] else ""
+    return (f'<img class="placed{" " + cls if cls else ""}" src="{base}{r["file"]}" srcset="{srcset}" sizes="{sizes}" width="{r["w"]}" height="{r["h"]}" '
+            f'alt="{e(r["alt"])}" style="{style}" {"fetchpriority=" + chr(34) + "high" + chr(34) if eager else "loading=" + chr(34) + "lazy" + chr(34)} decoding="async">')
+
+
 def slot(role, ratio, label):
     """Records an image position; returns its id (None on the development pages)."""
     if not CUR["slug"]:
@@ -434,6 +459,11 @@ def slot(role, ratio, label):
     CUR["n"] += 1
     sid = f'{CUR["slug"]}-{CUR["n"]:02d}'
     SLOTS.append(dict(id=sid, page=CUR["title"], role=role, ratio=(ratio or "29/16").replace("/", ":"), label=label))
+    which = sum(1 for x in SLOTS if x["id"].rsplit("-", 1)[0] == CUR["slug"] and x["role"] == role)
+    r = PLACED.get((CUR["slug"], role, which))
+    if r:
+        PLACED_AT[sid] = r
+        PICKS[sid] = dict(ar=r["ar"], place=r["place"], year="")
     return sid
 
 
@@ -461,14 +491,16 @@ def frame(label, ratio="3/2", caption=None, credit=None, cls="", role="grid-3", 
     """An image in its slot, with what stands beneath it. own: its own credit line; cap: its caption (AR ID, place, year)."""
     sid = slot(role, ratio, label)
     below = credit_line(credit=credit, own=own, cap=caption_html(sid, caption) if (cap or caption) else "")
-    return f'<figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}>{img(label, ratio, cls=cls)}{below}</figure>'
+    pic = placed_img(sid, ratio, cls, sizes=f"(min-width:1024px) {round(ROLES[role][1] / 14.4)}vw, 92vw") or img(label, ratio, cls=cls)
+    return f'<figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}>{pic}{below}</figure>'
 
 
 def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12", credit=None, sid=None, lead=False, echo=False, wide=False):
     role = "lead-bleed" if lead else "two-thirds" if wide else {"a": "feature", "c": "half"}.get(variant, "lead" if span == "c1-12" else "half")
-    below = credit_line(credit=credit, cap=caption_html(slot(role, ratio, label), caption))
+    psid = slot(role, ratio, label)
+    below = credit_line(credit=credit, cap=caption_html(psid, caption))
     if variant == "a":
-        inner = f'<figure class="frame"><div class="bleed">{img(label, ratio, cls="bleed-img")}{ECHO if echo else ""}</div><div class="wrap">{below}</div></figure>'
+        inner = f'<figure class="frame"><div class="bleed">{placed_img(psid, ratio, "bleed-img", eager=lead) or img(label, ratio, cls="bleed-img")}{ECHO if echo else ""}</div><div class="wrap">{below}</div></figure>'
         return mod("photo", "a, full bleed" + (", the lead" if lead else ""), inner, wrap=False, sid=sid, tight=lead, cls="lead-bleed" if lead else "")
     if variant == "c":
         # wide: the photograph over eight columns and the words in four, so that it is the large one of its story
@@ -573,6 +605,15 @@ def theme_photo(t, base):
             f'width="960" height="640" alt="{e(pick["alt"])}" loading="lazy" decoding="async"></figure>')
 
 
+def place_house_collection():
+    r = FRONT_RECORDS
+    place("house-collection", "lead-bleed", 1, "AR-2002", PHOTO_AR_2002["place"], PHOTO_AR_2002["alt"], "assets/opening/ar-2002-wide-1920.jpg", 1920, 1237,
+          more=(("assets/opening/ar-2002-wide-2880.jpg", 2880),), pos="50% 22%")
+    for role, which, ar in (("two-thirds", 1, "AR-1350"), ("grid-3", 1, "AR-1137"), ("grid-3", 2, "AR-1852"), ("grid-3", 3, "AR-1341")):
+        place("house-collection", role, which, ar, r[ar]["place"], r[ar]["desc"], f"assets/home/{ar.lower()}-800.jpg", 800, 533,
+              more=((f"assets/home/{ar.lower()}-1280.jpg", 1280),))
+
+
 # The collection card's photograph. The markup carries the layers of the test page (see above), which only show there;
 # on the live pages the card is plain. A collection without a chosen photograph keeps its grey box.
 COLLECTION_PHOTOS = {   # on trial, not the final pick
@@ -589,18 +630,18 @@ def card_photo(slug, label, base):
     return f'<figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}><div class="mount">{MOUNT_PATTERN}{inside}</div></figure>'
 
 
-def theme_entry(t, base, i, row=False, ratio="4/5"):
-    if not row and ratio == "4/5" and CUR["slug"] in ("home", "signs") and t["slug"] in THEME_PHOTOS:
+def theme_entry(t, base, i, row=False, ratio="4/5", short=False):
+    if not row and ratio == "4/5" and CUR["slug"] in ("home", "signs", "house-collection") and t["slug"] in THEME_PHOTOS:
         strip = theme_photo(t, base)
     else:
         strip = (frame(f'Image for {t["name"]}', "3/2", role="row", own=False, cap=False) if row
                  else frame("Theme image", ratio, role="theme-nav" if ratio == "5/2" else "theme", own=False, cap=False))
     return (f'<a class="theme-entry{" row" if row else ""}" href="{base}themes/{t["slug"]}/">'
-            f'<span class="order">{i}</span>{"" if row else strip}<div><h3>{e(t["name"])}</h3><p>{e(limit("theme statement", t["statement"]))}</p>'
+            f'<span class="order">{i}</span>{"" if row else strip}<div><h3>{e(t["name"])}</h3>{"" if short else "<p>" + e(limit("theme statement", t["statement"])) + "</p>"}'
             f'<span class="count">{t["count"]} images</span></div>{strip if row else ""}</a>')
 
 
-def m_themes(base, variant="a", current=None):
+def m_themes(base, variant="a", current=None, title=None, short=False):
     if variant == "c":
         n = THEMES.index(current)
         prv, nxt = THEMES[n - 1], THEMES[(n + 1) % len(THEMES)]
@@ -608,12 +649,12 @@ def m_themes(base, variant="a", current=None):
                  f'<div class="c-half theme-nav"><span class="dir">Next theme →</span>{theme_entry(nxt, base, THEMES.index(nxt) + 1, ratio="5/2")}</div></div>')
         return mod("themes", "c, previous and next", inner)
     lead = draft(limit("lead", THEMES_LEAD), "p", "lead")
-    title = f"The first {NUMBER_WORDS[len(THEMES)]} themes"
+    title = title or f"The first {NUMBER_WORDS[len(THEMES)]} themes"
     DRAFT_HEADINGS.add(title)
     if variant == "b":
         rows = "".join(theme_entry(t, base, i, row=True) for i, t in enumerate(THEMES, 1))
         return mod("themes", "b, rows", f'<div class="theme-rows">{rows}</div>')
-    cards = "".join(theme_entry(t, base, i) for i, t in enumerate(THEMES, 1))
+    cards = "".join(theme_entry(t, base, i, short=short) for i, t in enumerate(THEMES, 1))   # short: the name and the count; the statement stands on the theme's own page
     # up to five stand in one row; from six they stand in two even rows, so a new theme needs no new design
     n = len(THEMES)
     return mod("themes", "a, in a row", f'<div class="cols"><div class="c1-4">{heading(title)}</div><div class="c7-12">{lead}</div></div>'
@@ -964,10 +1005,10 @@ REQUEST_FOOT = "Companies get access through a collection sponsorship; write to 
 # ---------------------------------------------------------------------------------------------
 HOUSE_COLLECTION = dict(
     slug="house-collection", title="House Collection", kicker="Collection", statement=HOUSE_STATEMENT, statement_draft=True,
-    lead="Collection image", story_title="Made by our own team, 2013 to 2018", story=HOUSE_STORY, facts=HOUSE_FACTS,
-    grid_line="A spread across the five themes; released, no minors.",
+    lead="Collection image", story_title="Made by our own team", story=HOUSE_STORY, facts=HOUSE_FACTS,   # the heading without its years (draft, 13 November 2026: no dates as structure)
+    grid_line="A spread across the five themes.",   # "released, no minors" was our own working note, not a line for a reader (13 November 2026)
     access=dict(count=("1,122", "images in the House Collection"), src="collection-house", line=f"Sponsoring a collection? Write to {EMAIL_PARTNERS}."),
-    sections=["story", "grid", "places", "feature", "themes", "goals", "access", "uses"],
+    sections=["themes", "story", "grid", "places", "feature", "goals", "access", "uses"],
     card=dict(kicker="Our own collection", line="1,122 photographs made by our team in Mali, Kenya and The Gambia.",
               meta=["1,122 images", "21 shoots", "Mali · Kenya · The Gambia"], image="Collection image"),
 )
@@ -1835,7 +1876,10 @@ def tpl_home(p, base):
     # Request access and sponsoring a collection are on Partners; the collections are in the menu.
     # Rhythm: one section's distance between the parts; a title stands 32 px over what it opens.
     return (m_opening(HOME_LINE, base=base)
-            + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro"))
+            # The two ways on (Thomas, 13 November 2026, 10:06): under the first text block a link to About, where the reader
+            # who has just read why the work matters asks who is behind it; and in the archive the button into the House
+            # Collection, which is what the archive launches with and the better place to explore the themes from.
+            + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[f'<a class="textlink" href="{base}about/">About Africa Reframed</a>']))
             + front_mini(base)
             + in_chapter(m_items(None, PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"),
                          home_head(*HOME_CHAPTERS["principles"]))
@@ -2067,7 +2111,7 @@ def front_mini(base):
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
     words = (f'<p class="kicker">{e(a["kicker"])}</p><p class="meta-row">{meta}</p>'
              f'<h3 class="kicker">By theme</h3><ul class="theme-doors">{rows}</ul>'
-             f'<p class="doors">{button(base + "themes/", "Explore the themes", quiet=True)}</p>')
+             f'<p class="doors">{button(base + "collections/house-collection/", "Explore the House Collection", quiet=True)}</p>')
     kw = "".join(f'<h4 class="kicker kw-label">{e(label)}</h4><ul class="kw-row">'
                  + "".join(f'<li><button type="button" class="kw{" lit" if w in first[k] else ""}" data-kw="{e(w)}"><span>{e(w)}</span></button></li>' for w in FRONT_ROWS[k]) + "</ul>"
                  for k, label in FRONT_LAYERS)
@@ -2233,7 +2277,9 @@ COLLECTION_SECTIONS = {
                                      links=[button(base + "partners/#sponsor", "How sponsoring a collection works →", quiet=True)]),
     "places": lambda c, base: m_items("Three countries, three cities", [(k, t, f"Image from {k}") for k, t in PLACES], "d", credit=c.get("credit")),
     "feature": lambda c, base: m_photo("A photograph from the collection, full bleed", "21/9", "a", credit=c.get("credit")),
-    "themes": lambda c, base: m_items("Themes it feeds", [(t["name"], f'{base}themes/{t["slug"]}/') for t in THEMES], "e"),
+    # (13 November 2026) Home routes its readers here to explore the themes (Thomas, 10:06), so the themes stand as cards with
+    # their photographs, directly under the lead photograph, and no longer as a list of names five screens down ("Themes it feeds").
+    "themes": lambda c, base: m_themes(base, "a", title="Explore by theme", short=True),
     "goals": lambda c, base: m_items("Goals it serves", [(g, None) for g in ("SDG 4 – Quality Education", "SDG 8 – Decent Work and Economic Growth", "SDG 5 – Gender Equality")], "e", tight=True,
                                      lead=note("From the SDG field in the metadata; the three most frequent for now, to confirm from the AR Metadata sheet.")),
     "access": lambda c, base: (
@@ -3182,6 +3228,7 @@ body.clean .mod::before{display:none}
 .grid-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
 .grid-mixed{grid-template-columns:repeat(4,minmax(0,1fr));align-items:start}
 .bleed-img{border-radius:0}
+.placed{display:block;width:100%;height:auto;object-fit:cover}   /* a photograph placed in a slot: whole width of its slot, at the slot's proportion */
 .theme-entry{display:flex;flex-direction:column;text-decoration:none;scroll-snap-align:start}
 .theme-entry h3{margin:4px 0 8px}
 .theme-entry p{font-size:var(--fs-text);color:var(--ink-soft);margin:0 0 8px}
@@ -3484,7 +3531,10 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 
 /* Theme and collection pages */
 .wide{max-height:62vh}
-.action{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
+.action{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:16px;align-items:center}   /* on the line: the count from column 1, the ways on from column 7 */
+.action > *{grid-column:1 / 7}
+.action > .doors{grid-column:7 / -1}
+.action > .doors:only-child{grid-column:1 / -1}
 .action .doors{margin:0}
 .facts-box{border-top:1px solid var(--line);padding:16px 0 0;margin-top:24px}
 /* Artist pages (Artist pages – template): works are shown whole at their own proportion, never cropped or filtered. */
@@ -3633,6 +3683,7 @@ body.show-grid .grid-overlay{display:block}
 
 /* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
 @media (max-width:1023px){
+  .action > *,.action > .doors{grid-column:1 / -1}
   .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}
   :root{--fs-title:32px;--fs-display:44px;--cols:8;--gutter:24px;--margin:32px;--logo-w:192px;--section:80px;--section-head:56px;--section-tight:28px}
   .cards-6{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -3669,6 +3720,7 @@ body.show-grid .grid-overlay{display:block}
 }
 /* Phone (below 768 px): the guide's 4 columns, 16 px gutters and 16 px margins; one column, the title first */
 @media (max-width:767px){
+  .doors .textlink{display:inline-block;padding:12px 0}
   .logos.supporters{grid-template-columns:repeat(2,minmax(0,1fr))}
   :root{--cols:4;--gutter:16px;--margin:16px;--header-h:64px;--logo-w:160px;--section:64px;--section-head:40px;--section-tight:24px}
   .channels{grid-template-columns:1fr;gap:16px}
@@ -3774,7 +3826,7 @@ def build():
     (ROOT / "assets" / "site.css").write_text(CSS)
     share_image()
     rows, links = [], {}
-    SLOTS.clear()
+    SLOTS.clear(); PLACED_AT.clear(); place_house_collection()
     (ROOT / "assets" / "logo-white.svg").write_text((ROOT / "assets" / "logo-black.svg").read_text().replace('fill="#000000"', 'fill="#ffffff"').replace(", black</title>", ", white</title>"))
     # the logo mark alone, in white, for the footer: the first four shapes of the side-by-side logo, at its height
     mark = "".join(re.findall(r'<path d="[^"]+"></path>', (ROOT / "assets" / "logo-black.svg").read_text())[:4])
@@ -3783,7 +3835,7 @@ def build():
     for p in PAGES:
         depth = p["path"].count("/")
         base = "../" * depth if depth else "./"
-        CUR.update(slug=p["slug"], title=p["title"], n=0)
+        CUR.update(slug=p["slug"], title=p["title"], n=0, base=base)
         main = TEMPLATES[p["tpl"]](p, base)
         CUR["slug"] = None
         rows.append(dict(p, stats=page_stats(main)))

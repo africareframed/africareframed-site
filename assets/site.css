@@ -122,6 +122,7 @@ body.clean .mod::before{display:none}
 .grid-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
 .grid-mixed{grid-template-columns:repeat(4,minmax(0,1fr));align-items:start}
 .bleed-img{border-radius:0}
+.placed{display:block;width:100%;height:auto;object-fit:cover}   /* a photograph placed in a slot: whole width of its slot, at the slot's proportion */
 .theme-entry{display:flex;flex-direction:column;text-decoration:none;scroll-snap-align:start}
 .theme-entry h3{margin:4px 0 8px}
 .theme-entry p{font-size:var(--fs-text);color:var(--ink-soft);margin:0 0 8px}
@@ -424,7 +425,10 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 
 /* Theme and collection pages */
 .wide{max-height:62vh}
-.action{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
+.action{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:16px;align-items:center}   /* on the line: the count from column 1, the ways on from column 7 */
+.action > *{grid-column:1 / 7}
+.action > .doors{grid-column:7 / -1}
+.action > .doors:only-child{grid-column:1 / -1}
 .action .doors{margin:0}
 .facts-box{border-top:1px solid var(--line);padding:16px 0 0;margin-top:24px}
 /* Artist pages (Artist pages – template): works are shown whole at their own proportion, never cropped or filtered. */
@@ -573,6 +577,7 @@ body.show-grid .grid-overlay{display:block}
 
 /* Tablet (768–1,023 px): 8 columns, 24 px gutters, 32 px margins; the menu folds, like the archive's below tablet width */
 @media (max-width:1023px){
+  .action > *,.action > .doors{grid-column:1 / -1}
   .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}
   :root{--fs-title:32px;--fs-display:44px;--cols:8;--gutter:24px;--margin:32px;--logo-w:192px;--section:80px;--section-head:56px;--section-tight:28px}
   .cards-6{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -609,6 +614,7 @@ body.show-grid .grid-overlay{display:block}
 }
 /* Phone (below 768 px): the guide's 4 columns, 16 px gutters and 16 px margins; one column, the title first */
 @media (max-width:767px){
+  .doors .textlink{display:inline-block;padding:12px 0}
   .logos.supporters{grid-template-columns:repeat(2,minmax(0,1fr))}
   :root{--cols:4;--gutter:16px;--margin:16px;--header-h:64px;--logo-w:160px;--section:64px;--section-head:40px;--section-tight:24px}
   .channels{grid-template-columns:1fr;gap:16px}

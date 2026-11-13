@@ -269,6 +269,9 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .opening-frame{position:relative}
 .cut{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .cut-narrow{display:none}
+/* Home's first section on the plain pale ground: the photograph, then the line and its text block as one statement. */
+.mod.premise{background:var(--wash)}
+#intro.premise{padding-bottom:var(--section)}
 #intro{padding-top:var(--section-tight)}
 /* One text block, one set of distances (design guide, Layout: the text block): 12 px from the sentence to its detail, 16 px to its link.
    Home's first block stood at 24 and 24 until 13 November 2026, 11:58, beside two blocks at 12 and 16. */

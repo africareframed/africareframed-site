@@ -1940,10 +1940,17 @@ def home_partnerships(base):
                cls="on-ground turn", sid="partnerships")
 
 
+def premise(section):
+    """Home's first section, the bold line and its text block, stands on the plain pale ground (Thomas, 13 November 2026, 14:19
+    and 14:24): it reads as one statement, and the archive beneath it begins on white. Plain: the stripes belong to the turn."""
+    assert section.count('<section class="mod ') == 1
+    return section.replace('<section class="mod ', '<section class="mod premise ', 1)
+
+
 def on_the_line(intro):
     """Home's lead stands in the right half under the bold line (design guide, Layout: the one exception to the three arrangements)."""
     assert intro.count('<div class="c1-8">') == 1
-    return nb(intro.replace('<div class="c1-8">', '<div class="c7-12">', 1))
+    return premise(nb(intro.replace('<div class="c1-8">', '<div class="c7-12">', 1)))
 
 
 def in_chapter(section, head):
@@ -1959,7 +1966,9 @@ def tpl_home(p, base):
     # (why; what, beside "The archive"; how to take part, beside "Partnerships"), and under each what it opens.
     # The archive: the archive in small (a photograph as a record, the five themes, the photographs' own keywords,
     #   answering to the pointer); the way on is Explore the themes.
-    # Principles: behind every image and every collaboration; the four, one line each.
+    # Partnerships (since 13 November 2026, 10:43; Principles stood here before and moved to About): three ways to take part.
+    # Grounds (13 November 2026, 14:24): the first section on the plain pale ground, the archive on white, Partnerships on
+    # the pale ground with the stripes, the photograph on white, the footer on black.
     # A photograph from a workshop, as a document of the work, closes the page (Principles stood under it for a few minutes
     # on 13 November 2026 and went back over it: Thomas, 04:42).
     # The chapter on who is behind it (More than an archive, with the way to About) was taken out on 13 November 2026
@@ -1967,7 +1976,7 @@ def tpl_home(p, base):
     # In use (the numbers, the partners by name, one example) is built only when each exists (rule 27).
     # Request access and sponsoring a collection are on Partners; the collections are in the menu.
     # Rhythm: one section's distance between the parts; a title stands 32 px over what it opens.
-    return (m_opening(HOME_LINE, base=base)
+    return (premise(m_opening(HOME_LINE, base=base))
             # The two ways on (Thomas, 13 November 2026, 10:06): under the first text block a link to About, where the reader
             # who has just read why the work matters asks who is behind it; and in the archive the button into the House
             # Collection, which is what the archive launches with and the better place to explore the themes from.
@@ -3478,6 +3487,9 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .opening-frame{position:relative}
 .cut{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .cut-narrow{display:none}
+/* Home's first section on the plain pale ground: the photograph, then the line and its text block as one statement. */
+.mod.premise{background:var(--wash)}
+#intro.premise{padding-bottom:var(--section)}
 #intro{padding-top:var(--section-tight)}
 /* One text block, one set of distances (design guide, Layout: the text block): 12 px from the sentence to its detail, 16 px to its link.
    Home's first block stood at 24 and 24 until 13 November 2026, 11:58, beside two blocks at 12 and 16. */

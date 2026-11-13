@@ -618,8 +618,10 @@ def place_house_collection():
     r = FRONT_RECORDS
     place("house-collection", "lead-bleed", 1, "AR-2002", PHOTO_AR_2002["place"], PHOTO_AR_2002["alt"], "assets/opening/ar-2002-wide-1920.jpg", 1920, 1237,
           more=(("assets/opening/ar-2002-wide-2880.jpg", 2880),), pos="50% 22%")
-    for role, which, ar in (("two-thirds", 1, "AR-1350"), ("grid-3", 1, "AR-1137"), ("grid-3", 2, "AR-1852"), ("grid-3", 3, "AR-1341")):
-        place("house-collection", role, which, ar, r[ar]["place"], r[ar]["desc"], f"assets/home/{ar.lower()}-800.jpg", 800, 533,
+    # Since 13 November 2026, 17:00: the themes stand on this page as a switch, each with a pair of photographs. A first
+    # set, for Thomas to change: the ten he chose for Home on 12 November, two for each theme, in the themes' order.
+    for n, ar in enumerate(ar for t in THEMES for ar in HOME_PAIRS[t["slug"]]):
+        place("house-collection", "pair", n + 1, ar, r[ar]["place"], r[ar]["desc"], f"assets/home/{ar.lower()}-800.jpg", 800, 533,
               more=((f"assets/home/{ar.lower()}-1280.jpg", 1280),))
 
 
@@ -1065,7 +1067,12 @@ HOUSE_COLLECTION = dict(
     lead="Collection image", story_title="Made by our own team", story=HOUSE_STORY, facts=HOUSE_FACTS,   # the heading without its years (draft, 13 November 2026: no dates as structure)
     grid_line="A spread across the five themes.",   # "released, no minors" was our own working note, not a line for a reader (13 November 2026)
     access=dict(count=("1,122", "images in the House Collection"), src="collection-house", line=f"Sponsoring a collection? Write to {EMAIL_PARTNERS}."),
-    sections=["themes", "story", "grid", "places", "feature", "goals", "access", "uses"],
+    # Four parts since 13 November 2026, 17:00 (the plan Thomas approved at 16:44; he judges it at the first checkpoint): the
+    # head with the lead photograph, the themes as a switch, how it was made with the facts, and the way into the archive.
+    # Out, on trial: the grid From the collection (the switch shows the photographs), Three countries, three cities (the
+    # countries stand in the facts), the second full-width photograph, and Goals it serves (never confirmed from the
+    # metadata). Until then: ["themes", "story", "grid", "places", "feature", "goals", "access", "uses"].
+    sections=["theme-switch", "story", "access", "uses"],
     card=dict(kicker="Our own collection", line="1,122 photographs made by our team in Mali, Kenya and The Gambia.",
               meta=["1,122 images", "21 shoots", "Mali · Kenya · The Gambia"], image="Collection image"),
 )
@@ -2330,6 +2337,42 @@ def tpl_theme(p, base):
             + m_themes(base, "c", current=t))
 
 
+# The themes of a collection, as a switch (Thomas, 13 November 2026, 16:32 to 16:44). The themes are how the House
+# Collection is built, so they stand inside its page and not as pages of their own or as a word in the menu. One theme is
+# always open, Learning first: its name, its sentence (the Keywording Guide's, 8b, word for word), its way into the
+# archive, and a pair of photographs. Choosing another theme is a cut (rule 20); nothing is hidden behind a plus. It is
+# Home's archive in small, in full. Without scripts the five stand under each other and the names lead down to them.
+# Each theme has its address on the page (#learning ...), which the script opens on arrival.
+def m_theme_switch(c, base):
+    tabs, panels = "", ""
+    for i, t in enumerate(THEMES):
+        on = i == 0
+        tabs += (f'<li><a href="#{t["slug"]}" data-theme="{t["slug"]}"{" class=" + chr(34) + "on" + chr(34) + " aria-current=" + chr(34) + "true" + chr(34) if on else ""}>'
+                 f'<strong>{e(t["name"])}</strong><span class="count">{t["count"]} images</span></a></li>')
+        there = archive("/-/galleries/archive?search=" + quote(t["query"]), "house-theme-" + t["slug"])
+        pair = "".join(frame(f'{t["name"]}: a photograph from the theme', "3/2", role="pair", own=False) for _ in range(2))
+        panels += (f'<section class="theme-panel{" on" if on else ""}" id="{t["slug"]}" aria-labelledby="{t["slug"]}-name">'
+                   f'<div class="cols"><div class="c1-4"><h3 class="panel-name" id="{t["slug"]}-name">{e(t["name"])}</h3></div>'
+                   f'<div class="c7-12"><p class="lead">{e(limit("theme statement", t["statement"]))}</p>'
+                   f'<p class="doors"><a class="textlink" href="{there}">{t["count"]} images in the archive →</a></p></div></div>'
+                   f'<div class="theme-pair">{pair}</div>{credit_line(credit=c.get("credit"), group=True)}</section>')
+    head = (f'<div class="cols"><div class="c1-4">{heading(c.get("themes_title", "Explore by theme"))}</div>'
+            f'<div class="c7-12">{draft(limit("lead", THEMES_LEAD))}</div></div>')
+    script = ("<script>(function(){var box=document.querySelector('.theme-switch');if(!box)return;"
+              "var tabs=[].slice.call(box.querySelectorAll('[data-theme]')),panels=[].slice.call(box.querySelectorAll('.theme-panel'));"
+              "function show(slug){tabs.forEach(function(a){var on=a.dataset.theme===slug;a.classList.toggle('on',on);if(on)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current')});"
+              "panels.forEach(function(p){p.classList.toggle('on',p.id===slug)})}"
+              "function known(h){h=(h||'').replace('#','');return panels.some(function(p){return p.id===h})?h:null}"
+              "var first=known(location.hash);if(first)show(first);box.classList.add('switching');"
+              "tabs.forEach(function(a){a.addEventListener('click',function(ev){ev.preventDefault();show(a.dataset.theme);"
+              "if(history.replaceState)history.replaceState(null,'','#'+a.dataset.theme)})});"
+              "function warm(){box.querySelectorAll('img[loading=lazy]').forEach(function(i){i.loading='eager'})}"
+              "['pointerenter','focusin','touchstart'].forEach(function(ev){box.addEventListener(ev,warm,{once:true,passive:true})});"
+              "window.addEventListener('hashchange',function(){var h=known(location.hash);if(h)show(h)})})();</script>")
+    return mod("themes", "the themes of a collection, as a switch",
+               f'{head}<div class="theme-switch"><ul class="theme-tabs">{tabs}</ul>{panels}</div>{script}', sid="themes")
+
+
 def story_id(x):
     return "story-" + re.sub(r"[^a-z0-9]+", "-", x["name"].lower()).strip("-")
 
@@ -2377,6 +2420,7 @@ def facts_html(c):
 
 # The collection page's sections. Each takes the collection and the base path; a collection names the ones it uses, in order.
 COLLECTION_SECTIONS = {
+    "theme-switch": m_theme_switch,
     "story": lambda c, base: (m_text(c["story_title"], c["story"], "a") if "grid" in c["sections"] else
                               m_text(c["story_title"], c["story"], "b", box=facts_html(c))),
     "companies": lambda c, base: (mod("items", "a, the stories’ contents",
@@ -3751,6 +3795,29 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .contact-box{border-top:1px solid var(--line);padding:16px 0 0;margin-top:48px}
 
 /* Partner portal */
+/* The theme switch on a collection's page. The names stand in a row of five under a rule (fifths: the one row that leaves
+   the columns); the chosen one carries the heavy rule. One panel shows; without scripts all five stand under each other. */
+.theme-switch{margin-top:48px}
+.theme-tabs{list-style:none;margin:0 0 48px;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gutter)}
+.theme-tabs a{display:block;padding:12px 0 8px;text-decoration:none;color:var(--ink);box-shadow:inset 0 1px 0 var(--ink-soft);min-height:44px}
+.theme-tabs a.on{box-shadow:inset 0 4px 0 var(--ink)}
+.theme-tabs strong{display:block;font-weight:700;line-height:1.25}
+.theme-tabs .count{display:block;font-size:var(--fs-small);color:var(--ink-soft)}
+.theme-tabs a:hover strong,.theme-tabs a:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
+.theme-panel{scroll-margin-top:160px}
+.theme-panel + .theme-panel{margin-top:64px}
+.theme-switch.switching .theme-panel{display:none;margin-top:0}
+.theme-switch.switching .theme-panel.on{display:block}
+.theme-panel .panel-name{font-size:var(--fs-head);margin:0}
+.theme-panel .lead{margin:0 0 12px}
+.theme-panel .doors{margin:0}
+.theme-pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
+.theme-pair .frame{margin:0}
+@media (max-width:767px){
+  .theme-tabs{grid-template-columns:1fr;margin-bottom:32px}
+  .theme-tabs a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0}
+  .theme-pair{grid-template-columns:1fr;gap:24px}
+}
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
 @media (min-width:768px){.door-panels.three{grid-template-columns:repeat(3,1fr)}}
 /* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive

@@ -506,6 +506,29 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .contact-box{border-top:1px solid var(--line);padding:16px 0 0;margin-top:48px}
 
 /* Partner portal */
+/* The theme switch on a collection's page. The names stand in a row of five under a rule (fifths: the one row that leaves
+   the columns); the chosen one carries the heavy rule. One panel shows; without scripts all five stand under each other. */
+.theme-switch{margin-top:48px}
+.theme-tabs{list-style:none;margin:0 0 48px;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gutter)}
+.theme-tabs a{display:block;padding:12px 0 8px;text-decoration:none;color:var(--ink);box-shadow:inset 0 1px 0 var(--ink-soft);min-height:44px}
+.theme-tabs a.on{box-shadow:inset 0 4px 0 var(--ink)}
+.theme-tabs strong{display:block;font-weight:700;line-height:1.25}
+.theme-tabs .count{display:block;font-size:var(--fs-small);color:var(--ink-soft)}
+.theme-tabs a:hover strong,.theme-tabs a:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
+.theme-panel{scroll-margin-top:160px}
+.theme-panel + .theme-panel{margin-top:64px}
+.theme-switch.switching .theme-panel{display:none;margin-top:0}
+.theme-switch.switching .theme-panel.on{display:block}
+.theme-panel .panel-name{font-size:var(--fs-head);margin:0}
+.theme-panel .lead{margin:0 0 12px}
+.theme-panel .doors{margin:0}
+.theme-pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
+.theme-pair .frame{margin:0}
+@media (max-width:767px){
+  .theme-tabs{grid-template-columns:1fr;margin-bottom:32px}
+  .theme-tabs a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0}
+  .theme-pair{grid-template-columns:1fr;gap:24px}
+}
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
 @media (min-width:768px){.door-panels.three{grid-template-columns:repeat(3,1fr)}}
 /* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive

@@ -930,9 +930,10 @@ INTRO_HOME = [
     # every collaboration"). The link under it leads to About, where the principles stand in full. Draft. Set aside the
     # same morning: "… We make the pictures that let them be seen: students, tradespeople, founders and young professionals,
     # in their own cities, today. When a company, a school and a ministry use the same picture, they begin to tell the same story."
-    "Relationships have to be seen to be trusted, so the pictures have to be true. Every photograph is made by a photographer "
-    "on location, with the consent of the people in it. Our images are never AI-generated. These principles stand behind "
-    "every image and every collaboration.",
+    # Since 11:50 (Thomas, 11:36 and 11:46): the archive has its own text block, so the sentences on how a photograph is made
+    # moved there, and this block keeps to why the work matters. One sentence of detail, and the link to About. Draft.
+    "Relationships have to be seen to be trusted, so the pictures have to be true. That is the principle behind every image "
+    "and every collaboration.",
     # Between 12 November, 18:02, and 13 November the bold line and the lead stood alone. Tried and set aside on 12 November 2026:
     # "It starts with real photographs…" (a claim about ourselves), four lines on who funds, makes and uses the collections
     # (the whole process up front), and "We make each new collection with partners, and share it among them."
@@ -958,7 +959,13 @@ PRINCIPLES_DETAIL = ("An organisation that uses our images puts its own name bes
                      "collection. These are what each of them can rely on. They hold for every collection, sponsored or our own.")
 # The chapters of Home: title, and the line under it.
 HOME_CHAPTERS = dict(
-    archive=("The archive", None),   # "A shared resource" went with the sentence that set it up (Thomas, 18:02); the title names the chapter again
+    # The archive is explained before it is shown (Thomas, 13 November 2026, 11:36): a text block like the first one, in the
+    # same column, and under it the archive in small. Draft. The sentences on the photographer, consent and AI stood in the
+    # first block until now. "Ten of them" is the count of the photographs in the module beneath (two for each theme).
+    archive=("The archive", "The archive holds photographs of modern African life, ready for partners to use in their own work.",
+             "Every photograph is made by a photographer on location, with the consent of the people in it. Our images are never "
+             "AI-generated. Each image carries a description and keywords, so it can be found by theme and by what it shows. "
+             "Ten of them stand below, with the keywords they carry in the archive."),   # "A shared resource" went with the sentence that set it up (Thomas, 18:02); the title names the chapter again
     # The third chapter is Partnerships since 13 November 2026, 10:30 (Thomas, 10:23 and 10:28): Home's three beats are why
     # (to About), what (to the House Collection) and how to take part (to Partners). The principles stand on About, in the
     # archive's chapter. The sentence is Thomas's idea of 12 November (the archive is built on collaboration across sectors).
@@ -1935,7 +1942,8 @@ def in_chapter(section, head):
 def tpl_home(p, base):
     # The front page is the page of the product (Thomas, 12 November 2026, 13:16 to 15:10; tried as version E on /dev/).
     # The Opening, the bold line and the lead say what this is and why it matters. Then two chapters, each under its title,
-    # and a photograph:
+    # and a photograph. Since 13 November 2026, 11:50, the page has one form three times: a text block in the right half
+    # (why; what, beside "The archive"; how to take part, beside "Partnerships"), and under each what it opens.
     # The archive: the archive in small (a photograph as a record, the five themes, the photographs' own keywords,
     #   answering to the pointer); the way on is Explore the themes.
     # Principles: behind every image and every collaboration; the four, one line each.
@@ -2200,7 +2208,7 @@ def front_mini(base):
               "['mouseenter','focus','click'].forEach(function(ev){b.addEventListener(ev,go)});"
               "['mouseleave','blur'].forEach(function(ev){b.addEventListener(ev,function(){b.classList.remove('hot')})})})})();</script>")
     return mod("collection", "the archive in small",
-               f'{home_head(*HOME_CHAPTERS["archive"])}<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
+               f'{nb(home_head(*HOME_CHAPTERS["archive"]))}<div class="mini"><div class="feature"><div class="switch f-photo">{shots}</div><div class="f-words">{words}</div></div>'
                f'<div class="kw-rows"><h3 class="kicker kw-head">Keywords on these photographs</h3>{kw}</div></div>{script}')
 
 

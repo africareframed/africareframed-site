@@ -2311,9 +2311,11 @@ def front_record(base, control="themes", tags=False, one=True):
         ctl = (f'<p class="rec-ctl"><span class="rec-count"><span class="rec-n">1</span> of {len(order)} shown here · 1,122 in the archive</span>'
                '<span class="rec-steps"><button type="button" class="textlink rec-step" data-step="-1">Previous</button>'
                '<button type="button" class="textlink rec-step" data-step="1">Next photograph</button></span></p>')
-    way = f'<div class="cols rec-way"><div class="c7-12"><p class="doors">{button(base + HOUSE_AT, "Explore the House Collection", quiet=True)}</p></div></div>'
+    # The way on stands inside the record's column, at its foot, level with the photograph's lower edge (Thomas, 18:08:
+    # there is room for it there): the module is one block, and nothing hangs under it.
+    way = f'<p class="doors rec-way">{button(base + HOUSE_AT, "Explore the House Collection", quiet=True)}</p>'
     return (f'<div class="rec-mod" data-control="{control}">{tabs}<div class="feature"><div class="switch f-photo">{shots}</div>'
-            f'<div class="f-words"><div class="rec-stack">{recs}</div>{ctl}</div></div>{way}</div>')
+            f'<div class="f-words"><div class="rec-stack">{recs}</div>{ctl}{way}</div></div></div>')
 
 
 # Choosing a theme shows its photograph; choosing is a cut. On a phone the five names are one row that is slid sideways with
@@ -3906,7 +3908,7 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .rec-tabs button:hover strong,.rec-tabs button:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
 .rec-mod .feature{align-items:stretch}
 .rec-mod .switch{cursor:pointer;align-self:start}
-.rec-mod .f-words{display:flex;flex-direction:column;justify-content:space-between}
+.rec-mod .f-words{display:flex;flex-direction:column;justify-content:space-between;padding-bottom:calc(8px + 2 * 1.45 * var(--fs-small))}   /* the caption's two lines: the button's foot meets the photograph's */
 .rec-stack{display:grid}
 .rec-stack .rec{grid-area:1 / 1;visibility:hidden}
 .rec-stack .rec.on{visibility:visible}
@@ -3926,8 +3928,7 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .rec-count{font-size:var(--fs-small);color:var(--ink-soft)}
 .rec-steps{display:flex;gap:24px}
 .rec-step{font:inherit;background:none;border:0;padding:12px 0;cursor:pointer;color:var(--ink);min-height:44px}
-.rec-way{margin-top:32px}
-.rec-way .doors{margin:0}
+.rec-mod .rec-way{margin:24px 0 0}
 .trial-label{margin:0 0 32px;color:var(--ink)}
 .trial-note{color:var(--ink-soft);margin-top:0}
 @media (max-width:767px){
@@ -3942,7 +3943,7 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 @media (max-width:1023px){
   /* below the desktop the control stands between the photograph and its record, so the picture stays in view when it is
      tapped, and the record takes its own height */
-  .rec-mod .f-words{margin-top:8px;justify-content:flex-start}
+  .rec-mod .f-words{margin-top:8px;justify-content:flex-start;padding-bottom:0}
   .rec-mod .rec-ctl{order:-1;margin:0 0 16px}
   .rec-stack .rec{display:none}
   .rec-stack .rec.on{display:block}

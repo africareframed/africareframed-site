@@ -633,7 +633,7 @@ def place_house_collection():
     r = FRONT_RECORDS
     place("house-collection", "lead-bleed", 1, "AR-2002", PHOTO_AR_2002["place"], PHOTO_AR_2002["alt"], "assets/opening/ar-2002-wide-1920.jpg", 1920, 1237,
           more=(("assets/opening/ar-2002-wide-2880.jpg", 2880),), pos="50% 22%")
-    # Since 13 November 2026, 17:00: the themes stand on this page as a switch, each with a pair of photographs. A first
+    # Since 13 November 2026, 16:49: the themes stand on this page as a switch, each with a pair of photographs. A first
     # set, for Thomas to change: the ten he chose for Home on 12 November, two for each theme, in the themes' order.
     for n, ar in enumerate(ar for t in THEMES for ar in HOME_PAIRS[t["slug"]]):
         place("house-collection", "pair", n + 1, ar, r[ar]["place"], r[ar]["desc"], f"assets/home/{ar.lower()}-800.jpg", 800, 533,
@@ -1082,7 +1082,7 @@ HOUSE_COLLECTION = dict(
     lead="Collection image", story_title="Made by our own team", story=HOUSE_STORY, facts=HOUSE_FACTS,   # the heading without its years (draft, 13 November 2026: no dates as structure)
     grid_line="A spread across the five themes.",   # "released, no minors" was our own working note, not a line for a reader (13 November 2026)
     access=dict(count=("1,122", "images in the House Collection"), src="collection-house", line=f"Sponsoring a collection? Write to {EMAIL_PARTNERS}."),
-    # Four parts since 13 November 2026, 17:00 (the plan Thomas approved at 16:44; he judges it at the first checkpoint): the
+    # Four parts since 13 November 2026, 16:49 (the plan Thomas approved at 16:44; at 16:51 he said to proceed): the
     # head with the lead photograph, the themes as a switch, how it was made with the facts, and the way into the archive.
     # Out, on trial: the grid From the collection (the switch shows the photographs), Three countries, three cities (the
     # countries stand in the facts), the second full-width photograph, and Goals it serves (never confirmed from the
@@ -2913,7 +2913,7 @@ def _tpl_modules(base):
 PAGES = [
     dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None,
          desc="We craft visual storytelling to bring contemporary Africa into view in Europe. A partner archive of real photographs, with exhibitions and workshops."),
-    # Not pages since 13 November 2026, 17:20: Themes, the five theme pages and Collections (see the restructuring, above).
+    # Not pages since 13 November 2026, 16:55: Themes, the five theme pages and Collections (see the restructuring, above).
     dict(path="collections/house-collection/", title="House Collection", slug="house-collection", tpl="collection", nav="collections",
          collection=HOUSE_COLLECTION, desc=HOUSE_LINE),
     dict(path="collections/waste-to-value/", title=WTV, slug="waste-to-value", tpl="collection", nav="collections",

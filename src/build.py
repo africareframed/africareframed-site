@@ -2023,7 +2023,7 @@ def tpl_home(p, base, record=False):
             # who has just read why the work matters asks who is behind it; and in the archive the button into the House
             # Collection, which is what the archive launches with and the better place to explore the themes from.
             + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[f'<a class="textlink" href="{base}about/">About Africa Reframed</a>']))
-            + (front_archive_field(base) if record == "field" else front_archive_record(base) if record else front_mini(base))
+            + (front_archive_band(base) if record == "band" else front_archive_field(base) if record == "field" else front_archive_record(base) if record else front_mini(base))
             + home_partnerships(base)
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
@@ -2398,6 +2398,65 @@ def front_field(base):
             f'<div class="kw-rows"><h3 class="kicker kw-head">Themes and keywords on these photographs</h3>{rows}</div></div>{script}')
 
 
+# The archive in small, as a band (the fourth version, on trial; Thomas, 13 November 2026, 21:56): a band of photographs, the
+# one in the middle shown whole with a slice of the one before it and of the one after it at its sides. The middle one is
+# the photograph whose keywords are lit in the field beneath. The slices say that there is more, without a control: a
+# click on a slice brings that photograph to the middle, a click on the middle one brings the next, and a word in the field
+# brings a photograph that carries it. The band is lower than the large photograph of the third version, so the module
+# fits a laptop's window. Here the band changes as a cut (rule 20: nothing on the site moves); whether it may slide is
+# Thomas's to decide.
+def front_band(base):
+    order = [ar for t in THEMES for ar in HOME_PAIRS[t["slug"]]]
+    theme_of = {ar: t for t in THEMES for ar in HOME_PAIRS[t["slug"]]}
+    n = len(order)
+    mid, before, after, caps = "", "", "", ""
+    for i, ar in enumerate(order):
+        r, t = FRONT_RECORDS[ar], theme_of[ar]
+        kws = "|".join(["theme:" + t["slug"]] + [w for k, _ in FRONT_LAYERS for w in r[k]])
+        f = f'{base}assets/home/{ar.lower()}'
+        # the captions stand in a row of their own under the band, so that the slices are exactly as high as the photograph
+        caps += (f'<p class="credit cap{" on" if i == 0 else ""}"><span class="caption"><span class="record-title">{e(r["title"])}</span>'
+                 f'<a href="{archive("/-/galleries/archive?search=" + ar, "image")}">{ar}</a> · {e(r["place"])}</span> <span>{e(CREDIT)}</span></p>')
+        mid += (f'<figure class="frame{" on" if i == 0 else ""}" data-shot="{ar}" data-kws="{e(kws)}">'
+                f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 46vw, 92vw" '
+                f'width="1280" height="853" alt="{e(r["desc"])}" loading="lazy" decoding="async"></figure>')
+        slice_ = f'<img src="{f}-800.jpg" width="800" height="533" alt="" loading="lazy" decoding="async">'
+        before += f'<span class="slice{" on" if i == n - 1 else ""}" data-slice="{i}">{slice_}</span>'
+        after += f'<span class="slice{" on" if i == 1 else ""}" data-slice="{i}">{slice_}</span>'
+    first, t0 = FRONT_RECORDS[order[0]], theme_of[order[0]]
+    def tag(word, key, lit, cls=""):
+        return f'<li><button type="button" class="kw{cls}{" lit" if lit else ""}" data-kw="{e(key)}"><span>{e(word)}</span></button></li>'
+    rows = ('<h4 class="kicker kw-label">Theme</h4><ul class="kw-row">' + "".join(tag(t["name"], "theme:" + t["slug"], t is t0, " theme") for t in THEMES) + "</ul>")
+    rows += "".join(f'<h4 class="kicker kw-label">{e(label)}</h4><ul class="kw-row">' + "".join(tag(w, w, w in first[k]) for w in FRONT_ROWS[k]) + "</ul>"
+                    for k, label in FRONT_LAYERS)
+    way = f'<div class="cols strip-way"><div class="c7-12"><p class="doors">{button(base + HOUSE_AT, "Explore the House Collection", quiet=True)}</p></div></div>'
+    script = ("<script>(function(){[].slice.call(document.querySelectorAll('.strip-mod')).forEach(function(box){"
+              "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),kws=[].slice.call(box.querySelectorAll('[data-kw]')),n=shots.length,cur=0;"
+              "var caps=[].slice.call(box.querySelectorAll('.cap'));"
+              "var before=[].slice.call(box.querySelectorAll('.strip-before .slice')),after=[].slice.call(box.querySelectorAll('.strip-after .slice'));"
+              "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
+              "function show(i,hot){cur=(i%n+n)%n;shots.forEach(function(f,k){f.classList.toggle('on',k===cur)});caps.forEach(function(c,k){c.classList.toggle('on',k===cur)});"
+              "before.forEach(function(s,k){s.classList.toggle('on',k===(cur-1+n)%n)});after.forEach(function(s,k){s.classList.toggle('on',k===(cur+1)%n)});"
+              "kws.forEach(function(b){b.classList.toggle('lit',has[cur].indexOf(b.dataset.kw)>-1);b.classList.toggle('hot',b.dataset.kw===hot)})}"
+              "box.querySelector('.strip-mid').addEventListener('click',function(ev){if(ev.target.closest('a'))return;show(cur+1)});"
+              "box.querySelector('.strip-before').addEventListener('click',function(){show(cur-1)});box.querySelector('.strip-after').addEventListener('click',function(){show(cur+1)});"
+              "kws.forEach(function(b){function go(){var k=b.dataset.kw,t=cur;for(var j=1;j<=n;j++){var q=(cur+j)%n;if(has[q].indexOf(k)>-1){t=q;break}}show(t,k)}"
+              "var touched=false;b.addEventListener('touchstart',function(){touched=true},{passive:true});"
+              "b.addEventListener('mouseenter',function(){if(!touched)go()});b.addEventListener('click',go);"
+              "['mouseleave','blur'].forEach(function(ev){b.addEventListener(ev,function(){b.classList.remove('hot')})})});"
+              "function warm(){[].slice.call(box.querySelectorAll('img[loading=lazy]')).forEach(function(i){i.loading='eager'})}"
+              "['pointerenter','focusin','touchstart'].forEach(function(ev){box.addEventListener(ev,warm,{once:true,passive:true})})})})();</script>")
+    return (f'<div class="strip-mod"><div class="strip"><button type="button" class="strip-side strip-before" aria-label="The photograph before">{before}</button>'
+            f'<div class="switch strip-mid">{mid}</div><button type="button" class="strip-side strip-after" aria-label="The next photograph">{after}</button>'
+            f'<div class="strip-caps">{caps}</div></div>'
+            f'<div class="kw-rows"><h3 class="kicker kw-head">Themes and keywords on these photographs</h3>{rows}</div>{way}</div>{script}')
+
+
+def front_archive_band(base):
+    """The archive's chapter on Home with the band: on trial at /dev/home-band/."""
+    return mod("collection", "the archive in small, as a band", f'{nb(home_head(*HOME_CHAPTERS["archive"]))}{front_band(base)}')
+
+
 def front_archive_field(base):
     """The archive's chapter on Home with the field: on trial at /dev/home-field/."""
     title, line, detail = HOME_CHAPTERS["archive"]
@@ -2422,11 +2481,13 @@ def tpl_archive_trial(p, base):
     intro = (m_page_head("The archive on Home", "A simpler archive in small, on trial. Home itself is unchanged.", kicker="Development")
              + '<p class="wrap trial-note">Choose a theme: one photograph from it appears with its record. On a phone the five names are a row to slide. '
                'Three themes, chosen to differ. Versions 1 and 2 differ in one thing only: how the keywords are set. '
-               'Version 3 is another idea: a photograph over a field of words. Click the photograph, or point at a word.</p>')
+               'Version 3 is another idea: a photograph over a field of words. Click the photograph, or point at a word. '
+               'Version 4 sets the photographs in a band, with a slice of the one before and of the one after.</p>')
     a = mod("collection", "the archive as a record, keywords as words", f'<p class="kicker trial-label">Version 1 · the keywords as plain words</p>{head}{front_record(base, "themes")}')
     b = mod("collection", "the archive as a record, keywords as tags", f'<p class="kicker trial-label">Version 2 · the keywords as tags, outlined</p>{head}{front_record(base, "themes", tags=True)}')
     c = mod("collection", "the archive as a field", f'<p class="kicker trial-label">Version 3 · a photograph over a field of words</p>{nb(home_head(*HOME_CHAPTERS["archive"]))}{front_field(base)}')
-    return intro + a + b + c + REC_SCRIPT
+    d = mod("collection", "the archive as a band", f'<p class="kicker trial-label">Version 4 · a band of photographs over the field of words</p>{nb(home_head(*HOME_CHAPTERS["archive"]))}{front_band(base)}')
+    return intro + a + b + c + d + REC_SCRIPT
 
 
 def front_ways(base):
@@ -4019,6 +4080,42 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .field-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
   .field-mod .kw.theme.lit span{color:var(--ink)}
 }
+/* The archive in small, as a band (the fourth version, on trial): the middle photograph whole on columns 4 to 9, a slice of
+   the one before it on columns 1 to 3 and of the one after it on 10 to 12, all at the middle photograph's height. */
+/* named strip, not band: .band is the yellow way into the archive, and a rule for one must not reach the other */
+.strip{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:stretch}
+.strip-mid{grid-column:4 / 10;grid-row:1;cursor:pointer}
+.strip-side{grid-column:span 3;grid-row:1;display:grid;padding:0;border:0;background:none;cursor:pointer;overflow:hidden;min-height:0;position:relative}
+.strip-before{grid-column:1 / 4}
+.strip-after{grid-column:10 / 13}
+.strip-caps{grid-column:4 / 10;grid-row:2;display:grid}
+.strip-caps .cap{grid-area:1 / 1;visibility:hidden}
+.strip-caps .cap.on{visibility:visible}
+.strip-caps .record-title{display:block;font-weight:700;color:var(--ink)}
+.strip-side .slice{grid-area:1 / 1;visibility:hidden;display:block;position:absolute;inset:0}
+.strip-side .slice.on{visibility:visible}
+.strip-side img{display:block;width:100%;height:100%;object-fit:cover}
+.strip-before img{object-position:right center}
+.strip-after img{object-position:left center}
+.strip-mod .kw-rows{margin-top:16px}
+.strip-way{margin-top:32px}
+.strip-way .doors{margin:0}
+@media (max-width:1023px){
+  .strip{grid-template-columns:1fr 6fr 1fr}
+  .strip-before{grid-column:1}
+  .strip-mid,.strip-caps{grid-column:2}
+  .strip-after{grid-column:3}
+}
+@media (max-width:767px){
+  /* on a phone the middle photograph has the width and a tap on it shows the next; the field shows what it carries */
+  .strip{grid-template-columns:1fr}
+  .strip-mid,.strip-caps{grid-column:1}
+  .strip-side{display:none}
+  .strip-mod .kw-row li:has(.kw:not(.lit)){display:none}
+  .strip-mod .kw-label:has(+ .kw-row:not(:has(.lit))),.strip-mod .kw-row:not(:has(.lit)){display:none}
+  .strip-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
+  .strip-mod .kw.theme.lit span{color:var(--ink)}
+}
 .rec-mod .rec-tabs{margin-bottom:32px}
 .rec-tabs.three li{grid-column:span 3}   /* three names: on columns 1, 4 and 7, the third on the half line */
 .rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}
@@ -4409,6 +4506,11 @@ def build():
         (dev_dir / "home").mkdir(exist_ok=True)
         home_main = tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record=True).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
         (dev_dir / "home" / "index.html").write_text(render(hmt, home_main, "../../"))
+        hmb = dict(path="dev/home-band/", title="Home, with the archive as a band, on trial", slug=None, tpl="front", nav=None,
+                   desc="A copy of Home with the fourth version of the archive module, on trial; generated by the build, removed at launch.")
+        CUR.update(slug=None, n=0)
+        (dev_dir / "home-band").mkdir(exist_ok=True)
+        (dev_dir / "home-band" / "index.html").write_text(render(hmb, tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record="band"), "../../"))
         hmf = dict(path="dev/home-field/", title="Home, with the archive as a field, on trial", slug=None, tpl="front", nav=None,
                    desc="A copy of Home with the third version of the archive module, on trial; generated by the build, removed at launch.")
         CUR.update(slug=None, n=0)

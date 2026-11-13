@@ -559,6 +559,42 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .field-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
   .field-mod .kw.theme.lit span{color:var(--ink)}
 }
+/* The archive in small, as a band (the fourth version, on trial): the middle photograph whole on columns 4 to 9, a slice of
+   the one before it on columns 1 to 3 and of the one after it on 10 to 12, all at the middle photograph's height. */
+/* named strip, not band: .band is the yellow way into the archive, and a rule for one must not reach the other */
+.strip{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);align-items:stretch}
+.strip-mid{grid-column:4 / 10;grid-row:1;cursor:pointer}
+.strip-side{grid-column:span 3;grid-row:1;display:grid;padding:0;border:0;background:none;cursor:pointer;overflow:hidden;min-height:0;position:relative}
+.strip-before{grid-column:1 / 4}
+.strip-after{grid-column:10 / 13}
+.strip-caps{grid-column:4 / 10;grid-row:2;display:grid}
+.strip-caps .cap{grid-area:1 / 1;visibility:hidden}
+.strip-caps .cap.on{visibility:visible}
+.strip-caps .record-title{display:block;font-weight:700;color:var(--ink)}
+.strip-side .slice{grid-area:1 / 1;visibility:hidden;display:block;position:absolute;inset:0}
+.strip-side .slice.on{visibility:visible}
+.strip-side img{display:block;width:100%;height:100%;object-fit:cover}
+.strip-before img{object-position:right center}
+.strip-after img{object-position:left center}
+.strip-mod .kw-rows{margin-top:16px}
+.strip-way{margin-top:32px}
+.strip-way .doors{margin:0}
+@media (max-width:1023px){
+  .strip{grid-template-columns:1fr 6fr 1fr}
+  .strip-before{grid-column:1}
+  .strip-mid,.strip-caps{grid-column:2}
+  .strip-after{grid-column:3}
+}
+@media (max-width:767px){
+  /* on a phone the middle photograph has the width and a tap on it shows the next; the field shows what it carries */
+  .strip{grid-template-columns:1fr}
+  .strip-mid,.strip-caps{grid-column:1}
+  .strip-side{display:none}
+  .strip-mod .kw-row li:has(.kw:not(.lit)){display:none}
+  .strip-mod .kw-label:has(+ .kw-row:not(:has(.lit))),.strip-mod .kw-row:not(:has(.lit)){display:none}
+  .strip-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
+  .strip-mod .kw.theme.lit span{color:var(--ink)}
+}
 .rec-mod .rec-tabs{margin-bottom:32px}
 .rec-tabs.three li{grid-column:span 3}   /* three names: on columns 1, 4 and 7, the third on the half line */
 .rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}

@@ -925,23 +925,37 @@ INTRO_HOME = [
     # the sentence at the intro size and its detail at the text size beneath (design guide, Layout: text is an object).
     # Draft. It stays with why the work matters, as the lead does, and names people, not our process: the first sentence is
     # the Strategic Platform's (the relationships have to be seen to be trusted).
-    # Longer since 10:00 (Thomas: at least half as long again, so that it stands as a block): the third sentence says "across
-    # sectors" in people, not in the word.
-    "Relationships have to be seen to be trusted. We make the pictures that let them be seen: students, tradespeople, "
-    "founders and young professionals, in their own cities, today. When a company, a school and a ministry use the same "
-    "picture, they begin to tell the same story.",
+    # Since 10:30 (Thomas, 10:28): with the principles moved to About, this text says the substantial thing itself: the images
+    # are real, and never AI-generated; and it takes up the sentence that stood beside Principles ("Behind every image and
+    # every collaboration"). The link under it leads to About, where the principles stand in full. Draft. Set aside the
+    # same morning: "… We make the pictures that let them be seen: students, tradespeople, founders and young professionals,
+    # in their own cities, today. When a company, a school and a ministry use the same picture, they begin to tell the same story."
+    "Relationships have to be seen to be trusted, so the pictures have to be true. Every photograph is made by a photographer "
+    "on location, with the consent of the people in it. Our images are never AI-generated. These principles stand behind "
+    "every image and every collaboration.",
     # Between 12 November, 18:02, and 13 November the bold line and the lead stood alone. Tried and set aside on 12 November 2026:
     # "It starts with real photographs…" (a claim about ourselves), four lines on who funds, makes and uses the collections
     # (the whole process up front), and "We make each new collection with partners, and share it among them."
 ]
-# The three chapters of Home: title, and the line under it.
+# Home's third chapter, three roles and no steps (draft, from the Partners page's own sentences): a landing page explains no
+# process, so each role has one line. Twice on 12 November this content was cut from Home as a paragraph and as a pair inside
+# the archive's box; here it stands third, after the product, as three short items in place of the principles.
+HOME_PARTNERSHIPS = [
+    ("Use it", "Non-profit and public organisations use the images free, in their own reports, campaigns and classrooms."),
+    ("Sponsor it", "Companies and foundations fund a new collection on a theme close to their own work."),
+    ("Make it", "Photographers on location are commissioned, credited and paid."),
+]
+# The principles' own sentence and its detail, on About since 13 November 2026 (they stood on Home beside Principles).
+PRINCIPLES_LINE = "Behind every image and every collaboration."
+PRINCIPLES_DETAIL = ("An organisation that uses our images puts its own name beside them, and a sponsor puts its name on a whole "
+                     "collection. These are what each of them can rely on. They hold for every collection, sponsored or our own.")
+# The chapters of Home: title, and the line under it.
 HOME_CHAPTERS = dict(
     archive=("The archive", None),   # "A shared resource" went with the sentence that set it up (Thomas, 18:02); the title names the chapter again
-    # Thomas, 12 November, 14:58 and 15:08, for the sentence; its detail beneath since 13 November 2026, 09:54 (draft): what the
-    # principles are for, from the engine brief (what a company needs before it puts its name on the work).
-    principles=("Principles", "Behind every image and every collaboration.",
-                "An organisation that uses our images puts its own name beside them, and a sponsor puts its name on a whole "
-                "collection. These four are what each of them can rely on. They hold for every collection, sponsored or our own."),
+    # The third chapter is Partnerships since 13 November 2026, 10:30 (Thomas, 10:23 and 10:28): Home's three beats are why
+    # (to About), what (to the House Collection) and how to take part (to Partners). The principles stand on About, in the
+    # archive's chapter. The sentence is Thomas's idea of 12 November (the archive is built on collaboration across sectors).
+    partnerships=("Partnerships", "The archive is built on collaboration across sectors."),
     # about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African
     # photographers with the international picture market."), with the button More about us: off Home since 13 November 2026.
 )
@@ -1849,10 +1863,15 @@ def home_head(title, line=None, detail=None):
     return f'<div class="chapter-head"><h2 class="chapter-title">{e(title)}</h2></div>'
 
 
+def nb(html):
+    """Keeps "AI-generated" on one line: the fixed sentence must not break at its hyphen."""
+    return html.replace("AI-generated", '<span class="nb">AI-generated</span>')
+
+
 def on_the_line(intro):
     """Home's lead stands in the right half under the bold line (design guide, Layout: the one exception to the three arrangements)."""
     assert intro.count('<div class="c1-8">') == 1
-    return intro.replace('<div class="c1-8">', '<div class="c7-12">', 1)
+    return nb(intro.replace('<div class="c1-8">', '<div class="c7-12">', 1))
 
 
 def in_chapter(section, head):
@@ -1881,8 +1900,8 @@ def tpl_home(p, base):
             # Collection, which is what the archive launches with and the better place to explore the themes from.
             + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[f'<a class="textlink" href="{base}about/">About Africa Reframed</a>']))
             + front_mini(base)
-            + in_chapter(m_items(None, PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"),
-                         home_head(*HOME_CHAPTERS["principles"]))
+            + in_chapter(m_items(None, HOME_PARTNERSHIPS, "a", sid="partnerships", cls="three"), home_head(*HOME_CHAPTERS["partnerships"]))
+            + m_doors("c", links=[f'<a class="textlink" href="{base}partners/">How partners take part</a>'], tight=True, left=True)
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
@@ -2390,6 +2409,10 @@ def tpl_text(p, base):
                 + mod("collection", "a, the collections in the archive", "".join(collection_entry(x, base) for x in by_state(ARCHIVE_COLLECTIONS)))
                 + mod("text", "the register", f'<div class="cols"><div class="c7-12">{register}'
                       f'<p class="doors">{button(base + "partners/#use", "How partners use the archive →", quiet=True)}</p></div></div>', tight=True)
+                # the principles stand here since 13 November 2026 (Thomas, 10:23): they are the terms the archive stands on, and
+                # here they are read by the reader who is checking who is behind it; on Home they made way for Partnerships
+                + nb(m_items("Principles", PRINCIPLES + [("Fair terms", "One download, one licence, free of charge; no resale, no sublicensing.")], "a", cls="five",
+                             lead=draft(PRINCIPLES_LINE) + draft(PRINCIPLES_DETAIL), sid="principles"))
                 + mod("text", "the hinge", f'<div class="cols"><div class="c7-12">{draft(ABOUT_HINGE, "p", "hinge")}</div></div>'))
         # 2 Exhibitions: a medium we activate. The activity, then the projects, the door, the artists. The page turns here.
         exhibitions = (opener("Exhibitions", ABOUT_EXHIBITIONS, "exhibitions")
@@ -2411,7 +2434,6 @@ def tpl_text(p, base):
         # 4 Who is behind it
         who = (opener("Who is behind it", ABOUT_WHO, "who")
                 + m_items(None, ABOUT_PEOPLE, "d", image_ratio="1/1", tight=True, cols=4)
-                + m_items("Principles", PRINCIPLES + [("Fair terms", "One download, one licence, free of charge; no resale, no sublicensing.")], "a", cls="five")
                 + m_doors("d", kicker="Write to us", address=EMAIL_MAIN, line=f"Partnerships: {EMAIL_PARTNERS} · Press: {EMAIL_PRESS}"))
         # The exhibitions and the artists' works stand on black (Thomas, 11 November 2026, 14:33): the page turns here, and
         # the black ground groups them as one category (Quality rules, rule 18: each ground holds one kind of content).
@@ -3039,6 +3061,7 @@ LAYOUT = """<!doctype html>
     <div class="close-words">
     <img src="{base}assets/logo-mark-white.svg" alt="Africa Reframed" class="close-logo" width="113" height="48">
     <p class="about-line">{about_line}</p>
+    <p class="images-line">Our images are never <span class="nb">AI-generated</span>.</p>
     <p class="links">
       <a href="{base}about/">About</a> ·
       <a href="{base}press/">Press</a> ·
@@ -3228,6 +3251,7 @@ body.clean .mod::before{display:none}
 .grid-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
 .grid-mixed{grid-template-columns:repeat(4,minmax(0,1fr));align-items:start}
 .bleed-img{border-radius:0}
+.nb{white-space:nowrap}
 .placed{display:block;width:100%;height:auto;object-fit:cover}   /* a photograph placed in a slot: whole width of its slot, at the slot's proportion */
 .theme-entry{display:flex;flex-direction:column;text-decoration:none;scroll-snap-align:start}
 .theme-entry h3{margin:4px 0 8px}
@@ -3429,7 +3453,8 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .kw.lit span{color:var(--paper);background:var(--ink);border-color:var(--ink)}   /* the keywords the photograph carries are inverted: black, white type (Thomas, 12 November 2026, 14:31; the yellow tried at 14:25 keeps its one job) */
 .kw.hot span,.kw:focus-visible span{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}   /* the one under the pointer: a ring */
 .kw:focus-visible{outline:none}
-#principles .principles{margin-bottom:0}   /* Home: one section's distance to the photograph, as above the heading */
+#partnerships .principles{margin-bottom:0}   /* Home: the way on stands under the three roles */
+.principles.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
 .principles.two li:last-child{grid-column:8 / 13}
@@ -3773,7 +3798,7 @@ body.show-grid .grid-overlay{display:block}
   .theme-row{grid-auto-columns:78%}
 }
 @media (max-width:480px){
-  .cards-4,.cards-5,.principles,.principles.two,.contents{grid-template-columns:1fr}
+  .cards-4,.cards-5,.principles,.principles.two,.principles.three,.contents{grid-template-columns:1fr}
   .wire-strip .wrap{align-items:flex-start}
   .strip-tools{flex-wrap:wrap;row-gap:4px}
 }

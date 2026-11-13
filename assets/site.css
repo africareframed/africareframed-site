@@ -122,6 +122,7 @@ body.clean .mod::before{display:none}
 .grid-strip{grid-template-columns:repeat(3,minmax(0,1fr))}
 .grid-mixed{grid-template-columns:repeat(4,minmax(0,1fr));align-items:start}
 .bleed-img{border-radius:0}
+.nb{white-space:nowrap}
 .placed{display:block;width:100%;height:auto;object-fit:cover}   /* a photograph placed in a slot: whole width of its slot, at the slot's proportion */
 .theme-entry{display:flex;flex-direction:column;text-decoration:none;scroll-snap-align:start}
 .theme-entry h3{margin:4px 0 8px}
@@ -323,7 +324,8 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .kw.lit span{color:var(--paper);background:var(--ink);border-color:var(--ink)}   /* the keywords the photograph carries are inverted: black, white type (Thomas, 12 November 2026, 14:31; the yellow tried at 14:25 keeps its one job) */
 .kw.hot span,.kw:focus-visible span{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}   /* the one under the pointer: a ring */
 .kw:focus-visible{outline:none}
-#principles .principles{margin-bottom:0}   /* Home: one section's distance to the photograph, as above the heading */
+#partnerships .principles{margin-bottom:0}   /* Home: the way on stands under the three roles */
+.principles.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}
 .principles.two li:last-child{grid-column:8 / 13}
@@ -667,7 +669,7 @@ body.show-grid .grid-overlay{display:block}
   .theme-row{grid-auto-columns:78%}
 }
 @media (max-width:480px){
-  .cards-4,.cards-5,.principles,.principles.two,.contents{grid-template-columns:1fr}
+  .cards-4,.cards-5,.principles,.principles.two,.principles.three,.contents{grid-template-columns:1fr}
   .wire-strip .wrap{align-items:flex-start}
   .strip-tools{flex-wrap:wrap;row-gap:4px}
 }

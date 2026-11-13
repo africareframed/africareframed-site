@@ -529,6 +529,36 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .theme-tabs li{grid-column:auto}
 }
 /* The archive in small, as a record (on trial at /dev/archive/). */
+/* The archive in small, as a field (the third version, on trial): a large photograph on two thirds, its theme and title
+   in the last third with the way on at the foot, and under them the field of themes and keywords. */
+.field-mod .feature{align-items:stretch}
+.field-mod .f-photo{grid-column:1 / 9;cursor:pointer;align-self:start}
+.field-mod .f-words{grid-column:9 / 13;display:flex;flex-direction:column;justify-content:space-between;padding-bottom:calc(8px + 2 * 1.45 * var(--fs-small))}
+.field-mod .rec-title{margin:0}
+.field-mod .rec-way{margin:24px 0 0}
+.field-mod .kw-rows{margin-top:16px}
+.kw.theme span{font-weight:700;color:var(--ink)}
+.kw.theme.lit span{color:var(--paper)}
+@media (max-width:1023px){
+  .field-mod .f-photo,.field-mod .f-words{grid-column:1 / -1}
+  .field-mod .f-words{padding-bottom:0;margin-top:8px}
+  .field-mod .rec-stack .rec{display:none}
+  .field-mod .rec-stack .rec.on{display:block}
+}
+@media (max-width:767px){
+  /* on a phone nothing can be pointed at, so the field shows what the photograph carries and no more, and a tap on the
+     photograph shows the next one (Thomas, 21:37); the way on stands last */
+  .field-mod{display:grid}
+  .field-mod .feature,.field-mod .f-words{display:contents}
+  .field-mod .rec-stack{margin-top:8px}
+  .field-mod .kw-rows{order:3}
+  .field-mod .rec-way{order:4}
+  .field-mod .kw-row li:has(.kw:not(.lit)){display:none}
+  .field-mod .kw-label:has(+ .kw-row:not(:has(.lit))),.field-mod .kw-row:not(:has(.lit)){display:none}
+  /* and since only the carried ones show there, they are the plain outlined tags, not the black ones (17:53) */
+  .field-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
+  .field-mod .kw.theme.lit span{color:var(--ink)}
+}
 .rec-mod .rec-tabs{margin-bottom:32px}
 .rec-tabs.three li{grid-column:span 3}   /* three names: on columns 1, 4 and 7, the third on the half line */
 .rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}

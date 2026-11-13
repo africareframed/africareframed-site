@@ -2276,6 +2276,69 @@ def front_mini(base):
                f'<div class="kw-rows"><h3 class="kicker kw-head">Keywords on these photographs</h3>{kw}</div></div>{script}')
 
 
+# The archive in small, as a record (on trial at /dev/archive/, 13 November 2026; Thomas, 17:16 to 17:34: the module as it
+# stands is a little gritty; simplify it so that it still shows, and does not tell, what the archive is). One photograph in
+# the left half and its record in the right half, under the text block and on its line: the theme as the small label, the
+# title in bold, then the four layers of keywords this photograph carries, as words under thin rules and not as a board of
+# boxes. It is the archive's own image page in small. Two controls on trial: "themes", a row of the five names over the
+# module, as on the House Collection's page (choosing a theme shows a photograph from it); and "steps", previous and next
+# in words. Home itself is untouched until Thomas has compared them.
+def front_record(base, control="themes"):
+    order = [ar for t in THEMES for ar in HOME_PAIRS[t["slug"]]]          # the themes' story order
+    theme_of = {ar: t for t in THEMES for ar in HOME_PAIRS[t["slug"]]}
+    shots, recs = "", ""
+    for i, ar in enumerate(order):
+        r, t, on = FRONT_RECORDS[ar], theme_of[ar], i == 0
+        f = f'{base}assets/home/{ar.lower()}'
+        cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + ar, "image")}">{ar}</a> · {e(r["place"])}</span> '
+               f'<span>{e(CREDIT)}</span></p>')
+        shots += (f'<figure class="frame{" on" if on else ""}" data-shot="{ar}" data-of="{t["slug"]}">'
+                  f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 46vw, 92vw" '
+                  f'width="1280" height="853" alt="{e(r["desc"])}" loading="lazy" decoding="async">{cap}</figure>')
+        # a layer this photograph carries no keyword in is left out, never shown as an empty row
+        rows = "".join(f'<div><dt>{e(label)}</dt><dd>' + "".join(f"<span>{e(w)}</span>" for w in r[k]) + "</dd></div>" for k, label in FRONT_LAYERS if r[k])
+        recs += (f'<div class="rec{" on" if on else ""}" data-rec="{ar}"><p class="kicker">{e(t["name"])}</p>'
+                 f'<h3 class="rec-title">{e(r["title"])}</h3><dl class="rec-rows">{rows}</dl></div>')
+    tabs = ""
+    if control == "themes":
+        tabs = ('<ul class="theme-tabs rec-tabs">' + "".join(
+            f'<li><button type="button" data-theme="{t["slug"]}" aria-pressed="{"true" if i == 0 else "false"}"{" class=" + chr(34) + "on" + chr(34) if i == 0 else ""}>'
+            f'<strong>{e(t["name"])}</strong><span class="count">{t["count"]} images</span></button></li>' for i, t in enumerate(THEMES)) + "</ul>")
+        ctl = '<p class="rec-ctl"><button type="button" class="textlink rec-step" data-step="theme">Another photograph from this theme</button></p>'
+    else:
+        ctl = (f'<p class="rec-ctl"><span class="rec-count"><span class="rec-n">1</span> of {len(order)} shown here · 1,122 in the archive</span>'
+               '<span class="rec-steps"><button type="button" class="textlink rec-step" data-step="-1">Previous</button>'
+               '<button type="button" class="textlink rec-step" data-step="1">Next photograph</button></span></p>')
+    way = f'<div class="cols rec-way"><div class="c7-12"><p class="doors">{button(base + HOUSE_AT, "Explore the House Collection", quiet=True)}</p></div></div>'
+    return (f'<div class="rec-mod" data-control="{control}">{tabs}<div class="feature"><div class="switch f-photo">{shots}</div>'
+            f'<div class="f-words"><div class="rec-stack">{recs}</div>{ctl}</div></div>{way}</div>')
+
+
+REC_SCRIPT = ("<script>(function(){[].slice.call(document.querySelectorAll('.rec-mod')).forEach(function(box){"
+              "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),recs=[].slice.call(box.querySelectorAll('[data-rec]')),"
+              "tabs=[].slice.call(box.querySelectorAll('[data-theme]')),n=box.querySelector('.rec-n'),cur=0,byTheme=box.dataset.control==='themes';"
+              "function show(i){cur=(i+shots.length)%shots.length;shots.forEach(function(f,k){f.classList.toggle('on',k===cur)});"
+              "recs.forEach(function(r,k){r.classList.toggle('on',k===cur)});var t=shots[cur].dataset.of;"
+              "tabs.forEach(function(a){var on=a.dataset.theme===t;a.classList.toggle('on',on);a.setAttribute('aria-pressed',String(on))});if(n)n.textContent=cur+1}"
+              "function of(t){var l=[];shots.forEach(function(f,k){if(f.dataset.of===t)l.push(k)});return l}"
+              "function other(){var l=of(shots[cur].dataset.of);show(l[(l.indexOf(cur)+1)%l.length])}"
+              "tabs.forEach(function(a){a.addEventListener('click',function(){var l=of(a.dataset.theme),j=l.indexOf(cur);show(j>-1?l[(j+1)%l.length]:l[0])})});"
+              "[].slice.call(box.querySelectorAll('[data-step]')).forEach(function(b){b.addEventListener('click',function(){if(b.dataset.step==='theme')other();else show(cur+Number(b.dataset.step))})});"
+              "box.querySelector('.switch').addEventListener('click',function(ev){if(ev.target.closest('a'))return;if(byTheme)other();else show(cur+1)});"
+              "function warm(){[].slice.call(box.querySelectorAll('img[loading=lazy]')).forEach(function(i){i.loading='eager'})}"
+              "['pointerenter','focusin','touchstart'].forEach(function(ev){box.addEventListener(ev,warm,{once:true,passive:true})})})})();</script>")
+
+
+def tpl_archive_trial(p, base):
+    head = nb(home_head(*HOME_CHAPTERS["archive"]))
+    intro = (m_page_head("The archive on Home", "Two simpler versions of the archive in small, on trial. Home itself is unchanged.", kicker="Development")
+             + '<p class="wrap trial-note">Each version stands as it would on Home, under the archive’s text block. '
+               'A: choose a theme. B: step through the photographs.</p>')
+    a = mod("collection", "the archive as a record, A: choose a theme", f'<p class="kicker trial-label">Version A · choose a theme</p>{head}{front_record(base, "themes")}')
+    b = mod("collection", "the archive as a record, B: step through", f'<p class="kicker trial-label">Version B · step through the photographs</p>{head}{front_record(base, "steps")}')
+    return intro + a + b + REC_SCRIPT
+
+
 def front_ways(base):
     """Version D: how the archive is organised, in words: by theme and by collection."""
     w = FRONT_WAYS
@@ -3823,6 +3886,41 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .theme-tabs .count{display:block;font-size:var(--fs-small);color:var(--ink-soft)}
 .theme-tabs a:hover strong,.theme-tabs a:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
 .theme-tabs.two{grid-template-columns:1fr 1fr;margin:0}
+/* The archive in small, as a record (on trial at /dev/archive/). */
+.rec-mod .rec-tabs{margin-bottom:32px}
+.rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);box-shadow:inset 0 1px 0 var(--ink-soft);min-height:44px}
+.rec-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
+.rec-tabs button:hover strong,.rec-tabs button:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
+.rec-mod .feature{align-items:stretch}
+.rec-mod .switch{cursor:pointer;align-self:start}
+.rec-mod .f-words{display:flex;flex-direction:column;justify-content:space-between}
+.rec-stack{display:grid}
+.rec-stack .rec{grid-area:1 / 1;visibility:hidden}
+.rec-stack .rec.on{visibility:visible}
+.rec .kicker{margin:0 0 8px}
+.rec-title{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 24px;text-wrap:balance}
+.rec-rows{margin:0}
+.rec-rows div{display:grid;grid-template-columns:8em minmax(0,1fr);column-gap:16px;align-items:baseline;border-top:1px solid var(--line);padding:12px 0}
+.rec-rows div:last-child{border-bottom:1px solid var(--line)}
+.rec-rows dt{font-size:var(--fs-small);line-height:1.45;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.rec-rows dd{margin:0}
+.rec-rows dd span{display:block}
+.rec-ctl{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin:24px 0 0}
+.rec-count{font-size:var(--fs-small);color:var(--ink-soft)}
+.rec-steps{display:flex;gap:24px}
+.rec-step{font:inherit;background:none;border:0;padding:12px 0;cursor:pointer;color:var(--ink);min-height:44px}
+.rec-way{margin-top:32px}
+.rec-way .doors{margin:0}
+.trial-label{margin:0 0 32px;color:var(--ink)}
+.trial-note{color:var(--ink-soft);margin-top:0}
+@media (max-width:1023px){
+  /* below the desktop the control stands between the photograph and its record, so the picture stays in view when it is
+     tapped, and the record takes its own height */
+  .rec-mod .f-words{margin-top:8px;justify-content:flex-start}
+  .rec-mod .rec-ctl{order:-1;margin:0 0 16px}
+  .rec-stack .rec{display:none}
+  .rec-stack .rec.on{display:block}
+}
 .mod.collection-switch::before{top:8px}   /* the wireframe's label stands clear of the names */
 .mod.collection-switch{padding-top:48px;padding-bottom:0;margin:0}
 .theme-panel{scroll-margin-top:160px}
@@ -4152,6 +4250,11 @@ def build():
             CUR.update(slug=None, n=0)
             (dev_dir / f"front-{k}").mkdir(exist_ok=True)
             (dev_dir / f"front-{k}" / "index.html").write_text(render(fr, tpl_front(fr, "../../", k), "../../"))
+        arc = dict(path="dev/archive/", title="The archive on Home, on trial", slug=None, tpl="front", nav=None,
+                   desc="Two simpler versions of the archive in small, on trial; generated by the build, removed at launch.")
+        CUR.update(slug=None, n=0)
+        (dev_dir / "archive").mkdir(exist_ok=True)
+        (dev_dir / "archive" / "index.html").write_text(render(arc, tpl_archive_trial(arc, "../../"), "../../"))
         sgn = dict(path="dev/signs/", title="The collection card", slug="signs", tpl="signs", nav=None,
                    desc="A copy of Home with three versions of the collection card on trial; generated by the build, removed at launch.")
         CUR.update(slug="signs", n=0)

@@ -536,7 +536,9 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .rec-rows dd{margin:0}
 .rec-rows dd span{display:block}
 .rec-rows.tags dd{display:flex;flex-wrap:wrap;gap:8px}
-.rec-rows.tags dd span{font-size:var(--fs-small);line-height:1.4;color:var(--paper);background:var(--ink);border:1px solid var(--ink);padding:4px 12px}
+/* The tags are the plain ones of the earlier module, not the black ones (Thomas, 13 November 2026, 17:53): black was the
+   highlight among many; here only the keywords the photograph carries are shown, so nothing has to be picked out. */
+.rec-rows.tags dd span{font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);border:1px solid var(--line);padding:4px 12px}
 .rec-ctl{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin:24px 0 0}
 .rec-count{font-size:var(--fs-small);color:var(--ink-soft)}
 .rec-steps{display:flex;gap:24px}

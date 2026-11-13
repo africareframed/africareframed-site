@@ -2286,7 +2286,7 @@ def front_mini(base):
 def front_record(base, control="themes", tags=False, one=True):
     """one: one photograph for each theme, the first of each pair Thomas chose (17:42: the limited examples; a second
     photograph behind a second click would stay unseen). tags: the keywords as the small black tags of the earlier module,
-    only those this photograph carries; else as plain words."""
+    only those this photograph carries (the plain, outlined ones since 17:53); else as plain words."""
     order = [ar for t in THEMES for ar in (HOME_PAIRS[t["slug"]][:1] if one else HOME_PAIRS[t["slug"]])]   # the themes' story order
     theme_of = {ar: t for t in THEMES for ar in HOME_PAIRS[t["slug"]]}
     shots, recs = "", ""
@@ -2348,7 +2348,7 @@ def tpl_archive_trial(p, base):
              + '<p class="wrap trial-note">Choose a theme: one photograph from it appears with its record. On a phone the five names are a row to slide. '
                'The two versions differ in one thing only: how the keywords are set.</p>')
     a = mod("collection", "the archive as a record, keywords as words", f'<p class="kicker trial-label">Version 1 · the keywords as plain words</p>{head}{front_record(base, "themes")}')
-    b = mod("collection", "the archive as a record, keywords as tags", f'<p class="kicker trial-label">Version 2 · the keywords as tags</p>{head}{front_record(base, "themes", tags=True)}')
+    b = mod("collection", "the archive as a record, keywords as tags", f'<p class="kicker trial-label">Version 2 · the keywords as tags, outlined</p>{head}{front_record(base, "themes", tags=True)}')
     return intro + a + b + REC_SCRIPT
 
 
@@ -3919,7 +3919,9 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .rec-rows dd{margin:0}
 .rec-rows dd span{display:block}
 .rec-rows.tags dd{display:flex;flex-wrap:wrap;gap:8px}
-.rec-rows.tags dd span{font-size:var(--fs-small);line-height:1.4;color:var(--paper);background:var(--ink);border:1px solid var(--ink);padding:4px 12px}
+/* The tags are the plain ones of the earlier module, not the black ones (Thomas, 13 November 2026, 17:53): black was the
+   highlight among many; here only the keywords the photograph carries are shown, so nothing has to be picked out. */
+.rec-rows.tags dd span{font-size:var(--fs-small);line-height:1.4;color:var(--ink-soft);border:1px solid var(--line);padding:4px 12px}
 .rec-ctl{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin:24px 0 0}
 .rec-count{font-size:var(--fs-small);color:var(--ink-soft)}
 .rec-steps{display:flex;gap:24px}

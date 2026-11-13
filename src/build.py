@@ -887,8 +887,8 @@ INTRO_HOME = [
 HOME_CHAPTERS = dict(
     archive=("The archive", None),   # "A shared resource" went with the sentence that set it up (Thomas, 18:02); the title names the chapter again
     principles=("Principles", "Behind every image and every collaboration."),   # Thomas, 14:58 and 15:08
-    about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African photographers "
-                                   "with the international picture market."),   # made from About's two lines of activity
+    # about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African
+    # photographers with the international picture market."), with the button More about us: off Home since 13 November 2026.
 )
 PRINCIPLES = [  # engine brief, For design: the principles a company needs before it puts its name on the work
     # "and what they show is never altered" (12 November 2026): the Strategic Platform's AI rule allows normal editing of
@@ -1799,31 +1799,26 @@ def in_chapter(section, head):
 
 def tpl_home(p, base):
     # The front page is the page of the product (Thomas, 12 November 2026, 13:16 to 15:10; tried as version E on /dev/).
-    # The Opening and the intro say what this is and who is behind it. Then three chapters, each under its title:
+    # The Opening, the bold line and the lead say what this is and why it matters. Then two chapters, each under its title,
+    # with a photograph between them:
     # The archive: the archive in small (a photograph as a record, the five themes, the photographs' own keywords,
     #   answering to the pointer); the way on is Explore the themes.
-    # Principles: behind every image and every collaboration; the four, one line each.
-    # A photograph from a workshop, as a document of the work, stands between the chapters.
-    # About us: About's statement and the way to About.
+    # A photograph from a workshop, as a document of the work.
+    # Principles: behind every image and every collaboration; the four, one line each. They close the page.
+    # The chapter on who is behind it (More than an archive, with the way to About) was taken out on 13 November 2026
+    # (Thomas, 04:38): About is in the menu and the footer.
     # In use (the numbers, the partners by name, one example) is built only when each exists (rule 27).
     # Request access and sponsoring a collection are on Partners; the collections are in the menu.
-    # Rhythm: one section's distance between chapters; a title stands 32 px over what it opens.
+    # Rhythm: one section's distance between the parts; a title stands 32 px over what it opens.
     return (m_opening(HOME_LINE, base=base)
             + m_text(None, INTRO_HOME, "d", sid="intro")
             + front_mini(base)
-            + in_chapter(m_items(None, PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"),
-                         home_head(*HOME_CHAPTERS["principles"]))
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            # The photograph stands between the chapters, as a passage from the images to the people who make them; the chapter
-            # About us begins under it: title, statement, button, together (Thomas, 15:16 and 15:19).
             + m_document(base, HOME_DOCUMENT)
-            + mod("text", "the chapter About us: About's statement and the way to About",
-                  f'<div class="cols"><div class="c1-8">{home_head(*HOME_CHAPTERS["about"])}'
-                  f'<p class="doors">{button(base + "about/", "More about us", quiet=True)}</p></div></div>', sid="behind"))
-
-
+            + in_chapter(m_items(None, PRINCIPLES, "a", lead=note("One line each; the full story is on About."), sid="principles"),
+                         home_head(*HOME_CHAPTERS["principles"])))
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -3346,8 +3341,6 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .chapter-head{margin:0 0 32px}
 .chapter-head .chapter-title{margin:0;font-weight:700}
 .chapter-head p{margin:16px 0 0}
-#behind .chapter-head{margin:0}
-#behind .doors{margin:16px 0 0}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}

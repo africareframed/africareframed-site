@@ -305,8 +305,6 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .chapter-head{margin:0 0 32px}
 .chapter-head .chapter-title{margin:0;font-weight:700}
 .chapter-head p{margin:16px 0 0}
-#behind .chapter-head{margin:0}
-#behind .doors{margin:16px 0 0}
 .switch{display:grid}
 .switch figure{grid-area:1 / 1;margin:0;visibility:hidden}   /* the change is a cut, not a fade: rule 20, nothing on the site moves */
 .switch figure.on{visibility:visible}

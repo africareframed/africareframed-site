@@ -606,6 +606,8 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .sq-mod .rec-way{margin:24px 0 0}
 @media (max-width:1023px){
   .sq-mod .f-words{padding-bottom:0;margin-top:16px}
+  .sq-field{row-gap:0}   /* each tag is 44 px to tap here, and that height keeps the rows apart */
+  .sq-field .brk{margin-top:0;height:8px}   /* and a group still stands apart from the next */
 }
 @media (max-width:767px){
   /* The phone's own form (Thomas, 13 November 2026, 22:21: an alternate version for the phone, about half a screen): the

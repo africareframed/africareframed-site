@@ -2001,13 +2001,15 @@ def in_chapter(section, head):
     return section.replace('<div class="wrap">', '<div class="wrap">' + head, 1)
 
 
-def tpl_home(p, base, record=False):
+def tpl_home(p, base, record="square"):
     # The front page is the page of the product (Thomas, 12 November 2026, 13:16 to 15:10; tried as version E on /dev/).
     # The Opening, the bold line and the lead say what this is and why it matters. Then two chapters, each under its title,
     # and a photograph. Since 13 November 2026, 11:50, the page has one form three times: a text block in the right half
     # (why; what, beside "The archive"; how to take part, beside "Partnerships"), and under each what it opens.
-    # The archive: the archive in small (a photograph as a record, the five themes, the photographs' own keywords,
-    #   answering to the pointer); the way on is Explore the themes.
+    # The archive: the archive in small. Since 14 November 2026 (Thomas, 00:07: "lets go live with no 5 - but lets keep the
+    #   rest as examples") it is the square of keywords: a photograph on the left, on the right the five themes and the
+    #   keywords of ten photographs as tags, the ones this photograph carries in black; a click on the photograph or on a
+    #   tag brings the next photograph. The module it replaced (record="original") and versions 1 to 4 stand on /dev/.
     # Partnerships (since 13 November 2026, 10:43; Principles stood here before and moved to About): three ways to take part.
     # Grounds (13 November 2026, 14:24): the first section on the plain pale ground, the archive on white, Partnerships on
     # the pale ground with the stripes, the photograph on white, the footer on black.
@@ -2023,7 +2025,7 @@ def tpl_home(p, base, record=False):
             # who has just read why the work matters asks who is behind it; and in the archive the button into the House
             # Collection, which is what the archive launches with and the better place to explore the themes from.
             + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[f'<a class="textlink" href="{base}about/">About Africa Reframed</a>']))
-            + (front_archive_record(base, tags=False) if record == "words" else front_archive_square(base) if record == "square" else front_archive_band(base) if record == "band" else front_archive_field(base) if record == "field" else front_archive_record(base) if record else front_mini(base))
+            + (front_archive_record(base, tags=False) if record == "words" else front_archive_band(base) if record == "band" else front_archive_field(base) if record == "field" else front_mini(base) if record == "original" else front_archive_record(base) if record is True else front_archive_square(base))
             + home_partnerships(base)
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
@@ -2145,8 +2147,8 @@ FRONT_RECORDS = {
                     desc="A young man in a red polo shirt leans on a bench vice and smiles at the camera in a blue-walled metal workshop in Bamako, Mali, with tools and parts on the shelves behind him.",
                     seen=["metalworker"], concept=["youth", "skills", "job", "small business"], story=["skills and craft", "work and livelihood"],
                     sdg=["SDG 8 – Decent Work and Economic Growth"]),
-    "AR-1137": dict(title="Woman with a laptop and phone in the driver's seat", place="Nairobi, Kenya",
-                    desc="A woman types on a laptop on her lap with a mobile phone tucked to her ear, sitting in the driver's seat of a car with the door open, in Nairobi, Kenya.",
+    "AR-1137": dict(title="Woman with a laptop and phone in the driver’s seat", place="Nairobi, Kenya",
+                    desc="A woman types on a laptop on her lap with a mobile phone tucked to her ear, sitting in the driver’s seat of a car with the door open, in Nairobi, Kenya.",
                     seen=["laptop", "mobile phone"], concept=["digital", "mobile technology"], story=["work and livelihood", "everyday technology"], sdg=[]),
     "AR-1381": dict(title="Older woman smiling at a smartphone, close-up", place="Bamako, Mali",
                     desc="An older woman in a printed head wrap smiles at a smartphone in her hand in Bamako, Mali.",
@@ -2501,7 +2503,7 @@ def front_square(base):
 
 
 def front_archive_square(base):
-    """The archive's chapter on Home with the square of keywords: on trial at /dev/home-square/."""
+    """The archive's chapter on Home with the square of keywords: on Home since 14 November 2026 (version 5 of the trial)."""
     return mod("collection", "the archive in small, as a square of keywords", f'{nb(home_head(*HOME_CHAPTERS["archive"]))}{front_square(base)}')
 
 
@@ -2526,7 +2528,7 @@ def tpl_archive_trial(p, base):
     assert old in detail
     # with one photograph for each theme the approved sentence no longer holds; its replacement is a draft for Thomas
     head = nb(home_head(title, line, detail.replace(old, HOME_TRIAL_LAST)))
-    intro = (m_page_head("The archive on Home", "A simpler archive in small, on trial. Home itself is unchanged.", kicker="Development")
+    intro = (m_page_head("The archive on Home", "Five versions of the archive in small. Version 5 is on Home since 14 November 2026; the others are kept as examples.", kicker="Development")
              + '<p class="wrap trial-note">Choose a theme: one photograph from it appears with its record. On a phone the five names are a row to slide. '
                'Three themes, chosen to differ. Versions 1 and 2 differ in one thing only: how the keywords are set. '
                'Version 3 is another idea: a photograph over a field of words. Click the photograph, or point at a word. '
@@ -4177,6 +4179,8 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .sq-mod .rec-way{margin:24px 0 0}
 @media (max-width:1023px){
   .sq-mod .f-words{padding-bottom:0;margin-top:16px}
+  .sq-field{row-gap:0}   /* each tag is 44 px to tap here, and that height keeps the rows apart */
+  .sq-field .brk{margin-top:0;height:8px}   /* and a group still stands apart from the next */
 }
 @media (max-width:767px){
   /* The phone's own form (Thomas, 13 November 2026, 22:21: an alternate version for the phone, about half a screen): the
@@ -4588,11 +4592,11 @@ def build():
         CUR.update(slug=None, n=0)
         (dev_dir / "home-words").mkdir(exist_ok=True)
         (dev_dir / "home-words" / "index.html").write_text(render(hmw, tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record="words"), "../../"))
-        hms = dict(path="dev/home-square/", title="Home, with the archive as a square of keywords, on trial", slug=None, tpl="front", nav=None,
-                   desc="A copy of Home with the fifth version of the archive module, on trial; generated by the build, removed at launch.")
+        hmo = dict(path="dev/home-original/", title="Home, with the archive module as it stood until 14 November 2026", slug=None, tpl="front", nav=None,
+                   desc="A copy of Home with the archive module it had until 14 November 2026, kept as an example; generated by the build, removed at launch.")
         CUR.update(slug=None, n=0)
-        (dev_dir / "home-square").mkdir(exist_ok=True)
-        (dev_dir / "home-square" / "index.html").write_text(render(hms, tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record="square"), "../../"))
+        (dev_dir / "home-original").mkdir(exist_ok=True)
+        (dev_dir / "home-original" / "index.html").write_text(render(hmo, tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record="original"), "../../"))
         hmb = dict(path="dev/home-band/", title="Home, with the archive as a band, on trial", slug=None, tpl="front", nav=None,
                    desc="A copy of Home with the fourth version of the archive module, on trial; generated by the build, removed at launch.")
         CUR.update(slug=None, n=0)

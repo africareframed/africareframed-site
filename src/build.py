@@ -83,6 +83,21 @@ THEMES = [
 # The themes grow with the collections (Thomas, 11 November 2026, 14:57): these five are what the House Collection delivers
 # today, and more will come, so nothing on the site presents them as a closed set. No "coming soon" either: the wording
 # says where the themes come from. Until 15:00 that day: "In order, the five themes are the archive’s argument: …".
+# The restructuring of 13 November 2026 (Thomas, 16:32 to 16:51). Themes left the menu, which is Collections · Partners ·
+# About | Log in. The themes are how the House Collection is built, so they stand inside its page as a switch, and each
+# has its address there. The Themes overview, the five theme pages and the Collections overview are gone as pages; their
+# addresses forward (FORWARDS, in build()), so no link from outside breaks. "Collections" opens the House Collection, and
+# a switch at the top of each collection's page leads to the other. The restore point is the branch
+# before-restructure-2026-11-13. The archive's own header and its navigation by theme are taken up later, in PhotoDeck.
+HOUSE_AT = "collections/house-collection/"
+THEMES_AT = HOUSE_AT + "#themes"
+
+
+def theme_url(base, slug):
+    """Where a theme is: its place on the House Collection's page."""
+    return f"{base}{HOUSE_AT}#{slug}"
+
+
 NUMBER_WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
 THEMES_SOURCE = ["Themes come from collections",   # the Themes page's closing section, a draft
                  "These five are drawn from the House Collection. Each new collection can bring a theme of its own."]
@@ -647,7 +662,7 @@ def theme_entry(t, base, i, row=False, ratio="4/5", short=False):
     else:
         strip = (frame(f'Image for {t["name"]}', "3/2", role="row", own=False, cap=False) if row
                  else frame("Theme image", ratio, role="theme-nav" if ratio == "5/2" else "theme", own=False, cap=False))
-    return (f'<a class="theme-entry{" row" if row else ""}" href="{base}themes/{t["slug"]}/">'
+    return (f'<a class="theme-entry{" row" if row else ""}" href="{theme_url(base, t["slug"])}">'
             f'<span class="order">{i}</span>{"" if row else strip}<div><h3>{e(t["name"])}</h3>{"" if short else "<p>" + e(limit("theme statement", t["statement"])) + "</p>"}'
             f'<span class="count">{t["count"]} images</span></div>{strip if row else ""}</a>')
 
@@ -2020,7 +2035,7 @@ def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45:
     # 1 What this is: the Opening. 2 Who it is for and who is behind it, with the ways on. 3 In use: the numbers (exist),
     # partners and an example (from the closed preview). 4 The five themes. 5 The collections. 6 The principles.
     return (m_opening(CORE_LINE, base=base)
-            + m_text(None, INTRO_HOME, "d", links=[button(base + "themes/", "Explore the themes", quiet=True),
+            + m_text(None, INTRO_HOME, "d", links=[button(base + THEMES_AT, "Explore the themes", quiet=True),
                                                    button(base + "partners/", "How partners use the archive", quiet=True)], sid="intro",
                      meta=[f"{n} {t}" for n, t in NUMBERS])
             # 3 In use, one section (page priorities, Home 3): the numbers, the partners by name, one example. Built only
@@ -2182,7 +2197,7 @@ def front_feature(c, base, flip=False, themes=False, ground=False):
     meta = "".join(f"<span>{e(m)}</span>" for m in card["meta"])
     doors = ""
     if themes:
-        rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
+        rows = "".join(f'<li><a href="{theme_url(base, t["slug"])}">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
         doors = f'<p class="kicker">By theme</p><ul class="theme-doors">{rows}</ul>'
     there = f'{base}collections/{slug}/'   # the photograph and the title lead to the collection's own page, where its story is told
     photo = f'<a href="{there}" class="feature-link" tabindex="-1" aria-hidden="true">{photo}</a>'
@@ -2230,11 +2245,11 @@ def front_mini(base):
              f'<span>{e(CREDIT)}</span></p>')
         f = f'{base}assets/home/{ar.lower()}'
         return (f'<figure class="frame{" on" if on else ""}" data-shot="{ar}" data-of="{theme_of[ar]}" data-kws="{e(kws)}">'
-                f'<a href="{base}themes/{theme_of[ar]}/" tabindex="-1" aria-hidden="true">'
+                f'<a href="{theme_url(base, theme_of[ar])}" tabindex="-1" aria-hidden="true">'
                 f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 46vw, 92vw" '
                 f'width="1280" height="853" alt="{e(r["desc"])}" loading="lazy" decoding="async"></a>{c}</figure>')
     shots = "".join(shot(ar, on=(i == 0)) for i, ar in enumerate(order))
-    rows = "".join(f'<li><a href="{base}themes/{t["slug"]}/" data-theme="{t["slug"]}">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
+    rows = "".join(f'<li><a href="{theme_url(base, t["slug"])}" data-theme="{t["slug"]}">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
     words = (f'<p class="kicker">{e(a["kicker"])}</p><p class="meta-row">{meta}</p>'
              f'<h3 class="kicker">By theme</h3><ul class="theme-doors">{rows}</ul>'
@@ -2264,24 +2279,24 @@ def front_mini(base):
 def front_ways(base):
     """Version D: how the archive is organised, in words: by theme and by collection."""
     w = FRONT_WAYS
-    th = "".join(f'<li><a href="{base}themes/{t["slug"]}/">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
+    th = "".join(f'<li><a href="{theme_url(base, t["slug"])}">{e(t["name"])}</a><span>{t["count"]} images</span></li>' for t in THEMES)
     co = "".join(f'<li><a href="{base}collections/{c["slug"]}/">{e(c["title"])}</a><span>{e(c["card"]["kicker"])}</span></li>' for c in COLLECTIONS)
     left = (f'<p class="kicker">By theme</p>{draft(w["themes"])}<ul class="theme-doors">{th}</ul>'
-            f'<p><a class="textlink" href="{base}themes/">All themes</a></p>')
+            f'<p><a class="textlink" href="{base}{THEMES_AT}">All themes</a></p>')
     right = (f'<p class="kicker">By collection</p>{draft(w["collections"])}<ul class="theme-doors">{co}</ul>'
-             f'<p><a class="textlink" href="{base}collections/">All collections</a></p>')
+             f'<p><a class="textlink" href="{base}{HOUSE_AT}">All collections</a></p>')
     head = f'<div class="cols"><div class="c1-12">{heading(w["title"])}</div></div>'
     return mod("doors", "how the archive is organised, on trial", f'{head}<div class="feature ways"><div class="f-left">{left}</div><div class="f-words">{right}</div></div>')
 
 
 def front_statement(base):
-    links = ", ".join(f'<a href="{base}themes/{t["slug"]}/">{e(t["name"].lower())}</a>' for t in THEMES)
+    links = ", ".join(f'<a href="{theme_url(base, t["slug"])}">{e(t["name"].lower())}</a>' for t in THEMES)
     return mod("text", "a statement that names the themes, on trial",
                f'<div class="cols"><div class="c1-9"><p class="statement-big draft">{e(FRONT_STATEMENT)} {links}.</p></div></div>')
 
 
 def front_themes_large(base):
-    cells = "".join(f'<a class="theme-large" href="{base}themes/{t["slug"]}/"><img src="{base}assets/themes/{THEME_PHOTOS[t["slug"]]["ar"].lower()}-upright.jpg" '
+    cells = "".join(f'<a class="theme-large" href="{theme_url(base, t["slug"])}"><img src="{base}assets/themes/{THEME_PHOTOS[t["slug"]]["ar"].lower()}-upright.jpg" '
                     f'width="800" height="1000" alt="{e(THEME_PHOTOS[t["slug"]]["alt"])}" loading="lazy" decoding="async"><span>{e(t["name"])}</span></a>' for t in THEMES)
     return mod("themes", "large pictures, names only, on trial",
                f'<div class="cols"><div class="c1-12">{heading("The first five themes")}</div></div><div class="theme-large-row">{cells}</div>')
@@ -2289,7 +2304,7 @@ def front_themes_large(base):
 
 def tpl_front(p, base, v):
     top = (m_opening(CORE_LINE, base=base).replace("<h1>", '<p class="h1">', 1).replace("</h1>", "</p>", 1)
-           + m_text(None, INTRO_HOME, "d", links=[button(base + "themes/", "Explore the themes", quiet=True),
+           + m_text(None, INTRO_HOME, "d", links=[button(base + THEMES_AT, "Explore the themes", quiet=True),
                                                   button(base + "partners/", "How partners use the archive", quiet=True)], sid="intro",
                     meta=[f"{n} {t}" for n, t in NUMBERS]))
     close = (chapter(m_document(base, HOME_DOCUMENT))
@@ -2456,6 +2471,14 @@ COLLECTION_SECTIONS = {
 }
 
 
+def m_collection_switch(c, base):
+    """The collections, as a switch at the top of each one's page: there is no overview page between them (Thomas, 13 November
+    2026, 16:38: a navigation in the top where you can switch between the two). Each by its full name, with whose it is."""
+    tabs = "".join(f'<li><a href="{base}collections/{x["slug"]}/"{" class=" + chr(34) + "on" + chr(34) + " aria-current=" + chr(34) + "page" + chr(34) if x is c else ""}>'
+                   f'<strong>{e(x["title"])}</strong><span class="count">{e(x["card"]["kicker"])}</span></a></li>' for x in COLLECTIONS)
+    return mod("doors", "the collections, as a switch", f'<nav aria-label="Collections"><ul class="theme-tabs two">{tabs}</ul></nav>', cls="collection-switch")
+
+
 def tpl_collection(p, base):
     # The head (name, statement, the lead photograph), then the collection's own sections in its order. House Collection:
     # the story, the evidence, places and series, themes and goals, Open in the archive, in use. A sponsored collection:
@@ -2467,7 +2490,8 @@ def tpl_collection(p, base):
         meta[0] = (meta[0], "#companies")                       # a sponsored collection: the way on is down to its stories
     elif not c["access"].get("request"):
         meta.insert(0, (f'{c["access"]["count"][0]} images in the archive →', archive("/-/galleries/archive", c["access"]["src"] + "-head")))
-    head = (m_page_head(c["title"], c["statement"], kicker=c["kicker"], meta=meta, statement_draft=c.get("statement_draft", False))
+    head = (m_collection_switch(c, base)
+            + m_page_head(c["title"], c["statement"], meta=meta, statement_draft=c.get("statement_draft", False))
             + m_photo(c["lead"], "21/9", "a", credit=c.get("lead_credit"), lead=True, echo=True))
     return head + "".join(COLLECTION_SECTIONS[s](c, base) for s in c["sections"])
 
@@ -2889,12 +2913,7 @@ def _tpl_modules(base):
 PAGES = [
     dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None,
          desc="We craft visual storytelling to bring contemporary Africa into view in Europe. A partner archive of real photographs, with exhibitions and workshops."),
-    dict(path="themes/", title="Themes", slug="themes", tpl="themes", nav="themes",
-         desc="Five themes, read in order: people learn, put their skills to work, live connected lives in modern cities, and make culture."),
-    *[dict(path=f"themes/{t['slug']}/", title=t["name"], slug=t["slug"], tpl="theme", nav="themes", theme=t,
-           desc=t["statement"]) for t in THEMES],
-    dict(path="collections/", title="Collections", slug="collections", tpl="collections", nav="collections",
-         desc="The collections in the Africa Reframed archive and the people behind them."),
+    # Not pages since 13 November 2026, 17:20: Themes, the five theme pages and Collections (see the restructuring, above).
     dict(path="collections/house-collection/", title="House Collection", slug="house-collection", tpl="collection", nav="collections",
          collection=HOUSE_COLLECTION, desc=HOUSE_LINE),
     dict(path="collections/waste-to-value/", title=WTV, slug="waste-to-value", tpl="collection", nav="collections",
@@ -3201,8 +3220,7 @@ LAYOUT = """<!doctype html>
       <span></span><span></span><span></span>
     </button>
     <nav class="menu" id="menu" aria-label="Main">
-      <a href="{base}themes/"{cur_themes}>Themes</a>
-      <a href="{base}collections/"{cur_collections}>Collections</a>
+      <a href="{base}collections/house-collection/"{cur_collections}>Collections</a>
       <a href="{base}partners/"{cur_partners}>Partners</a>
       <a href="{base}about/"{cur_about}>About</a>
       <span class="divider" aria-hidden="true"></span>
@@ -3804,6 +3822,9 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .theme-tabs strong{display:block;font-weight:700;line-height:1.25}
 .theme-tabs .count{display:block;font-size:var(--fs-small);color:var(--ink-soft)}
 .theme-tabs a:hover strong,.theme-tabs a:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
+.theme-tabs.two{grid-template-columns:1fr 1fr;margin:0}
+.mod.collection-switch::before{top:8px}   /* the wireframe's label stands clear of the names */
+.mod.collection-switch{padding-top:48px;padding-bottom:0;margin:0}
 .theme-panel{scroll-margin-top:160px}
 .theme-panel + .theme-panel{margin-top:64px}
 .theme-switch.switching .theme-panel{display:none;margin-top:0}
@@ -3814,8 +3835,12 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .theme-pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
 .theme-pair .frame{margin:0}
 @media (max-width:767px){
-  .theme-tabs{grid-template-columns:1fr;margin-bottom:32px}
+  .theme-tabs,.theme-tabs.two{grid-template-columns:1fr}
+  .theme-tabs{margin-bottom:32px}
+  .theme-tabs.two{margin-bottom:0}
   .theme-tabs a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0}
+  .theme-tabs .count{flex:none;white-space:nowrap}
+  .mod.collection-switch{padding-top:24px}
   .theme-pair{grid-template-columns:1fr;gap:24px}
 }
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
@@ -4052,7 +4077,7 @@ def render(p, main, base):
         robots="" if LAUNCH else '<meta name="robots" content="noindex">\n', strip=strip_html(base),
         base=base, stamp=STAMP, slug=p["slug"], tpl=p["tpl"], main=main, about_line=e(ABOUT_LINE), close_pattern=CLOSE_PATTERN, archive=ARCHIVE, partner_script=PARTNER_SCRIPT,
         archive_browse=archive("/-/galleries/archive", "menu"), archive_lightbox=archive("/lightbox", "menu"),
-        cur_themes=cur("themes"), cur_collections=cur("collections"), cur_partners=cur("partners"), cur_about=cur("about"), cur_portal=cur("portal"))
+        cur_collections=cur("collections"), cur_partners=cur("partners"), cur_about=cur("about"), cur_portal=cur("portal"))
 
 
 def build():
@@ -4083,6 +4108,16 @@ def build():
         out = ROOT / p["path"] / "index.html"
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(render(p, main, base))
+    # The addresses that are no longer pages forward to where their content stands now.
+    forwards = {"themes/": THEMES_AT, "collections/": HOUSE_AT, **{f"themes/{t['slug']}/": f"{HOUSE_AT}#{t['slug']}" for t in THEMES}}
+    for path, to in forwards.items():
+        rel = "../" * path.count("/") + to
+        out = ROOT / path / "index.html"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>House Collection – Africa Reframed</title>\n'
+                       '<meta name="robots" content="noindex">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+                       f'<link rel="canonical" href="{SITE_URL}{to.split("#")[0]}">\n<meta http-equiv="refresh" content="0; url={rel}">\n'
+                       f'<script>location.replace("{rel}")</script>\n</head>\n<body>\n<p>This page has moved: <a href="{rel}">the House Collection</a>.</p>\n</body>\n</html>\n')
     dev_dir = ROOT / "dev"
     if LAUNCH:
         shutil.rmtree(dev_dir, ignore_errors=True)
@@ -4128,8 +4163,8 @@ def build():
     nf = dict(path="404.html", title="Page not found", slug="not-found", tpl="text", nav=None,
               desc="This page is not on africareframed.com.")
     nf_main = (m_page_head("This page is not here", NOT_FOUND_LINE, statement_draft=True)
-               + m_doors("c", links=[button(root_path, "The front page", quiet=True), button(root_path + "themes/", "The five themes", quiet=True),
-                                     button(root_path + "collections/", "The collections", quiet=True)], tight=True))
+               + m_doors("c", links=[button(root_path, "The front page", quiet=True),
+                                     button(root_path + HOUSE_AT, "The collections", quiet=True)], tight=True))
     nf_html = render(nf, nf_main, root_path)
     nf_html = re.sub(r'<link rel="canonical"[^>]*>\n', '', nf_html)
     if 'name="robots"' not in nf_html:

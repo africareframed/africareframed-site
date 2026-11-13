@@ -515,6 +515,9 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .theme-tabs strong{display:block;font-weight:700;line-height:1.25}
 .theme-tabs .count{display:block;font-size:var(--fs-small);color:var(--ink-soft)}
 .theme-tabs a:hover strong,.theme-tabs a:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
+.theme-tabs.two{grid-template-columns:1fr 1fr;margin:0}
+.mod.collection-switch::before{top:8px}   /* the wireframe's label stands clear of the names */
+.mod.collection-switch{padding-top:48px;padding-bottom:0;margin:0}
 .theme-panel{scroll-margin-top:160px}
 .theme-panel + .theme-panel{margin-top:64px}
 .theme-switch.switching .theme-panel{display:none;margin-top:0}
@@ -525,8 +528,12 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .theme-pair{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
 .theme-pair .frame{margin:0}
 @media (max-width:767px){
-  .theme-tabs{grid-template-columns:1fr;margin-bottom:32px}
+  .theme-tabs,.theme-tabs.two{grid-template-columns:1fr}
+  .theme-tabs{margin-bottom:32px}
+  .theme-tabs.two{margin-bottom:0}
   .theme-tabs a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0}
+  .theme-tabs .count{flex:none;white-space:nowrap}
+  .mod.collection-switch{padding-top:24px}
   .theme-pair{grid-template-columns:1fr;gap:24px}
 }
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}

@@ -1953,7 +1953,10 @@ def home_partnerships(base):
     for terms, role, text in HOME_PARTNERSHIPS:
         limit("item title", role); limit("item line", text)
     cards = "".join(f'<li><p class="kicker">{e(terms)}</p><h3>{e(role)}</h3>{draft(text)}</li>' for terms, role, text in HOME_PARTNERSHIPS)
-    return mod("items", "the turn: three roles in white panels on the pale ground", turn_pattern() + turn_pattern(way_out=True) + head + f'<ul class="panels">{cards}</ul>',
+    # No stripes since 13 November 2026, 15:05 (Thomas, 15:03): the part stands on the plain pale ground, as the first
+    # section does. The page is calmer and the eye stays on the content; the pattern opens the page in the photograph and
+    # closes it in the footer. turn_pattern() is kept, unused, with the drawing as it was settled that morning.
+    return mod("items", "three ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels">{cards}</ul>',
                cls="on-ground turn", sid="partnerships")
 
 
@@ -3581,7 +3584,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
   width:calc((100% - 2 * var(--margin) - 11 * var(--gutter)) / 12 * 5 + 4 * var(--gutter));height:auto;aspect-ratio:528 / 400}
 /* The way out keeps clear of the panels (Thomas, 13 November 2026, 11:36: the white must not touch the white of the cards):
    a strip of the ground, 24 px, stays between the panels and the bars, and the ground under the panels is a step deeper. */
-.mod.on-ground.turn{--out:calc(var(--section) + 32px);padding-bottom:var(--out)}
+.mod.on-ground.turn{--out:var(--section)}   /* the deeper ground (section + 32 px) went with the stripes, 13 November 2026, 15:05 */
 .mod.turn > .wrap > .turn-pattern.way-out{left:auto;right:var(--margin);top:auto;bottom:calc(-1 * var(--out));height:calc(var(--out) - 24px);aspect-ratio:auto;overflow:visible;clip-path:inset(-40px -200px 0 -200px);transform:rotate(180deg)}
 .mod.turn .chapter-head.cols .doors{margin:16px 0 0}
 .panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}

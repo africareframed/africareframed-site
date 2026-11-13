@@ -339,7 +339,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
   width:calc((100% - 2 * var(--margin) - 11 * var(--gutter)) / 12 * 5 + 4 * var(--gutter));height:auto;aspect-ratio:528 / 400}
 /* The way out keeps clear of the panels (Thomas, 13 November 2026, 11:36: the white must not touch the white of the cards):
    a strip of the ground, 24 px, stays between the panels and the bars, and the ground under the panels is a step deeper. */
-.mod.on-ground.turn{--out:calc(var(--section) + 32px);padding-bottom:var(--out)}
+.mod.on-ground.turn{--out:var(--section)}   /* the deeper ground (section + 32 px) went with the stripes, 13 November 2026, 15:05 */
 .mod.turn > .wrap > .turn-pattern.way-out{left:auto;right:var(--margin);top:auto;bottom:calc(-1 * var(--out));height:calc(var(--out) - 24px);aspect-ratio:auto;overflow:visible;clip-path:inset(-40px -200px 0 -200px);transform:rotate(180deg)}
 .mod.turn .chapter-head.cols .doors{margin:16px 0 0}
 .panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}

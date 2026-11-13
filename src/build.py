@@ -2283,11 +2283,23 @@ def front_mini(base):
 # boxes. It is the archive's own image page in small. Two controls on trial: "themes", a row of the five names over the
 # module, as on the House Collection's page (choosing a theme shows a photograph from it); and "steps", previous and next
 # in words. Home itself is untouched until Thomas has compared them.
-def front_record(base, control="themes", tags=False, one=True):
+# Three themes on Home, not five (Thomas, 13 November 2026, 19:31): nobody wants to go through five there; the reader has to
+# understand the idea, and the three have to differ. A first choice, for Thomas to change: three themes, three countries,
+# three settings (a classroom, a car, a street), two women and a man; the third carries keywords in every layer but one.
+# The House Collection's page shows all five.
+HOME_THREE = [("learning", "AR-1350"), ("work-and-enterprise", "AR-2046"), ("city-life", "AR-1072")]
+HOME_TRIAL_LAST = "Three of the themes stand below, each with one photograph and the keywords it carries in the archive."   # draft
+
+
+def front_record(base, control="themes", tags=False, one=True, picks=HOME_THREE):
     """one: one photograph for each theme, the first of each pair Thomas chose (17:42: the limited examples; a second
     photograph behind a second click would stay unseen). tags: the keywords as the small black tags of the earlier module,
     only those this photograph carries (the plain, outlined ones since 17:53); else as plain words."""
-    order = [ar for t in THEMES for ar in (HOME_PAIRS[t["slug"]][:1] if one else HOME_PAIRS[t["slug"]])]   # the themes' story order
+    by_slug = {t["slug"]: t for t in THEMES}
+    if picks:
+        order, themes = [ar for _, ar in picks], [by_slug[sl] for sl, _ in picks]
+    else:
+        order, themes = [ar for t in THEMES for ar in (HOME_PAIRS[t["slug"]][:1] if one else HOME_PAIRS[t["slug"]])], THEMES   # the themes' story order
     theme_of = {ar: t for t in THEMES for ar in HOME_PAIRS[t["slug"]]}
     shots, recs = "", ""
     for i, ar in enumerate(order):
@@ -2304,9 +2316,9 @@ def front_record(base, control="themes", tags=False, one=True):
                  f'<h3 class="rec-title">{e(r["title"])}</h3><dl class="rec-rows{" tags" if tags else ""}">{rows}</dl></div>')
     tabs, ctl = "", ""
     if control == "themes":
-        tabs = ('<ul class="theme-tabs rec-tabs">' + "".join(
+        tabs = (f'<ul class="theme-tabs rec-tabs{" three" if len(themes) == 3 else ""}">' + "".join(
             f'<li><button type="button" data-theme="{t["slug"]}" aria-pressed="{"true" if i == 0 else "false"}"{" class=" + chr(34) + "on" + chr(34) if i == 0 else ""}>'
-            f'<strong>{e(t["name"])}</strong><span class="count">{t["count"]} images</span></button></li>' for i, t in enumerate(THEMES)) + "</ul>")
+            f'<strong>{e(t["name"])}</strong><span class="count">{t["count"]} images</span></button></li>' for i, t in enumerate(themes)) + "</ul>")
     else:
         ctl = (f'<p class="rec-ctl"><span class="rec-count"><span class="rec-n">1</span> of {len(order)} shown here · 1,122 in the archive</span>'
                '<span class="rec-steps"><button type="button" class="textlink rec-step" data-step="-1">Previous</button>'
@@ -2345,7 +2357,7 @@ def front_archive_record(base):
     title, line, detail = HOME_CHAPTERS["archive"]
     old = "Ten photographs stand below, with the keywords they carry in the archive."
     assert old in detail
-    head = nb(home_head(title, line, detail.replace(old, "One photograph from each theme stands below, with the keywords it carries in the archive.")))
+    head = nb(home_head(title, line, detail.replace(old, HOME_TRIAL_LAST)))
     return mod("collection", "the archive in small, as a record", f'{head}{front_record(base, "themes", tags=True)}{REC_SCRIPT}')
 
 
@@ -2354,10 +2366,10 @@ def tpl_archive_trial(p, base):
     old = "Ten photographs stand below, with the keywords they carry in the archive."
     assert old in detail
     # with one photograph for each theme the approved sentence no longer holds; its replacement is a draft for Thomas
-    head = nb(home_head(title, line, detail.replace(old, "One photograph from each theme stands below, with the keywords it carries in the archive.")))
+    head = nb(home_head(title, line, detail.replace(old, HOME_TRIAL_LAST)))
     intro = (m_page_head("The archive on Home", "A simpler archive in small, on trial. Home itself is unchanged.", kicker="Development")
              + '<p class="wrap trial-note">Choose a theme: one photograph from it appears with its record. On a phone the five names are a row to slide. '
-               'The two versions differ in one thing only: how the keywords are set.</p>')
+               'Three themes, chosen to differ. The two versions differ in one thing only: how the keywords are set.</p>')
     a = mod("collection", "the archive as a record, keywords as words", f'<p class="kicker trial-label">Version 1 · the keywords as plain words</p>{head}{front_record(base, "themes")}')
     b = mod("collection", "the archive as a record, keywords as tags", f'<p class="kicker trial-label">Version 2 · the keywords as tags, outlined</p>{head}{front_record(base, "themes", tags=True)}')
     return intro + a + b + REC_SCRIPT
@@ -3924,6 +3936,7 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 }
 /* The archive in small, as a record (on trial at /dev/archive/). */
 .rec-mod .rec-tabs{margin-bottom:32px}
+.rec-tabs.three li{grid-column:span 3}   /* three names: on columns 1, 4 and 7, the third on the half line */
 .rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}
 .rec-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
 .rec-tabs button:hover strong,.rec-tabs button:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
@@ -3957,7 +3970,7 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .theme-tabs.rec-tabs{display:flex;grid-template-columns:none;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
     margin:0 calc(-1 * var(--margin)) 24px 0;-webkit-overflow-scrolling:touch}
   .theme-tabs.rec-tabs::-webkit-scrollbar{display:none}
-  .rec-tabs li{flex:0 0 60%;scroll-snap-align:start}
+  .rec-tabs li,.rec-tabs.three li{flex:0 0 60%;scroll-snap-align:start;grid-column:auto}
   .rec-tabs li:last-child{margin-right:40%}
   .rec-tabs button{display:block}
 }

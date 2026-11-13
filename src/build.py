@@ -1874,20 +1874,24 @@ def nb(html):
 
 
 # The turn (design guide, Pattern; first built here on 13 November 2026, 10:45): the pale ground of the part where a page turns
-# to its second matter, with the white of the part above entering it as stripes. Three bars at 60 degrees start on the top
-# edge of the ground, in the title column, run down to the left and end in a horizontal cut at uneven heights; a few small
-# triangles fall from them. The 2019 measure: a 48 px bar on a 117 px pitch. About a seventh of the area it stands in
-# (528 by 400 px: columns 1 to 5, the head of the part). What stands on the ground covers it: the title stands over it,
-# the white panels stand in front of it. Drawn for the page; one white, never an opacity.
+# to its second matter, with the white of the part above entering it as stripes, in the title column.
+# Redrawn at 11:00 (Thomas, 10:52): the first drawing had thin bars (48 px) leaning the way the Opening's and the close's do,
+# with ten small triangles, and read as finicky. Now the bars are broad, as at the top and the bottom of the page (104 px;
+# the close's are 104 px and the Opening's 127 px on a laptop), and they lean the other way: the Opening falls to the left,
+# the turn falls to the right, the close falls to the left again, so the pattern goes down the page in a zigzag. Three bars,
+# each shorter than the last, their points on one line, as in the close; one triangle set clear of them. The bars end in a
+# point, as the Opening's and the close's do. What stands on the ground covers the pattern: the title stands over it, the
+# white panels in front of it. Drawn for the page; one white, never an opacity.
 def turn_pattern():
-    k = 0.5774                                           # 1 / tan 60: how far a bar moves left for each px it falls
-    bars = [(150, 250), (267, 372), (384, 176)]         # where each bar starts on the top edge, and how far it falls
-    tris = [(330, 236, 24), (392, 262, 24), (300, 292, 12), (446, 214, 12), (356, 318, 24), (428, 318, 12),
-            (470, 268, 24), (404, 366, 12), (318, 362, 12), (486, 340, 12)]   # x of the left corner, y of the base, side
-    shapes = "".join(f'<path d="M{x} 0h48L{round(x + 48 - k * h, 1)} {h}h-48z"/>' for x, h in bars)
-    shapes += "".join(f'<path d="M{x} {y}h{t}l-{t / 2} -{round(t * 0.866, 1)}z"/>' for x, y, t in tris)
+    k, bar, up = 0.57735, 104, 12
+    tip = 0.86603 * bar
+    bars = [(-30, 210), (200, 110), (430, 10)]          # the bar's left edge on the top edge, and how far it falls before its point
+    poly = "".join(f'<polygon points="{xl - k * up:.1f},{-up} {xl + bar - k * up:.1f},{-up} {xl + bar + k * b:.1f},{b:.1f} {xl + k * (b + tip):.1f},{b + tip:.1f}"/>'
+                   for xl, b in bars)
+    x, y, side = 356, 330, 56                           # one triangle, clear of the points
+    poly += f'<polygon points="{x},{y} {x + side},{y} {x + side / 2},{y - 0.86603 * side:.1f}"/>'
     return (f'<svg class="turn-pattern" viewBox="0 0 528 400" preserveAspectRatio="xMinYMin slice" aria-hidden="true" focusable="false">'
-            f'<g fill="#ffffff">{shapes}</g></svg>')
+            f'<g fill="#ffffff">{poly}</g></svg>')
 
 
 def home_partnerships(base):

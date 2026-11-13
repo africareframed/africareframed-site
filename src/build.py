@@ -884,8 +884,11 @@ INTRO_HOME = [
     # the sentence at the intro size and its detail at the text size beneath (design guide, Layout: text is an object).
     # Draft. It stays with why the work matters, as the lead does, and names people, not our process: the first sentence is
     # the Strategic Platform's (the relationships have to be seen to be trusted).
+    # Longer since 10:00 (Thomas: at least half as long again, so that it stands as a block): the third sentence says "across
+    # sectors" in people, not in the word.
     "Relationships have to be seen to be trusted. We make the pictures that let them be seen: students, tradespeople, "
-    "founders and young professionals, in their own cities, today.",
+    "founders and young professionals, in their own cities, today. When a company, a school and a ministry use the same "
+    "picture, they begin to tell the same story.",
     # Between 12 November, 18:02, and 13 November the bold line and the lead stood alone. Tried and set aside on 12 November 2026:
     # "It starts with real photographs…" (a claim about ourselves), four lines on who funds, makes and uses the collections
     # (the whole process up front), and "We make each new collection with partners, and share it among them."
@@ -896,7 +899,8 @@ HOME_CHAPTERS = dict(
     # Thomas, 12 November, 14:58 and 15:08, for the sentence; its detail beneath since 13 November 2026, 09:54 (draft): what the
     # principles are for, from the engine brief (what a company needs before it puts its name on the work).
     principles=("Principles", "Behind every image and every collaboration.",
-                "An organisation that uses our images puts its own name beside them. These four are what it can rely on."),
+                "An organisation that uses our images puts its own name beside them, and a sponsor puts its name on a whole "
+                "collection. These four are what each of them can rely on. They hold for every collection, sponsored or our own."),
     # about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African
     # photographers with the international picture market."), with the button More about us: off Home since 13 November 2026.
 )
@@ -3361,6 +3365,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
    size from column 7, both on one top line. Without one the title stands alone across the row (design guide, Layout). */
 .chapter-head{margin:0 0 32px}
 .chapter-head .chapter-title{margin:0}
+.chapter-head.cols{margin-bottom:64px}   /* a head that is a text block stands further from what it opens than a title alone (32 px): its last line is small text, and the rules of the items beneath need air (Thomas, 13 November 2026, 10:00) */
 .chapter-head.cols .lead{margin:0 0 12px;padding-top:8px}
 .chapter-head.cols .lead:last-child,.chapter-head.cols p:last-child{margin-bottom:0}
 .switch{display:grid}

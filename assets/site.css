@@ -305,6 +305,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
    size from column 7, both on one top line. Without one the title stands alone across the row (design guide, Layout). */
 .chapter-head{margin:0 0 32px}
 .chapter-head .chapter-title{margin:0}
+.chapter-head.cols{margin-bottom:64px}   /* a head that is a text block stands further from what it opens than a title alone (32 px): its last line is small text, and the rules of the items beneath need air (Thomas, 13 November 2026, 10:00) */
 .chapter-head.cols .lead{margin:0 0 12px;padding-top:8px}
 .chapter-head.cols .lead:last-child,.chapter-head.cols p:last-child{margin-bottom:0}
 .switch{display:grid}

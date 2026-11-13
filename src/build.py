@@ -86,7 +86,9 @@ THEMES = [
 NUMBER_WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
 THEMES_SOURCE = ["Themes come from collections",   # the Themes page's closing section, a draft
                  "These five are drawn from the House Collection. Each new collection can bring a theme of its own."]
-THEMES_LEAD = ("These five themes come from the House Collection: people learn, put their skills to work, "
+# Since 13 November 2026, 13:00: the same clause as in Home's archive block, so that "stories" means the same thing on Home,
+# on the House Collection and on Themes. Until then: "These five themes come from the House Collection: people learn, …".
+THEMES_LEAD = ("The themes follow one story: people learn, put their skills to work, "
                "live connected lives in modern cities, and make culture.")                            # Keywording Guide, 8b
 
 # Who gets access: AR Archive – Status, "Who gets access, and sponsors" (Thomas, 3 Nov 2026)
@@ -809,7 +811,7 @@ def door(href, kicker, title, line, dark=False):
     limit("door kicker", kicker); limit("door title", title); limit("door line", line)
     kind = " archive" if href.startswith(ARCHIVE) else ""
     return (f'<a class="panel{kind}" href="{href}"><span class="kicker">{e(kicker)}</span>'
-            f'<strong>{e(title)}</strong><span>{e(line)}</span></a>')
+            f'<strong>{e(title)}</strong>{f"<span>{e(line)}</span>" if line else ""}</a>')
 
 
 def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None, tight=False, left=False):
@@ -962,19 +964,25 @@ HOME_CHAPTERS = dict(
     # The archive is explained before it is shown (Thomas, 13 November 2026, 11:36): a text block like the first one, in the
     # same column, and under it the archive in small. Draft. The sentences on the photographer, consent and AI stood in the
     # first block until now. "Ten of them" is the count of the photographs in the module beneath (two for each theme).
-    archive=("The archive", "The archive holds photographs of modern African life, ready for partners to use in their own work.",
+    # Since 13:00 (Thomas, 12:43 and 12:49): Home's three blocks are read as why, what and how, and each answers one question.
+    # The why rests on two words, "shared" and "stories": "stories" is paid off here (the archive holds the stories in
+    # pictures; its themes follow one story, in the Keywording Guide's story order, as the themes' own lead says), and
+    # "shared" in Partnerships. Draft.
+    archive=("The archive", "The archive holds the stories in pictures: photographs of modern African life, ready for partners to use in their own work.",
              "Every photograph is made by a photographer on location, with the consent of the people in it. Our images are never "
-             "AI-generated. Each image carries a description and keywords, so it can be found by theme and by what it shows. "
-             "Ten of them stand below, with the keywords they carry in the archive."),   # "A shared resource" went with the sentence that set it up (Thomas, 18:02); the title names the chapter again
+             "AI-generated. The themes follow one story: people learn, put their skills to work, live connected lives in modern "
+             "cities, and make culture. Ten photographs stand below, with the keywords they carry in the archive."),   # "A shared resource" went with the sentence that set it up (Thomas, 18:02); the title names the chapter again
     # The third chapter is Partnerships since 13 November 2026, 10:30 (Thomas, 10:23 and 10:28): Home's three beats are why
     # (to About), what (to the House Collection) and how to take part (to Partners). The principles stand on About, in the
     # archive's chapter. The sentence is Thomas's idea of 12 November (the archive is built on collaboration across sectors).
     # Since 10:45 (Thomas, 10:42): a text block like the first one, the sentence with a small text and the link to Partners
     # beneath it, and the three roles as cards. The small text is a draft; "a shared resource" is Thomas's phrase of 12 November.
     partnerships=("Partnerships", "The archive is built on collaboration across sectors.",
-                  "A picture that Europe can trust cannot come from one voice. So the archive is a shared resource: what one "
-                  "partner makes possible, every partner can use. Each takes part on the same terms, and it grows with every "
-                  "new collection."),
+                  # Since 13:00: the sentence of belief ("A picture that Europe can trust cannot come from one voice") is out:
+                  # a belief belongs to the first block. "On the same terms" is out: the three panels beneath carry three
+                  # different terms. "Shared" from the first block is paid off here. Draft.
+                  "The archive is a shared resource: what one partner makes possible, every partner can use. That is how the "
+                  "stories become shared, and how the archive grows. There are three ways to take part."),
     # about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African
     # photographers with the international picture market."), with the button More about us: off Home since 13 November 2026.
 )
@@ -1136,8 +1144,13 @@ COLLECTIONS = [HOUSE_COLLECTION, WTV_COLLECTION]   # the order on Collections an
 # workshops with its photographers." One wording on About and on Home (rule 30).
 # (The statement's limit is 25 words, rule 4: with the new opening the three lines are named without their qualifiers,
 # which About's three lines of activity carry directly under it.)
-ABOUT_STATEMENT = ("We build partnerships around visual storytelling to bring contemporary Africa into view in Europe: "
-                   "through an archive of photographs, exhibitions and workshops.")
+# Since 13 November 2026, 13:00 (Thomas, 12:49): About is the long form of Home's first block, the why, and the page of
+# credibility and of the ecosystem, so it opens with the why (the Strategic Platform's root: "Europe and Africa need each
+# other, and the relationships between them have to be seen to be trusted") and then says what we do about it. The archive,
+# exhibitions and workshops are named in the three lines directly under it. Draft. Until then: "We build partnerships around
+# visual storytelling to bring contemporary Africa into view in Europe: through an archive of photographs, exhibitions and workshops."
+ABOUT_STATEMENT = ("Europe and Africa need each other. Their relationships have to be seen to be trusted, "
+                   "so we build partnerships around visual storytelling.")
 STATES = {"in production": "In production", "now": "Now", "record": ""}   # the order projects are shown in, top first
 ABOUT_CHANNELS = [  # (anchor, name, one line): the three lines of activity under the head, in the order of the sections
     ("archive", "The archive", "Photographs of contemporary Africa, open to the organisations we approve and growing with every collection."),
@@ -2387,10 +2400,18 @@ def tpl_collection(p, base):
 
 
 def tpl_partners(p, base):
-    doors = [door("#use", "Organisations", "Use the images", "Free for selected non-profit and public partners.", dark=True),
-             door("#sponsor", "Companies", "Sponsor a collection", "Companies get access through a collection sponsorship.")]
+    # Since 13 November 2026, 13:00 (Thomas, 12:49): Partners is the long form of Home's third block, the how. It opens with
+    # the how in one sentence, and its two doors are ways to take part with their terms as the label, as on Home's panels
+    # (Thomas, 10:58: not kinds of people; and a company is not told only that it pays). Draft. Until then the doors read
+    # "Organisations / Free for selected non-profit and public partners." and "Companies / Companies get access through a
+    # collection sponsorship.", and the page had no opening sentence.
+    # The doors carry no line of their own since then: who may use the images stands directly under them, in How access
+    # works, and what a sponsor gets in Sponsor a collection; and the page keeps inside its budget of 350 words (rule 4).
+    doors = [door("#use", "Always free", "Use the images", "", dark=True),
+             door("#sponsor", "By collection", "Sponsor a collection", "")]
     # 1 the two doors; 2 how access works; 3 using the images; 4 sponsor a collection; 5 who already uses the archive; 6 request access, contact.
-    return (m_page_head(p["title"], doors=m_doors("a", doors=doors))
+    return (m_page_head(p["title"], "The archive is shared: what one partner makes possible, every partner can use.",
+                        statement_draft=True, doors=m_doors("a", doors=doors))
             + m_text("How access works", [ACCESS_WHO], "a", is_draft=False, sid="use")
             + m_items(None, ACCESS_STEPS, "b", tight=True)
             + m_doors("c", links=[button(base + "request-access/", "Request access", quiet=True)], tight=True)

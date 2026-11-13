@@ -2485,9 +2485,14 @@ def front_square(base):
     script = ("<script>(function(){[].slice.call(document.querySelectorAll('.sq-mod')).forEach(function(box){"
               "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),kws=[].slice.call(box.querySelectorAll('[data-kw]')),n=shots.length,cur=0;"
               "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
-              "function show(i){cur=(i%n+n)%n;shots.forEach(function(f,k){f.classList.toggle('on',k===cur)});"
-              "kws.forEach(function(b){b.classList.toggle('lit',has[cur].indexOf(b.dataset.kw)>-1)})}"
-              "box.querySelector('.switch').addEventListener('click',function(ev){if(ev.target.closest('a'))return;show(cur+1)});"
+              "var row=box.querySelector('.switch');function slides(){return row.scrollWidth>row.clientWidth+4}"
+              "function show(i,fromSlide){cur=(i%n+n)%n;shots.forEach(function(f,k){f.classList.toggle('on',k===cur)});"
+              "kws.forEach(function(b){b.classList.toggle('lit',has[cur].indexOf(b.dataset.kw)>-1)});"
+              "if(!fromSlide&&slides())row.scrollLeft=shots[cur].offsetLeft-shots[0].offsetLeft}"
+              "row.addEventListener('click',function(ev){if(ev.target.closest('a'))return;show(cur+1)});"
+              "var tm;row.addEventListener('scroll',function(){clearTimeout(tm);tm=setTimeout(function(){if(!slides())return;"
+              "var x=row.getBoundingClientRect().left,best=0,d=1e9;shots.forEach(function(f,k){var q=Math.abs(f.getBoundingClientRect().left-x);if(q<d){d=q;best=k}});"
+              "if(best!==cur)show(best,true)},140)},{passive:true});"
               "kws.forEach(function(b){b.addEventListener('click',function(){var k=b.dataset.kw;for(var j=1;j<=n;j++){var q=(cur+j)%n;if(has[q].indexOf(k)>-1){show(q);return}}})});"
               "function warm(){[].slice.call(box.querySelectorAll('img[loading=lazy]')).forEach(function(i){i.loading='eager'})}"
               "['pointerenter','focusin','touchstart'].forEach(function(ev){box.addEventListener(ev,warm,{once:true,passive:true})})})})();</script>")
@@ -4172,6 +4177,21 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .sq-mod .rec-way{margin:24px 0 0}
 @media (max-width:1023px){
   .sq-mod .f-words{padding-bottom:0;margin-top:16px}
+}
+@media (max-width:767px){
+  /* The phone's own form (Thomas, 13 November 2026, 22:21: an alternate version for the phone, about half a screen): the
+     photographs are one row to slide with the finger, the next one showing at the edge, and under them stand only the
+     themes and keywords the photograph in front carries, as the plain outlined boxes. A tap on a word, or on the
+     photograph, brings the next photograph. The finger moves the row; nothing moves by itself. */
+  .sq-mod .switch{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-right:calc(-1 * var(--margin));-webkit-overflow-scrolling:touch}
+  .sq-mod .switch::-webkit-scrollbar{display:none}
+  .sq-mod .switch figure{flex:0 0 84%;grid-area:auto;visibility:visible;scroll-snap-align:start}
+  .sq-mod .switch figure:last-child{margin-right:16%}
+  .sq-mod .f-words{margin-top:8px}
+  .sq-field li:has(.kw:not(.lit)),.sq-field .brk{display:none}
+  .sq-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
+  .sq-mod .kw.theme.lit span{color:var(--ink)}
+  .sq-mod .rec-way{margin-top:16px}
 }
 .rec-mod .rec-tabs{margin-bottom:32px}
 .rec-tabs.three li{grid-column:span 3}   /* three names: on columns 1, 4 and 7, the third on the half line */

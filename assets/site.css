@@ -607,6 +607,21 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 @media (max-width:1023px){
   .sq-mod .f-words{padding-bottom:0;margin-top:16px}
 }
+@media (max-width:767px){
+  /* The phone's own form (Thomas, 13 November 2026, 22:21: an alternate version for the phone, about half a screen): the
+     photographs are one row to slide with the finger, the next one showing at the edge, and under them stand only the
+     themes and keywords the photograph in front carries, as the plain outlined boxes. A tap on a word, or on the
+     photograph, brings the next photograph. The finger moves the row; nothing moves by itself. */
+  .sq-mod .switch{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-right:calc(-1 * var(--margin));-webkit-overflow-scrolling:touch}
+  .sq-mod .switch::-webkit-scrollbar{display:none}
+  .sq-mod .switch figure{flex:0 0 84%;grid-area:auto;visibility:visible;scroll-snap-align:start}
+  .sq-mod .switch figure:last-child{margin-right:16%}
+  .sq-mod .f-words{margin-top:8px}
+  .sq-field li:has(.kw:not(.lit)),.sq-field .brk{display:none}
+  .sq-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
+  .sq-mod .kw.theme.lit span{color:var(--ink)}
+  .sq-mod .rec-way{margin-top:16px}
+}
 .rec-mod .rec-tabs{margin-bottom:32px}
 .rec-tabs.three li{grid-column:span 3}   /* three names: on columns 1, 4 and 7, the third on the half line */
 .rec-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}

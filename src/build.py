@@ -940,10 +940,15 @@ INTRO_HOME = [
 # Home's third chapter, three roles and no steps (draft, from the Partners page's own sentences): a landing page explains no
 # process, so each role has one line. Twice on 12 November this content was cut from Home as a paragraph and as a pair inside
 # the archive's box; here it stands third, after the product, as three short items in place of the principles.
-HOME_PARTNERSHIPS = [   # who (a label), the role, one line
-    ("Organisations", "Use it", "Non-profit and public organisations use the images free, in their own reports, campaigns and classrooms."),
-    ("Companies and foundations", "Sponsor it", "Companies and foundations fund a new collection on a theme close to their own work."),
-    ("Photographers", "Make it", "Photographers on location are commissioned, credited and paid."),
+# Since 11:10 (Thomas, 10:58): three ways to take part, not three kinds of people. The first cards carried a label saying who
+# (Organisations, Companies and foundations, Photographers), which sorted each reader into one role and was wrong: media use
+# it too, a sponsor also uses it, and more than photographers make it; and it told a company only that it pays. Now each
+# card says what the role gives as well as what it asks. Drafts, from the Partners page's own sentences (ACCESS_WHO, SPONSOR_TEXT).
+HOME_PARTNERSHIPS = [   # the role, its text
+    ("Use it", "Always free. NGOs, media, educational and public institutions use the images in their own reports, campaigns and classrooms."),
+    ("Sponsor it", "A company or foundation makes a new collection possible, on a theme of its own or one the archive already holds. "
+                   "It is named on the collection and uses the whole archive in its own channels."),
+    ("Craft it", "Photographers and other creators make the collections on location. Their work is commissioned, credited and paid."),
 ]
 # The principles' own sentence and its detail, on About since 13 November 2026 (they stood on Home beside Principles).
 PRINCIPLES_LINE = "Behind every image and every collaboration."
@@ -1900,9 +1905,9 @@ def home_partnerships(base):
     head = (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
             f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}'
             f'<p class="doors"><a class="textlink" href="{base}partners/">How partners take part</a></p></div></div>')
-    for who, role, text in HOME_PARTNERSHIPS:
+    for role, text in HOME_PARTNERSHIPS:
         limit("item title", role); limit("item line", text)
-    cards = "".join(f'<li><p class="kicker">{e(who)}</p><h3>{e(role)}</h3>{draft(text)}</li>' for who, role, text in HOME_PARTNERSHIPS)
+    cards = "".join(f'<li><h3>{e(role)}</h3>{draft(text)}</li>' for role, text in HOME_PARTNERSHIPS)
     return mod("items", "the turn: three roles in white panels on the pale ground", turn_pattern() + head + f'<ul class="panels">{cards}</ul>',
                cls="on-ground turn", sid="partnerships")
 
@@ -3499,7 +3504,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
   width:calc((100% - 2 * var(--margin) - 11 * var(--gutter)) / 12 * 5 + 4 * var(--gutter));height:auto;aspect-ratio:528 / 400}
 .mod.turn .chapter-head.cols .doors{margin:16px 0 0}
 .panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
-.panels li{background:var(--paper);padding:24px 24px 32px;max-width:none}
+.panels li{background:var(--paper);padding:32px 24px;max-width:none}
 .panels h3{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}
 .panels p{margin:0}
 .panels .kicker{margin:0 0 32px}

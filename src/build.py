@@ -2593,7 +2593,7 @@ def front_square(base):
     shots = ""
     for i, ar in enumerate(order):
         r, t = FRONT_RECORDS[ar], theme_of[ar]
-        kws = "|".join(["theme:" + t["slug"]] + [w for k, _ in FRONT_LAYERS for w in r[k]])
+        kws = "|".join(dict.fromkeys([t["name"].lower()] + [w for k, _ in FRONT_LAYERS for w in r[k]]))
         f = f'{base}assets/home/{ar.lower()}'
         cap = (f'<p class="credit"><span class="caption"><span class="record-title">{e(r["title"])}</span>'
                f'<a href="{archive("/-/galleries/archive?search=" + ar, "image")}">{ar}</a> · {e(r["place"])}</span> <span>{e(CREDIT)}</span></p>')
@@ -2601,10 +2601,15 @@ def front_square(base):
                   f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 46vw, 92vw" '
                   f'width="1280" height="853" alt="{e(r["desc"])}" loading="lazy" decoding="async">{cap}</figure>')
     first, t0 = FRONT_RECORDS[order[0]], theme_of[order[0]]
-    def tag(word, key, lit, cls=""):
-        return f'<li><button type="button" class="kw{cls}{" lit" if lit else ""}" data-kw="{e(key)}"><span>{e(word)}</span></button></li>'
-    groups = ["".join(tag(t["name"], "theme:" + t["slug"], t is t0, " theme") for t in THEMES)]
-    groups += ["".join(tag(w, w, w in first[k]) for w in FRONT_ROWS[k]) for k, _ in FRONT_LAYERS]
+    # In the wall every word is a tag, and a tag stands once and in one spelling (Thomas, 14 November 2026, 20:14). The
+    # themes came over as titles with a capital, and two of them, Learning and Creativity and culture, are also keywords,
+    # so the word stood twice. Here a theme is written as the keywords are, with a small letter; a word that is both
+    # stands once, where the theme stood, and lights when either applies. The goals keep their names as they are.
+    words = list(dict.fromkeys([t["name"].lower() for t in THEMES] + [w for k, _ in FRONT_LAYERS for w in FRONT_ROWS[k]]))
+    lit0 = {t0["name"].lower()} | {w for k, _ in FRONT_LAYERS for w in first[k]}
+    def tag(word, lit):
+        return f'<li><button type="button" class="kw{" lit" if lit else ""}" data-kw="{e(word)}"><span>{e(word)}</span></button></li>'
+    groups = [tag(w, w in lit0) for w in words]
     # The field is a wall of tags as high and as wide as the photograph (Thomas, 14 November 2026, 18:40 and 19:00). The
     # tags run on without groups: nobody works out the five kinds in the time they look, and gaps between groups read
     # as a mistake. Every row fills the width and the rows share the height, so the distance between tags is the same

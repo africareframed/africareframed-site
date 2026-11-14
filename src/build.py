@@ -1274,7 +1274,7 @@ ARCHIVE_COLLECTIONS = [  # the collections in the archive; a sponsored collectio
 # this, but it's impressive if they try"); and the numbers large again, as in the first form. So: the two numbers stand
 # large in the left column under the title; the switch names four sectors; under it stands one row of four names, and two
 # arrows page through every name, sector after sector, the switch following. All 56 names of the Track Record's list are
-# in (without Amazon, Google, Exxon and Shell). The third sector is Business and finance, so that the industry names
+# in (without Amazon, Google, Exxon and Shell; and without Apple: Thomas, 09:59, "we don't need Apple on the list"). The third sector is Business and finance, so that the industry names
 # (Pfizer, 3M, UPS, Virgin, Del Monte) stand under one of four sectors and the four still stand over the four columns.
 LICENCE_TITLE = "Licensed across sectors"
 LICENCE_LEAD = "Before the archive, images from our productions were licensed through Getty Images by institutions, companies and media."
@@ -1283,7 +1283,7 @@ LICENCE_AFTER = ("In 2025 we took them back, so that they serve one purpose: to 
 LICENCE_NUMBERS = [("548", "licences"), ("46", "countries")]
 LICENSEE_SECTORS = [   # the sector's address, its name on the switch, its names in the order they are paged through, four at a time
     ("institutions", "Institutions", ["United Nations", "World Bank", "European Investment Bank", "Gates Foundation", "British Council"]),
-    ("technology", "Technology and telecom", ["Microsoft", "Apple", "Samsung", "Spotify", "Uber", "Orange", "MTN", "Airtel",
+    ("technology", "Technology and telecom", ["Microsoft", "Samsung", "Spotify", "Uber", "Orange", "MTN", "Airtel",
                                               "Vodacom", "Safaricom", "AT&T", "Yahoo", "AOL", "ASUS", "NEC"]),
     ("business", "Business and finance", ["VISA", "HSBC", "Barclays", "Western Union", "McKinsey", "Deloitte", "KPMG", "Accenture",
                                           "Lloyds Bank", "EY", "Ogilvy", "M&C Saatchi", "Pfizer", "3M", "UPS", "Virgin", "Del Monte"]),
@@ -2765,7 +2765,7 @@ def m_register(c, base):
     return mod("numbers", "the register: who has licensed the images, by sector", head
                + f'<div class="sector-switch"><ul class="theme-tabs sector-tabs" aria-label="Sectors">{tabs}</ul>{row}{panels}{nav}</div>{script}'
                + note(f"Draft wording, for Thomas. {count} names in four sectors, four at a time; the arrows run through all of them in one sequence, and no cell is ever empty. Source: the Track "
-                      "Record’s list of Getty licensees. Left out: Amazon and Google (marked to confirm there), Exxon and Shell."), sid="licensed")
+                      "Record’s list of Getty licensees. Left out: Amazon and Google (marked to confirm there), Exxon and Shell, and Apple (Thomas, 14 November)."), sid="licensed")
 
 
 def m_theme_switch(c, base):

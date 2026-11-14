@@ -3411,18 +3411,18 @@ TEMPLATE_NAMES = {"home": "Home", "themes": "Index", "collections": "Index", "th
 WEEK_AIM = ("By Friday: a working site. Every main page built as Home is, with draft text in place. After that the text, in a round of its own; "
             "by the end of November the final site runs in closed preview.")
 WEEK_PLAN = [
-    ("Mon 16", "Partners", "Thomas: the names of the three ways",
+    ("Mon 16", "Partners: the how", "Thomas: the names of the three ways",
      [("The page built as the long form of the how", False),
       ("The three ways named, on Partners and on Home’s cards", False),
       ("Collaborate: where the word stands", False),
       ("A header photograph: yes or no", False),
       ("The links in the new form, words and an arrow", False)]),
-    ("Tue 17", "The collections", "Thomas: photographs for Waste to Value",
+    ("Tue 17", "The collections: the what", "Thomas: photographs for Waste to Value",
      [("House Collection: the lower half, Made by our own team and the facts", False),
       ("House Collection: what the links into the archive give a reader who is not a partner", False),
       ("Waste to Value: its photographs placed", False),
       ("Waste to Value: structure and draft text", False)]),
-    ("Wed 18", "About and the artists", "Thomas: whether the network’s artists join the row",
+    ("Wed 18", "About: the why, and the artists", "Thomas: whether the network’s artists join the row",
      [("About rebuilt around the why", False),
       ("The artists in one row, with arrows", False),
       ("An artist’s page: the next artist leads; all the artists moves to the top", False),
@@ -3436,6 +3436,21 @@ WEEK_PLAN = [
       ("A real phone, Safari and Firefox", False),
       ("One reading by someone outside the trade", False),
       ("The list of what to fix, and the fixes", False)]),
+]
+# What the work on Home taught, kept in sight beside the plan (Thomas, 14 November 2026, 19:28 and 19:29: "it became clear
+# for us what each section should communicate ... note this in the work doc on the site also, so we remember it").
+# The design guide holds each of these in full; here they are one line each.
+WEEK_GUIDES = [
+    ("Why, what, how", "Each page answers one question. About: why this exists. The collections: what it is. Partners: how one takes part. "
+                       "Home answers all three, one part each, and each part leads to the page that answers the same question at length. "
+                       "Before a page is built, say which question it answers; every part of it serves that, or goes."),
+    ("One order in every part", "The title on the left. On the right a sentence, about three lines, and the way on. Then what the text opens."),
+    ("Proof in its context", "A name or a number stands where it explains the work, not where it only shows scale: who licensed the images, by sector; "
+                             "who supported the work, each with what it supported."),
+    ("Draw only the order a reader can see", "A structure nobody works out at a glance reads as noise or as a mistake. Leave it out and make the form whole."),
+    ("The mood counts", "The archive is the product; the mood is what sets it apart. Home is where the mood is set."),
+    ("Words for a reader outside the trade", "She has an academic education and does not know the picture trade. A mechanism such as a licence is "
+                                             "explained where it first stands. A button says where it leads."),
 ]
 WEEK_DONE = [   # done before the week began, on 14 November 2026
     "Home: layout and use on a desktop",
@@ -3581,6 +3596,7 @@ def tpl_dev(rows, links, base):
                   f'<span class="sr">{", done" if done else ", open"}</span></li>' for item, done in items)
         + "</ul></li>" for day, title, needs, items in WEEK_PLAN)
     before = "".join(f'<li class="done"><span class="box" aria-hidden="true"></span>{e(x)}<span class="sr">, done</span></li>' for x in WEEK_DONE)
+    guides = "".join(f"<li><strong>{e(name)}</strong><span>{e(what)}</span></li>" for name, what in WEEK_GUIDES)
     week_done = sum(d for _, _, _, items in WEEK_PLAN for _, d in items)
     week_all = sum(len(items) for _, _, _, items in WEEK_PLAN)
     commits = git_log()
@@ -3591,6 +3607,8 @@ def tpl_dev(rows, links, base):
             + sec(head("This week", f"Monday 16 to Friday 20 November 2026. {WEEK_AIM} {week_done} of {week_all} done.")
                   + f'<ol class="dev-list week">{week}</ol>'
                   + f'<p class="small week-before">Done before the week began</p><ul class="ticks">{before}</ul>')
+            + sec(head("What guides the work", "What the work on Home made clear, to keep in sight while the other pages are built.")
+                  + f'<ul class="dev-list">{guides}</ul>')
             + sec(head("Where things live")
                   + '<ul class="dev-list"><li><strong>Decisions and the log</strong><span>On the Drive. The Website brief is the master for the site; '
                     'the log is in AR Archive – Status until the work moves to the Brand and design project.</span></li>'

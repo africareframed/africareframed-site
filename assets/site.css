@@ -630,7 +630,8 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .field-mod .rec-title{margin:0}
 .field-mod .rec-way{margin:24px 0 0}
 .field-mod .kw-rows{margin-top:16px}
-.kw.theme span{font-weight:700;color:var(--ink)}
+/* The themes among the tags are set like every other tag (Thomas, 14 November 2026, 15:10, from a reader's feedback):
+   bold marked a structure nobody stops to work out, and so it read as a mistake. They keep their place, first in the field. */
 .kw.theme.lit span{color:var(--paper)}
 @media (max-width:1023px){
   .field-mod .f-photo,.field-mod .f-words{grid-column:1 / -1}

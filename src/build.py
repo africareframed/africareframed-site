@@ -2354,7 +2354,7 @@ def front_mini(base):
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
     words = (f'<p class="kicker">{e(a["kicker"])}</p><p class="meta-row">{meta}</p>'
              f'<h3 class="kicker">By theme</h3><ul class="theme-doors">{rows}</ul>'
-             f'<p class="doors">{button(base + "collections/house-collection/", "Explore the House Collection", quiet=True)}</p>')
+             f'<p class="doors">{button(base + "collections/house-collection/", "About the House Collection", quiet=True)}</p>')
     kw = "".join(f'<h4 class="kicker kw-label">{e(label)}</h4><ul class="kw-row">'
                  + "".join(f'<li><button type="button" class="kw{" lit" if w in first[k] else ""}" data-kw="{e(w)}"><span>{e(w)}</span></button></li>' for w in FRONT_ROWS[k]) + "</ul>"
                  for k, label in FRONT_LAYERS)
@@ -2426,7 +2426,7 @@ def front_record(base, control="themes", tags=False, one=True, picks=HOME_THREE)
                '<button type="button" class="textlink rec-step" data-step="1">Next photograph</button></span></p>')
     # The way on stands inside the record's column, at its foot, level with the photograph's lower edge (Thomas, 18:08:
     # there is room for it there): the module is one block, and nothing hangs under it.
-    way = f'<p class="doors rec-way">{button(base + HOUSE_AT, "Explore the House Collection", quiet=True)}</p>'
+    way = f'<p class="doors rec-way">{button(base + HOUSE_AT, "About the House Collection", quiet=True)}</p>'
     return (f'<div class="rec-mod" data-control="{control}">{tabs}<div class="feature"><div class="switch f-photo">{shots}</div>'
             f'<div class="f-words"><div class="rec-stack">{recs}</div>{ctl}{way}</div></div></div>')
 
@@ -2481,7 +2481,7 @@ def front_field(base):
             + "".join(tag(t["name"], "theme:" + t["slug"], t is theme_of[order[0]], " theme") for t in THEMES) + "</ul>")
     rows += "".join(f'<h4 class="kicker kw-label">{e(label)}</h4><ul class="kw-row">' + "".join(tag(w, w, w in first[k]) for w in FRONT_ROWS[k]) + "</ul>"
                     for k, label in FRONT_LAYERS)
-    way = f'<p class="doors rec-way">{button(base + HOUSE_AT, "Explore the House Collection", quiet=True)}</p>'
+    way = f'<p class="doors rec-way">{button(base + HOUSE_AT, "About the House Collection", quiet=True)}</p>'
     script = ("<script>(function(){[].slice.call(document.querySelectorAll('.field-mod')).forEach(function(box){"
               "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),recs=[].slice.call(box.querySelectorAll('[data-rec]')),kws=[].slice.call(box.querySelectorAll('[data-kw]')),cur=0;"
               "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
@@ -2530,7 +2530,7 @@ def front_band(base):
     rows = ('<h4 class="kicker kw-label">Theme</h4><ul class="kw-row">' + "".join(tag(t["name"], "theme:" + t["slug"], t is t0, " theme") for t in THEMES) + "</ul>")
     rows += "".join(f'<h4 class="kicker kw-label">{e(label)}</h4><ul class="kw-row">' + "".join(tag(w, w, w in first[k]) for w in FRONT_ROWS[k]) + "</ul>"
                     for k, label in FRONT_LAYERS)
-    way = f'<div class="cols strip-way"><div class="c7-12"><p class="doors">{button(base + HOUSE_AT, "Explore the House Collection", quiet=True)}</p></div></div>'
+    way = f'<div class="cols strip-way"><div class="c7-12"><p class="doors">{button(base + HOUSE_AT, "About the House Collection", quiet=True)}</p></div></div>'
     script = ("<script>(function(){[].slice.call(document.querySelectorAll('.strip-mod')).forEach(function(box){"
               "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),kws=[].slice.call(box.querySelectorAll('[data-kw]')),n=shots.length,cur=0;"
               "var caps=[].slice.call(box.querySelectorAll('.cap'));"
@@ -2582,7 +2582,9 @@ def front_square(base):
     groups = ["".join(tag(t["name"], "theme:" + t["slug"], t is t0, " theme") for t in THEMES)]
     groups += ["".join(tag(w, w, w in first[k]) for w in FRONT_ROWS[k]) for k, _ in FRONT_LAYERS]
     field = '<li class="brk" aria-hidden="true"></li>'.join(groups)
-    way = f'<p class="doors rec-way">{button(base + HOUSE_AT, "Explore the House Collection", quiet=True)}</p>'
+    # The button says where it leads (Thomas, 14 November 2026, 15:10, from a reader's feedback): "Explore the House
+    # Collection" promised a place to browse the images, and the page it opens is about the collection.
+    way = f'<p class="doors rec-way">{button(base + HOUSE_AT, "About the House Collection", quiet=True)}</p>'
     script = ("<script>(function(){[].slice.call(document.querySelectorAll('.sq-mod')).forEach(function(box){"
               "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),kws=[].slice.call(box.querySelectorAll('[data-kw]')),n=shots.length,cur=0;"
               "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
@@ -4352,7 +4354,8 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .field-mod .rec-title{margin:0}
 .field-mod .rec-way{margin:24px 0 0}
 .field-mod .kw-rows{margin-top:16px}
-.kw.theme span{font-weight:700;color:var(--ink)}
+/* The themes among the tags are set like every other tag (Thomas, 14 November 2026, 15:10, from a reader's feedback):
+   bold marked a structure nobody stops to work out, and so it read as a mistake. They keep their place, first in the field. */
 .kw.theme.lit span{color:var(--paper)}
 @media (max-width:1023px){
   .field-mod .f-photo,.field-mod .f-words{grid-column:1 / -1}

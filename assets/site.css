@@ -216,16 +216,10 @@ body.clean .mod::before{display:none}
 .logo-grid.plain .logo-cell{display:flex;align-items:center;justify-content:center;min-height:144px;padding:24px}   /* the boxes without their second side: lower, since no text has to fit */
 .supported-plain .chapter-head .doors{margin:0}
 .mod.supported-plain.on-ground.join{margin-top:0;padding-top:32px;padding-bottom:64px}
-.mod.mod-photo.on-ground.join.bare + .mod.supported-plain.on-ground.join{padding-top:64px;padding-bottom:0}   /* 64 px from the photograph to the label, as from the panels to the photograph */
-.supported-plain .supported-title a{color:inherit;text-decoration:none;display:inline-block;padding:16px 0;margin:-16px 0}   /* discreet: the label's own look; the padding is the finger's room */
-.supported-plain .supported-title a:hover,.supported-plain .supported-title a:focus-visible{color:var(--ink);text-decoration:underline;text-underline-offset:.3em}
-.supported-plain .credit.corner{margin:0;min-height:64px;padding-top:16px;text-align:right}   /* the photograph's caption and credit as one line in the lower right corner of the ground */
-.supported-plain .credit.corner .caption{display:inline;color:inherit}
-.supported-plain .credit.corner .caption::after{content:" ·"}
-@media (max-width:767px){.supported-plain .credit.corner{text-align:left}.supported-plain .credit.corner .caption{display:block}.supported-plain .credit.corner .caption::after{content:none}}   /* on a phone the line does not fit: the caption and the credit on a line each, at the left */   /* in the pale ground of Partnerships, under the photograph; the ground ends 64 px under the boxes */
+.supported-plain .supported-title .way{font-weight:400;min-height:0;padding:16px 0;margin:-16px 0}   /* a link you can see: underlined words and the arrow; the padding is the finger's room */
 .mod.supported-plain.on-ground.join::before{display:none}
 .supported-plain .supported-title{font-size:var(--fs-small);line-height:1.15;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0}
-.supported-plain.on-ground .logo-grid{margin-top:16px}
+.supported-plain.on-ground .logo-grid{margin-top:24px}   /* room between the link's line and the grid's first rule */
 .supported-plain.on-ground .logo-grid.plain .logo-cell{min-height:120px}
 @media (max-width:767px){.supported-plain.on-ground .logo-grid.plain .logo-cell{min-height:96px}}
 .supported-plain.on-ground{--line:#dedbd4}   /* the rules one step darker, so the boxes show on the pale ground */

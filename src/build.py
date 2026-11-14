@@ -3733,9 +3733,9 @@ LAYOUT = """<!doctype html>
 <meta property="og:image:height" content="627">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="{base}assets/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="{base}assets/favicon.svg?v=2" type="image/svg+xml">
-<link rel="icon" href="{base}assets/favicon-32.png?v=2" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="{base}assets/apple-touch-icon.png?v=2">
+<link rel="icon" href="{base}assets/favicon.svg?v=3" type="image/svg+xml">
+<link rel="icon" href="{base}assets/favicon-32.png?v=3" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="{base}assets/apple-touch-icon.png?v=3">
 {partner_script}<link rel="stylesheet" href="{base}assets/site.css?v={stamp}">
 </head>
 <body class="page-{slug} tpl-{tpl}">

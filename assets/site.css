@@ -323,6 +323,16 @@ main{padding-bottom:var(--section)}
 .button.archive{background:var(--accent);border-color:var(--accent);color:var(--ink)}   /* the yellow's one job: the way into the archive */
 .button.archive:hover{background:var(--ink);border-color:var(--ink);color:#fff}
 .button.quiet{background:transparent;border:1px solid var(--ink-soft);color:var(--ink)}
+/* The trial of 14 November 2026, 16:39 (/dev/home-yellow/ only): yellow on Home's button and cards, the photograph on the pale ground. */
+.button.sun{background:var(--accent);border-color:var(--accent);color:var(--ink)}
+.button.sun:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+.panels.sun.flips .flip{background:var(--accent)}
+.panels.sun.flips .front .kicker{color:var(--ink)}
+.panels.sun.flips .flip.open,.panels.sun.flips .flip:has(.flip-more:focus-visible){background:var(--paper)}
+@media (hover:hover){.panels.sun.flips .flip:hover{background:var(--paper)}}
+.mod.on-ground.joined{padding-bottom:64px}
+.mod.mod-photo.on-ground.join{margin-top:0;padding-top:0}   /* the white before the footer is the page's own 96 px */
+.mod.mod-photo.on-ground.join::before{display:none}
 .button.quiet:hover{border-color:var(--ink);background:var(--ink);color:#fff}
 .button[disabled],.button.dead,.button[disabled]:hover,.button.dead:hover{background:var(--wash);border-color:var(--line);color:var(--ink-soft);cursor:not-allowed}
 main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2px}

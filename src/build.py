@@ -800,7 +800,7 @@ def m_partners(n=6, title="In use by", tight=False):
 GRID_LOGO_AREA, GRID_LOGO_MAX_H, GRID_LOGO_MAX_W = 6400, 56, 208   # the logos in the ruled grid: about twice the strip's area
 
 
-def m_supporter_grid(rows, title, base):
+def m_supporter_grid(rows, title, base, plain=False, link=None):
     """The supporters as a ruled grid, four across (Partners, Thomas, 14 November 2026, 08:39, after Kontrapunkt's Selected
     clients): generous cells, thin rules, one logo in the middle of each. The heading stays "Our work has been supported
     by": these institutions supported the exhibition, the workshops and a collection, and are not shown as users of the
@@ -811,6 +811,9 @@ def m_supporter_grid(rows, title, base):
         w = r * h
         if w > GRID_LOGO_MAX_W:
             w, h = GRID_LOGO_MAX_W, GRID_LOGO_MAX_W / r
+        if plain:
+            return (f'<li><span class="logo-cell"><img src="{base}assets/supporters/{x["logo"]}" alt="{e(x["name"])}" width="{w:.0f}" height="{h:.0f}" '
+                    f'loading="lazy" decoding="async"></span></li>')
         # The cell is a button with a plus in its corner (Thomas, 14 November 2026, 09:12): pointing at it, or tapping
         # it on a phone, shows what the organisation supported in place of its logo. A cut. Without scripts the line
         # stands under each logo.
@@ -823,6 +826,17 @@ def m_supporter_grid(rows, title, base):
               "var o=!b.classList.contains('open');"
               "bs.forEach(function(x){x.classList.remove('open');x.setAttribute('aria-expanded','false');});"
               "if(o){b.classList.add('open');b.setAttribute('aria-expanded','true');}});});})();</script>")
+    if plain:
+        # The same boxes without their second side (Home, on trial at /dev/home-supporters/; Thomas, 14 November 2026, 21:31
+        # and 21:35: "i like the boxes even if they dont turn"). A sign-off in the white before the footer, not a fourth
+        # part of Home: the title on the left, on the right only the way on to Partners, where each box says what the
+        # organisation supported; then the boxes, lower than on Partners.
+        head = (f'<div class="chapter-head cols"><div class="c1-6"><h2 class="chapter-title"><span class="draft">{e(title)}</span></h2></div>'
+                f'<div class="c7-12">{f"<p class={chr(34)}doors{chr(34)}>{link}</p>" if link else ""}</div></div>')
+        return mod("partners", "supporters, as a ruled grid without the second side",
+                   f'{head}<ul class="reg-grid logo-grid plain">{"".join(one(x) for x in rows)}</ul>'
+                   + note("On trial: the supporters on Home, as the boxes of Partners without their second side. The same eight, in the same order."),
+                   cls="supported-plain")
     return mod("partners", "supporters, as a ruled grid",
                f'<div class="cols"><div class="c1-12"><h2><span class="draft">{e(title)}</span></h2></div></div>'
                f'<ul class="reg-grid logo-grid">{"".join(one(x) for x in rows)}</ul>{script}'
@@ -2120,7 +2134,7 @@ def in_chapter(section, head):
     return section.replace('<div class="wrap">', '<div class="wrap">' + head, 1)
 
 
-def tpl_home(p, base, record="square"):
+def tpl_home(p, base, record="square", supporters=False):
     # The front page is the page of the product (Thomas, 12 November 2026, 13:16 to 15:10; tried as version E on /dev/).
     # The Opening, the bold line and the lead say what this is and why it matters. Then two chapters, each under its title,
     # and a photograph. Since 13 November 2026, 11:50, the page has one form three times: a text block in the right half
@@ -2149,7 +2163,8 @@ def tpl_home(p, base, record="square"):
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            + m_document(base, HOME_DOCUMENT, ground=True))
+            + m_document(base, HOME_DOCUMENT, ground=True)
+            + (m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base, plain=True, link=way_on(base + "partners/#supported", "What each of them supported")) if supporters else ""))
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -4049,6 +4064,10 @@ body.clean .mod::before{display:none}
 .logo-grid button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;min-height:192px;
   padding:32px 24px;font:inherit;color:var(--ink);background:none;border:0;border-radius:0;cursor:default;text-align:center}
 .logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
+.logo-grid.plain .logo-cell{display:flex;align-items:center;justify-content:center;min-height:144px;padding:24px}   /* the boxes without their second side: lower, since no text has to fit */
+.supported-plain .chapter-head .doors{margin:0}
+@media (min-width:1024px){.supported-plain .chapter-head > div{align-self:baseline}}   /* the way on stands on the title's line */
+@media (max-width:767px){.logo-grid.plain .logo-cell{min-height:104px;padding:16px}}
 /* What each organisation supported. Without scripts it stands under the logo; with them it takes the logo's place when the
    reader points at the cell or taps it, and a plus in the corner says that there is more. A cut, never a fade. */
 .logo-what{display:block;font-size:var(--fs-small);line-height:1.45;color:var(--ink-soft)}
@@ -4997,6 +5016,11 @@ def build():
         CUR.update(slug=None, n=0)
         (dev_dir / "home-band").mkdir(exist_ok=True)
         (dev_dir / "home-band" / "index.html").write_text(render(hmb, tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record="band"), "../../"))
+        hms = dict(path="dev/home-supporters/", title="Home, with the supporters before the footer, on trial", slug=None, tpl="front", nav=None,
+                   desc="A copy of Home with the supporters' boxes in the white before the footer, on trial; generated by the build, removed at launch.")
+        CUR.update(slug=None, n=0)
+        (dev_dir / "home-supporters").mkdir(exist_ok=True)
+        (dev_dir / "home-supporters" / "index.html").write_text(render(hms, tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", supporters=True), "../../"))
         hmf = dict(path="dev/home-field/", title="Home, with the archive as a field, on trial", slug=None, tpl="front", nav=None,
                    desc="A copy of Home with the third version of the archive module, on trial; generated by the build, removed at launch.")
         CUR.update(slug=None, n=0)

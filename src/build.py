@@ -1095,7 +1095,7 @@ CRAFT_TEXT = [  # Partners 5: craft a collection (13 November 2026, 14:40). Draf
 ACCESS_STEPS = [  # Partners 2: how access works (AR Archive – Status, 3 and 6 November 2026)
     ("Request access", "Tell us who you are and how you will use the images. We reply within a working day."),
     ("Approved by name", "We approve each organisation by name; your account opens for the email address you give."),
-    ("Collect, then download", "Gather images in the Lightbox. Each download is a free licence for the one use you state."),
+    ("Collect, then download", "Gather images in the Lightbox. Each download is a free licence: permission for the one use you state."),
 ]
 RULES = [  # Partners 3: Using the images, drafted in the brief; to check against the licence
     ("Who may use the images", "Approved partners, one licence per organisation. The press set is for editorial use."),
@@ -1244,13 +1244,13 @@ ABOUT_CHANNELS = [  # (anchor, name, one line): the three lines of activity unde
 # 1 The archive: the activity, then the proof
 ABOUT_ARCHIVE_LONG = [   # the wording until 11 November 2026, 15:00, kept
     "We run an archive of photographs of contemporary Africa for the organisations that work with the continent: NGOs, media, educational institutions, embassies, development finance institutions and companies. It is free for the non-profit and public partners we approve; companies take part by sponsoring a collection.",
-    "Partners browse the archive, gather images and share them with colleagues, and download what they need. Every download is a licence for one stated use, so we know where the images go. The archive grows by collections.",
+    "Partners browse the archive, gather images and share them with colleagues, and download what they need. Every download is a licence, the permission for one stated use, so we know where the images go. The archive grows by collections.",
 ]
 # Shortened as a draft for Thomas (11 November 2026): the first sentence opens the chapter at the intro size; how the archive
 # works is told on the function pages (About page – build brief, 5.1).
 ABOUT_ARCHIVE = [
     "We run an archive of photographs of contemporary Africa for the organisations that work with the continent.",
-    "It is free for the non-profit and public partners we approve; companies take part by sponsoring a collection. Every download is a licence for one stated use, so we know where the images go. The archive grows by collections.",
+    "It is free for the non-profit and public partners we approve; companies take part by sponsoring a collection. Every download is a licence, the permission for one stated use, so we know where the images go. The archive grows by collections.",
 ]
 ARCHIVE_COLLECTIONS = [  # the collections in the archive; a sponsored collection is one more entry, shown first while in production
     dict(title="House Collection", state="record", kicker="The first collection", href="collections/house-collection/", slug="house-collection",
@@ -1277,10 +1277,13 @@ ARCHIVE_COLLECTIONS = [  # the collections in the archive; a sponsored collectio
 # in (without Amazon, Google, Exxon and Shell; and without Apple: Thomas, 09:59, "we don't need Apple on the list"). The third sector is Business and finance, so that the industry names
 # (Pfizer, 3M, UPS, Virgin, Del Monte) stand under one of four sectors and the four still stand over the four columns.
 LICENCE_TITLE = "Licensed across sectors"
-LICENCE_LEAD = "Before the archive, images from our productions were licensed through Getty Images by institutions, companies and media."
+# 14 November 2026, 15:01 and 15:04 (Thomas, after an outsider's reading): the reader has an academic education and does not
+# know the picture trade. The word licence stays, and the mechanism is said where the word first stands on a page: here,
+# that organisations paid to use the images; on Partners and About, that a licence is the permission for one stated use.
+LICENCE_LEAD = "Before the archive, institutions, companies and media licensed images from our productions through Getty Images: they paid to use them."
 LICENCE_AFTER = ("In 2025 we took them back, so that they serve one purpose: to carry this picture of Africa "
                  "into the work of organisations that work with the continent.")
-LICENCE_NUMBERS = [("548", "licences"), ("46", "countries")]
+LICENCE_NUMBERS = [("548", "licences sold"), ("46", "countries")]
 LICENSEE_SECTORS = [   # the sector's address, its name on the switch, its names in the order they are paged through, four at a time
     ("institutions", "Institutions", ["United Nations", "World Bank", "European Investment Bank", "Gates Foundation", "British Council"]),
     ("technology", "Technology and telecom", ["Microsoft", "Samsung", "Spotify", "Uber", "Orange", "MTN", "Airtel",

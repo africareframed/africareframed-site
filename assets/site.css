@@ -418,9 +418,30 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .mod.turn .chapter-head.cols .doors{margin:16px 0 0}
 .panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
 .panels li{background:var(--paper);padding:24px 24px 32px;max-width:none}
-.panels h3{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}
+.panels h3,.panels .flip-title{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}
 .panels p{margin:0}
 .panels .kicker{margin:0 0 32px}
+/* A card with two sides (Home, 14 November 2026). Both sides lie in one cell of the card's own grid, so the card is as
+   high as its higher side and a change of side moves nothing. Without scripts only the side with the text stands. */
+.panels .flip{position:relative;display:grid}
+.panels .face{grid-area:1 / 1}
+.panels .front,.panels .flip-more{display:none}
+.panels.flips .front{display:flex;flex-direction:column;justify-content:space-between}
+.panels.flips .front h3{font-size:var(--fs-title);line-height:1.05;letter-spacing:-.02em;margin:0}
+.panels.flips .back{visibility:hidden}
+.panels.flips .flip{cursor:pointer}
+.panels.flips .flip-more{display:block;position:absolute;top:8px;right:8px;width:44px;height:44px;background:none;border:0;border-radius:0;cursor:pointer;padding:0}
+.flip-more .plus{position:absolute;left:16px;top:16px;width:12px;height:12px}
+.flip-more .plus::before,.flip-more .plus::after{content:"";position:absolute;background:var(--ink);left:0;top:5px;width:12px;height:2px}
+.flip-more .plus::after{transform:rotate(90deg)}
+.panels.flips .flip.open .front,.panels.flips .flip:has(.flip-more:focus-visible) .front{visibility:hidden}
+.panels.flips .flip.open .back,.panels.flips .flip:has(.flip-more:focus-visible) .back{visibility:visible}
+.panels.flips .flip.open .plus::after,.panels.flips .flip:has(.flip-more:focus-visible) .plus::after{display:none}
+@media (hover:hover){
+  .panels.flips .flip:hover .front{visibility:hidden}
+  .panels.flips .flip:hover .back{visibility:visible}
+  .panels.flips .flip:hover .plus::after{display:none}
+}
 .principles.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}

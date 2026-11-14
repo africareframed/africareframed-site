@@ -44,7 +44,9 @@ MEASURE_JS = r"""
 () => {
   document.body.classList.add('clean');
   const W = innerWidth, H = innerHeight;
-  const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };
+  // A card with two sides (Home, 14 November 2026) is read with both sides: the side with the text is on the page and
+  // shows when the reader points at the card, so its letters and words are counted although it is hidden at rest.
+  const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 0 && r.height > 0 && (s.visibility !== 'hidden' || !!e.closest('.face.back')) && s.display !== 'none'; };
   const wire = e => !!e.closest('.wire-strip,.note,.grid-overlay,.skip,.lines,.ph-text');
   // credit lines and captions are counted by rule 15, not as the page's words: one stands under every image by rule
   // (12 November 2026) the keywords of the photographs on Home (.kw-rows) are a part of the photograph's record, as its

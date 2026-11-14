@@ -2059,11 +2059,22 @@ def home_partnerships(base):
             f'<p class="doors"><a class="textlink" href="{base}partners/">How partners take part</a></p></div></div>')
     for terms, role, text in HOME_PARTNERSHIPS:
         limit("item title", role); limit("item line", text)
-    cards = "".join(f'<li><p class="kicker">{e(terms)}</p><h3>{e(role)}</h3>{draft(text)}</li>' for terms, role, text in HOME_PARTNERSHIPS)
+    # Cards with two sides (Thomas, 14 November 2026, 09:35, after the supporters' cells on Partners): at rest a card shows
+    # its terms and its name, large, with a plus in its corner; pointing at it, or tapping it on a phone, shows the side
+    # with the text, which is the card as it stood until now. A cut; both sides share one height, so nothing moves.
+    # Without scripts the side with the text stands. No new wording.
+    cards = "".join(f'<li class="flip"><div class="face front"><p class="kicker">{e(terms)}</p><h3>{e(role)}</h3></div>'
+                    f'<div class="face back"><p class="kicker">{e(terms)}</p><p class="flip-title">{e(role)}</p>{draft(text)}</div>'
+                    f'<button type="button" class="flip-more" aria-expanded="false" aria-label="{e(role)}: what it means"><span class="plus" aria-hidden="true"></span></button></li>'
+                    for terms, role, text in HOME_PARTNERSHIPS)
+    flip = ("<script>(function(){var u=document.querySelector('.panels');if(!u)return;u.classList.add('flips');"
+            "[].forEach.call(u.querySelectorAll('.flip'),function(c){var b=c.querySelector('.flip-more');"
+            "c.addEventListener('click',function(){if(window.matchMedia&&matchMedia('(hover:hover)').matches&&!b.matches(':focus-visible'))return;"
+            "var o=c.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});});})();</script>")
     # No stripes since 13 November 2026, 15:05 (Thomas, 15:03): the part stands on the plain pale ground, as the first
     # section does. The page is calmer and the eye stays on the content; the pattern opens the page in the photograph and
     # closes it in the footer. turn_pattern() is kept, unused, with the drawing as it was settled that morning.
-    return mod("items", "three ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels">{cards}</ul>',
+    return mod("items", "three ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels">{cards}</ul>{flip}',
                cls="on-ground turn", sid="partnerships")
 
 
@@ -4117,9 +4128,30 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .mod.turn .chapter-head.cols .doors{margin:16px 0 0}
 .panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
 .panels li{background:var(--paper);padding:24px 24px 32px;max-width:none}
-.panels h3{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}
+.panels h3,.panels .flip-title{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}
 .panels p{margin:0}
 .panels .kicker{margin:0 0 32px}
+/* A card with two sides (Home, 14 November 2026). Both sides lie in one cell of the card's own grid, so the card is as
+   high as its higher side and a change of side moves nothing. Without scripts only the side with the text stands. */
+.panels .flip{position:relative;display:grid}
+.panels .face{grid-area:1 / 1}
+.panels .front,.panels .flip-more{display:none}
+.panels.flips .front{display:flex;flex-direction:column;justify-content:space-between}
+.panels.flips .front h3{font-size:var(--fs-title);line-height:1.05;letter-spacing:-.02em;margin:0}
+.panels.flips .back{visibility:hidden}
+.panels.flips .flip{cursor:pointer}
+.panels.flips .flip-more{display:block;position:absolute;top:8px;right:8px;width:44px;height:44px;background:none;border:0;border-radius:0;cursor:pointer;padding:0}
+.flip-more .plus{position:absolute;left:16px;top:16px;width:12px;height:12px}
+.flip-more .plus::before,.flip-more .plus::after{content:"";position:absolute;background:var(--ink);left:0;top:5px;width:12px;height:2px}
+.flip-more .plus::after{transform:rotate(90deg)}
+.panels.flips .flip.open .front,.panels.flips .flip:has(.flip-more:focus-visible) .front{visibility:hidden}
+.panels.flips .flip.open .back,.panels.flips .flip:has(.flip-more:focus-visible) .back{visibility:visible}
+.panels.flips .flip.open .plus::after,.panels.flips .flip:has(.flip-more:focus-visible) .plus::after{display:none}
+@media (hover:hover){
+  .panels.flips .flip:hover .front{visibility:hidden}
+  .panels.flips .flip:hover .back{visibility:visible}
+  .panels.flips .flip:hover .plus::after{display:none}
+}
 .principles.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .principles.two{grid-template-columns:repeat(12,minmax(0,1fr));margin-top:32px}   /* on the columns of the archive in small above */
 .principles.two li:first-child{grid-column:1 / 7}

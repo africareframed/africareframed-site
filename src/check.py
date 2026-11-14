@@ -156,7 +156,7 @@ MEASURE_JS = r"""
     const cs = getComputedStyle(wrapEl), wr = wrapEl.getBoundingClientRect(), m0 = parseFloat(cs.paddingLeft);
     const L0 = wr.left + m0, CW = wr.width - 2 * m0, g = 32, cw = (CW - 11 * g) / 12, ok = [1, 4, 5, 7, 9, 10];
     main.querySelectorAll('h1, h2, h3, p').forEach(e => {
-      if (!vis(e) || wire(e) || e.closest('.kw-rows, figure, li, form, table, .credit, .dev-list, .theme-row')) return;
+      if (!vis(e) || wire(e) || e.closest('.kw-rows, figure, li, form, table, .credit, .dev-list, .theme-row, .reg-nav')) return;
       const c = (e.getBoundingClientRect().left - L0) / (cw + g) + 1;
       if (!ok.some(k => Math.abs(c - k) < 0.07)) offLine.push((Math.round(c * 10) / 10) + ': ' + e.innerText.trim().replace(/\s+/g, ' ').slice(0, 28));
     });

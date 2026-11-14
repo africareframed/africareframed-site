@@ -2606,18 +2606,27 @@ def front_square(base):
     script = ("<script>(function(){[].slice.call(document.querySelectorAll('.sq-mod')).forEach(function(box){"
               "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),kws=[].slice.call(box.querySelectorAll('[data-kw]')),n=shots.length,cur=0;"
               "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
-              "var row=box.querySelector('.switch');function slides(){return row.scrollWidth>row.clientWidth+4}"
+              "var row=box.querySelector('.switch'),pos=box.querySelector('.reg-pos');function slides(){return row.scrollWidth>row.clientWidth+4}"
               "function show(i,fromSlide){cur=(i%n+n)%n;shots.forEach(function(f,k){f.classList.toggle('on',k===cur)});"
               "kws.forEach(function(b){b.classList.toggle('lit',has[cur].indexOf(b.dataset.kw)>-1)});"
+              "if(pos)pos.textContent=(cur+1)+' / '+n;"
               "if(!fromSlide&&slides())row.scrollLeft=shots[cur].offsetLeft-shots[0].offsetLeft}"
-              "row.addEventListener('click',function(ev){if(ev.target.closest('a'))return;show(cur+1)});"
+              "row.addEventListener('click',function(ev){if(ev.target.closest('a,.sq-nav'))return;show(cur+1)});"
+              "box.classList.add('plays');var nx=box.querySelector('.reg-next'),pv=box.querySelector('.reg-prev');"
+              "if(nx)nx.addEventListener('click',function(){show(cur+1)});if(pv)pv.addEventListener('click',function(){show(cur-1)});"
               "var tm;row.addEventListener('scroll',function(){clearTimeout(tm);tm=setTimeout(function(){if(!slides())return;"
               "var x=row.getBoundingClientRect().left,best=0,d=1e9;shots.forEach(function(f,k){var q=Math.abs(f.getBoundingClientRect().left-x);if(q<d){d=q;best=k}});"
               "if(best!==cur)show(best,true)},140)},{passive:true});"
               "kws.forEach(function(b){b.addEventListener('click',function(){var k=b.dataset.kw;for(var j=1;j<=n;j++){var q=(cur+j)%n;if(has[q].indexOf(k)>-1){show(q);return}}})});"
               "function warm(){[].slice.call(box.querySelectorAll('img[loading=lazy]')).forEach(function(i){i.loading='eager'})}"
               "['pointerenter','focusin','touchstart'].forEach(function(ev){box.addEventListener(ev,warm,{once:true,passive:true})})})})();</script>")
-    return (f'<div class="sq-mod"><div class="feature"><div class="switch f-photo">{shots}</div>'
+    # Two arrows and a count under the photograph, at its right edge (Thomas, 14 November 2026, 17:10): nothing told the
+    # reader that the module answers; the cards have their plus and the names on the House Collection their arrows, and
+    # this is the same form. On a phone the row of photographs slides, with the next one in sight, and the arrows are left out.
+    nav = (f'<p class="reg-nav sq-nav"><span class="reg-pos">1 / {len(order)}</span>'
+           '<button type="button" class="reg-prev" aria-label="The photograph before this one">←</button>'
+           '<button type="button" class="reg-next" aria-label="The next photograph">→</button></p>')
+    return (f'<div class="sq-mod"><div class="feature"><div class="switch f-photo">{shots}{nav}</div>'
             f'<div class="f-words"><ul class="sq-field" aria-label="Themes and keywords on these photographs">{field}</ul>{way}</div></div></div>{script}')
 
 
@@ -4456,6 +4465,10 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .sq-field{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .sq-field .brk{flex:0 0 100%;max-width:none;height:0;margin-top:-8px}   /* a list item is held to the measure elsewhere; this one breaks the line */
 .sq-mod .record-title{display:block;font-weight:700;color:var(--ink)}
+.sq-mod .f-photo{position:relative}
+.sq-mod .sq-nav{position:absolute;right:0;bottom:0;margin:0;cursor:default}   /* in the caption's band, at the photograph's right edge */
+.sq-mod:not(.plays) .sq-nav{display:none}
+@media (max-width:767px){.sq-mod .sq-nav{display:none}}
 .sq-mod .rec-way{margin:24px 0 0}
 @media (max-width:1023px){
   .sq-mod .f-words{padding-bottom:0;margin-top:16px}

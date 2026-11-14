@@ -1994,8 +1994,16 @@ SUPPORTERS_TITLE = "Our work has been supported by"
 #   danish-film-institute.svg     dfi.dk/themes/custom/p8z_proto/prototype/source/gfx/dfi_logo_standard.svg
 #   dtda.png                      dtda.dk/wp-content/uploads/2026/03/DTDA_DK_logo1_Positiv.png (renamed from Ulandssekretariatet, April 2026)
 #   pawa254.png                   pawa254.org/wp-content/uploads/2023/09/PAWA254-LOGO-white.png
-# They are shown in one tone by a filter (greyscale, darkened), not redrawn; the official one-colour files replace them when the
-# courtesy notes bring them. Sizes follow equal optical weight: the same area for every logo (LOGO_AREA), capped by the cell,
+# Until 14 November 2026, 22:52 they were shown in one tone by a filter (greyscale, darkened), which left greys and uneven
+# weight (Al Jazeera's orange square turned mid-grey, the Ministry's arms muddy). Since then the files themselves are one-tone
+# (Thomas: "find original one tone versions - or render better onetone versions yourself"): every shape in the one ink
+# (#151515) on a clear ground, nothing redrawn. The vector files have their fills set to the ink. The three raster files are
+# converted pixel by pixel: coloured or dark becomes ink, white or light becomes clear (for the Ministry the red square and
+# the blue lions are ink, the gold crown and the shield are clear, as in a one-colour print of its logo). One file is changed
+# in its make-up: Al Jazeera's header logo set a white mark in an orange square; here the mark itself stands in ink without
+# the square, and the wordmark keeps the distance it had to the square. PAWA254's letters touch in its own file, so in one
+# tone they run together. The files as taken on 10 November are in the repository's history (before this commit). The
+# official one-colour files replace these when the courtesy notes bring them. Sizes follow equal optical weight: the same area for every logo (LOGO_AREA), capped by the cell,
 # times a factor set by eye for marks that read heavier or lighter than their area.
 # 14 November 2026 (Thomas, 09:12): on Partners each logo's cell says what the organisation supported, when the reader
 # points at it or taps it: short (its name in the cell) and line (one line, a draft from Thomas's words at 09:12 and the
@@ -2011,7 +2019,7 @@ SUPPORTERS = [  # name (the logo's alt text), what it supported (for the record 
          short="BESTSELLER FOUNDATION", line="The Waste to Value Collection."),
     dict(name="Augustinus Fonden", what="Øksnehallen 2016", logo="augustinus-fonden.svg", ratio=219 / 74.35, weight=1.1,
          short="Augustinus Fonden", line="The exhibition at Øksnehallen in Copenhagen."),
-    dict(name="Al Jazeera", what="Øksnehallen 2016: a supporter in the programme, and a partner in the film programme", logo="al-jazeera.svg", ratio=166 / 60, weight=1.0,
+    dict(name="Al Jazeera", what="Øksnehallen 2016: a supporter in the programme, and a partner in the film programme", logo="al-jazeera.svg", ratio=133.53 / 48, weight=1.0,
          short="Al Jazeera", line="The film programme at the exhibition."),
     dict(name="Danish Film Institute", what="Øksnehallen 2016", logo="danish-film-institute.svg", ratio=105.6683 / 25, weight=0.85,
          short="Danish Film Institute", line="The exhibition at Øksnehallen in Copenhagen."),
@@ -4086,7 +4094,7 @@ body.clean .mod::before{display:none}
 .logo-grid{margin-top:32px;border-top:1px solid var(--line)}
 .logo-grid button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;min-height:192px;
   padding:32px 24px;font:inherit;color:var(--ink);background:none;border:0;border-radius:0;cursor:default;text-align:center}
-.logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
+.logo-grid img{display:block;max-width:100%;height:auto}   /* the files are one-tone themselves since 14 November 2026, 22:52: no filter */
 .logo-grid.plain .logo-cell{display:flex;align-items:center;justify-content:center;min-height:144px;padding:24px}   /* the boxes without their second side: lower, since no text has to fit */
 .supported-plain .chapter-head .doors{margin:0}
 .mod.supported-plain.on-ground.join{margin-top:0;padding-top:32px;padding-bottom:64px}
@@ -4439,7 +4447,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .logos.supporters{grid-template-columns:repeat(8,minmax(0,1fr));margin:12px 0 8px}
 .supporters .logo{text-align:center;padding:8px;line-height:1.3}
 .supporters .logo.has-img{border:0;aspect-ratio:auto;height:64px;padding:0}
-.supporters .logo img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
+.supporters .logo img{display:block;max-width:100%;height:auto}
 @media (max-width:1359px){.logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:24px}}
 .supporters-title{margin:0}
 .logo{aspect-ratio:5/2;border:1px dashed #c9c6bf;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:var(--fs-small);color:#8a877f}

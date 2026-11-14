@@ -212,7 +212,7 @@ body.clean .mod::before{display:none}
 .logo-grid{margin-top:32px;border-top:1px solid var(--line)}
 .logo-grid button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;min-height:192px;
   padding:32px 24px;font:inherit;color:var(--ink);background:none;border:0;border-radius:0;cursor:default;text-align:center}
-.logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
+.logo-grid img{display:block;max-width:100%;height:auto}   /* the files are one-tone themselves since 14 November 2026, 22:52: no filter */
 .logo-grid.plain .logo-cell{display:flex;align-items:center;justify-content:center;min-height:144px;padding:24px}   /* the boxes without their second side: lower, since no text has to fit */
 .supported-plain .chapter-head .doors{margin:0}
 .mod.supported-plain.on-ground.join{margin-top:0;padding-top:32px;padding-bottom:64px}
@@ -565,7 +565,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:400;line-height:1.15}
 .logos.supporters{grid-template-columns:repeat(8,minmax(0,1fr));margin:12px 0 8px}
 .supporters .logo{text-align:center;padding:8px;line-height:1.3}
 .supporters .logo.has-img{border:0;aspect-ratio:auto;height:64px;padding:0}
-.supporters .logo img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
+.supporters .logo img{display:block;max-width:100%;height:auto}
 @media (max-width:1359px){.logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:24px}}
 .supporters-title{margin:0}
 .logo{aspect-ratio:5/2;border:1px dashed #c9c6bf;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:var(--fs-small);color:#8a877f}

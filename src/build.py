@@ -2605,10 +2605,12 @@ def front_square(base):
         return f'<li><button type="button" class="kw{cls}{" lit" if lit else ""}" data-kw="{e(key)}"><span>{e(word)}</span></button></li>'
     groups = ["".join(tag(t["name"], "theme:" + t["slug"], t is t0, " theme") for t in THEMES)]
     groups += ["".join(tag(w, w, w in first[k]) for w in FRONT_ROWS[k]) for k, _ in FRONT_LAYERS]
-    # The field is as high as the photograph (Thomas, 14 November 2026, 18:40): its first row stands on the photograph's
-    # upper edge and its last on the lower, and the room between is shared out between the five groups. Where the tags
-    # need more rows than the photograph is high, on a narrower laptop, the field runs on below it.
-    field = "".join(f'<li class="grp"><ul>{g}</ul></li>' for g in groups)
+    # The field is a wall of tags as high and as wide as the photograph (Thomas, 14 November 2026, 18:40 and 19:00). The
+    # tags run on without groups: nobody works out the five kinds in the time they look, and gaps between groups read
+    # as a mistake. Every row fills the width and the rows share the height, so the distance between tags is the same
+    # everywhere, 8 px. The order stays: themes first, then what is seen, the concepts, the story, the goals. Where the
+    # tags need more room than the photograph is high, on a narrower laptop, the wall runs on below it.
+    field = "".join(groups)
     script = ("<script>(function(){[].slice.call(document.querySelectorAll('.sq-mod')).forEach(function(box){"
               "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),kws=[].slice.call(box.querySelectorAll('[data-kw]')),n=shots.length,cur=0;"
               "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
@@ -4522,9 +4524,10 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .sq-mod .feature{align-items:stretch}
 .sq-mod .f-photo{cursor:pointer;align-self:start}
 .sq-mod .f-words{display:flex;flex-direction:column;justify-content:space-between;padding-bottom:calc(8px + 3 * 1.45 * var(--fs-small))}   /* the caption's three lines */
-.sq-field{list-style:none;margin:0;padding:0;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:16px}
-.sq-field .grp{max-width:none;margin:0}
-.sq-field .grp ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.sq-field{list-style:none;margin:0;padding:0;flex:1;display:flex;flex-wrap:wrap;align-content:stretch;gap:8px}
+.sq-field li{flex:1 1 auto;display:flex;max-width:none;margin:0}
+.sq-field .kw{flex:1;display:flex;padding:0}
+.sq-field .kw span{flex:1;display:flex;align-items:center;justify-content:center;text-align:center}
 .sq-mod .record-title{display:block;font-weight:700;color:var(--ink)}
 .sq-mod .f-photo{position:relative}
 .sq-mod .sq-nav{position:absolute;right:0;bottom:0;margin:0;cursor:default}   /* in the caption's band, at the photograph's right edge */
@@ -4533,8 +4536,7 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .sq-mod .rec-way{margin:24px 0 0}
 @media (max-width:1023px){
   .sq-mod .f-words{padding-bottom:0;margin-top:16px}
-  .sq-field{gap:8px}
-  .sq-field .grp ul{row-gap:0}   /* each tag is 44 px to tap here, and that height keeps the rows apart */
+  .sq-field .kw span{min-height:44px}   /* 44 px to tap: here the tag itself is that high, and the wall keeps its even 8 px */
 }
 @media (max-width:767px){
   /* The phone's own form (Thomas, 13 November 2026, 22:21: an alternate version for the phone, about half a screen): the
@@ -4546,9 +4548,11 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .sq-mod .switch figure{flex:0 0 84%;grid-area:auto;visibility:visible;scroll-snap-align:start}
   .sq-mod .switch figure:last-child{margin-right:16%}
   .sq-mod .f-words{margin-top:8px}
-  .sq-field{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;gap:0 8px}
-  .sq-field .grp,.sq-field .grp ul{display:contents}   /* the lit tags of all five groups run on as one row */
-  .sq-field .grp li:has(.kw:not(.lit)){display:none}
+  .sq-field{gap:0 8px}
+  .sq-field li{flex:0 0 auto}
+  .sq-field li:has(.kw:not(.lit)){display:none}
+  .sq-field .kw{padding:8px 0}   /* on a phone the tags keep their own size, 44 px to tap through the room around them */
+  .sq-field .kw span{min-height:0}
   .sq-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
   .sq-mod .kw.theme.lit span{color:var(--ink)}
   .sq-mod .rec-way{margin-top:16px}

@@ -4101,7 +4101,7 @@ body.clean .mod::before{display:none}
 .supported-plain .credit.corner{margin:0;min-height:64px;padding-top:16px;text-align:right}   /* the photograph's caption and credit as one line in the lower right corner of the ground */
 .supported-plain .credit.corner .caption{display:inline;color:inherit}
 .supported-plain .credit.corner .caption::after{content:" ·"}
-@media (max-width:767px){.supported-plain .credit.corner{text-align:left}}   /* in the pale ground of Partnerships, under the photograph; the ground ends 64 px under the boxes */
+@media (max-width:767px){.supported-plain .credit.corner{text-align:left}.supported-plain .credit.corner .caption{display:block}.supported-plain .credit.corner .caption::after{content:none}}   /* on a phone the line does not fit: the caption and the credit on a line each, at the left */   /* in the pale ground of Partnerships, under the photograph; the ground ends 64 px under the boxes */
 .mod.supported-plain.on-ground.join::before{display:none}
 .supported-plain .supported-title{font-size:var(--fs-small);line-height:1.15;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0}
 .supported-plain.on-ground .logo-grid{margin-top:16px}

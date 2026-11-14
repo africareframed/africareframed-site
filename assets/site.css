@@ -217,7 +217,10 @@ body.clean .mod::before{display:none}
 .supported-plain .chapter-head .doors{margin:0}
 .mod.supported-plain.on-ground.join{margin-top:0;padding-top:32px;padding-bottom:64px}   /* in the pale ground of Partnerships, under the photograph; the ground ends 64 px under the boxes */
 .mod.supported-plain.on-ground.join::before{display:none}
-.supported-plain .supported-title{font-size:var(--fs-head);line-height:1.2;font-weight:700;letter-spacing:-.01em;margin:0}
+.supported-plain .supported-title{font-size:var(--fs-small);line-height:1.45;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0}
+.supported-plain.on-ground .logo-grid{margin-top:16px}
+.supported-plain.on-ground .logo-grid.plain .logo-cell{min-height:120px}
+@media (max-width:767px){.supported-plain.on-ground .logo-grid.plain .logo-cell{min-height:96px}}
 .supported-plain.on-ground{--line:#dedbd4}   /* the rules one step darker, so the boxes show on the pale ground */
 .supported-plain.on-ground .logo-grid img{mix-blend-mode:multiply}   /* a logo file with a white ground of its own takes the pale ground */
 @media (min-width:1024px){.supported-plain .chapter-head > div{align-self:baseline}}   /* the way on stands on the title's line */

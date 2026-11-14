@@ -797,6 +797,7 @@ def m_partners(n=6, title="In use by", tight=False):
 
 # 2.10, supporters (About, Thomas, 10 November 2026): the institutions that have supported the work, strongest first, at equal
 # size (the guide's PartnerStrip: one-colour logos, no tiers, no boxes; the order is the only ranking).
+PLAIN_LOGO_SCALE = 0.75   # the boxes without their second side, on Home: the logos at three quarters of their size on Partners
 GRID_LOGO_AREA, GRID_LOGO_MAX_H, GRID_LOGO_MAX_W = 6400, 56, 208   # the logos in the ruled grid: about twice the strip's area
 
 
@@ -812,6 +813,7 @@ def m_supporter_grid(rows, title, base, plain=False, link=None, ground=False):
         if w > GRID_LOGO_MAX_W:
             w, h = GRID_LOGO_MAX_W, GRID_LOGO_MAX_W / r
         if plain:
+            w, h = w * PLAIN_LOGO_SCALE, h * PLAIN_LOGO_SCALE
             return (f'<li><span class="logo-cell"><img src="{base}assets/supporters/{x["logo"]}" alt="{e(x["name"])}" width="{w:.0f}" height="{h:.0f}" '
                     f'loading="lazy" decoding="async"></span></li>')
         # The cell is a button with a plus in its corner (Thomas, 14 November 2026, 09:12): pointing at it, or tapping
@@ -834,12 +836,20 @@ def m_supporter_grid(rows, title, base, plain=False, link=None, ground=False):
         # ground (Thomas, 14 November 2026, 22:02): if the block stands on Home it belongs to Partnerships, so it stands
         # inside that part's pale ground, under the workshop photograph, with a smaller title (22 px Bold): the part says
         # the archive is built on collaboration, shows the three ways, the photograph, and then who has supported the work.
-        head = (f'<div class="chapter-head cols"><div class="c1-6"><h2 class="{"supported-title" if ground else "chapter-title"}"><span class="draft">{e(title)}</span></h2></div>'
+        # 22:05 (Thomas): "make it clean here, as clean as possible": no link, the title as a small label (13 px, the
+        # kicker's form), the logos smaller and the boxes lower.
+        if ground:
+            return mod("partners", "supporters, as a ruled grid without the second side",
+                       f'<h2 class="kicker supported-title"><span class="draft">{e(title)}</span></h2>'
+                       f'<ul class="reg-grid logo-grid plain">{"".join(one(x) for x in rows)}</ul>'
+                       + note("On trial: the supporters on Home, as the boxes of Partners without their second side. The same eight, in the same order."),
+                       cls="supported-plain on-ground join")
+        head = (f'<div class="chapter-head cols"><div class="c1-6"><h2 class="chapter-title"><span class="draft">{e(title)}</span></h2></div>'
                 f'<div class="c7-12">{f"<p class={chr(34)}doors{chr(34)}>{link}</p>" if link else ""}</div></div>')
         return mod("partners", "supporters, as a ruled grid without the second side",
                    f'{head}<ul class="reg-grid logo-grid plain">{"".join(one(x) for x in rows)}</ul>'
                    + note("On trial: the supporters on Home, as the boxes of Partners without their second side. The same eight, in the same order."),
-                   cls="supported-plain on-ground join" if ground else "supported-plain")
+                   cls="supported-plain")
     return mod("partners", "supporters, as a ruled grid",
                f'<div class="cols"><div class="c1-12"><h2><span class="draft">{e(title)}</span></h2></div></div>'
                f'<ul class="reg-grid logo-grid">{"".join(one(x) for x in rows)}</ul>{script}'
@@ -4071,7 +4081,10 @@ body.clean .mod::before{display:none}
 .supported-plain .chapter-head .doors{margin:0}
 .mod.supported-plain.on-ground.join{margin-top:0;padding-top:32px;padding-bottom:64px}   /* in the pale ground of Partnerships, under the photograph; the ground ends 64 px under the boxes */
 .mod.supported-plain.on-ground.join::before{display:none}
-.supported-plain .supported-title{font-size:var(--fs-head);line-height:1.2;font-weight:700;letter-spacing:-.01em;margin:0}
+.supported-plain .supported-title{font-size:var(--fs-small);line-height:1.45;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0}
+.supported-plain.on-ground .logo-grid{margin-top:16px}
+.supported-plain.on-ground .logo-grid.plain .logo-cell{min-height:120px}
+@media (max-width:767px){.supported-plain.on-ground .logo-grid.plain .logo-cell{min-height:96px}}
 .supported-plain.on-ground{--line:#dedbd4}   /* the rules one step darker, so the boxes show on the pale ground */
 .supported-plain.on-ground .logo-grid img{mix-blend-mode:multiply}   /* a logo file with a white ground of its own takes the pale ground */
 @media (min-width:1024px){.supported-plain .chapter-head > div{align-self:baseline}}   /* the way on stands on the title's line */

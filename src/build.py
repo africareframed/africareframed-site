@@ -554,12 +554,20 @@ HOME_DOCUMENT = dict(
          "original file (this one is 2,000 px wide and soft on sharp screens). Its people are not named.")
 
 
-def m_document(base, d, ground=False):
+def m_document(base, d, ground=False, credit_in=None):
     f = base + d["file"]
     sid = slot("feature", "16/9", "A document of the work: photographers at a workshop")
     pic = (f'<img class="doc-photo" src="{f}-1920.jpg" srcset="{f}-1280.jpg 1280w, {f}-1920.jpg 1920w" sizes="(min-width:1440px) 1312px, 92vw" '
            f'width="{d["size"][0]}" height="{d["size"][1]}" alt="{e(d["alt"])}" loading="lazy" decoding="async">')
     below = f'<p class="credit"><span class="caption">{e(limit("caption", d["caption"]))}</span> <span>{e(CREDIT)}</span></p>{note(d["note"])}'
+    if credit_in:
+        # Home only (Thomas, 14 November 2026, 22:16: "just in this case", to clean up the look): the caption and the credit
+        # do not stand under the photograph but as one line in the lower right corner of the pale ground, under the
+        # supporters' boxes. The photograph names that line (aria-describedby), and the module says where its credit stands.
+        pic = pic.replace("<img ", f'<img aria-describedby="{credit_in}" ', 1)
+        return mod("photo", "b, on the columns, a document of the work",
+                   f'<div class="cols"><div class="c1-12"><figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}>{pic}{note(d["note"])}</figure></div></div>',
+                   cls="on-ground join bare").replace("<section ", f'<section data-credited-by="{credit_in}" ', 1)
     # ground (Home, 14 November 2026, 16:39 and 16:50): the photograph stands on the pale ground of the part above it and
     # belongs to it; the ground ends under its caption, and the page's white stands between it and the footer.
     return mod("photo", "b, on the columns, a document of the work",
@@ -801,7 +809,7 @@ PLAIN_LOGO_SCALE = 0.75   # the boxes without their second side, on Home: the lo
 GRID_LOGO_AREA, GRID_LOGO_MAX_H, GRID_LOGO_MAX_W = 6400, 56, 208   # the logos in the ruled grid: about twice the strip's area
 
 
-def m_supporter_grid(rows, title, base, plain=False, link=None, ground=False):
+def m_supporter_grid(rows, title, base, plain=False, link=None, ground=False, corner=None):
     """The supporters as a ruled grid, four across (Partners, Thomas, 14 November 2026, 08:39, after Kontrapunkt's Selected
     clients): generous cells, thin rules, one logo in the middle of each. The heading stays "Our work has been supported
     by": these institutions supported the exhibition, the workshops and a collection, and are not shown as users of the
@@ -840,8 +848,10 @@ def m_supporter_grid(rows, title, base, plain=False, link=None, ground=False):
         # kicker's form), the logos smaller and the boxes lower.
         if ground:
             return mod("partners", "supporters, as a ruled grid without the second side",
-                       f'<h2 class="kicker supported-title"><span class="draft">{e(title)}</span></h2>'
+                       # the label is itself the way to Partners, discreetly (Thomas, 22:16): no underline until pointed at
+                       f'<h2 class="kicker supported-title">{f"<a href={chr(34)}{link}{chr(34)}>" if link else ""}<span class="draft">{e(title)}</span>{"</a>" if link else ""}</h2>'
                        f'<ul class="reg-grid logo-grid plain">{"".join(one(x) for x in rows)}</ul>'
+                       + (f'<div id="{corner[0]}"><p class="credit corner"><span class="caption">{e(corner[1])}</span> <span>{e(CREDIT)}</span></p></div>' if corner else "")
                        + note("The supporters, as the boxes of Partners without their second side: the same eight, in the same order. "
                               "The logos need their courtesy notes and official one-colour files before launch, as on Partners."),
                        cls="supported-plain on-ground join")
@@ -2177,11 +2187,12 @@ def tpl_home(p, base, record="square", supporters=True):
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            + m_document(base, HOME_DOCUMENT, ground=True)
+            + m_document(base, HOME_DOCUMENT, ground=True, credit_in="workshop-credit" if supporters else None)
             # Who has supported the work closes Partnerships, inside its pale ground under the photograph (Thomas,
             # 14 November 2026, 21:31 to 22:11; tried on /dev/home-supporters/ first): the boxes of Partners without
             # their second side, a small label over them, no link. On Partners each box says what was supported.
-            + (m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base, plain=True, ground=True, link=way_on(base + "partners/#supported", "What each of them supported")) if supporters else ""))
+            + (m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base, plain=True, ground=True, link=base + "partners/#supported",
+                                  corner=("workshop-credit", limit("caption", HOME_DOCUMENT["caption"]))) if supporters else ""))
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -4083,7 +4094,14 @@ body.clean .mod::before{display:none}
 .logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
 .logo-grid.plain .logo-cell{display:flex;align-items:center;justify-content:center;min-height:144px;padding:24px}   /* the boxes without their second side: lower, since no text has to fit */
 .supported-plain .chapter-head .doors{margin:0}
-.mod.supported-plain.on-ground.join{margin-top:0;padding-top:32px;padding-bottom:64px}   /* in the pale ground of Partnerships, under the photograph; the ground ends 64 px under the boxes */
+.mod.supported-plain.on-ground.join{margin-top:0;padding-top:32px;padding-bottom:64px}
+.mod.mod-photo.on-ground.join.bare + .mod.supported-plain.on-ground.join{padding-top:64px;padding-bottom:0}   /* 64 px from the photograph to the label, as from the panels to the photograph */
+.supported-plain .supported-title a{color:inherit;text-decoration:none;display:inline-block;padding:16px 0;margin:-16px 0}   /* discreet: the label's own look; the padding is the finger's room */
+.supported-plain .supported-title a:hover,.supported-plain .supported-title a:focus-visible{color:var(--ink);text-decoration:underline;text-underline-offset:.3em}
+.supported-plain .credit.corner{margin:0;min-height:64px;padding-top:16px;text-align:right}   /* the photograph's caption and credit as one line in the lower right corner of the ground */
+.supported-plain .credit.corner .caption{display:inline;color:inherit}
+.supported-plain .credit.corner .caption::after{content:" ·"}
+@media (max-width:767px){.supported-plain .credit.corner{text-align:left}}   /* in the pale ground of Partnerships, under the photograph; the ground ends 64 px under the boxes */
 .mod.supported-plain.on-ground.join::before{display:none}
 .supported-plain .supported-title{font-size:var(--fs-small);line-height:1.15;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0}
 .supported-plain.on-ground .logo-grid{margin-top:16px}

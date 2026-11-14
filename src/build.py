@@ -808,11 +808,23 @@ def m_supporter_grid(rows, title, base):
         w = r * h
         if w > GRID_LOGO_MAX_W:
             w, h = GRID_LOGO_MAX_W, GRID_LOGO_MAX_W / r
-        return (f'<li><img src="{base}assets/supporters/{x["logo"]}" alt="{e(x["name"])}" width="{w:.0f}" height="{h:.0f}" loading="lazy" decoding="async"></li>')
+        # The cell is a button with a plus in its corner (Thomas, 14 November 2026, 09:12): pointing at it, or tapping
+        # it on a phone, shows what the organisation supported in place of its logo. A cut. Without scripts the line
+        # stands under each logo.
+        return (f'<li><button type="button" aria-expanded="false"><img src="{base}assets/supporters/{x["logo"]}" alt="{e(x["name"])}" width="{w:.0f}" height="{h:.0f}" loading="lazy" decoding="async">'
+                f'<span class="logo-what"><strong>{e(x["short"])}</strong> <span class="draft">{e(x["line"])}</span></span><span class="plus" aria-hidden="true"></span></button></li>')
+    script = ("<script>(function(){var g=document.querySelector('.logo-grid');if(!g)return;g.classList.add('reveals');"
+              "var bs=[].slice.call(g.querySelectorAll('button'));"
+              "bs.forEach(function(b){b.addEventListener('click',function(){"
+              "if(window.matchMedia&&matchMedia('(hover:hover)').matches&&!b.matches(':focus-visible'))return;"
+              "var o=!b.classList.contains('open');"
+              "bs.forEach(function(x){x.classList.remove('open');x.setAttribute('aria-expanded','false');});"
+              "if(o){b.classList.add('open');b.setAttribute('aria-expanded','true');}});});})();</script>")
     return mod("partners", "supporters, as a ruled grid",
                f'<div class="cols"><div class="c1-12"><h2><span class="draft">{e(title)}</span></h2></div></div>'
-               f'<ul class="reg-grid logo-grid">{"".join(one(x) for x in rows)}</ul>'
-               + note("The same eight as on About, in About’s order. The logos are each organisation’s own, taken from its website on 10 November 2026; "
+               f'<ul class="reg-grid logo-grid">{"".join(one(x) for x in rows)}</ul>{script}'
+               + note("The same eight as on About, in About’s order. Each cell shows what the organisation supported when pointed at or tapped: "
+                      "draft lines, for Thomas. The logos are each organisation’s own, taken from its website on 10 November 2026; "
                       "shown this large, each needs its courtesy note and its official one-colour file before launch."), sid="supported")
 
 
@@ -1933,17 +1945,28 @@ SUPPORTERS_TITLE = "Our work has been supported by"
 # They are shown in one tone by a filter (greyscale, darkened), not redrawn; the official one-colour files replace them when the
 # courtesy notes bring them. Sizes follow equal optical weight: the same area for every logo (LOGO_AREA), capped by the cell,
 # times a factor set by eye for marks that read heavier or lighter than their area.
+# 14 November 2026 (Thomas, 09:12): on Partners each logo's cell says what the organisation supported, when the reader
+# points at it or taps it: short (its name in the cell) and line (one line, a draft from Thomas's words at 09:12 and the
+# Track Record's funders table; no years). "what" stays the record and is never shown.
 SUPPORTERS = [  # name (the logo's alt text), what it supported (for the record only, never on the page), file, width/height, weight
     dict(name="Ministry of Foreign Affairs of Denmark (Danida)", what="Øksnehallen 2016, through the information grant; the Bamako programme, through the Danish Embassy in Mali",
-         logo="danish-mfa.png", ratio=886 / 200, weight=1.3),
+         logo="danish-mfa.png", ratio=886 / 200, weight=1.3,
+         short="Ministry of Foreign Affairs of Denmark", line="Workshops and training in Mali, and the exhibition at Øksnehallen in Copenhagen."),
     dict(name="Innovation Fund Denmark", what="An investment in Africa Reframed, 2020 (InnoBooster); never implied to back today's model",
-         logo="innovation-fund-denmark.svg", ratio=172 / 33, weight=0.9),
-    dict(name="BESTSELLER FOUNDATION", what="The Waste to Value Collection, 2020–2022", logo="bestseller-foundation.svg", ratio=426.17 / 27.03, weight=1.0),
-    dict(name="Augustinus Fonden", what="Øksnehallen 2016", logo="augustinus-fonden.svg", ratio=219 / 74.35, weight=1.1),
-    dict(name="Al Jazeera", what="Øksnehallen 2016: a supporter in the programme, and a partner in the film programme", logo="al-jazeera.svg", ratio=166 / 60, weight=1.0),
-    dict(name="Danish Film Institute", what="Øksnehallen 2016", logo="danish-film-institute.svg", ratio=105.6683 / 25, weight=0.85),
-    dict(name="DTDA, the Danish Trade Union Development Agency", what="Freetown 2013, as the LO/FTF Council (its name then)", logo="dtda.png", ratio=1148 / 324, weight=1.2),
-    dict(name="PAWA254", what="Nairobi 2014: the master class with the Photojournalists Association of Kenya, in its premises", logo="pawa254.png", ratio=802 / 278, weight=0.9),
+         logo="innovation-fund-denmark.svg", ratio=172 / 33, weight=0.9,
+         short="Innovation Fund Denmark", line="The development of our online platform for collaboration and learning."),
+    dict(name="BESTSELLER FOUNDATION", what="The Waste to Value Collection, 2020–2022", logo="bestseller-foundation.svg", ratio=426.17 / 27.03, weight=1.0,
+         short="BESTSELLER FOUNDATION", line="The Waste to Value Collection."),
+    dict(name="Augustinus Fonden", what="Øksnehallen 2016", logo="augustinus-fonden.svg", ratio=219 / 74.35, weight=1.1,
+         short="Augustinus Fonden", line="The exhibition at Øksnehallen in Copenhagen."),
+    dict(name="Al Jazeera", what="Øksnehallen 2016: a supporter in the programme, and a partner in the film programme", logo="al-jazeera.svg", ratio=166 / 60, weight=1.0,
+         short="Al Jazeera", line="The film programme at the exhibition."),
+    dict(name="Danish Film Institute", what="Øksnehallen 2016", logo="danish-film-institute.svg", ratio=105.6683 / 25, weight=0.85,
+         short="Danish Film Institute", line="The exhibition at Øksnehallen in Copenhagen."),
+    dict(name="DTDA, the Danish Trade Union Development Agency", what="Freetown 2013, as the LO/FTF Council (its name then)", logo="dtda.png", ratio=1148 / 324, weight=1.2,
+         short="Danish Trade Union Development Agency", line="A photography workshop in Freetown."),
+    dict(name="PAWA254", what="Nairobi 2014: the master class with the Photojournalists Association of Kenya, in its premises", logo="pawa254.png", ratio=802 / 278, weight=0.9,
+         short="PAWA254", line="A photography workshop in Nairobi, made together."),
 ]
 LOGO_AREA, LOGO_MAX_H, LOGO_MAX_W = 3000, 38, 150   # px² of logo per entry at desktop size; the cell caps height and width
 
@@ -3856,16 +3879,40 @@ body.clean .mod::before{display:none}
 .sector-switch:not(.switching) .sector-tabs{display:none}
 .reg-names li{display:flex;align-items:center;min-height:96px;padding:16px 0;font-size:var(--fs-head);font-weight:700;line-height:1.15;letter-spacing:-.01em}
 .logo-grid{margin-top:32px;border-top:1px solid var(--line)}
-.logo-grid li{display:flex;align-items:center;justify-content:center;min-height:176px;padding:24px}
+.logo-grid button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;min-height:192px;
+  padding:32px 24px;font:inherit;color:var(--ink);background:none;border:0;border-radius:0;cursor:default;text-align:center}
 .logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
+/* What each organisation supported. Without scripts it stands under the logo; with them it takes the logo's place when the
+   reader points at the cell or taps it, and a plus in the corner says that there is more. A cut, never a fade. */
+.logo-what{display:block;font-size:var(--fs-small);line-height:1.45;color:var(--ink-soft)}
+.logo-what strong{display:block;color:var(--ink)}
+.logo-grid .plus{display:none;position:absolute;top:16px;right:0;width:12px;height:12px}
+.logo-grid .plus::before,.logo-grid .plus::after{content:"";position:absolute;background:var(--ink);left:0;top:5px;width:12px;height:2px}
+.logo-grid .plus::after{transform:rotate(90deg)}
+.logo-grid.reveals button{cursor:pointer}
+.logo-grid.reveals .plus{display:block}
+.logo-grid.reveals .logo-what{display:none;font-size:var(--fs-text);line-height:1.45;color:var(--ink)}
+.logo-grid.reveals .logo-what strong{font-weight:700;margin:0 0 4px}
+.logo-grid.reveals button.open,.logo-grid.reveals button:focus-visible{align-items:flex-start;text-align:left;padding-left:0;padding-right:16px}
+.logo-grid.reveals button.open img,.logo-grid.reveals button:focus-visible img{display:none}
+.logo-grid.reveals button.open .logo-what,.logo-grid.reveals button:focus-visible .logo-what{display:block}
+.logo-grid.reveals button.open .plus::after{display:none}
+@media (hover:hover){
+  .logo-grid.reveals button:hover{align-items:flex-start;text-align:left;padding-left:0;padding-right:16px}
+  .logo-grid.reveals button:hover img{display:none}
+  .logo-grid.reveals button:hover .logo-what{display:block}
+  .logo-grid.reveals button:hover .plus::after{display:none}
+}
 @media (max-width:1023px){
   .reg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .logo-grid li{min-height:128px}
+  .logo-grid button{min-height:160px}
   .theme-tabs.sector-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
   .theme-tabs.sector-tabs li{grid-column:auto}
 }
 @media (max-width:767px){
   .reg-names li{font-size:var(--fs-text);min-height:72px}
+  .logo-grid button{padding:24px 16px;min-height:176px}   /* high enough for the longest line, so a tap moves nothing */
+  .logo-grid.reveals .logo-what{font-size:var(--fs-small)}
   .theme-tabs.sector-tabs{grid-template-columns:1fr}
   .sector-tabs button{box-shadow:inset 0 1px 0 var(--ink-soft);padding:12px 0}
   .sector-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}

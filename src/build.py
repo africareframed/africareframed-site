@@ -3393,6 +3393,46 @@ STATE = {}            # slug -> stage; every page is at "Wireframe" until it mov
 TEMPLATE_NAMES = {"home": "Home", "themes": "Index", "collections": "Index", "theme": "Theme page",
                   "collection": "Collection page", "partners": "Partners", "portal": "Partner portal",
                   "form": "Form", "press": "Press room", "text": "Text page", "artist": "Artist page"}
+# The week's plan (Thomas, 14 November 2026, 16:35 and 17:24): Monday 16 to Friday 20 November, shown on the Development page
+# as boxes. A box is ticked here, in the build, when the thing is done (True), so the page cannot go out of date; Thomas
+# says when something moves to another day. The master of the plan is Website – Brief and build plan on the Drive.
+# The site is public: page names and tasks only, nothing internal.
+WEEK_AIM = ("By Friday: a working site. Every main page built as Home is, with draft text in place. After that the text, in a round of its own; "
+            "by the end of November the final site runs in closed preview.")
+WEEK_PLAN = [
+    ("Mon 16", "Partners", "Thomas: the names of the three ways",
+     [("The page built as the long form of the how", False),
+      ("The three ways named, on Partners and on Home’s cards", False),
+      ("Collaborate: where the word stands", False),
+      ("A header photograph: yes or no", False),
+      ("The links in the new form, words and an arrow", False)]),
+    ("Tue 17", "The collections", "Thomas: photographs for Waste to Value",
+     [("House Collection: the lower half, Made by our own team and the facts", False),
+      ("House Collection: what the links into the archive give a reader who is not a partner", False),
+      ("Waste to Value: its photographs placed", False),
+      ("Waste to Value: structure and draft text", False)]),
+    ("Wed 18", "About and the artists", "Thomas: whether the network’s artists join the row",
+     [("About rebuilt around the why", False),
+      ("The artists in one row, with arrows", False),
+      ("An artist’s page: the next artist leads; all the artists moves to the top", False),
+      ("The supporters’ strip on About: keep or drop", False)]),
+    ("Thu 19", "The small pages and the archive", "Thomas: signs in to the archive; where the forms send",
+     [("Partner portal", False), ("Request access, and where its form sends", False), ("Press room", False), ("Contact and Privacy", False),
+      ("The archive’s header and footer", False),
+      ("AI training: the tags, and the file for launch", False)]),
+    ("Fri 20", "Read and test", "Thomas: one reader from outside, for an hour",
+     [("Every page read at two speeds", False),
+      ("A real phone, Safari and Firefox", False),
+      ("One reading by someone outside the trade", False),
+      ("The list of what to fix, and the fixes", False)]),
+]
+WEEK_DONE = [   # done before the week began, on 14 November 2026
+    "Home: layout and use on a desktop",
+    "House Collection: the stripes on its photograph, and who has licensed the images, by sector",
+    "Partners: the supporters as a grid, each with what it supported",
+]
+
+
 ORDER_OF_WORK = [("Brief", "done", "Website – Brief and build plan"),
                  ("Site map and user flows", "done", "Website – Site map and user flows, and the two maps"),
                  ("Page priorities", "done", "Site map and user flows, section 6: what the five key pages must say and do, ranked"),
@@ -3524,11 +3564,22 @@ def tpl_dev(rows, links, base):
                    for url, (label, pages) in links.items())
     checks = "".join(f'<li><span class="tag {st}">{ {"done": "Done", "open": "Open"}[st] }</span><strong>{e(item)}</strong>'
                      f'<span>{e(where.format(**tot))}</span></li>' for item, where, *rest in CHECKLIST for st in [(rest or ["open"])[0]])
+    week = "".join(
+        f'<li><div><strong>{e(day)}</strong><span>{e(title)}</span><span class="needs">{e(needs)}</span></div><ul class="ticks">'
+        + "".join(f'<li class="{"done" if done else "open"}"><span class="box" aria-hidden="true"></span>{e(item)}'
+                  f'<span class="sr">{", done" if done else ", open"}</span></li>' for item, done in items)
+        + "</ul></li>" for day, title, needs, items in WEEK_PLAN)
+    before = "".join(f'<li class="done"><span class="box" aria-hidden="true"></span>{e(x)}<span class="sr">, done</span></li>' for x in WEEK_DONE)
+    week_done = sum(d for _, _, _, items in WEEK_PLAN for _, d in items)
+    week_all = sum(len(items) for _, _, _, items in WEEK_PLAN)
     commits = git_log()
     changes = "".join(f'<li><span class="mono">{e(h)}</span> <span class="where">{e(d)}</span><span>{e(subj)}</span></li>' for h, d, subj in commits)
     changes = (f'<ul class="dev-list">{changes}</ul>' if changes else '<p class="small">No history available in this build.</p>')
     return (sec(head("Development", "How far the site has come, where its masters are, and what is left before launch. "
                      "This page is generated by every build and removed at launch.", level=1), "page-head")
+            + sec(head("This week", f"Monday 16 to Friday 20 November 2026. {WEEK_AIM} {week_done} of {week_all} done.")
+                  + f'<ol class="dev-list week">{week}</ol>'
+                  + f'<p class="small week-before">Done before the week began</p><ul class="ticks">{before}</ul>')
             + sec(head("Where things live")
                   + '<ul class="dev-list"><li><strong>Decisions and the log</strong><span>On the Drive. The Website brief is the master for the site; '
                     'the log is in AR Archive – Status until the work moves to the Brand and design project.</span></li>'
@@ -4617,6 +4668,17 @@ main input[type=checkbox]:checked{background:var(--ink);box-shadow:inset 0 0 0 4
 .stepper span.on{background:var(--ink);color:#fff}
 .dev-list{list-style:none;padding:0;margin:8px 0 0;max-width:900px}
 .dev-list li{display:grid;grid-template-columns:minmax(0,260px) 1fr;gap:4px 24px;padding:12px 0;border-top:1px solid var(--line)}
+/* The week's plan on the Development page: a day, what it is for, what it needs, and its boxes. A filled box is done. */
+.dev-list.week > li{grid-template-columns:minmax(0,300px) 1fr}
+.dev-list.week > li > div{display:flex;flex-direction:column;gap:4px}
+.dev-list.week .needs{font-size:var(--fs-small);color:var(--ink-soft)}
+.ticks{list-style:none;margin:0;padding:0;max-width:none}
+.ticks li,.dev-list .ticks li{display:flex;gap:12px;align-items:baseline;padding:4px 0;border:0;max-width:none}
+.ticks .box{flex:0 0 auto;width:12px;height:12px;border:1px solid var(--ink);transform:translateY(1px)}
+.ticks .done .box{background:var(--ink)}
+.ticks .done{color:var(--ink-soft)}
+.ticks .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.week-before{margin:24px 0 8px;color:var(--ink-soft)}
 .dev-list li > span:last-child{color:var(--ink-soft)}
 .dev-list .where{font-size:var(--fs-small);color:#8a877f}
 .dev-list li:has(.tag){grid-template-columns:64px minmax(0,300px) 1fr}

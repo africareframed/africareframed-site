@@ -711,8 +711,9 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .sq-mod .feature{align-items:stretch}
 .sq-mod .f-photo{cursor:pointer;align-self:start}
 .sq-mod .f-words{display:flex;flex-direction:column;justify-content:space-between;padding-bottom:calc(8px + 3 * 1.45 * var(--fs-small))}   /* the caption's three lines */
-.sq-field{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.sq-field .brk{flex:0 0 100%;max-width:none;height:0;margin-top:-8px}   /* a list item is held to the measure elsewhere; this one breaks the line */
+.sq-field{list-style:none;margin:0;padding:0;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:16px}
+.sq-field .grp{max-width:none;margin:0}
+.sq-field .grp ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .sq-mod .record-title{display:block;font-weight:700;color:var(--ink)}
 .sq-mod .f-photo{position:relative}
 .sq-mod .sq-nav{position:absolute;right:0;bottom:0;margin:0;cursor:default}   /* in the caption's band, at the photograph's right edge */
@@ -721,8 +722,8 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .sq-mod .rec-way{margin:24px 0 0}
 @media (max-width:1023px){
   .sq-mod .f-words{padding-bottom:0;margin-top:16px}
-  .sq-field{row-gap:0}   /* each tag is 44 px to tap here, and that height keeps the rows apart */
-  .sq-field .brk{margin-top:0;height:8px}   /* and a group still stands apart from the next */
+  .sq-field{gap:8px}
+  .sq-field .grp ul{row-gap:0}   /* each tag is 44 px to tap here, and that height keeps the rows apart */
 }
 @media (max-width:767px){
   /* The phone's own form (Thomas, 13 November 2026, 22:21: an alternate version for the phone, about half a screen): the
@@ -734,7 +735,9 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .sq-mod .switch figure{flex:0 0 84%;grid-area:auto;visibility:visible;scroll-snap-align:start}
   .sq-mod .switch figure:last-child{margin-right:16%}
   .sq-mod .f-words{margin-top:8px}
-  .sq-field li:has(.kw:not(.lit)),.sq-field .brk{display:none}
+  .sq-field{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;gap:0 8px}
+  .sq-field .grp,.sq-field .grp ul{display:contents}   /* the lit tags of all five groups run on as one row */
+  .sq-field .grp li:has(.kw:not(.lit)){display:none}
   .sq-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
   .sq-mod .kw.theme.lit span{color:var(--ink)}
   .sq-mod .rec-way{margin-top:16px}

@@ -1039,9 +1039,13 @@ HOME_CHAPTERS = dict(
     # pictures; its themes follow one story, in the Keywording Guide's story order, as the themes' own lead says), and
     # "shared" in Partnerships. Draft.
     archive=("The archive", "The archive holds the stories in pictures: photographs of modern African life, ready for partners to use in their own work.",
+             # 14 November 2026, 18:40 and 18:43 (Thomas): the paragraph is as short as the one in Partnerships, three lines,
+             # so that the link can stand under it and the part still fits one window. Left out: the sentence on the
+             # themes' one story (it stands on the House Collection). "Our images are never AI-generated." stays: without
+             # it the paragraph was two lines, and the page's text fell under the share rule 11 asks for.
+             # A draft: all of Home's text is rewritten in the text round.
              "Every photograph is made by a photographer on location, with the consent of the people in it. Our images are never "
-             "AI-generated. The themes follow one story: people learn, put their skills to work, live connected lives in modern "
-             "cities, and make culture. Ten photographs stand below, with the keywords they carry in the archive."),   # "A shared resource" went with the sentence that set it up (Thomas, 18:02); the title names the chapter again
+             "AI-generated. Ten of them stand below, with the keywords they carry in the archive."),   # "A shared resource" went with the sentence that set it up (Thomas, 18:02); the title names the chapter again
     # The third chapter is Partnerships since 13 November 2026, 10:30 (Thomas, 10:23 and 10:28): Home's three beats are why
     # (to About), what (to the House Collection) and how to take part (to Partners). The principles stand on About, in the
     # archive's chapter. The sentence is Thomas's idea of 12 November (the archive is built on collaboration across sectors).
@@ -2025,11 +2029,13 @@ def way_on(href, label):
     return f'<a class="way" href="{href}"><span class="way-text">{e(label)}</span><span class="arr" aria-hidden="true">→</span></a>'
 
 
-def home_head(title, line=None, detail=None):
-    """A chapter of Home: its title at 44 px Bold; with a sentence, the sentence stands beside it from column 7."""
+def home_head(title, line=None, detail=None, link=None):
+    """A chapter of Home: its title at 44 px Bold; with a sentence, the sentence stands beside it from column 7, and
+    the chapter's way on, if it has one, stands under the text."""
     if line:
         return (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
-                f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail) if detail else ""}</div></div>')
+                f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail) if detail else ""}'
+                f'{f"<p class={chr(34)}doors{chr(34)}>{link}</p>" if link else ""}</div></div>')
     return f'<div class="chapter-head"><h2 class="chapter-title">{e(title)}</h2></div>'
 
 
@@ -2599,10 +2605,10 @@ def front_square(base):
         return f'<li><button type="button" class="kw{cls}{" lit" if lit else ""}" data-kw="{e(key)}"><span>{e(word)}</span></button></li>'
     groups = ["".join(tag(t["name"], "theme:" + t["slug"], t is t0, " theme") for t in THEMES)]
     groups += ["".join(tag(w, w, w in first[k]) for w in FRONT_ROWS[k]) for k, _ in FRONT_LAYERS]
-    field = '<li class="brk" aria-hidden="true"></li>'.join(groups)
-    # The button says where it leads (Thomas, 14 November 2026, 15:10, from a reader's feedback): "Explore the House
-    # Collection" promised a place to browse the images, and the page it opens is about the collection.
-    way = f'<p class="doors rec-way">{way_on(base + HOUSE_AT, "About the House Collection")}</p>'
+    # The field is as high as the photograph (Thomas, 14 November 2026, 18:40): its first row stands on the photograph's
+    # upper edge and its last on the lower, and the room between is shared out between the five groups. Where the tags
+    # need more rows than the photograph is high, on a narrower laptop, the field runs on below it.
+    field = "".join(f'<li class="grp"><ul>{g}</ul></li>' for g in groups)
     script = ("<script>(function(){[].slice.call(document.querySelectorAll('.sq-mod')).forEach(function(box){"
               "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),kws=[].slice.call(box.querySelectorAll('[data-kw]')),n=shots.length,cur=0;"
               "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
@@ -2627,12 +2633,15 @@ def front_square(base):
            '<button type="button" class="reg-prev" aria-label="The photograph before this one">←</button>'
            '<button type="button" class="reg-next" aria-label="The next photograph">→</button></p>')
     return (f'<div class="sq-mod"><div class="feature"><div class="switch f-photo">{shots}{nav}</div>'
-            f'<div class="f-words"><ul class="sq-field" aria-label="Themes and keywords on these photographs">{field}</ul>{way}</div></div></div>{script}')
+            f'<div class="f-words"><ul class="sq-field" aria-label="Themes and keywords on these photographs">{field}</ul></div></div></div>{script}')
 
 
 def front_archive_square(base):
     """The archive's chapter on Home with the square of keywords: on Home since 14 November 2026 (version 5 of the trial)."""
-    return mod("collection", "the archive in small, as a square of keywords", f'{nb(home_head(*HOME_CHAPTERS["archive"]))}{front_square(base)}')
+    # 14 November 2026, 18:40 (Thomas): the way on stands under the text, as in the two other parts of Home (title, text,
+    # link, then what the text opens), and no longer inside the module.
+    return mod("collection", "the archive in small, as a square of keywords",
+               f'{nb(home_head(*HOME_CHAPTERS["archive"], link=way_on(base + HOUSE_AT, "About the House Collection")))}{front_square(base)}')
 
 
 def front_archive_field(base):
@@ -2644,7 +2653,7 @@ def front_archive_field(base):
 def front_archive_record(base, tags=True):
     """The archive's chapter on Home with the record in place of the board of keywords: on trial at /dev/home/."""
     title, line, detail = HOME_CHAPTERS["archive"]
-    old = "Ten photographs stand below, with the keywords they carry in the archive."
+    old = "Ten of them stand below, with the keywords they carry in the archive."
     assert old in detail
     head = nb(home_head(title, line, detail.replace(old, HOME_TRIAL_LAST)))
     return mod("collection", "the archive in small, as a record", f'{head}{front_record(base, "themes", tags=tags)}{REC_SCRIPT}')
@@ -2652,7 +2661,7 @@ def front_archive_record(base, tags=True):
 
 def tpl_archive_trial(p, base):
     title, line, detail = HOME_CHAPTERS["archive"]
-    old = "Ten photographs stand below, with the keywords they carry in the archive."
+    old = "Ten of them stand below, with the keywords they carry in the archive."
     assert old in detail
     # with one photograph for each theme the approved sentence no longer holds; its replacement is a draft for Thomas
     head = nb(home_head(title, line, detail.replace(old, HOME_TRIAL_LAST)))
@@ -4513,8 +4522,9 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .sq-mod .feature{align-items:stretch}
 .sq-mod .f-photo{cursor:pointer;align-self:start}
 .sq-mod .f-words{display:flex;flex-direction:column;justify-content:space-between;padding-bottom:calc(8px + 3 * 1.45 * var(--fs-small))}   /* the caption's three lines */
-.sq-field{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.sq-field .brk{flex:0 0 100%;max-width:none;height:0;margin-top:-8px}   /* a list item is held to the measure elsewhere; this one breaks the line */
+.sq-field{list-style:none;margin:0;padding:0;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:16px}
+.sq-field .grp{max-width:none;margin:0}
+.sq-field .grp ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
 .sq-mod .record-title{display:block;font-weight:700;color:var(--ink)}
 .sq-mod .f-photo{position:relative}
 .sq-mod .sq-nav{position:absolute;right:0;bottom:0;margin:0;cursor:default}   /* in the caption's band, at the photograph's right edge */
@@ -4523,8 +4533,8 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .sq-mod .rec-way{margin:24px 0 0}
 @media (max-width:1023px){
   .sq-mod .f-words{padding-bottom:0;margin-top:16px}
-  .sq-field{row-gap:0}   /* each tag is 44 px to tap here, and that height keeps the rows apart */
-  .sq-field .brk{margin-top:0;height:8px}   /* and a group still stands apart from the next */
+  .sq-field{gap:8px}
+  .sq-field .grp ul{row-gap:0}   /* each tag is 44 px to tap here, and that height keeps the rows apart */
 }
 @media (max-width:767px){
   /* The phone's own form (Thomas, 13 November 2026, 22:21: an alternate version for the phone, about half a screen): the
@@ -4536,7 +4546,9 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .sq-mod .switch figure{flex:0 0 84%;grid-area:auto;visibility:visible;scroll-snap-align:start}
   .sq-mod .switch figure:last-child{margin-right:16%}
   .sq-mod .f-words{margin-top:8px}
-  .sq-field li:has(.kw:not(.lit)),.sq-field .brk{display:none}
+  .sq-field{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;gap:0 8px}
+  .sq-field .grp,.sq-field .grp ul{display:contents}   /* the lit tags of all five groups run on as one row */
+  .sq-field .grp li:has(.kw:not(.lit)){display:none}
   .sq-mod .kw.lit span{color:var(--ink-soft);background:none;border-color:var(--line)}
   .sq-mod .kw.theme.lit span{color:var(--ink)}
   .sq-mod .rec-way{margin-top:16px}

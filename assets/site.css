@@ -184,30 +184,35 @@ body.clean .mod::before{display:none}
 .reg-grid li{position:relative;max-width:none;margin:0}
 .reg-grid li::after{content:"";position:absolute;left:calc(-.5 * var(--gutter));right:calc(-.5 * var(--gutter));bottom:0;height:1px;background:var(--line)}
 .reg-grid li::before{content:"";position:absolute;left:calc(-.5 * var(--gutter));top:0;bottom:0;width:1px;background:var(--line)}
-/* The register: the numbers as the table's head under a heavy rule, the names in cells, the other names in columns. */
-.register-table{margin-top:var(--section-head)}
-.reg-nums{border-top:2px solid var(--ink)}
-.reg-nums li{padding:24px 0 32px}
-.reg-nums li::before{display:none}
-.reg-nums .num span{display:block;margin-top:8px}
-.reg-src{display:flex;align-items:flex-end;font-size:var(--fs-small);line-height:1.45;color:var(--ink-soft)}
+/* The register on the House Collection: the switch between the sectors, and under it two rows of names. */
+.sector-switch{margin-top:48px}
+.theme-tabs.sector-tabs{margin-bottom:16px}
+.theme-tabs.sector-tabs li{grid-column:span 3}   /* four names: on columns 1, 4, 7 and 10, each over its column of names */
+.sector-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}
+.sector-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
+.sector-tabs button:hover strong,.sector-tabs button:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
+.sector-panel .reg-names{border-top:1px solid var(--line)}
+.sector-panel + .sector-panel{margin-top:32px}
+.sector-name{font-size:var(--fs-text);font-weight:700;margin:0 0 8px}
+.sector-switch.switching .sector-panel{display:none;margin-top:0}
+.sector-switch.switching .sector-panel.on{display:block}
+.sector-switch.switching .sector-name{display:none}
+.sector-switch:not(.switching) .sector-tabs{display:none}
 .reg-names li{display:flex;align-items:center;min-height:96px;padding:16px 0;font-size:var(--fs-head);font-weight:700;line-height:1.15;letter-spacing:-.01em}
-.reg-more{list-style:none;margin:32px 0 0;padding:0;columns:4;column-gap:var(--gutter);color:var(--ink-soft)}
-.reg-more li{max-width:none;break-inside:avoid}
 .logo-grid{margin-top:32px;border-top:1px solid var(--line)}
 .logo-grid li{display:flex;align-items:center;justify-content:center;min-height:176px;padding:24px}
 .logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
-/* A door with its photograph (Partners): the door's name under the rule, its picture beneath, one credit for the three. */
-.door-pic{display:flex;flex-direction:column}
-.door-pic .frame{margin:24px 0 0}
 @media (max-width:1023px){
   .reg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .reg-more{columns:2}
   .logo-grid li{min-height:128px}
+  .theme-tabs.sector-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .theme-tabs.sector-tabs li{grid-column:auto}
 }
 @media (max-width:767px){
-  .reg-names li{font-size:var(--fs-text);min-height:64px}
-  .door-pic .frame,.door-panels.with-pics + .credit{display:none}   /* on a phone the three doors stand in the first screen, without their pictures (rule 23) */
+  .reg-names li{font-size:var(--fs-text);min-height:72px}
+  .theme-tabs.sector-tabs{grid-template-columns:1fr}
+  .sector-tabs button{box-shadow:inset 0 1px 0 var(--ink-soft);padding:12px 0}
+  .sector-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
 }
 .hinge{font-size:var(--fs-head);font-weight:300;line-height:1.45;max-width:32ch;margin:0}
 .project-title{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}

@@ -446,7 +446,7 @@ ROLES = {    # how an image is shown -> (in words, its width in px on a 1,440 px
     "lead": ("Lead photograph, the full content width", 1312), "lead-bleed": ("Lead photograph, full bleed, the width of the window", 1920),
     "two-thirds": ("Large photograph, columns 5 to 12", 864), "pair": ("One of a pair, half the columns each", 652),
     "feature": ("Full bleed, the width of the window", 1920), "half": ("Half the columns", 640), "third": ("A third of the columns", 416),
-    "door": ("A door’s photograph, a third of the columns", 416), "grid-3": ("Grid, three in a row", 432), "grid-4": ("Grid, four portraits in a row", 322), "strip": ("Strip of three squares", 432),
+    "grid-3": ("Grid, three in a row", 432), "grid-4": ("Grid, four portraits in a row", 322), "strip": ("Strip of three squares", 432),
     "row-strip": ("Square in a theme’s row", 216), "row": ("A theme’s photograph on the Themes page", 512), "theme": ("Theme entry, five in a row", 237), "theme-nav": ("Previous or next theme", 640),
 }
 
@@ -644,16 +644,6 @@ def place_house_collection():
     # set, for Thomas to change: the ten he chose for Home on 12 November, two for each theme, in the themes' order.
     for n, ar in enumerate(ar for t in THEMES for ar in HOME_PAIRS[t["slug"]]):
         place("house-collection", "pair", n + 1, ar, r[ar]["place"], r[ar]["desc"], f"assets/home/{ar.lower()}-800.jpg", 800, 533,
-              more=((f"assets/home/{ar.lower()}-1280.jpg", 1280),))
-
-
-PARTNER_DOORS = ["AR-1137", "AR-1044", "AR-1265"]   # Use the images, Sponsor a collection, Craft a collection: a first set (14 November 2026)
-
-
-def place_partners():
-    r = FRONT_RECORDS
-    for n, ar in enumerate(PARTNER_DOORS):
-        place("partners", "door", n + 1, ar, r[ar]["place"], r[ar]["desc"], f"assets/home/{ar.lower()}-800.jpg", 800, 533,
               more=((f"assets/home/{ar.lower()}-1280.jpg", 1280),))
 
 
@@ -870,21 +860,18 @@ def m_use(variant="a", title="In use", tight=False):
 
 
 # 2.12 Doors and actions: (a) two doors, (b) the action band with a count, (c) the ways on, (d) the contact band.
-def door(href, kicker, title, line, dark=False, photo=None):
+def door(href, kicker, title, line, dark=False):
+    # No photograph stands under a door's name (Thomas, 14 November 2026, 09:01, after an hour with one on each of Partners'
+    # doors): a picture there claims a connection to what the door leads to, and an archive photograph has none.
     limit("door kicker", kicker); limit("door title", title); limit("door line", line)
     kind = " archive" if href.startswith(ARCHIVE) else ""
-    a = (f'<a class="panel{kind}" href="{href}"><span class="kicker">{e(kicker)}</span>'
-         f'<strong>{e(title)}</strong>{f"<span>{e(line)}</span>" if line else ""}</a>')
-    # with a photograph (Partners, 14 November 2026): the door's name over its picture, the caption beneath the picture
-    return f'<div class="door-pic">{a}{frame(photo, "3/2", role="door", own=False)}</div>' if photo else a
+    return (f'<a class="panel{kind}" href="{href}"><span class="kicker">{e(kicker)}</span>'
+            f'<strong>{e(title)}</strong>{f"<span>{e(line)}</span>" if line else ""}</a>')
 
 
 def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None, tight=False, left=False):
     if variant == "a":
-        pics = any('class="door-pic"' in d for d in doors)   # doors with photographs share one credit line
-        return mod("doors", "a, the doors" + (", each with a photograph" if pics else ""),
-                   f'<div class="door-panels{" three" if len(doors) == 3 else ""}{" with-pics" if pics else ""}">{"".join(doors)}</div>'
-                   + (credit_line(group=True) if pics else ""), sid=sid, tight=tight)
+        return mod("doors", "a, the doors", f'<div class="door-panels{" three" if len(doors) == 3 else ""}">{"".join(doors)}</div>', sid=sid, tight=tight)
     if variant == "b":
         c = f'<div class="num"><b>{count[0]}</b><span>{e(count[1])}</span></div>'
         if count2 and (count2[0] != "—" or SHOW_EMPTY):
@@ -1258,30 +1245,32 @@ ARCHIVE_COLLECTIONS = [  # the collections in the archive; a sponsored collectio
          line="1,122 photographs made by our team in Bamako, Nairobi and Banjul, alongside our workshops.",
          meta=["1,122 images", "Mali · Kenya · The Gambia"], image="A photograph from the House Collection, from the picks once cleared"),
 ]
-# Who has licensed the images (Thomas, 14 November 2026, 08:39 and 08:45). Until then seven names stood on About, in small
-# type in the right column. They moved to the House Collection's page, directly under its lead photograph, as the element
-# that carries the page's authority: the numbers, the names with most weight in a ruled grid, and the other names in
-# columns beneath. Thomas, 08:45: the names are an asset; use them all, from both Getty contracts, and choose for impact.
+# Who has licensed the images (Thomas, 14 November 2026, 08:39, 08:45 and 09:01). Until then seven names stood on About,
+# in small type. They moved to the House Collection's page, directly under its lead photograph, as the element that
+# carries the page's authority. Thomas, 08:45: the names are an asset; use them all, from both Getty contracts, and choose
+# for impact. Thomas, 09:01: the point is not prestige but proof of how the images travelled: they worked across sectors,
+# for organisations that wanted to show another side of Africa, and that need is what the archive is about. So the names
+# are chosen by sector, eight at most to a sector, two rows, four sectors; the first form (three numbers, sixteen names and 39 more in
+# columns, 1,250 px high) took far too much of the page. The numbers stand in the sentence.
 # Source: 04 Commerce & Culture – Track Record (Licensed via Getty Images, by sector; Independent evidence, the licence
-# count from Getty's statements for January 2011 to February 2015: 548 licences, 46 countries, about 330 buyers). Names in
-# type, never logos: they bought a licence through Getty and are not our clients. The grid's rows follow the sectors,
-# unnamed: institutions; technology; finance and consulting; media. Left out: Amazon, Google and the Gates Foundation
-# (marked "to confirm" in the Track Record), and Exxon and Shell (the Track Record's own advice for this audience).
-# The wording is a draft for Thomas; "images from our productions" is the Track Record's phrase for both contracts.
-LICENCE_TITLE = "Licensed worldwide"
-LICENCE_LEAD = "Before the archive, images from our productions were licensed through Getty Images by companies, media and institutions."
+# count from Getty's statements for January 2011 to February 2015: 548 licences, 46 countries). Names in type, never
+# logos: they bought a licence through Getty and are not our clients. The Gates Foundation is confirmed (Thomas, 09:01:
+# he has seen the use himself). Left out: Amazon and Google (marked "to confirm" in the Track Record), Exxon and Shell
+# (Thomas, 09:01: take care with them). The wording is a draft for Thomas; "images from our productions" is the Track
+# Record's phrase for both contracts.
+LICENCE_TITLE = "Licensed across sectors"
+LICENCE_LEAD = "Before the archive, images from our productions were licensed through Getty Images 548 times, in 46 countries and across sectors."
 LICENCE_AFTER = ("In 2025 we took them back, so that they serve one purpose: to carry this picture of Africa "
                  "into the work of organisations that work with the continent.")
-LICENCE_NUMBERS = [("548", "licences"), ("46", "countries"), ("330", "buyers, in round numbers")]
-LICENCE_SOURCE = "Getty Images’ sales statements, 2011 to 2015."
-LICENSEES_FIRST = ["United Nations", "World Bank", "European Investment Bank", "British Council",
-                   "Microsoft", "Apple", "Samsung", "Spotify",
-                   "VISA", "HSBC", "McKinsey", "Deloitte",
-                   "BBC", "NBC", "The Guardian", "The Washington Post"]
-LICENSEES_MORE = ["3M", "ABC", "Accenture", "Airtel", "AOL", "ASUS", "AT&T", "Axel Springer", "Barclays", "Cambridge University Press",
-                  "CNBC", "Condé Nast", "Del Monte", "Discovery", "EY", "Hearst", "Heinemann", "KPMG", "Lloyds Bank", "M&C Saatchi",
-                  "McGraw-Hill", "MTN", "NEC", "Ogilvy", "Orange", "Oxford University Press", "Pearson", "Pfizer", "Random House", "RTL",
-                  "Safaricom", "Time Inc.", "Uber", "UPS", "Viacom", "Virgin", "Vodacom", "Western Union", "Yahoo"]
+LICENSEE_SECTORS = [   # the sector's address, its name on the switch, its names: two rows of four at most
+    ("institutions", "Institutions", ["United Nations", "World Bank", "European Investment Bank", "Gates Foundation", "British Council"]),
+    ("technology", "Technology and telecom", ["Microsoft", "Apple", "Samsung", "Spotify", "Uber", "Orange", "MTN", "Airtel"]),
+    ("finance", "Finance and consulting", ["VISA", "HSBC", "Barclays", "Western Union", "McKinsey", "Deloitte", "KPMG", "Accenture"]),
+    ("media", "Media and publishing", ["BBC", "NBC", "The Guardian", "The Washington Post", "Condé Nast", "Hearst", "Pearson", "Oxford University Press"]),
+]
+# Four sectors, so that each name on the switch stands over a column of names (columns 1, 4, 7 and 10). A fifth, Industry
+# (Pfizer, 3M, UPS, Virgin, Del Monte), stood there for a few minutes on 14 November 2026 and put the switch in sixths over
+# a grid in quarters; it is left out for the grid's sake, for Thomas to bring back if the sector matters more.
 ABOUT_HINGE = "The name Africa Reframed comes from an exhibition."
 
 # 2 Exhibitions: the activity, then the projects, then the artists
@@ -2690,20 +2679,30 @@ def tpl_theme(p, base):
 # Home's archive in small, in full. Without scripts the five stand under each other and the names lead down to them.
 # Each theme has its address on the page (#learning ...), which the script opens on arrival.
 def m_register(c, base):
-    """Who has licensed the images: a text block, then one table on four columns: the numbers, the names in ruled cells,
-    and the other names in columns."""
+    """Who has licensed the images: a text block, then the switch between the sectors over a ruled grid of two rows.
+    One sector is always open; choosing another is a cut; the grid keeps its height, so nothing under it moves.
+    Without scripts the sectors stand under each other, each under its name."""
     head = (f'<div class="cols"><div class="c1-4">{heading(LICENCE_TITLE)}</div>'
             f'<div class="c7-12">{draft(LICENCE_LEAD, "p", "lead")}{draft(LICENCE_AFTER)}</div></div>')
-    nums = "".join(f'<li class="num"><b>{n}</b><span>{e(t)}</span></li>' for n, t in LICENCE_NUMBERS)
-    nums += f'<li class="reg-src">{e(LICENCE_SOURCE)}</li>'
-    first = "".join(f"<li>{e(n)}</li>" for n in LICENSEES_FIRST)
-    more = "".join(f"<li>{e(n)}</li>" for n in LICENSEES_MORE)
-    return mod("numbers", "the register: who has licensed the images", head
-               + f'<div class="register-table"><ul class="reg-grid reg-nums">{nums}</ul><ul class="reg-grid reg-names">{first}</ul>'
-                 f'<ul class="reg-more">{more}</ul></div>'
-               + note("Draft wording and a first choice of names, for Thomas: sixteen in the grid, in rows by sector (institutions, technology, "
-                      "finance and consulting, media), and 39 beneath in alphabetical order. Source: the Track Record’s list of Getty licensees. "
-                      "Left out: Amazon, Google and the Gates Foundation (marked to confirm there), Exxon and Shell."), sid="licensed")
+    tabs, panels = "", ""
+    for i, (key, name, names) in enumerate(LICENSEE_SECTORS):
+        assert len(names) <= 8, name
+        on = i == 0
+        tabs += (f'<li><button type="button" data-sector="{key}" aria-pressed="{"true" if on else "false"}"{" class=" + chr(34) + "on" + chr(34) if on else ""}>'
+                 f'<strong>{e(name)}</strong></button></li>')
+        cells = "".join(f"<li>{e(n)}</li>" for n in names) + '<li class="blank" aria-hidden="true"></li>' * (8 - len(names))
+        panels += (f'<div class="sector-panel{" on" if on else ""}" data-sector="{key}"><h3 class="sector-name">{e(name)}</h3>'
+                   f'<ul class="reg-grid reg-names">{cells}</ul></div>')
+    script = ("<script>(function(){var box=document.querySelector('.sector-switch');if(!box)return;"
+              "var tabs=[].slice.call(box.querySelectorAll('button[data-sector]')),panels=[].slice.call(box.querySelectorAll('.sector-panel'));"
+              "box.classList.add('switching');"
+              "tabs.forEach(function(t){t.addEventListener('click',function(){var k=t.getAttribute('data-sector');"
+              "tabs.forEach(function(x){var o=x===t;x.classList.toggle('on',o);x.setAttribute('aria-pressed',o?'true':'false');});"
+              "panels.forEach(function(p){p.classList.toggle('on',p.getAttribute('data-sector')===k);});});});})();</script>")
+    return mod("numbers", "the register: who has licensed the images, by sector", head
+               + f'<div class="sector-switch"><ul class="theme-tabs sector-tabs" aria-label="Sectors">{tabs}</ul>{panels}</div>{script}'
+               + note("Draft wording and a first choice of names, for Thomas: four sectors, eight names at most in each. Source: the Track Record’s "
+                      "list of Getty licensees. Left out: Amazon and Google (marked to confirm there), Exxon and Shell; and a fifth sector, Industry (Pfizer, 3M, UPS, Virgin, Del Monte), so that the four names stand over the four columns."), sid="licensed")
 
 
 def m_theme_switch(c, base):
@@ -2857,13 +2856,12 @@ def tpl_partners(p, base):
     # held two. Its text is built from what the site already says: Home's panel (on location, credited, paid), the principle
     # Credited, fairly paid photographers, and About's network (open, since 2014; photographers who want to join can write).
     # No guidelines for creators are promised: they are still to be set up (Thomas, 10:58). Draft.
-    # 14 November 2026 (Thomas, 08:39): the page gets photographs and the supporters. Each door carries one photograph from
-    # the archive (a first set, for Thomas to change; a Waste to Value photograph belongs on Sponsor a collection once that
-    # collection's photographs are placed, and a partner's publication on Use the images once there is one). Under the doors
-    # stand the eight supporters from About, as a ruled grid.
-    doors = [door("#use", "Always free", "Use the images", "", dark=True, photo="Use the images: a photograph from the archive"),
-             door("#sponsor", "By collection", "Sponsor a collection", "", photo="Sponsor a collection: a photograph from the archive"),
-             door("#craft", "On commission", "Craft a collection", "", photo="Craft a collection: a photograph from the archive")]
+    # 14 November 2026 (Thomas, 08:39): under the doors stand the eight supporters from About, as a ruled grid. For an hour
+    # each door also carried a photograph from the archive; Thomas took them off at 09:01 (see door()). The page may get a
+    # header photograph instead; that is still to look into.
+    doors = [door("#use", "Always free", "Use the images", "", dark=True),
+             door("#sponsor", "By collection", "Sponsor a collection", ""),
+             door("#craft", "On commission", "Craft a collection", "")]
     # 1 the two doors; 2 how access works; 3 using the images; 4 sponsor a collection; 5 who already uses the archive; 6 request access, contact.
     return (m_page_head(p["title"], PARTNERS_STATEMENT,
                         statement_draft=True, doors=m_doors("a", doors=doors))
@@ -3842,30 +3840,35 @@ body.clean .mod::before{display:none}
 .reg-grid li{position:relative;max-width:none;margin:0}
 .reg-grid li::after{content:"";position:absolute;left:calc(-.5 * var(--gutter));right:calc(-.5 * var(--gutter));bottom:0;height:1px;background:var(--line)}
 .reg-grid li::before{content:"";position:absolute;left:calc(-.5 * var(--gutter));top:0;bottom:0;width:1px;background:var(--line)}
-/* The register: the numbers as the table's head under a heavy rule, the names in cells, the other names in columns. */
-.register-table{margin-top:var(--section-head)}
-.reg-nums{border-top:2px solid var(--ink)}
-.reg-nums li{padding:24px 0 32px}
-.reg-nums li::before{display:none}
-.reg-nums .num span{display:block;margin-top:8px}
-.reg-src{display:flex;align-items:flex-end;font-size:var(--fs-small);line-height:1.45;color:var(--ink-soft)}
+/* The register on the House Collection: the switch between the sectors, and under it two rows of names. */
+.sector-switch{margin-top:48px}
+.theme-tabs.sector-tabs{margin-bottom:16px}
+.theme-tabs.sector-tabs li{grid-column:span 3}   /* four names: on columns 1, 4, 7 and 10, each over its column of names */
+.sector-tabs button{display:block;width:100%;text-align:left;font:inherit;background:none;border:0;cursor:pointer;padding:12px 0 8px;color:var(--ink);min-height:44px}
+.sector-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
+.sector-tabs button:hover strong,.sector-tabs button:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
+.sector-panel .reg-names{border-top:1px solid var(--line)}
+.sector-panel + .sector-panel{margin-top:32px}
+.sector-name{font-size:var(--fs-text);font-weight:700;margin:0 0 8px}
+.sector-switch.switching .sector-panel{display:none;margin-top:0}
+.sector-switch.switching .sector-panel.on{display:block}
+.sector-switch.switching .sector-name{display:none}
+.sector-switch:not(.switching) .sector-tabs{display:none}
 .reg-names li{display:flex;align-items:center;min-height:96px;padding:16px 0;font-size:var(--fs-head);font-weight:700;line-height:1.15;letter-spacing:-.01em}
-.reg-more{list-style:none;margin:32px 0 0;padding:0;columns:4;column-gap:var(--gutter);color:var(--ink-soft)}
-.reg-more li{max-width:none;break-inside:avoid}
 .logo-grid{margin-top:32px;border-top:1px solid var(--line)}
 .logo-grid li{display:flex;align-items:center;justify-content:center;min-height:176px;padding:24px}
 .logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
-/* A door with its photograph (Partners): the door's name under the rule, its picture beneath, one credit for the three. */
-.door-pic{display:flex;flex-direction:column}
-.door-pic .frame{margin:24px 0 0}
 @media (max-width:1023px){
   .reg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .reg-more{columns:2}
   .logo-grid li{min-height:128px}
+  .theme-tabs.sector-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .theme-tabs.sector-tabs li{grid-column:auto}
 }
 @media (max-width:767px){
-  .reg-names li{font-size:var(--fs-text);min-height:64px}
-  .door-pic .frame,.door-panels.with-pics + .credit{display:none}   /* on a phone the three doors stand in the first screen, without their pictures (rule 23) */
+  .reg-names li{font-size:var(--fs-text);min-height:72px}
+  .theme-tabs.sector-tabs{grid-template-columns:1fr}
+  .sector-tabs button{box-shadow:inset 0 1px 0 var(--ink-soft);padding:12px 0}
+  .sector-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
 }
 .hinge{font-size:var(--fs-head);font-weight:300;line-height:1.45;max-width:32ch;margin:0}
 .project-title{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}
@@ -4626,7 +4629,7 @@ def build():
     (ROOT / "assets" / "site.css").write_text(CSS)
     share_image()
     rows, links = [], {}
-    SLOTS.clear(); PLACED_AT.clear(); place_house_collection(); place_partners()
+    SLOTS.clear(); PLACED_AT.clear(); place_house_collection()
     (ROOT / "assets" / "logo-white.svg").write_text((ROOT / "assets" / "logo-black.svg").read_text().replace('fill="#000000"', 'fill="#ffffff"').replace(", black</title>", ", white</title>"))
     # the logo mark alone, in white, for the footer: the first four shapes of the side-by-side logo, at its height
     mark = "".join(re.findall(r'<path d="[^"]+"></path>', (ROOT / "assets" / "logo-black.svg").read_text())[:4])

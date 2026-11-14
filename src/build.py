@@ -554,14 +554,17 @@ HOME_DOCUMENT = dict(
          "original file (this one is 2,000 px wide and soft on sharp screens). Its people are not named.")
 
 
-def m_document(base, d):
+def m_document(base, d, ground=False):
     f = base + d["file"]
     sid = slot("feature", "16/9", "A document of the work: photographers at a workshop")
     pic = (f'<img class="doc-photo" src="{f}-1920.jpg" srcset="{f}-1280.jpg 1280w, {f}-1920.jpg 1920w" sizes="(min-width:1440px) 1312px, 92vw" '
            f'width="{d["size"][0]}" height="{d["size"][1]}" alt="{e(d["alt"])}" loading="lazy" decoding="async">')
     below = f'<p class="credit"><span class="caption">{e(limit("caption", d["caption"]))}</span> <span>{e(CREDIT)}</span></p>{note(d["note"])}'
+    # ground (Home, 14 November 2026, 16:39 and 16:50): the photograph stands on the pale ground of the part above it and
+    # belongs to it; the ground ends under its caption, and the page's white stands between it and the footer.
     return mod("photo", "b, on the columns, a document of the work",
-               f'<div class="cols"><div class="c1-12"><figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}>{pic}{below}</figure></div></div>')
+               f'<div class="cols"><div class="c1-12"><figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}>{pic}{below}</figure></div></div>',
+               cls="on-ground join" if ground else "")
 
 
 # 2.6 Image grid: (a) three in a row, (b) four portraits, (c) a strip of three squares, (d) six to eight mixed.
@@ -2014,6 +2017,14 @@ PRIVACY = [("What we collect", "Your organisation, your name and role, your emai
 # The pages, each a sequence of modules in the order of the page priorities (Site map, section 6) and the inventory
 # (section 3). Nine templates; the five key pages first.
 # ---------------------------------------------------------------------------------------------
+def way_on(href, label):
+    """The way on (Thomas, 14 November 2026, 16:50): a link in words with an arrow after it, not a box. A boxed button
+    drowned beside the boxed keyword tags, and a plain text link was too quiet for a call to act. Bold, the words
+    underlined, the arrow a step to the right; pointed at, the arrow moves on by 6 px. That is the identity's second
+    motion, after the footer's stripes, and it stands still for readers who ask for reduced motion."""
+    return f'<a class="way" href="{href}"><span class="way-text">{e(label)}</span><span class="arr" aria-hidden="true">→</span></a>'
+
+
 def home_head(title, line=None, detail=None):
     """A chapter of Home: its title at 44 px Bold; with a sentence, the sentence stands beside it from column 7."""
     if line:
@@ -2059,13 +2070,16 @@ def home_partnerships(base):
     title, line, detail = HOME_CHAPTERS["partnerships"]
     head = (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
             f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}'
-            f'<p class="doors"><a class="textlink" href="{base}partners/">How partners take part</a></p></div></div>')
+            f'<p class="doors">{way_on(base + "partners/", "How partners take part")}</p></div></div>')
     for terms, role, text in HOME_PARTNERSHIPS:
         limit("item title", role); limit("item line", text)
     # Cards with two sides (Thomas, 14 November 2026, 09:35, after the supporters' cells on Partners): at rest a card shows
     # its terms and its name, large, with a plus in its corner; pointing at it, or tapping it on a phone, shows the side
     # with the text, which is the card as it stood until now. A cut; both sides share one height, so nothing moves.
     # Without scripts the side with the text stands. No new wording.
+    # 14 November 2026, 16:39 and 16:50 (Thomas): at rest the cards are yellow, and white on the side with the text. The
+    # yellow no longer has one job only: it marks where the reader acts, here the three ways to take part, elsewhere the
+    # way into the archive. Under the cards, on the same pale ground, stands the workshop photograph.
     cards = "".join(f'<li class="flip"><div class="face front"><p class="kicker">{e(terms)}</p><h3>{e(role)}</h3></div>'
                     f'<div class="face back"><p class="kicker">{e(terms)}</p><p class="flip-title">{e(role)}</p>{draft(text)}</div>'
                     f'<button type="button" class="flip-more" aria-expanded="false" aria-label="{e(role)}: what it means"><span class="plus" aria-hidden="true"></span></button></li>'
@@ -2077,8 +2091,8 @@ def home_partnerships(base):
     # No stripes since 13 November 2026, 15:05 (Thomas, 15:03): the part stands on the plain pale ground, as the first
     # section does. The page is calmer and the eye stays on the content; the pattern opens the page in the photograph and
     # closes it in the footer. turn_pattern() is kept, unused, with the drawing as it was settled that morning.
-    return mod("items", "three ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels">{cards}</ul>{flip}',
-               cls="on-ground turn", sid="partnerships")
+    return mod("items", "three ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels sun">{cards}</ul>{flip}',
+               cls="on-ground turn joined", sid="partnerships")
 
 
 def premise(section):
@@ -2123,29 +2137,13 @@ def tpl_home(p, base, record="square"):
             # The two ways on (Thomas, 13 November 2026, 10:06): under the first text block a link to About, where the reader
             # who has just read why the work matters asks who is behind it; and in the archive the button into the House
             # Collection, which is what the archive launches with and the better place to explore the themes from.
-            + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[f'<a class="textlink" href="{base}about/">About Africa Reframed</a>']))
+            + on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[way_on(base + "about/", "About Africa Reframed")]))
             + (front_archive_record(base, tags=False) if record == "words" else front_archive_band(base) if record == "band" else front_archive_field(base) if record == "field" else front_mini(base) if record == "original" else front_archive_record(base) if record is True else front_archive_square(base))
             + home_partnerships(base)
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            + m_document(base, HOME_DOCUMENT))
-
-
-def home_sun(html):
-    """A trial of Home (Thomas, 14 November 2026, 16:39), on /dev/home-yellow/ only: the button About the House Collection in
-    the yellow; the three cards yellow at rest and white on their side with the text; and the pale ground of Partnerships
-    drawn down over the workshop photograph, so that the photograph belongs to that part, with a band of white before
-    the footer. It is a trial page because it sets aside two rules Thomas made: the yellow has one job, the way into the
-    archive (the gate's rule 18), and a photograph stands on white. Home itself is unchanged."""
-    for old, new in [('<p class="doors rec-way"><a class="button quiet"', '<p class="doors rec-way"><a class="button sun"'),
-                     ('<ul class="panels">', '<ul class="panels sun">'),
-                     ('class="mod mod-items on-ground turn"', 'class="mod mod-items on-ground turn joined"'),
-                     ('class="mod mod-photo " data-mod="2.5 Photograph (b, on the columns, a document of the work)"',
-                      'class="mod mod-photo on-ground join" data-mod="2.5 Photograph (b, on the columns, a document of the work)"')]:
-        assert html.count(old) == 1, old
-        html = html.replace(old, new)
-    return html
+            + m_document(base, HOME_DOCUMENT, ground=True))
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -2604,7 +2602,7 @@ def front_square(base):
     field = '<li class="brk" aria-hidden="true"></li>'.join(groups)
     # The button says where it leads (Thomas, 14 November 2026, 15:10, from a reader's feedback): "Explore the House
     # Collection" promised a place to browse the images, and the page it opens is about the collection.
-    way = f'<p class="doors rec-way">{button(base + HOUSE_AT, "About the House Collection", quiet=True)}</p>'
+    way = f'<p class="doors rec-way">{way_on(base + HOUSE_AT, "About the House Collection")}</p>'
     script = ("<script>(function(){[].slice.call(document.querySelectorAll('.sq-mod')).forEach(function(box){"
               "var shots=[].slice.call(box.querySelectorAll('[data-shot]')),kws=[].slice.call(box.querySelectorAll('[data-kw]')),n=shots.length,cur=0;"
               "var has=shots.map(function(f){return f.dataset.kws.split('|')});"
@@ -4067,9 +4065,16 @@ main{padding-bottom:var(--section)}
 .button.archive{background:var(--accent);border-color:var(--accent);color:var(--ink)}   /* the yellow's one job: the way into the archive */
 .button.archive:hover{background:var(--ink);border-color:var(--ink);color:#fff}
 .button.quiet{background:transparent;border:1px solid var(--ink-soft);color:var(--ink)}
-/* The trial of 14 November 2026, 16:39 (/dev/home-yellow/ only): yellow on Home's button and cards, the photograph on the pale ground. */
-.button.sun{background:var(--accent);border-color:var(--accent);color:var(--ink)}
-.button.sun:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+/* The way on (14 November 2026): words and an arrow. way:motion marks the one transition the gate allows beside the close. */
+.way{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-weight:700;color:var(--ink);text-decoration:none}
+.way .way-text{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.3em}
+.way .arr{display:inline-block}
+/* way:motion */
+.way .arr{transition:transform .18s ease}
+.way:hover .arr,.way:focus-visible .arr{transform:translateX(6px)}
+@media (prefers-reduced-motion:reduce){.way .arr{transition:none}.way:hover .arr,.way:focus-visible .arr{transform:none}}
+/* way:motion end */
+/* Home's three cards are yellow at rest and white on the side with the text; the workshop photograph joins their ground (14 November 2026). */
 .panels.sun.flips .flip{background:var(--accent)}
 .panels.sun.flips .front .kicker{color:var(--ink)}
 .panels.sun.flips .flip.open,.panels.sun.flips .flip:has(.flip-more:focus-visible){background:var(--paper)}
@@ -4872,11 +4877,6 @@ def build():
         CUR.update(slug=None, n=0)
         (dev_dir / "home-original").mkdir(exist_ok=True)
         (dev_dir / "home-original" / "index.html").write_text(render(hmo, tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record="original"), "../../"))
-        hmy = dict(path="dev/home-yellow/", title="Home, with yellow cards and the photograph on the pale ground, on trial", slug=None, tpl="front", nav=None,
-                   desc="A trial copy of Home: yellow on the button and the three cards, and the workshop photograph on the pale ground; generated by the build, removed at launch.")
-        CUR.update(slug=None, n=0)
-        (dev_dir / "home-yellow").mkdir(exist_ok=True)
-        (dev_dir / "home-yellow" / "index.html").write_text(render(hmy, home_sun(tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../")), "../../"))
         hmb = dict(path="dev/home-band/", title="Home, with the archive as a band, on trial", slug=None, tpl="front", nav=None,
                    desc="A copy of Home with the fourth version of the archive module, on trial; generated by the build, removed at launch.")
         CUR.update(slug=None, n=0)

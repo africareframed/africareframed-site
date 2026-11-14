@@ -323,9 +323,16 @@ main{padding-bottom:var(--section)}
 .button.archive{background:var(--accent);border-color:var(--accent);color:var(--ink)}   /* the yellow's one job: the way into the archive */
 .button.archive:hover{background:var(--ink);border-color:var(--ink);color:#fff}
 .button.quiet{background:transparent;border:1px solid var(--ink-soft);color:var(--ink)}
-/* The trial of 14 November 2026, 16:39 (/dev/home-yellow/ only): yellow on Home's button and cards, the photograph on the pale ground. */
-.button.sun{background:var(--accent);border-color:var(--accent);color:var(--ink)}
-.button.sun:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+/* The way on (14 November 2026): words and an arrow. way:motion marks the one transition the gate allows beside the close. */
+.way{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-weight:700;color:var(--ink);text-decoration:none}
+.way .way-text{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.3em}
+.way .arr{display:inline-block}
+/* way:motion */
+.way .arr{transition:transform .18s ease}
+.way:hover .arr,.way:focus-visible .arr{transform:translateX(6px)}
+@media (prefers-reduced-motion:reduce){.way .arr{transition:none}.way:hover .arr,.way:focus-visible .arr{transform:none}}
+/* way:motion end */
+/* Home's three cards are yellow at rest and white on the side with the text; the workshop photograph joins their ground (14 November 2026). */
 .panels.sun.flips .flip{background:var(--accent)}
 .panels.sun.flips .front .kicker{color:var(--ink)}
 .panels.sun.flips .flip.open,.panels.sun.flips .flip:has(.flip-more:focus-visible){background:var(--paper)}

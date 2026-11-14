@@ -197,7 +197,10 @@ def css_findings():
                     off[v] = off.get(v, 0) + 1
     sizes = sorted({float(v) for v in re.findall(r"font-size\s*:\s*([\d.]+)px", css)})
     return dict(spacing_off=dict(sorted(off.items(), key=lambda x: -x[1])), font_sizes=sizes,
-                motion=len(re.findall(r"transition|animation|@keyframes", css)))
+                # one transition is allowed since 14 November 2026 (Thomas, 16:50): the arrow of a way on moves when the
+                # reader points at the link; the stylesheet marks those lines, and they are left out of the count
+                motion=len(re.findall(r"transition|animation|@keyframes",
+                                      re.sub(r"/\*.*?\*/", "", re.sub(r"(?s)/\* way:motion \*/.*?/\* way:motion end \*/", "", build.CSS), flags=re.S))))
 
 
 def run(only=None):
@@ -278,7 +281,10 @@ def verdict(rows):
         if m["overlaid"]:
             fail(14, slug, w, f'{m["overlaid"]} frames with something laid over them')
         ny = sum(m["yellow"].values())
-        if ny > 1 or any("archive" not in k for k in m["yellow"]):
+        # the yellow marks where the reader acts (Thomas, 14 November 2026, 16:50; until then it had one job): the way
+        # into the archive, once on a page, and the cards that name the ways to take part, yellow at rest
+        ya = sum(v for k, v in m["yellow"].items() if "archive" in k)
+        if ya > 1 or any("archive" not in k and "flip" not in k for k in m["yellow"]):
             fail(18, slug, w, "yellow on " + ", ".join(f"{k} ×{v}" for k, v in m["yellow"].items()))
         if m["overflow"] > 0 or m.get("overflow320", 0) > 0:
             fail(23, slug, w, f'scrolls sideways by {max(m["overflow"], m.get("overflow320", 0))} px')

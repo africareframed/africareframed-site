@@ -800,7 +800,7 @@ def m_partners(n=6, title="In use by", tight=False):
 GRID_LOGO_AREA, GRID_LOGO_MAX_H, GRID_LOGO_MAX_W = 6400, 56, 208   # the logos in the ruled grid: about twice the strip's area
 
 
-def m_supporter_grid(rows, title, base, plain=False, link=None):
+def m_supporter_grid(rows, title, base, plain=False, link=None, ground=False):
     """The supporters as a ruled grid, four across (Partners, Thomas, 14 November 2026, 08:39, after Kontrapunkt's Selected
     clients): generous cells, thin rules, one logo in the middle of each. The heading stays "Our work has been supported
     by": these institutions supported the exhibition, the workshops and a collection, and are not shown as users of the
@@ -831,12 +831,15 @@ def m_supporter_grid(rows, title, base, plain=False, link=None):
         # and 21:35: "i like the boxes even if they dont turn"). A sign-off in the white before the footer, not a fourth
         # part of Home: the title on the left, on the right only the way on to Partners, where each box says what the
         # organisation supported; then the boxes, lower than on Partners.
-        head = (f'<div class="chapter-head cols"><div class="c1-6"><h2 class="chapter-title"><span class="draft">{e(title)}</span></h2></div>'
+        # ground (Thomas, 14 November 2026, 22:02): if the block stands on Home it belongs to Partnerships, so it stands
+        # inside that part's pale ground, under the workshop photograph, with a smaller title (22 px Bold): the part says
+        # the archive is built on collaboration, shows the three ways, the photograph, and then who has supported the work.
+        head = (f'<div class="chapter-head cols"><div class="c1-6"><h2 class="{"supported-title" if ground else "chapter-title"}"><span class="draft">{e(title)}</span></h2></div>'
                 f'<div class="c7-12">{f"<p class={chr(34)}doors{chr(34)}>{link}</p>" if link else ""}</div></div>')
         return mod("partners", "supporters, as a ruled grid without the second side",
                    f'{head}<ul class="reg-grid logo-grid plain">{"".join(one(x) for x in rows)}</ul>'
                    + note("On trial: the supporters on Home, as the boxes of Partners without their second side. The same eight, in the same order."),
-                   cls="supported-plain")
+                   cls="supported-plain on-ground join" if ground else "supported-plain")
     return mod("partners", "supporters, as a ruled grid",
                f'<div class="cols"><div class="c1-12"><h2><span class="draft">{e(title)}</span></h2></div></div>'
                f'<ul class="reg-grid logo-grid">{"".join(one(x) for x in rows)}</ul>{script}'
@@ -2164,7 +2167,7 @@ def tpl_home(p, base, record="square", supporters=False):
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
             + m_document(base, HOME_DOCUMENT, ground=True)
-            + (m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base, plain=True, link=way_on(base + "partners/#supported", "What each of them supported")) if supporters else ""))
+            + (m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base, plain=True, ground=True, link=way_on(base + "partners/#supported", "What each of them supported")) if supporters else ""))
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -4066,6 +4069,11 @@ body.clean .mod::before{display:none}
 .logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
 .logo-grid.plain .logo-cell{display:flex;align-items:center;justify-content:center;min-height:144px;padding:24px}   /* the boxes without their second side: lower, since no text has to fit */
 .supported-plain .chapter-head .doors{margin:0}
+.mod.supported-plain.on-ground.join{margin-top:0;padding-top:32px;padding-bottom:64px}   /* in the pale ground of Partnerships, under the photograph; the ground ends 64 px under the boxes */
+.mod.supported-plain.on-ground.join::before{display:none}
+.supported-plain .supported-title{font-size:var(--fs-head);line-height:1.2;font-weight:700;letter-spacing:-.01em;margin:0}
+.supported-plain.on-ground{--line:#dedbd4}   /* the rules one step darker, so the boxes show on the pale ground */
+.supported-plain.on-ground .logo-grid img{mix-blend-mode:multiply}   /* a logo file with a white ground of its own takes the pale ground */
 @media (min-width:1024px){.supported-plain .chapter-head > div{align-self:baseline}}   /* the way on stands on the title's line */
 @media (max-width:767px){.logo-grid.plain .logo-cell{min-height:104px;padding:16px}}
 /* What each organisation supported. Without scripts it stands under the logo; with them it takes the logo's place when the

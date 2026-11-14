@@ -215,6 +215,11 @@ body.clean .mod::before{display:none}
 .logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
 .logo-grid.plain .logo-cell{display:flex;align-items:center;justify-content:center;min-height:144px;padding:24px}   /* the boxes without their second side: lower, since no text has to fit */
 .supported-plain .chapter-head .doors{margin:0}
+.mod.supported-plain.on-ground.join{margin-top:0;padding-top:32px;padding-bottom:64px}   /* in the pale ground of Partnerships, under the photograph; the ground ends 64 px under the boxes */
+.mod.supported-plain.on-ground.join::before{display:none}
+.supported-plain .supported-title{font-size:var(--fs-head);line-height:1.2;font-weight:700;letter-spacing:-.01em;margin:0}
+.supported-plain.on-ground{--line:#dedbd4}   /* the rules one step darker, so the boxes show on the pale ground */
+.supported-plain.on-ground .logo-grid img{mix-blend-mode:multiply}   /* a logo file with a white ground of its own takes the pale ground */
 @media (min-width:1024px){.supported-plain .chapter-head > div{align-self:baseline}}   /* the way on stands on the title's line */
 @media (max-width:767px){.logo-grid.plain .logo-cell{min-height:104px;padding:16px}}
 /* What each organisation supported. Without scripts it stands under the logo; with them it takes the logo's place when the

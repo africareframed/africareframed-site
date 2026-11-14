@@ -4169,7 +4169,8 @@ main{padding-bottom:var(--section)}
 .panels.sun.flips .flip.open,.panels.sun.flips .flip:has(.flip-more:focus-visible){background:var(--paper)}
 @media (hover:hover){.panels.sun.flips .flip:hover{background:var(--paper)}}
 .mod.on-ground.joined{padding-bottom:64px}
-.mod.mod-photo.on-ground.join{margin-top:0;padding-top:0;padding-bottom:64px}   /* the grey under the caption equals the grey over the photograph (Thomas, 14 November 2026, 19:39); the white before the footer is the page's own 96 px */
+.mod.mod-photo.on-ground.join{margin-top:0;padding-top:0;padding-bottom:0}   /* the white before the footer is the page's own 96 px */
+.mod.mod-photo.on-ground.join .credit{min-height:56px}   /* the grey under the photograph, measured from the photograph's own edge with the caption inside it, equals the grey over it: 8 + 56 = 64 px (Thomas, 14 November 2026, 19:39 and 19:44) */
 .mod.mod-photo.on-ground.join::before{display:none}
 .button.quiet:hover{border-color:var(--ink);background:var(--ink);color:#fff}
 .button[disabled],.button.dead,.button[disabled]:hover,.button.dead:hover{background:var(--wash);border-color:var(--line);color:var(--ink-soft);cursor:not-allowed}

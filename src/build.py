@@ -2565,6 +2565,10 @@ def front_archive_band(base):
 # A small game, all in one window. The themes come first, in bold; each layer after them starts on a new line.
 def front_square(base):
     order = [ar for t in THEMES for ar in HOME_PAIRS[t["slug"]]]
+    # The module opens on the taxi driver (Thomas, 14 November 2026, 16:28), as Home's archive module did before it. The
+    # ten keep their story order and the run starts there: on a phone the first photograph in the row is the one in view.
+    k = order.index(HOME_REST)
+    order = order[k:] + order[:k]
     theme_of = {ar: t for t in THEMES for ar in HOME_PAIRS[t["slug"]]}
     shots = ""
     for i, ar in enumerate(order):

@@ -173,10 +173,42 @@ body.clean .mod::before{display:none}
 .channels strong{display:block;font-weight:700;font-size:var(--fs-head);line-height:1.15;margin:0 0 8px}
 .channels a:hover strong{text-decoration:underline}
 .channels .channel-line{font-size:var(--fs-text);color:var(--ink-soft)}
-.register{margin:0 0 8px;padding:24px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.register-lead{font-size:var(--fs-small);color:var(--ink-soft);margin:0 0 8px}
-.register-names{display:flex;flex-wrap:wrap;gap:4px 32px;font-size:var(--fs-text);line-height:1.4;margin:0 0 12px;max-width:none}
-.register-after{margin:0}
+/* A collection's lead photograph with the cut (14 November 2026): the Opening's photograph and pattern, under the page's head. */
+.cut-lead .opening-img{aspect-ratio:16/9}
+@media (min-width:1024px){.cut-lead .opening-img{aspect-ratio:var(--shape,2000/1288);max-height:max(520px,calc(100vh - var(--header-h) - 32px))}}
+/* The ruled grid (14 November 2026, after Kontrapunkt's Selected clients): four across, thin rules between the cells, the
+   content on the columns 1, 4, 7 and 10. The rules stand in the middle of the gutters, so what a cell holds starts on its
+   column; the grid is open at its left and right edges. Two uses: names in type (the register on the House Collection)
+   and logos (the supporters on Partners). */
+.reg-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--gutter);overflow:hidden}
+.reg-grid li{position:relative;max-width:none;margin:0}
+.reg-grid li::after{content:"";position:absolute;left:calc(-.5 * var(--gutter));right:calc(-.5 * var(--gutter));bottom:0;height:1px;background:var(--line)}
+.reg-grid li::before{content:"";position:absolute;left:calc(-.5 * var(--gutter));top:0;bottom:0;width:1px;background:var(--line)}
+/* The register: the numbers as the table's head under a heavy rule, the names in cells, the other names in columns. */
+.register-table{margin-top:var(--section-head)}
+.reg-nums{border-top:2px solid var(--ink)}
+.reg-nums li{padding:24px 0 32px}
+.reg-nums li::before{display:none}
+.reg-nums .num span{display:block;margin-top:8px}
+.reg-src{display:flex;align-items:flex-end;font-size:var(--fs-small);line-height:1.45;color:var(--ink-soft)}
+.reg-names li{display:flex;align-items:center;min-height:96px;padding:16px 0;font-size:var(--fs-head);font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.reg-more{list-style:none;margin:32px 0 0;padding:0;columns:4;column-gap:var(--gutter);color:var(--ink-soft)}
+.reg-more li{max-width:none;break-inside:avoid}
+.logo-grid{margin-top:32px;border-top:1px solid var(--line)}
+.logo-grid li{display:flex;align-items:center;justify-content:center;min-height:176px;padding:24px}
+.logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
+/* A door with its photograph (Partners): the door's name under the rule, its picture beneath, one credit for the three. */
+.door-pic{display:flex;flex-direction:column}
+.door-pic .frame{margin:24px 0 0}
+@media (max-width:1023px){
+  .reg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .reg-more{columns:2}
+  .logo-grid li{min-height:128px}
+}
+@media (max-width:767px){
+  .reg-names li{font-size:var(--fs-text);min-height:64px}
+  .door-pic .frame,.door-panels.with-pics + .credit{display:none}   /* on a phone the three doors stand in the first screen, without their pictures (rule 23) */
+}
 .hinge{font-size:var(--fs-head);font-weight:300;line-height:1.45;max-width:32ch;margin:0}
 .project-title{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}
 .kicker.state{color:var(--ink);font-weight:700}

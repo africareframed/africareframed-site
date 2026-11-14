@@ -446,7 +446,7 @@ ROLES = {    # how an image is shown -> (in words, its width in px on a 1,440 px
     "lead": ("Lead photograph, the full content width", 1312), "lead-bleed": ("Lead photograph, full bleed, the width of the window", 1920),
     "two-thirds": ("Large photograph, columns 5 to 12", 864), "pair": ("One of a pair, half the columns each", 652),
     "feature": ("Full bleed, the width of the window", 1920), "half": ("Half the columns", 640), "third": ("A third of the columns", 416),
-    "grid-3": ("Grid, three in a row", 432), "grid-4": ("Grid, four portraits in a row", 322), "strip": ("Strip of three squares", 432),
+    "door": ("A door’s photograph, a third of the columns", 416), "grid-3": ("Grid, three in a row", 432), "grid-4": ("Grid, four portraits in a row", 322), "strip": ("Strip of three squares", 432),
     "row-strip": ("Square in a theme’s row", 216), "row": ("A theme’s photograph on the Themes page", 512), "theme": ("Theme entry, five in a row", 237), "theme-nav": ("Previous or next theme", 640),
 }
 
@@ -519,10 +519,17 @@ def frame(label, ratio="3/2", caption=None, credit=None, cls="", role="grid-3", 
     return f'<figure class="frame"{f" data-slot={chr(34)}{sid}{chr(34)}" if sid else ""}>{pic}{below}</figure>'
 
 
-def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12", credit=None, sid=None, lead=False, echo=False, wide=False):
+def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left", span="c1-12", credit=None, sid=None, lead=False, echo=False, wide=False, cut=None):
     role = "lead-bleed" if lead else "two-thirds" if wide else {"a": "feature", "c": "half"}.get(variant, "lead" if span == "c1-12" else "half")
     psid = slot(role, ratio, label)
     below = credit_line(credit=credit, cap=caption_html(psid, caption))
+    if variant == "a" and cut:
+        # A collection's lead photograph with the cut (Thomas, 14 November 2026, 08:39: the House Collection's photograph
+        # gets the stripes that were drawn for it as Home's Opening on 11 November). The photograph and its pattern are the
+        # Opening's own, in the photograph's own proportion; the caption and credit stand beneath as for any lead.
+        pic = opening_photo(CUR.get("base", ""), cut)[0].replace('class="opening-img opening-real"', 'class="placed opening-img opening-real"')
+        inner = f'<figure class="frame"><div class="opening-frame bleed">{pic}</div><div class="wrap">{below}</div></figure>'
+        return mod("photo", "a, full bleed, the lead, with the cut", inner, wrap=False, sid=sid, tight=lead, cls="lead-bleed cut-lead")
     if variant == "a":
         inner = f'<figure class="frame"><div class="bleed">{placed_img(psid, ratio, "bleed-img", eager=lead) or img(label, ratio, cls="bleed-img")}{ECHO if echo else ""}</div><div class="wrap">{below}</div></figure>'
         return mod("photo", "a, full bleed" + (", the lead" if lead else ""), inner, wrap=False, sid=sid, tight=lead, cls="lead-bleed" if lead else "")
@@ -637,6 +644,16 @@ def place_house_collection():
     # set, for Thomas to change: the ten he chose for Home on 12 November, two for each theme, in the themes' order.
     for n, ar in enumerate(ar for t in THEMES for ar in HOME_PAIRS[t["slug"]]):
         place("house-collection", "pair", n + 1, ar, r[ar]["place"], r[ar]["desc"], f"assets/home/{ar.lower()}-800.jpg", 800, 533,
+              more=((f"assets/home/{ar.lower()}-1280.jpg", 1280),))
+
+
+PARTNER_DOORS = ["AR-1137", "AR-1044", "AR-1265"]   # Use the images, Sponsor a collection, Craft a collection: a first set (14 November 2026)
+
+
+def place_partners():
+    r = FRONT_RECORDS
+    for n, ar in enumerate(PARTNER_DOORS):
+        place("partners", "door", n + 1, ar, r[ar]["place"], r[ar]["desc"], f"assets/home/{ar.lower()}-800.jpg", 800, 533,
               more=((f"assets/home/{ar.lower()}-1280.jpg", 1280),))
 
 
@@ -787,6 +804,28 @@ def m_partners(n=6, title="In use by", tight=False):
 
 # 2.10, supporters (About, Thomas, 10 November 2026): the institutions that have supported the work, strongest first, at equal
 # size (the guide's PartnerStrip: one-colour logos, no tiers, no boxes; the order is the only ranking).
+GRID_LOGO_AREA, GRID_LOGO_MAX_H, GRID_LOGO_MAX_W = 6400, 56, 208   # the logos in the ruled grid: about twice the strip's area
+
+
+def m_supporter_grid(rows, title, base):
+    """The supporters as a ruled grid, four across (Partners, Thomas, 14 November 2026, 08:39, after Kontrapunkt's Selected
+    clients): generous cells, thin rules, one logo in the middle of each. The heading stays "Our work has been supported
+    by": these institutions supported the exhibition, the workshops and a collection, and are not shown as users of the
+    archive. Partners who use the archive take the same grid, under their own heading, once there are any."""
+    def one(x):
+        r = x["ratio"]
+        h = min(GRID_LOGO_MAX_H, math.sqrt(GRID_LOGO_AREA * x.get("weight", 1) ** 2 / r))
+        w = r * h
+        if w > GRID_LOGO_MAX_W:
+            w, h = GRID_LOGO_MAX_W, GRID_LOGO_MAX_W / r
+        return (f'<li><img src="{base}assets/supporters/{x["logo"]}" alt="{e(x["name"])}" width="{w:.0f}" height="{h:.0f}" loading="lazy" decoding="async"></li>')
+    return mod("partners", "supporters, as a ruled grid",
+               f'<div class="cols"><div class="c1-12"><h2><span class="draft">{e(title)}</span></h2></div></div>'
+               f'<ul class="reg-grid logo-grid">{"".join(one(x) for x in rows)}</ul>'
+               + note("The same eight as on About, in About’s order. The logos are each organisation’s own, taken from its website on 10 November 2026; "
+                      "shown this large, each needs its courtesy note and its official one-colour file before launch."), sid="supported")
+
+
 def m_supporters(rows, title, base):
     def one(x):
         if not x.get("logo"):
@@ -831,16 +870,21 @@ def m_use(variant="a", title="In use", tight=False):
 
 
 # 2.12 Doors and actions: (a) two doors, (b) the action band with a count, (c) the ways on, (d) the contact band.
-def door(href, kicker, title, line, dark=False):
+def door(href, kicker, title, line, dark=False, photo=None):
     limit("door kicker", kicker); limit("door title", title); limit("door line", line)
     kind = " archive" if href.startswith(ARCHIVE) else ""
-    return (f'<a class="panel{kind}" href="{href}"><span class="kicker">{e(kicker)}</span>'
-            f'<strong>{e(title)}</strong>{f"<span>{e(line)}</span>" if line else ""}</a>')
+    a = (f'<a class="panel{kind}" href="{href}"><span class="kicker">{e(kicker)}</span>'
+         f'<strong>{e(title)}</strong>{f"<span>{e(line)}</span>" if line else ""}</a>')
+    # with a photograph (Partners, 14 November 2026): the door's name over its picture, the caption beneath the picture
+    return f'<div class="door-pic">{a}{frame(photo, "3/2", role="door", own=False)}</div>' if photo else a
 
 
 def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=None, line=None, address=None, kicker=None, links=None, sid=None, tight=False, left=False):
     if variant == "a":
-        return mod("doors", "a, the doors", f'<div class="door-panels{" three" if len(doors) == 3 else ""}">{"".join(doors)}</div>', sid=sid, tight=tight)
+        pics = any('class="door-pic"' in d for d in doors)   # doors with photographs share one credit line
+        return mod("doors", "a, the doors" + (", each with a photograph" if pics else ""),
+                   f'<div class="door-panels{" three" if len(doors) == 3 else ""}{" with-pics" if pics else ""}">{"".join(doors)}</div>'
+                   + (credit_line(group=True) if pics else ""), sid=sid, tight=tight)
     if variant == "b":
         c = f'<div class="num"><b>{count[0]}</b><span>{e(count[1])}</span></div>'
         if count2 and (count2[0] != "—" or SHOW_EMPTY):
@@ -1079,7 +1123,7 @@ REQUEST_FOOT = "Companies get access through a collection sponsorship; write to 
 # ---------------------------------------------------------------------------------------------
 HOUSE_COLLECTION = dict(
     slug="house-collection", title="House Collection", kicker="Collection", statement=HOUSE_STATEMENT, statement_draft=True,
-    lead="Collection image", story_title="Made by our own team", story=HOUSE_STORY, facts=HOUSE_FACTS,   # the heading without its years (draft, 13 November 2026: no dates as structure)
+    lead="Collection image", lead_cut=PHOTO_AR_2002, story_title="Made by our own team", story=HOUSE_STORY, facts=HOUSE_FACTS,   # the heading without its years (draft, 13 November 2026: no dates as structure)
     grid_line="A spread across the five themes.",   # "released, no minors" was our own working note, not a line for a reader (13 November 2026)
     access=dict(count=("1,122", "images in the House Collection"), src="collection-house", line=f"Sponsoring a collection? Write to {EMAIL_PARTNERS}."),
     # Four parts since 13 November 2026, 16:49 (the plan Thomas approved at 16:44; at 16:51 he said to proceed): the
@@ -1087,7 +1131,8 @@ HOUSE_COLLECTION = dict(
     # Out, on trial: the grid From the collection (the switch shows the photographs), Three countries, three cities (the
     # countries stand in the facts), the second full-width photograph, and Goals it serves (never confirmed from the
     # metadata). Until then: ["themes", "story", "grid", "places", "feature", "goals", "access", "uses"].
-    sections=["theme-switch", "story", "access", "uses"],
+    # 14 November 2026 (Thomas, 08:39): who has licensed the images stands directly under the lead photograph.
+    sections=["register", "theme-switch", "story", "access", "uses"],
     card=dict(kicker="Our own collection", line="1,122 photographs made by our team in Mali, Kenya and The Gambia.",
               meta=["1,122 images", "21 shoots", "Mali · Kenya · The Gambia"], image="Collection image"),
 )
@@ -1213,10 +1258,30 @@ ARCHIVE_COLLECTIONS = [  # the collections in the archive; a sponsored collectio
          line="1,122 photographs made by our team in Bamako, Nairobi and Banjul, alongside our workshops.",
          meta=["1,122 images", "Mali · Kenya · The Gambia"], image="A photograph from the House Collection, from the picks once cleared"),
 ]
-ABOUT_GETTY_BEFORE = "Before the archive, our team’s images were licensed through Getty Images by companies including"
-ARCHIVE_LICENSEES = ["VISA", "Western Union", "MTN", "McKinsey Global Institute", "Airtel", "Samsung", "Pearson"]   # bought the team's images (Getty contract 5100359; Track Record)
-ABOUT_GETTY_AFTER = ("In 2025 we took them back, so that they serve one purpose: to carry this picture of Africa "
-                     "into the work of organisations that work with the continent.")
+# Who has licensed the images (Thomas, 14 November 2026, 08:39 and 08:45). Until then seven names stood on About, in small
+# type in the right column. They moved to the House Collection's page, directly under its lead photograph, as the element
+# that carries the page's authority: the numbers, the names with most weight in a ruled grid, and the other names in
+# columns beneath. Thomas, 08:45: the names are an asset; use them all, from both Getty contracts, and choose for impact.
+# Source: 04 Commerce & Culture – Track Record (Licensed via Getty Images, by sector; Independent evidence, the licence
+# count from Getty's statements for January 2011 to February 2015: 548 licences, 46 countries, about 330 buyers). Names in
+# type, never logos: they bought a licence through Getty and are not our clients. The grid's rows follow the sectors,
+# unnamed: institutions; technology; finance and consulting; media. Left out: Amazon, Google and the Gates Foundation
+# (marked "to confirm" in the Track Record), and Exxon and Shell (the Track Record's own advice for this audience).
+# The wording is a draft for Thomas; "images from our productions" is the Track Record's phrase for both contracts.
+LICENCE_TITLE = "Licensed worldwide"
+LICENCE_LEAD = "Before the archive, images from our productions were licensed through Getty Images by companies, media and institutions."
+LICENCE_AFTER = ("In 2025 we took them back, so that they serve one purpose: to carry this picture of Africa "
+                 "into the work of organisations that work with the continent.")
+LICENCE_NUMBERS = [("548", "licences"), ("46", "countries"), ("330", "buyers, in round numbers")]
+LICENCE_SOURCE = "Getty Images’ sales statements, 2011 to 2015."
+LICENSEES_FIRST = ["United Nations", "World Bank", "European Investment Bank", "British Council",
+                   "Microsoft", "Apple", "Samsung", "Spotify",
+                   "VISA", "HSBC", "McKinsey", "Deloitte",
+                   "BBC", "NBC", "The Guardian", "The Washington Post"]
+LICENSEES_MORE = ["3M", "ABC", "Accenture", "Airtel", "AOL", "ASUS", "AT&T", "Axel Springer", "Barclays", "Cambridge University Press",
+                  "CNBC", "Condé Nast", "Del Monte", "Discovery", "EY", "Hearst", "Heinemann", "KPMG", "Lloyds Bank", "M&C Saatchi",
+                  "McGraw-Hill", "MTN", "NEC", "Ogilvy", "Orange", "Oxford University Press", "Pearson", "Pfizer", "Random House", "RTL",
+                  "Safaricom", "Time Inc.", "Uber", "UPS", "Viacom", "Virgin", "Vodacom", "Western Union", "Yahoo"]
 ABOUT_HINGE = "The name Africa Reframed comes from an exhibition."
 
 # 2 Exhibitions: the activity, then the projects, then the artists
@@ -2624,6 +2689,23 @@ def tpl_theme(p, base):
 # archive, and a pair of photographs. Choosing another theme is a cut (rule 20); nothing is hidden behind a plus. It is
 # Home's archive in small, in full. Without scripts the five stand under each other and the names lead down to them.
 # Each theme has its address on the page (#learning ...), which the script opens on arrival.
+def m_register(c, base):
+    """Who has licensed the images: a text block, then one table on four columns: the numbers, the names in ruled cells,
+    and the other names in columns."""
+    head = (f'<div class="cols"><div class="c1-4">{heading(LICENCE_TITLE)}</div>'
+            f'<div class="c7-12">{draft(LICENCE_LEAD, "p", "lead")}{draft(LICENCE_AFTER)}</div></div>')
+    nums = "".join(f'<li class="num"><b>{n}</b><span>{e(t)}</span></li>' for n, t in LICENCE_NUMBERS)
+    nums += f'<li class="reg-src">{e(LICENCE_SOURCE)}</li>'
+    first = "".join(f"<li>{e(n)}</li>" for n in LICENSEES_FIRST)
+    more = "".join(f"<li>{e(n)}</li>" for n in LICENSEES_MORE)
+    return mod("numbers", "the register: who has licensed the images", head
+               + f'<div class="register-table"><ul class="reg-grid reg-nums">{nums}</ul><ul class="reg-grid reg-names">{first}</ul>'
+                 f'<ul class="reg-more">{more}</ul></div>'
+               + note("Draft wording and a first choice of names, for Thomas: sixteen in the grid, in rows by sector (institutions, technology, "
+                      "finance and consulting, media), and 39 beneath in alphabetical order. Source: the Track Record’s list of Getty licensees. "
+                      "Left out: Amazon, Google and the Gates Foundation (marked to confirm there), Exxon and Shell."), sid="licensed")
+
+
 def m_theme_switch(c, base):
     tabs, panels = "", ""
     for i, t in enumerate(THEMES):
@@ -2701,6 +2783,7 @@ def facts_html(c):
 
 # The collection page's sections. Each takes the collection and the base path; a collection names the ones it uses, in order.
 COLLECTION_SECTIONS = {
+    "register": m_register,
     "theme-switch": m_theme_switch,
     "story": lambda c, base: (m_text(c["story_title"], c["story"], "a") if "grid" in c["sections"] else
                               m_text(c["story_title"], c["story"], "b", box=facts_html(c))),
@@ -2758,7 +2841,7 @@ def tpl_collection(p, base):
         meta.insert(0, (f'{c["access"]["count"][0]} images in the archive →', archive("/-/galleries/archive", c["access"]["src"] + "-head")))
     head = (m_collection_switch(c, base)
             + m_page_head(c["title"], c["statement"], meta=meta, statement_draft=c.get("statement_draft", False))
-            + m_photo(c["lead"], "21/9", "a", credit=c.get("lead_credit"), lead=True, echo=True))
+            + m_photo(c["lead"], "21/9", "a", credit=c.get("lead_credit"), lead=True, echo=True, cut=c.get("lead_cut")))
     return head + "".join(COLLECTION_SECTIONS[s](c, base) for s in c["sections"])
 
 
@@ -2774,12 +2857,17 @@ def tpl_partners(p, base):
     # held two. Its text is built from what the site already says: Home's panel (on location, credited, paid), the principle
     # Credited, fairly paid photographers, and About's network (open, since 2014; photographers who want to join can write).
     # No guidelines for creators are promised: they are still to be set up (Thomas, 10:58). Draft.
-    doors = [door("#use", "Always free", "Use the images", "", dark=True),
-             door("#sponsor", "By collection", "Sponsor a collection", ""),
-             door("#craft", "On commission", "Craft a collection", "")]
+    # 14 November 2026 (Thomas, 08:39): the page gets photographs and the supporters. Each door carries one photograph from
+    # the archive (a first set, for Thomas to change; a Waste to Value photograph belongs on Sponsor a collection once that
+    # collection's photographs are placed, and a partner's publication on Use the images once there is one). Under the doors
+    # stand the eight supporters from About, as a ruled grid.
+    doors = [door("#use", "Always free", "Use the images", "", dark=True, photo="Use the images: a photograph from the archive"),
+             door("#sponsor", "By collection", "Sponsor a collection", "", photo="Sponsor a collection: a photograph from the archive"),
+             door("#craft", "On commission", "Craft a collection", "", photo="Craft a collection: a photograph from the archive")]
     # 1 the two doors; 2 how access works; 3 using the images; 4 sponsor a collection; 5 who already uses the archive; 6 request access, contact.
     return (m_page_head(p["title"], PARTNERS_STATEMENT,
                         statement_draft=True, doors=m_doors("a", doors=doors))
+            + m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base)
             + m_text("How access works", [ACCESS_WHO], "a", is_draft=False, sid="use")
             + m_items(None, ACCESS_STEPS, "b", tight=True)
             + m_doors("c", links=[button(base + "request-access/", "Request access", quiet=True)], tight=True)
@@ -2843,10 +2931,7 @@ def tpl_press(p, base):
 def tpl_text(p, base):
     k = p["slug"]
     if k == "about":
-        register = ('<div class="register">' + draft(ABOUT_GETTY_BEFORE, "p", "register-lead")
-                    + '<p class="register-names">' + "".join(f"<span>{e(n)}</span>" for n in ARCHIVE_LICENSEES) + "</p>"
-                    + draft(ABOUT_GETTY_AFTER, "p", "register-after")
-                    + note("Companies that bought our team’s images, the images now in the archive. Institutional names (the UN, the World Bank, the BBC and others) are added once Thomas has checked they bought the team’s images.") + "</div>")
+        # The register (who has licensed the images) stood here until 14 November 2026; it is on the House Collection's page.
         # Four chapters (the plan of 11 November 2026, the whole site): the archive, exhibitions, workshops, who is behind
         # it. Each opens with twice the space above it and its title at the page-title size in Light. The order and the
         # words are the build brief's (About page – build brief): credibility, then wonder, then people.
@@ -2857,7 +2942,7 @@ def tpl_text(p, base):
         # 1 The archive: always on. The activity, then the proof: its collections, where its images have been, the way in.
         the_archive = (opener("The archive", ABOUT_ARCHIVE, "archive")
                 + mod("collection", "a, the collections in the archive", "".join(collection_entry(x, base) for x in by_state(ARCHIVE_COLLECTIONS)))
-                + mod("text", "the register", f'<div class="cols"><div class="c7-12">{register}'
+                + mod("doors", "c, the way on", f'<div class="cols"><div class="c7-12">'
                       f'<p class="doors">{button(base + "partners/#use", "How partners use the archive →", quiet=True)}</p></div></div>', tight=True)
                 # the principles stand here since 13 November 2026 (Thomas, 10:23): they are the terms the archive stands on, and
                 # here they are read by the reader who is checking who is behind it; on Home they made way for Partnerships
@@ -3746,10 +3831,42 @@ body.clean .mod::before{display:none}
 .channels strong{display:block;font-weight:700;font-size:var(--fs-head);line-height:1.15;margin:0 0 8px}
 .channels a:hover strong{text-decoration:underline}
 .channels .channel-line{font-size:var(--fs-text);color:var(--ink-soft)}
-.register{margin:0 0 8px;padding:24px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.register-lead{font-size:var(--fs-small);color:var(--ink-soft);margin:0 0 8px}
-.register-names{display:flex;flex-wrap:wrap;gap:4px 32px;font-size:var(--fs-text);line-height:1.4;margin:0 0 12px;max-width:none}
-.register-after{margin:0}
+/* A collection's lead photograph with the cut (14 November 2026): the Opening's photograph and pattern, under the page's head. */
+.cut-lead .opening-img{aspect-ratio:16/9}
+@media (min-width:1024px){.cut-lead .opening-img{aspect-ratio:var(--shape,2000/1288);max-height:max(520px,calc(100vh - var(--header-h) - 32px))}}
+/* The ruled grid (14 November 2026, after Kontrapunkt's Selected clients): four across, thin rules between the cells, the
+   content on the columns 1, 4, 7 and 10. The rules stand in the middle of the gutters, so what a cell holds starts on its
+   column; the grid is open at its left and right edges. Two uses: names in type (the register on the House Collection)
+   and logos (the supporters on Partners). */
+.reg-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--gutter);overflow:hidden}
+.reg-grid li{position:relative;max-width:none;margin:0}
+.reg-grid li::after{content:"";position:absolute;left:calc(-.5 * var(--gutter));right:calc(-.5 * var(--gutter));bottom:0;height:1px;background:var(--line)}
+.reg-grid li::before{content:"";position:absolute;left:calc(-.5 * var(--gutter));top:0;bottom:0;width:1px;background:var(--line)}
+/* The register: the numbers as the table's head under a heavy rule, the names in cells, the other names in columns. */
+.register-table{margin-top:var(--section-head)}
+.reg-nums{border-top:2px solid var(--ink)}
+.reg-nums li{padding:24px 0 32px}
+.reg-nums li::before{display:none}
+.reg-nums .num span{display:block;margin-top:8px}
+.reg-src{display:flex;align-items:flex-end;font-size:var(--fs-small);line-height:1.45;color:var(--ink-soft)}
+.reg-names li{display:flex;align-items:center;min-height:96px;padding:16px 0;font-size:var(--fs-head);font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.reg-more{list-style:none;margin:32px 0 0;padding:0;columns:4;column-gap:var(--gutter);color:var(--ink-soft)}
+.reg-more li{max-width:none;break-inside:avoid}
+.logo-grid{margin-top:32px;border-top:1px solid var(--line)}
+.logo-grid li{display:flex;align-items:center;justify-content:center;min-height:176px;padding:24px}
+.logo-grid img{display:block;max-width:100%;height:auto;filter:grayscale(1) brightness(.6) contrast(1.6)}
+/* A door with its photograph (Partners): the door's name under the rule, its picture beneath, one credit for the three. */
+.door-pic{display:flex;flex-direction:column}
+.door-pic .frame{margin:24px 0 0}
+@media (max-width:1023px){
+  .reg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .reg-more{columns:2}
+  .logo-grid li{min-height:128px}
+}
+@media (max-width:767px){
+  .reg-names li{font-size:var(--fs-text);min-height:64px}
+  .door-pic .frame,.door-panels.with-pics + .credit{display:none}   /* on a phone the three doors stand in the first screen, without their pictures (rule 23) */
+}
 .hinge{font-size:var(--fs-head);font-weight:300;line-height:1.45;max-width:32ch;margin:0}
 .project-title{font-size:var(--fs-head);font-weight:700;line-height:1.15;margin:0 0 12px}
 .kicker.state{color:var(--ink);font-weight:700}
@@ -4509,7 +4626,7 @@ def build():
     (ROOT / "assets" / "site.css").write_text(CSS)
     share_image()
     rows, links = [], {}
-    SLOTS.clear(); PLACED_AT.clear(); place_house_collection()
+    SLOTS.clear(); PLACED_AT.clear(); place_house_collection(); place_partners()
     (ROOT / "assets" / "logo-white.svg").write_text((ROOT / "assets" / "logo-black.svg").read_text().replace('fill="#000000"', 'fill="#ffffff"').replace(", black</title>", ", white</title>"))
     # the logo mark alone, in white, for the footer: the first four shapes of the side-by-side logo, at its height
     mark = "".join(re.findall(r'<path d="[^"]+"></path>', (ROOT / "assets" / "logo-black.svg").read_text())[:4])

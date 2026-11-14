@@ -197,6 +197,18 @@ body.clean .mod::before{display:none}
 .sector-switch.switching .sector-panel{display:none;margin-top:0}
 .sector-switch.switching .sector-panel.on{display:block}
 .sector-switch.switching .sector-name{display:none}
+.sector-switch.switching .reg-names li{display:none}
+.sector-switch.switching .reg-names li.show{display:flex}
+/* the two numbers, large, in the title's column: on columns 1 and 3 */
+.reg-nums{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:var(--gutter)}
+.reg-nums li{max-width:none}
+.reg-nums .num span{display:block;margin-top:8px}
+/* the way through the names: two arrows at the right under the row, and where the reader is */
+.reg-nav{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin:16px 0 0;max-width:none}
+.reg-pos{font-size:var(--fs-small);color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-right:8px}
+.reg-nav button{width:44px;height:44px;font:inherit;line-height:1;color:var(--ink);background:none;border:1px solid var(--ink);border-radius:0;cursor:pointer}
+.reg-nav button:hover,.reg-nav button:focus-visible{background:var(--ink);color:var(--paper)}
+.sector-switch:not(.switching) .reg-nav{display:none}
 .sector-switch:not(.switching) .sector-tabs{display:none}
 .reg-names li{display:flex;align-items:center;min-height:96px;padding:16px 0;font-size:var(--fs-head);font-weight:700;line-height:1.15;letter-spacing:-.01em}
 .logo-grid{margin-top:32px;border-top:1px solid var(--line)}
@@ -232,6 +244,7 @@ body.clean .mod::before{display:none}
 }
 @media (max-width:767px){
   .reg-names li{font-size:var(--fs-text);min-height:72px}
+  .reg-nums{margin:16px 0 24px}
   .logo-grid button{padding:24px 16px;min-height:176px}   /* high enough for the longest line, so a tap moves nothing */
   .logo-grid.reveals .logo-what{font-size:var(--fs-small)}
   .theme-tabs.sector-tabs{grid-template-columns:1fr}

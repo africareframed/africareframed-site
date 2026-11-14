@@ -1270,19 +1270,27 @@ ARCHIVE_COLLECTIONS = [  # the collections in the archive; a sponsored collectio
 # he has seen the use himself). Left out: Amazon and Google (marked "to confirm" in the Track Record), Exxon and Shell
 # (Thomas, 09:01: take care with them). The wording is a draft for Thomas; "images from our productions" is the Track
 # Record's phrase for both contracts.
+# 14 November 2026, 09:27 (Thomas): one row of names, not two, and a way forward through all of them ("few people do
+# this, but it's impressive if they try"); and the numbers large again, as in the first form. So: the two numbers stand
+# large in the left column under the title; the switch names four sectors; under it stands one row of four names, and two
+# arrows page through every name, sector after sector, the switch following. All 56 names of the Track Record's list are
+# in (without Amazon, Google, Exxon and Shell). The third sector is Business and finance, so that the industry names
+# (Pfizer, 3M, UPS, Virgin, Del Monte) stand under one of four sectors and the four still stand over the four columns.
 LICENCE_TITLE = "Licensed across sectors"
-LICENCE_LEAD = "Before the archive, images from our productions were licensed through Getty Images 548 times, in 46 countries and across sectors."
+LICENCE_LEAD = "Before the archive, images from our productions were licensed through Getty Images by institutions, companies and media."
 LICENCE_AFTER = ("In 2025 we took them back, so that they serve one purpose: to carry this picture of Africa "
                  "into the work of organisations that work with the continent.")
-LICENSEE_SECTORS = [   # the sector's address, its name on the switch, its names: two rows of four at most
+LICENCE_NUMBERS = [("548", "licences"), ("46", "countries")]
+LICENSEE_SECTORS = [   # the sector's address, its name on the switch, its names in the order they are paged through, four at a time
     ("institutions", "Institutions", ["United Nations", "World Bank", "European Investment Bank", "Gates Foundation", "British Council"]),
-    ("technology", "Technology and telecom", ["Microsoft", "Apple", "Samsung", "Spotify", "Uber", "Orange", "MTN", "Airtel"]),
-    ("finance", "Finance and consulting", ["VISA", "HSBC", "Barclays", "Western Union", "McKinsey", "Deloitte", "KPMG", "Accenture"]),
-    ("media", "Media and publishing", ["BBC", "NBC", "The Guardian", "The Washington Post", "Condé Nast", "Hearst", "Pearson", "Oxford University Press"]),
+    ("technology", "Technology and telecom", ["Microsoft", "Apple", "Samsung", "Spotify", "Uber", "Orange", "MTN", "Airtel",
+                                              "Vodacom", "Safaricom", "AT&T", "Yahoo", "AOL", "ASUS", "NEC"]),
+    ("business", "Business and finance", ["VISA", "HSBC", "Barclays", "Western Union", "McKinsey", "Deloitte", "KPMG", "Accenture",
+                                          "Lloyds Bank", "EY", "Ogilvy", "M&C Saatchi", "Pfizer", "3M", "UPS", "Virgin", "Del Monte"]),
+    ("media", "Media and publishing", ["BBC", "NBC", "The Guardian", "The Washington Post", "Condé Nast", "Hearst", "Pearson", "Oxford University Press",
+                                       "ABC", "CNBC", "Time Inc.", "Axel Springer", "Discovery", "Viacom", "RTL", "Cambridge University Press",
+                                       "McGraw-Hill", "Heinemann", "Random House"]),
 ]
-# Four sectors, so that each name on the switch stands over a column of names (columns 1, 4, 7 and 10). A fifth, Industry
-# (Pfizer, 3M, UPS, Virgin, Del Monte), stood there for a few minutes on 14 November 2026 and put the switch in sixths over
-# a grid in quarters; it is left out for the grid's sake, for Thomas to bring back if the sector matters more.
 ABOUT_HINGE = "The name Africa Reframed comes from an exhibition."
 
 # 2 Exhibitions: the activity, then the projects, then the artists
@@ -2702,30 +2710,42 @@ def tpl_theme(p, base):
 # Home's archive in small, in full. Without scripts the five stand under each other and the names lead down to them.
 # Each theme has its address on the page (#learning ...), which the script opens on arrival.
 def m_register(c, base):
-    """Who has licensed the images: a text block, then the switch between the sectors over a ruled grid of two rows.
-    One sector is always open; choosing another is a cut; the grid keeps its height, so nothing under it moves.
-    Without scripts the sectors stand under each other, each under its name."""
-    head = (f'<div class="cols"><div class="c1-4">{heading(LICENCE_TITLE)}</div>'
+    """Who has licensed the images: the title with the two numbers under it, the text block beside them; then the switch
+    between the sectors over one row of four names, and two arrows that page through every name, sector after sector.
+    A change is a cut and the row keeps its height. Without scripts every name stands under its sector."""
+    nums = "".join(f'<li class="num"><b>{n}</b><span>{e(t)}</span></li>' for n, t in LICENCE_NUMBERS)
+    head = (f'<div class="cols"><div class="c1-4">{heading(LICENCE_TITLE)}<ul class="reg-nums">{nums}</ul></div>'
             f'<div class="c7-12">{draft(LICENCE_LEAD, "p", "lead")}{draft(LICENCE_AFTER)}</div></div>')
-    tabs, panels = "", ""
+    tabs, panels, pages = "", "", 0
     for i, (key, name, names) in enumerate(LICENSEE_SECTORS):
-        assert len(names) <= 8, name
         on = i == 0
         tabs += (f'<li><button type="button" data-sector="{key}" aria-pressed="{"true" if on else "false"}"{" class=" + chr(34) + "on" + chr(34) if on else ""}>'
                  f'<strong>{e(name)}</strong></button></li>')
-        cells = "".join(f"<li>{e(n)}</li>" for n in names) + '<li class="blank" aria-hidden="true"></li>' * (8 - len(names))
+        cells = "".join(f"<li>{e(n)}</li>" for n in names) + '<li class="blank" aria-hidden="true"></li>' * (-len(names) % 4)
+        pages += -(-len(names) // 4)
         panels += (f'<div class="sector-panel{" on" if on else ""}" data-sector="{key}"><h3 class="sector-name">{e(name)}</h3>'
                    f'<ul class="reg-grid reg-names">{cells}</ul></div>')
+    nav = (f'<p class="reg-nav"><span class="reg-pos">1 / {pages}</span>'
+           '<button type="button" class="reg-prev" aria-label="The names before these">←</button>'
+           '<button type="button" class="reg-next" aria-label="More names">→</button></p>')
     script = ("<script>(function(){var box=document.querySelector('.sector-switch');if(!box)return;"
-              "var tabs=[].slice.call(box.querySelectorAll('button[data-sector]')),panels=[].slice.call(box.querySelectorAll('.sector-panel'));"
-              "box.classList.add('switching');"
-              "tabs.forEach(function(t){t.addEventListener('click',function(){var k=t.getAttribute('data-sector');"
-              "tabs.forEach(function(x){var o=x===t;x.classList.toggle('on',o);x.setAttribute('aria-pressed',o?'true':'false');});"
-              "panels.forEach(function(p){p.classList.toggle('on',p.getAttribute('data-sector')===k);});});});})();</script>")
+              "var tabs=[].slice.call(box.querySelectorAll('button[data-sector]')),panels=[].slice.call(box.querySelectorAll('.sector-panel')),"
+              "pos=box.querySelector('.reg-pos'),pages=[],first={},cur=0;"
+              "panels.forEach(function(p,i){var n=p.querySelectorAll('.reg-names li').length;first[i]=pages.length;for(var k=0;k<n;k+=4)pages.push([i,k]);});"
+              "function show(n){cur=(n+pages.length)%pages.length;var pi=pages[cur][0],st=pages[cur][1];"
+              "panels.forEach(function(p,i){p.classList.toggle('on',i===pi);"
+              "[].forEach.call(p.querySelectorAll('.reg-names li'),function(li,k){li.classList.toggle('show',i===pi&&k>=st&&k<st+4);});});"
+              "tabs.forEach(function(t,i){var o=i===pi;t.classList.toggle('on',o);t.setAttribute('aria-pressed',o?'true':'false');});"
+              "pos.textContent=(cur+1)+' / '+pages.length;}"
+              "box.classList.add('switching');show(0);"
+              "tabs.forEach(function(t,i){t.addEventListener('click',function(){show(first[i]);});});"
+              "box.querySelector('.reg-next').addEventListener('click',function(){show(cur+1);});"
+              "box.querySelector('.reg-prev').addEventListener('click',function(){show(cur-1);});})();</script>")
+    count = sum(len(x[2]) for x in LICENSEE_SECTORS)
     return mod("numbers", "the register: who has licensed the images, by sector", head
-               + f'<div class="sector-switch"><ul class="theme-tabs sector-tabs" aria-label="Sectors">{tabs}</ul>{panels}</div>{script}'
-               + note("Draft wording and a first choice of names, for Thomas: four sectors, eight names at most in each. Source: the Track Record’s "
-                      "list of Getty licensees. Left out: Amazon and Google (marked to confirm there), Exxon and Shell; and a fifth sector, Industry (Pfizer, 3M, UPS, Virgin, Del Monte), so that the four names stand over the four columns."), sid="licensed")
+               + f'<div class="sector-switch"><ul class="theme-tabs sector-tabs" aria-label="Sectors">{tabs}</ul>{panels}{nav}</div>{script}'
+               + note(f"Draft wording, for Thomas. {count} names in four sectors, four at a time; the arrows run through all of them. Source: the Track "
+                      "Record’s list of Getty licensees. Left out: Amazon and Google (marked to confirm there), Exxon and Shell."), sid="licensed")
 
 
 def m_theme_switch(c, base):
@@ -3876,6 +3896,18 @@ body.clean .mod::before{display:none}
 .sector-switch.switching .sector-panel{display:none;margin-top:0}
 .sector-switch.switching .sector-panel.on{display:block}
 .sector-switch.switching .sector-name{display:none}
+.sector-switch.switching .reg-names li{display:none}
+.sector-switch.switching .reg-names li.show{display:flex}
+/* the two numbers, large, in the title's column: on columns 1 and 3 */
+.reg-nums{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:var(--gutter)}
+.reg-nums li{max-width:none}
+.reg-nums .num span{display:block;margin-top:8px}
+/* the way through the names: two arrows at the right under the row, and where the reader is */
+.reg-nav{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin:16px 0 0;max-width:none}
+.reg-pos{font-size:var(--fs-small);color:var(--ink-soft);font-variant-numeric:tabular-nums;margin-right:8px}
+.reg-nav button{width:44px;height:44px;font:inherit;line-height:1;color:var(--ink);background:none;border:1px solid var(--ink);border-radius:0;cursor:pointer}
+.reg-nav button:hover,.reg-nav button:focus-visible{background:var(--ink);color:var(--paper)}
+.sector-switch:not(.switching) .reg-nav{display:none}
 .sector-switch:not(.switching) .sector-tabs{display:none}
 .reg-names li{display:flex;align-items:center;min-height:96px;padding:16px 0;font-size:var(--fs-head);font-weight:700;line-height:1.15;letter-spacing:-.01em}
 .logo-grid{margin-top:32px;border-top:1px solid var(--line)}
@@ -3911,6 +3943,7 @@ body.clean .mod::before{display:none}
 }
 @media (max-width:767px){
   .reg-names li{font-size:var(--fs-text);min-height:72px}
+  .reg-nums{margin:16px 0 24px}
   .logo-grid button{padding:24px 16px;min-height:176px}   /* high enough for the longest line, so a tap moves nothing */
   .logo-grid.reveals .logo-what{font-size:var(--fs-small)}
   .theme-tabs.sector-tabs{grid-template-columns:1fr}

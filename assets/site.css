@@ -192,13 +192,11 @@ body.clean .mod::before{display:none}
 .sector-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
 .sector-tabs button:hover strong,.sector-tabs button:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
 .sector-panel .reg-names{border-top:1px solid var(--line)}
-.sector-panel + .sector-panel{margin-top:32px}
+.sector-panel ~ .sector-panel{margin-top:32px}
 .sector-name{font-size:var(--fs-text);font-weight:700;margin:0 0 8px}
-.sector-switch.switching .sector-panel{display:none;margin-top:0}
-.sector-switch.switching .sector-panel.on{display:block}
-.sector-switch.switching .sector-name{display:none}
-.sector-switch.switching .reg-names li{display:none}
-.sector-switch.switching .reg-names li.show{display:flex}
+.sector-switch.switching .sector-panel{display:none}
+.sector-switch:not(.switching) .reg-row{display:none}
+.reg-row{border-top:1px solid var(--line);touch-action:pan-y}
 /* the two numbers, large, in the title's column: on columns 1 and 3 */
 .reg-nums{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:var(--gutter)}
 .reg-nums li{max-width:none}

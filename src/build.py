@@ -2722,40 +2722,49 @@ def tpl_theme(p, base):
 # Each theme has its address on the page (#learning ...), which the script opens on arrival.
 def m_register(c, base):
     """Who has licensed the images: the title with the two numbers under it, the text block beside them; then the switch
-    between the sectors over one row of four names, and two arrows that page through every name, sector after sector.
-    A change is a cut and the row keeps its height. Without scripts every name stands under its sector."""
+    between the sectors over one row of four names, and two arrows that slide through every name in one run.
+    A change is a cut and the row is never empty. Without scripts every name stands under its sector."""
     nums = "".join(f'<li class="num"><b>{n}</b><span>{e(t)}</span></li>' for n, t in LICENCE_NUMBERS)
     head = (f'<div class="cols"><div class="c1-4">{heading(LICENCE_TITLE)}<ul class="reg-nums">{nums}</ul></div>'
             f'<div class="c7-12">{draft(LICENCE_LEAD, "p", "lead")}{draft(LICENCE_AFTER)}</div></div>')
-    tabs, panels, pages = "", "", 0
+    # One run of names (Thomas, 14 November 2026, 09:49): the arrows slide through every name in one sequence, four at a
+    # time, and where a sector ends the next one's names follow in the same row, so no cell is ever empty. The switch
+    # marks the sector most of the four belong to, and a click on a sector starts the row at its first name. On a
+    # phone the row also answers to a swipe. The count says which names of the total are shown.
+    tabs, panels = "", ""
+    total = sum(len(x[2]) for x in LICENSEE_SECTORS)
     for i, (key, name, names) in enumerate(LICENSEE_SECTORS):
         on = i == 0
         tabs += (f'<li><button type="button" data-sector="{key}" aria-pressed="{"true" if on else "false"}"{" class=" + chr(34) + "on" + chr(34) if on else ""}>'
                  f'<strong>{e(name)}</strong></button></li>')
-        cells = "".join(f"<li>{e(n)}</li>" for n in names) + '<li class="blank" aria-hidden="true"></li>' * (-len(names) % 4)
-        pages += -(-len(names) // 4)
-        panels += (f'<div class="sector-panel{" on" if on else ""}" data-sector="{key}"><h3 class="sector-name">{e(name)}</h3>'
-                   f'<ul class="reg-grid reg-names">{cells}</ul></div>')
-    nav = (f'<p class="reg-nav"><span class="reg-pos">1 / {pages}</span>'
+        panels += (f'<div class="sector-panel" data-sector="{key}"><h3 class="sector-name">{e(name)}</h3>'
+                   f'<ul class="reg-grid reg-names">{"".join(f"<li>{e(n)}</li>" for n in names)}</ul></div>')
+    row = '<ul class="reg-grid reg-names reg-row" aria-live="polite">' + "".join(f"<li>{e(n)}</li>" for n in LICENSEE_SECTORS[0][2][:4]) + "</ul>"
+    nav = (f'<p class="reg-nav"><span class="reg-pos">1–4 of {total}</span>'
            '<button type="button" class="reg-prev" aria-label="The names before these">←</button>'
            '<button type="button" class="reg-next" aria-label="More names">→</button></p>')
     script = ("<script>(function(){var box=document.querySelector('.sector-switch');if(!box)return;"
-              "var tabs=[].slice.call(box.querySelectorAll('button[data-sector]')),panels=[].slice.call(box.querySelectorAll('.sector-panel')),"
-              "pos=box.querySelector('.reg-pos'),pages=[],first={},cur=0;"
-              "panels.forEach(function(p,i){var n=p.querySelectorAll('.reg-names li').length;first[i]=pages.length;for(var k=0;k<n;k+=4)pages.push([i,k]);});"
-              "function show(n){cur=(n+pages.length)%pages.length;var pi=pages[cur][0],st=pages[cur][1];"
-              "panels.forEach(function(p,i){p.classList.toggle('on',i===pi);"
-              "[].forEach.call(p.querySelectorAll('.reg-names li'),function(li,k){li.classList.toggle('show',i===pi&&k>=st&&k<st+4);});});"
-              "tabs.forEach(function(t,i){var o=i===pi;t.classList.toggle('on',o);t.setAttribute('aria-pressed',o?'true':'false');});"
-              "pos.textContent=(cur+1)+' / '+pages.length;}"
+              "var tabs=[].slice.call(box.querySelectorAll('button[data-sector]')),row=box.querySelector('.reg-row'),cells=[].slice.call(row.children),"
+              "pos=box.querySelector('.reg-pos'),names=[],first=[],cur=0;"
+              "[].forEach.call(box.querySelectorAll('.sector-panel'),function(p,i){first[i]=names.length;"
+              "[].forEach.call(p.querySelectorAll('li'),function(li){names.push([li.textContent,i]);});});"
+              "var last=names.length-4;"
+              "function show(n){cur=Math.max(0,Math.min(last,n));var c=[];"
+              "cells.forEach(function(li,k){var x=names[cur+k];li.textContent=x[0];c[x[1]]=(c[x[1]]||0)+1;});"
+              "var top=0;c.forEach(function(v,i){if(v>=(c[top]||0))top=i;});"
+              "tabs.forEach(function(t,i){var o=i===top;t.classList.toggle('on',o);t.setAttribute('aria-pressed',o?'true':'false');});"
+              "pos.textContent=(cur+1)+'\u2013'+(cur+4)+' of '+names.length;}"
+              "function next(){show(cur>=last?0:cur+4);}function prev(){show(cur<=0?last:cur-4);}"
               "box.classList.add('switching');show(0);"
               "tabs.forEach(function(t,i){t.addEventListener('click',function(){show(first[i]);});});"
-              "box.querySelector('.reg-next').addEventListener('click',function(){show(cur+1);});"
-              "box.querySelector('.reg-prev').addEventListener('click',function(){show(cur-1);});})();</script>")
+              "box.querySelector('.reg-next').addEventListener('click',next);box.querySelector('.reg-prev').addEventListener('click',prev);"
+              "var x0=null,y0=0;row.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});"
+              "row.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;"
+              "if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){if(dx<0)next();else prev();}},{passive:true});})();</script>")
     count = sum(len(x[2]) for x in LICENSEE_SECTORS)
     return mod("numbers", "the register: who has licensed the images, by sector", head
-               + f'<div class="sector-switch"><ul class="theme-tabs sector-tabs" aria-label="Sectors">{tabs}</ul>{panels}{nav}</div>{script}'
-               + note(f"Draft wording, for Thomas. {count} names in four sectors, four at a time; the arrows run through all of them. Source: the Track "
+               + f'<div class="sector-switch"><ul class="theme-tabs sector-tabs" aria-label="Sectors">{tabs}</ul>{row}{panels}{nav}</div>{script}'
+               + note(f"Draft wording, for Thomas. {count} names in four sectors, four at a time; the arrows run through all of them in one sequence, and no cell is ever empty. Source: the Track "
                       "Record’s list of Getty licensees. Left out: Amazon and Google (marked to confirm there), Exxon and Shell."), sid="licensed")
 
 
@@ -3902,13 +3911,11 @@ body.clean .mod::before{display:none}
 .sector-tabs button.on{box-shadow:inset 0 4px 0 var(--ink)}
 .sector-tabs button:hover strong,.sector-tabs button:focus-visible strong{text-decoration:underline;text-underline-offset:.2em}
 .sector-panel .reg-names{border-top:1px solid var(--line)}
-.sector-panel + .sector-panel{margin-top:32px}
+.sector-panel ~ .sector-panel{margin-top:32px}
 .sector-name{font-size:var(--fs-text);font-weight:700;margin:0 0 8px}
-.sector-switch.switching .sector-panel{display:none;margin-top:0}
-.sector-switch.switching .sector-panel.on{display:block}
-.sector-switch.switching .sector-name{display:none}
-.sector-switch.switching .reg-names li{display:none}
-.sector-switch.switching .reg-names li.show{display:flex}
+.sector-switch.switching .sector-panel{display:none}
+.sector-switch:not(.switching) .reg-row{display:none}
+.reg-row{border-top:1px solid var(--line);touch-action:pan-y}
 /* the two numbers, large, in the title's column: on columns 1 and 3 */
 .reg-nums{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:var(--gutter)}
 .reg-nums li{max-width:none}

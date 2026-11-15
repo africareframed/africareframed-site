@@ -1,0 +1,35 @@
+/* Africa Reframed - custom CSS (1 Nov 2026; the white header 8 Nov 2026) */
+/* Detail page: air between the title and the caption */
+.media_detail_meta_wrapper h1 { margin-bottom: 0.6em; }
+
+/* Search page: hide "Searched all galleries. Group by gallery" (one archive gallery, so it says nothing); the result count stays */
+.search_meta p { display: none; }
+
+/* Login wall: point people without an account to Request access (the PhotoDeck text here is fixed) */
+.text_block[data-gallery-id] form#login::after { content: "Not a partner yet? Use Request access in the footer below."; display: block; margin-top: 1.4em; opacity: .75; }
+
+/* The grid of the main site (Website - modules, section 3): side margins 64 / 32 / 16 px, content up to 1,312 px, centred */
+html { --page-sides-margin: 64px; }
+#block_navib .block_inner, #block_footer .block_inner, #block_main .block_inner { max-width: 1312px; margin-left: auto; margin-right: auto; }
+@media screen and (max-width: 1023px) { html { --page-sides-margin: 32px; } }
+@media screen and (max-width: 767px) { html { --page-sides-margin: 16px; } }
+
+/* The header, white with the black logo, 128 px tall on desktop and tablet, 64 px on phones; no shadow, no border (the design guide, Header) */
+#block_navib { padding-top: 0; padding-bottom: 0; min-height: 128px; box-shadow: none !important; border-bottom: 0; }
+#block_navib .block_inner { min-height: 128px; align-items: center; }
+#block_navib #component_logo a { display: block; width: 192px; aspect-ratio: 1417.75 / 285.75; background: url("https://africareframed.github.io/africareframed-site/assets/logo-black.svg") no-repeat left center / contain; }
+#block_navib #component_logo img { opacity: 0; width: 192px; max-height: none; display: block; }
+#block_navib #nav_toggle { top: 10px; }
+@media screen and (max-width: 767px) {
+  #block_navib, #block_navib .block_inner { min-height: 64px; }
+  #block_navib #component_logo a, #block_navib #component_logo img { width: 128px; }
+}
+
+/* The menu: 17 px, 24 px apart, black; the divider as a 1 px line, 18 px tall, as on the main site */
+#block_navib #component_menu .menu_item a { font-size: 17px; line-height: 24px; }
+#block_navib #component_menu .menu_item { margin-left: 24px; }
+#block_navib #component_menu .menu_separator_item { font-size: 0; width: 1px; height: 18px; background: #000000; display: inline-block; vertical-align: middle; margin: 0 4px 0 28px; }
+
+/* The footer on the grid: left-aligned, as the main site */
+#block_footer { text-align: left; }
+#block_footer .component_text_content { text-align: left; }

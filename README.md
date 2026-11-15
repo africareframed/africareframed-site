@@ -22,7 +22,7 @@ The public site of Africa Reframed. The archive lives on PhotoDeck at archive.af
   - *Only what exists:* a module whose data does not exist yet (the in-use numbers, partners by name, uses, news, a theme's sponsor) is not built. Enter the data in `PARTNERS_NAMED`, `USES`, `NEWS`, `THEME_SPONSORS` and `MOMENTUM`, and the module appears. `/dev/modules/` still shows every module with placeholders.
   - *The yellow* (`--accent`, the guide's #eacb84) has one job: the way into the archive (`.button.archive`, `.panel.archive`).
   - *The gate:* `python3 src/build.py && python3 src/check.py` opens every page at 1,440, 834 and 390 px and measures it against the rules that can be counted. Run it before every push; nothing is published that makes a number worse. It needs Playwright with Chromium.
-- **Fonts:** DM Sans is served from `assets/fonts` (SIL Open Font License; the licence is beside the files). No request goes to another company's server.
+- **Fonts:** Outfit is served from `assets/fonts` (SIL Open Font License; the licence is beside the files). No request goes to another company's server.
 - **Launch switch:** `LAUNCH = True` in `src/build.py` removes `/dev/`, the wireframe strip and `noindex`. It does not decide which sections show: that follows the data (above).
 - **Deploy:** the workflow runs `python3 src/build.py` before publishing, so the live site always matches `src/`.
 - **Not indexed:** `noindex` stays on until launch on the real domain.

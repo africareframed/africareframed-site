@@ -24,7 +24,7 @@ import build  # noqa: E402  (the pages and the stylesheet come from the build it
 WIDTHS = [(1440, 900, "desktop"), (834, 1112, "tablet"), (390, 844, "phone")]
 SCALE = {0, 4, 8, 12, 16, 24, 32, 48, 64, 96}                    # rule 9
 SIZES = {13, 17, 22, 32, 44, 64}                                 # rule 11, the approved scale
-WEIGHTS = {"300", "400", "700"}                                  # rule 11
+WEIGHTS = {"260", "420", "600"}                                  # rule 11: Outfit's Light, Regular and Bold as tuned (15 November 2026)
 MEASURE = {"desktop": 75, "tablet": 75, "phone": 48}             # rule 10 (the phone: 35 to 45 is the aim, 48 the gate)
 BUDGET = {"home": 350, "theme": 200, "collection": 300, "partners": 350, "portal": 200}   # words a page, by template
 BUDGET_BY_SLUG = {"waste-to-value": None,                       # a sponsored collection is budgeted by story (90 words)

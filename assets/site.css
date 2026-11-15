@@ -219,9 +219,9 @@ body.clean .mod::before{display:none}
 .supported-plain .supported-title .way{font-weight:400;min-height:0;padding:16px 0;margin:-16px 0}   /* a link you can see: underlined words and the arrow; the padding is the finger's room */
 .mod.supported-plain.on-ground.join::before{display:none}
 .supported-plain .supported-title{font-size:var(--fs-small);line-height:1.15;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0}
-.supported-plain.on-ground .logo-grid{margin-top:24px}   /* room between the link's line and the grid's first rule */
-.supported-plain.on-ground .logo-grid.plain .logo-cell{min-height:120px}
-@media (max-width:767px){.supported-plain.on-ground .logo-grid.plain .logo-cell{min-height:96px}}
+.supported-plain.clean .logo-grid{margin-top:24px}   /* room between the link's line and the grid's first rule */
+.supported-plain.clean .logo-grid.plain .logo-cell{min-height:120px}
+@media (max-width:767px){.supported-plain.clean .logo-grid.plain .logo-cell{min-height:96px}}
 .supported-plain.on-ground{--line:#dedbd4}   /* the rules one step darker, so the boxes show on the pale ground */
 .supported-plain.on-ground .logo-grid img{mix-blend-mode:multiply}   /* a logo file with a white ground of its own takes the pale ground */
 @media (min-width:1024px){.supported-plain .chapter-head > div{align-self:baseline}}   /* the way on stands on the title's line */

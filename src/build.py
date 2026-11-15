@@ -3566,7 +3566,7 @@ CHECKLIST = [
     ("Request access and the portal forms connected to the partner database", "Build decision (form service or Cloudflare)"),
     ("Header pixel-identical with the archive's", "PhotoDeck custom CSS"),
     ("Real domain: africareframed.com through Cloudflare, and SITE_URL switched", "src/build.py"),
-    ("Archive pointed at the real domain: logo link, menu items, About and Contact redirects", "Brief, section 10"),
+    ("Archive pointed at the real domain: logo link, menu items, About and Contact redirects; and the addresses of the logo and the font files in its custom CSS (the new host must allow the archive to load the fonts)", "Brief, section 10; PhotoDeck custom CSS"),
     ("About: the supporters’ logo files (official, one-colour) in, and a courtesy note sent to each", "About page – build brief, section 0"),
     ("Every archive link to this site keeps ?src=archive (the partner menu), and the Privacy line checked against the Danish cookie rules", "PhotoDeck menu, logo and footer; Privacy"),
     ("Terms proper confirmed, and Using the images checked against them", "Archive, Terms"),

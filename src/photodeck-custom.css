@@ -6,7 +6,7 @@
 .search_meta p { display: none; }
 
 /* Login wall: point people without an account to Request access (the PhotoDeck text here is fixed) */
-.text_block[data-gallery-id] form#login::after { content: "Not a partner yet? Use Request access in the footer below."; display: block; margin-top: 1.4em; opacity: .75; }
+.text_block form#login::after { content: "Not a partner yet? Use Request access in the footer below."; display: block; margin-top: 1.4em; opacity: .75; text-align: left; }
 
 /* The grid of the main site (Website - modules, section 3): side margins 64 / 32 / 16 px, content up to 1,312 px, centred */
 html { --page-sides-margin: 64px; }
@@ -17,12 +17,14 @@ html { --page-sides-margin: 64px; }
 /* The header, white with the black logo, 128 px tall on desktop and tablet, 64 px on phones; no shadow, no border (the design guide, Header) */
 #block_navib { padding-top: 0; padding-bottom: 0; min-height: 128px; box-shadow: none !important; border-bottom: 0; }
 #block_navib .block_inner { min-height: 128px; align-items: center; }
-#block_navib #component_logo a { display: block; width: 192px; aspect-ratio: 1417.75 / 285.75; background: url("https://africareframed.github.io/africareframed-site/assets/logo-black.svg") no-repeat left center / contain; }
-#block_navib #component_logo img { opacity: 0; width: 192px; max-height: none; display: block; }
+#block_navib #component_logo a { display: block; width: 240px; max-width: none !important; aspect-ratio: 1417.75 / 285.75; background: url("https://africareframed.github.io/africareframed-site/assets/logo-black.svg") no-repeat left center / contain; }
+#block_navib #component_logo img { opacity: 0; width: 240px; max-width: none; max-height: none; display: block; }
 #block_navib #nav_toggle { top: 10px; }
+/* The logo at the size of the main site: 240 px, 192 px on tablets, 160 px on phones (15 Nov 2026); the max width in the Logo panel (192 px) is lifted in the rule above */
+@media screen and (max-width: 1023px) { #block_navib #component_logo a, #block_navib #component_logo img { width: 192px; } }
 @media screen and (max-width: 767px) {
   #block_navib, #block_navib .block_inner { min-height: 64px; }
-  #block_navib #component_logo a, #block_navib #component_logo img { width: 128px; }
+  #block_navib #component_logo a, #block_navib #component_logo img { width: 160px; }
 }
 
 /* The menu: 17 px, 24 px apart, black; the divider as a 1 px line, 18 px tall, as on the main site */
@@ -33,3 +35,30 @@ html { --page-sides-margin: 64px; }
 /* The footer on the grid: left-aligned, as the main site */
 #block_footer { text-align: left; }
 #block_footer .component_text_content { text-align: left; }
+
+/* The typeface: Outfit, the same file as on the main site, at its three weights (260, 420, 600) and its letter-spacing for each size; no joined letters, no faked bold or italic (15 Nov 2026). The font pickers of the design editor stay as they were and are no longer used. */
+@font-face { font-family: "Outfit AR"; font-style: normal; font-display: swap; font-weight: 100 600; src: url("https://africareframed.github.io/africareframed-site/assets/fonts/outfit-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Outfit AR"; font-style: normal; font-display: swap; font-weight: 100 600; src: url("https://africareframed.github.io/africareframed-site/assets/fonts/outfit-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+:root { --tooltips-font-family: "Outfit AR", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+body, .page_title_nav, h1, h2, h3, h4, input, textarea, select, .submit, a.button, .submit_small, .button_to input, div.popup > .title, #block_navib #toggable_nav #component_menu li.menu_item .client_minilightbox.present, #block_navib #toggable_nav #component_menu li.menu_item .client_minicart.present { font-family: "Outfit AR", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+body { font-weight: 420; letter-spacing: .024em; font-variant-ligatures: no-common-ligatures; font-synthesis: none; }
+input, textarea, select, button, .submit, a.button, .submit_small, .button_to input { letter-spacing: inherit; }
+b, strong, th, dt { font-weight: 600; }
+.page_title_nav, h1, h2, h3, h4, div.popup > .title { font-weight: 600; }
+h1 { letter-spacing: .005em; }
+h1.page_title_nav, h2, h3, div.popup > .title { letter-spacing: .013em; }
+h4 { letter-spacing: .024em; }
+/* The menu at the weight of the main site (it was Light) */
+#block_navib { font-weight: 420; }
+#block_navib #component_menu .menu_item a { letter-spacing: .024em; }
+/* Labels in capitals */
+.component > .title { letter-spacing: .08em; }
+/* The pages behind the login (15 Nov 2026): the title on the detail page stands at the size of a heading on the main site (22 px, 600, with its spacing); the keywords stand in the weight of the text and are underlined as links; the short messages take the spacing of a lead; bold is 600 where the theme names 700 */
+.media_detail_meta_wrapper h1 { font-size: 22px; line-height: 1.25; letter-spacing: .013em; }
+.media_detail_keywords b { font-weight: inherit; }
+.media_detail_keywords a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.media_detail_keywords a:hover { text-decoration-thickness: 2px; }
+p.short_message { letter-spacing: .022em; }
+.media_detail_meta_wrapper .media_copyright, .component > .title { font-weight: 600; }
+/* Text blocks and descriptions are left-aligned, as on the main site (the theme justifies them) */
+#block_main #component_mainc .text_block, .galleries.thumbs_relaxed .thumb_description, .medias-list.thumbs_relaxed .thumb_description { text-align: left; }

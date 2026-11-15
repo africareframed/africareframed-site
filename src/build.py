@@ -548,10 +548,15 @@ def m_photo(label, ratio="3/2", variant="b", caption=None, text=None, side="left
 # the photographs of the archive. This is the one exception to "the workshops appear on About only" (About page - build brief).
 HOME_DOCUMENT = dict(
     file="assets/documents/workshop-01", size=(1920, 1080),
-    alt="A photographer laughs with her camera in her hands among other participants at a photography workshop",
-    caption="At one of our photography workshops",   # draft; the place and the year are added when Thomas gives them
-    note="A document, not an archive photograph: no AR ID. To add: the place and the year of the workshop (Thomas), and the "
-         "original file (this one is 2,000 px wide and soft on sharp screens). Its people are not named.")
+    # The place and the partners from Thomas, 15 November 2026, 07:01: "its from banjul. Banjul, The Gambia. workshop in
+    # collaboration with Gambia Media Support and The Gambia Press Union". The caption is a draft in his words; mid-sentence
+    # the union stands as "the Gambia Press Union" (its own name is Gambia Press Union). No year: the Track Record places the
+    # workshop with these two organisers in Banjul in May 2015 (18 to 22 May, at the Gambia Press Union), but that this
+    # photograph is from that week is not confirmed.
+    alt="A photographer laughs with her camera in her hands among other participants at a photography workshop in Banjul",
+    caption="Photography workshop in Banjul, The Gambia, in collaboration with Gambia Media Support and the Gambia Press Union",   # draft
+    note="A document, not an archive photograph: no AR ID. To add: the original file (this one is 2,000 px wide and soft on "
+         "sharp screens), and the year if Thomas confirms it. Its people are not named.")
 
 
 def m_document(base, d, ground=False):
@@ -3490,6 +3495,7 @@ WEEK_PLAN = [
     ("Fri 20", "Read and test", "Thomas: one reader from outside, for an hour",
      [("Every page read at two speeds", False),
       ("A real phone, Safari and Firefox", False),
+      ("The phone: Home tuned part by part, then the other pages", False),
       ("One reading by someone outside the trade", False),
       ("The list of what to fix, and the fixes", False)]),
 ]
@@ -3509,7 +3515,7 @@ WEEK_GUIDES = [
                                              "explained where it first stands. A button says where it leads."),
 ]
 WEEK_DONE = [   # done before the week began, on 14 November 2026
-    "Home: layout and use on a desktop",
+    "Home on a desktop: the design ready for the closed preview, and the level the other pages aim for (15 November)",
     "House Collection: the stripes on its photograph, and who has licensed the images, by sector",
     "Partners: the supporters as a grid, each with what it supported",
 ]
@@ -4240,6 +4246,7 @@ main{padding-bottom:var(--section)}
 .mod.on-ground.joined{padding-bottom:64px}
 .mod.mod-photo.on-ground.join{margin-top:0;padding-top:0;padding-bottom:0}   /* the white before the footer is the page's own 96 px */
 .mod.mod-photo.on-ground.join .credit{min-height:56px}   /* the grey under the photograph, measured from the photograph's own edge with the caption inside it, equals the grey over it: 8 + 56 = 64 px (Thomas, 14 November 2026, 19:39 and 19:44) */
+@media (max-width:1023px){.mod.mod-photo.on-ground.join .credit{padding-bottom:16px}}   /* a caption of two or three lines on a tablet or phone keeps room under it before the ground ends */
 .mod.mod-photo.on-ground.join::before{display:none}
 .button.quiet:hover{border-color:var(--ink);background:var(--ink);color:#fff}
 .button[disabled],.button.dead,.button[disabled]:hover,.button.dead:hover{background:var(--wash);border-color:var(--line);color:var(--ink-soft);cursor:not-allowed}

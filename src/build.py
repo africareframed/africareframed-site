@@ -3162,7 +3162,7 @@ def tpl_partners(p, base):
 # the archive again, and how one becomes a partner is told on Partnerships. No word budget (Thomas, 10:28): its rules are
 # a help page's. Every text is a draft for Thomas (Website – copy, section 6); the steps in the archive were read on the
 # archive itself on 16 November 2026 as the test partner.
-PORTAL_STATEMENT = "Welcome, it is good to have you here. We help you find the right images and put them to use."
+PORTAL_STATEMENT = "Open the archive, find what you need, and tell us what you made."
 PORTAL_TASKS = [("made", "Show us what you made", "A link, a screenshot or a document, with a comment if you like."),
                 ("missing", "Tell us what is missing", "Images you looked for and did not find."),
                 ("feedback", "Give us feedback", "On the archive, the images or this page. A line is enough."),

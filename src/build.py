@@ -3193,11 +3193,11 @@ def tpl_portal(p, base):
         ("text", "Your message", dict(kind="textarea")),
         ("organisation", "Organisation", dict(required=True, auto="organization")),
         ("email", "Email", dict(kind="email", required=True, auto="email"))],
-        "Send", "Your message is with us, and we answer every one.")
+        "Send", "Your message is with us.")
     write = (f'<div class="write gone" id="write"><div class="write-clip"><div class="sheet"><div class="cols"><div class="c1-4"><h3 class="h-big write-title">Talk to us</h3>'
              + f'<p class="small write-line"></p></div><div class="c7-12">{form}</div></div></div></div></div>')
     partnership = (f'<div class="cols"><div class="c1-4">{heading("Talk to us")}</div><div class="c7-12">'
-                   + para("A good partnership goes both ways. We appreciate hearing from you, and we answer every message.") + '</div></div>'
+                   + para("We appreciate hearing from you. What you show us and tell us shapes what the archive becomes.") + '</div></div>'
                    + f'<div class="task-grid">{tasks}{write}</div>')
 
     spine = (f'<div class="cols"><div class="c1-4">{heading("How it works")}</div><div class="c7-12">'
@@ -3212,7 +3212,7 @@ def tpl_portal(p, base):
             ("photo-id", "Find an image by its number",
              para("Every image has a number, such as AR-1645. Search for it in the archive to go straight to the image, and quote it when you write to us, so we know exactly which one you mean.")),
             ("find-missing", "Cannot find what you need?",
-             para("Tell us what you looked for. We answer, and what partners ask for guides what we photograph next.") + way("#write", "Tell us what is missing ↑", "missing"))]),
+             para("Tell us what you looked for. What partners ask for guides what we photograph next.") + way("#write", "Tell us what is missing ↑", "missing"))]),
         ("Collect and download", [
             ("collect", "Gather a selection",
              para("Under an image, press Add to selection. Your selection is under Lightbox in the menu, and the selections you save are listed in My account.")),

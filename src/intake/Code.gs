@@ -40,7 +40,7 @@ const KINDS = {
   made: 'Show us what you made',
   missing: 'Tell us what is missing',
   feedback: 'Feedback',
-  bigger: 'Something bigger',
+  bigger: 'Build with us',
   question: 'A question'
 };
 
@@ -182,7 +182,7 @@ function confirm_(form, id, d, email) {
     text = 'Thank you for asking for access to the Africa Reframed archive. We read every request ourselves and answer within a working day.';
   } else {
     subject = 'Africa Reframed: we have your message (' + id + ')';
-    text = 'Thank you for writing to us. Your message is with us, and we answer every one.';
+    text = 'Thank you for writing to us. Your message is with us.';
   }
   MailApp.sendEmail({
     to: email,

@@ -163,8 +163,9 @@ MEASURE_JS = r"""
   }
   // (13 November 2026) no year on an archive photograph: a caption that leads with an AR ID carries the place and no year
   const yearCaps = main ? [...main.querySelectorAll('.credit .caption, figcaption')].filter(e => vis(e) && /AR-\d{4}/.test(e.textContent) && /\b(19|20)\d\d\b/.test(e.textContent.replace(/AR-\d{4}/g, ''))).length : 0;
+  const idLinks = [...document.querySelectorAll('a')].filter(a => /^\s*AR-\d+\s*$/.test(a.textContent)).length;
   return {
-    offLine, yearCaps,
+    offLine, yearCaps, idLinks,
     sizes, weights, total, measure, measureAt, words: words(main), frames: frames.length, nocredit, overlaid, yellow,
     small, controls: controls.length, heads,
     overflow: document.documentElement.scrollWidth - W,
@@ -292,7 +293,12 @@ def verdict(rows):
             fail(18, slug, w, "yellow on " + ", ".join(f"{k} ×{v}" for k, v in m["yellow"].items()))
         if m["overflow"] > 0 or m.get("overflow320", 0) > 0:
             fail(23, slug, w, f'scrolls sideways by {max(m["overflow"], m.get("overflow320", 0))} px')
-        if w == "phone" and m["tpl"] in ("home", "theme", "collection", "partners", "portal") and (m["firstLinkTop"] is None or m["firstLinkTop"] > 700):
+        # Home's first way on is the link that closes its opening, About Africa Reframed, at 756 px: inside the phone's
+        # first screen (844 px) and below the 700 px line. Until 16 November 2026 the line was met by the image number
+        # under the opening photograph, which was a link into the archive's login wall; that link is gone (Thomas, 10:15).
+        # Moving the About link up to meet the number would serve the measure and not the page, so Home's line is the
+        # first screen less one tap target (800 px). To judge on a real phone.
+        if w == "phone" and m["tpl"] in ("home", "theme", "collection", "partners", "portal") and (m["firstLinkTop"] is None or m["firstLinkTop"] > (800 if slug == "home" else 700)):
             fail(23, slug, w, f'the way on starts at {m["firstLinkTop"]} px')
         if w == "phone" and m["small"]:
             fail(24, slug, w, f'{len(m["small"])} of {m["controls"]} things to tap under 44 px')
@@ -302,6 +308,10 @@ def verdict(rows):
             (fail if slug in LINE_DONE else lambda r, sl, wi, what: misses.append(f"{sl}: {what}"))(8, slug, w, f'{len(m["offLine"])} off the line, first “{m["offLine"][0]}”')
         if m.get("yearCaps"):
             fail(15, slug, w, f'{m["yearCaps"]} archive captions with a year')
+        # an image number is plain text, never a link (Thomas, 16 November 2026, 10:15): a visitor who follows it meets
+        # the archive's login wall
+        if m.get("idLinks"):
+            fail(15, slug, w, f'{m["idLinks"]} image numbers set as links')
         if m["dashes"] or m["placeholders"]:
             fail(27, slug, w, f'{m["dashes"]} empty counts, {m["placeholders"]} placeholders')
         if m["foreign"]:

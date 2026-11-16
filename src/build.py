@@ -380,7 +380,7 @@ def opening_photo(base, t=None):
     pic = (f'<picture><source media="(max-width:1023px)" srcset="{f}-close-800.jpg 800w, {f}-close-1200.jpg 1200w, {f}-close-2000.jpg 2000w" sizes="100vw">'
            f'<img class="opening-img opening-real" src="{f}-wide-1920.jpg" srcset="{f}-wide-1920.jpg 1920w, {f}-wide-2880.jpg 2880w, {f}-wide-3840.jpg 3840w" sizes="100vw" '
            f'width="{t["size"][0]}" height="{t["size"][1]}" style="--shape:{t["shape"]}" alt="{e(t["alt"])}" fetchpriority="high"></picture>')
-    cap = f'<a href="{archive("/-/galleries/archive?search=" + t["ar"], "image")}">{t["ar"]}</a> · {e(t["place"])}'   # no year (Thomas, 12 November 2026, 15:39)
+    cap = f'{t["ar"]} · {e(t["place"])}'   # no year (Thomas, 12 November 2026, 15:39)
     return pic + t["wide"] + t["close"], cap
 
 
@@ -434,8 +434,10 @@ CREDIT = "Photo: Africa Reframed"
 # Images (Thomas, 11 November 2026, second round). Three things are decided here, once, for every module:
 # - The slot. Every image position on the site is recorded as it is built: its page, how it is shown, its proportion and
 #   the size its file needs. The list is /dev/images/; choosing the images is filling these slots.
-# - The caption. A photograph shown as work carries its AR ID, place and year, and the ID is a link to that image in the
-#   archive: the proof beside the picture, which is the site's point of view. Until a slot is filled the pattern is shown.
+# - The caption. A photograph shown as work carries its AR ID and place. The ID is plain text, never a link (Thomas,
+#   16 November 2026, 10:15): a visitor who follows it meets the archive's login wall, a dead end; a partner can look
+#   the number up in the archive. The gate fails a page that links one (rule 15). Until a slot is filled the pattern
+#   is shown.
 # - The credit. A credit line stands where a photograph is shown as work: under a lead or featured photograph, and once
 #   under a grid or a row from one collection. A small image that is a link to a page where the credit stands has none.
 #   (Quality rules, rule 15, as relaxed on 11 November 2026: the credit is our choice, not a quality in itself.)
@@ -500,7 +502,7 @@ def caption_html(sid, caption=None):
         return e(limit("caption", caption))
     pick = PICKS.get(sid)
     if pick:
-        return (f'<a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{e(pick["ar"])}</a> · '
+        return (f'{e(pick["ar"])} · '
                 + e(limit("caption", pick.get("text") or pick["place"])))
     return "AR ID · Place"
 
@@ -2371,7 +2373,7 @@ def front_feature(c, base, flip=False, themes=False, ground=False):
     pick = COLLECTION_PHOTOS.get(slug)
     photo = (f'<img class="feature-photo" src="{base}assets/trial/{pick["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(pick["alt"])}" loading="lazy" decoding="async">'
              if pick else img(card["image"], "3/2"))
-    cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{pick["ar"]}</a> · {e(pick["place"])}</span> '
+    cap = (f'<p class="credit"><span class="caption">{pick["ar"]} · {e(pick["place"])}</span> '
            f'<span>{e(CREDIT)}</span></p>') if pick else ""
     meta = "".join(f"<span>{e(m)}</span>" for m in card["meta"])
     doors = ""
@@ -2391,7 +2393,7 @@ def front_archive(base, themes=False):
     """The archive as something to use now: one photograph and a few words (D); with its themes and Request access, on a ground (E)."""
     a, pick = FRONT_ARCHIVE, COLLECTION_PHOTOS["house-collection"]
     photo = (f'<img class="feature-photo" src="{base}assets/trial/{pick["ar"].lower()}-feature.jpg" width="1920" height="1280" alt="{e(pick["alt"])}" loading="lazy" decoding="async">')
-    cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + pick["ar"], "image")}">{pick["ar"]}</a> · {e(pick["place"])}</span> '
+    cap = (f'<p class="credit"><span class="caption">{pick["ar"]} · {e(pick["place"])}</span> '
            f'<span>{e(CREDIT)}</span></p>')
     meta = "".join(f"<span>{e(m)}</span>" for m in a["meta"])
     if themes:
@@ -2420,7 +2422,7 @@ def front_mini(base):
         r = FRONT_RECORDS[ar]
         kws = "|".join(w for k, _ in FRONT_LAYERS for w in r[k])
         c = (f'<p class="credit"><span class="caption record-title">{e(r["title"])}</span>'
-             f'<span class="caption"><a href="{archive("/-/galleries/archive?search=" + ar, "image")}">{ar}</a> · {e(r["place"])}</span> '
+             f'<span class="caption">{ar} · {e(r["place"])}</span> '
              f'<span>{e(CREDIT)}</span></p>')
         f = f'{base}assets/home/{ar.lower()}'
         return (f'<figure class="frame{" on" if on else ""}" data-shot="{ar}" data-of="{theme_of[ar]}" data-kws="{e(kws)}">'
@@ -2484,7 +2486,7 @@ def front_record(base, control="themes", tags=False, one=True, picks=HOME_THREE)
     for i, ar in enumerate(order):
         r, t, on = FRONT_RECORDS[ar], theme_of[ar], i == 0
         f = f'{base}assets/home/{ar.lower()}'
-        cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + ar, "image")}">{ar}</a> · {e(r["place"])}</span> '
+        cap = (f'<p class="credit"><span class="caption">{ar} · {e(r["place"])}</span> '
                f'<span>{e(CREDIT)}</span></p>')
         shots += (f'<figure class="frame{" on" if on else ""}" data-shot="{ar}" data-of="{t["slug"]}">'
                   f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 46vw, 92vw" '
@@ -2546,7 +2548,7 @@ def front_field(base):
         r, t, on = FRONT_RECORDS[ar], theme_of[ar], i == 0
         kws = "|".join(["theme:" + t["slug"]] + [w for k, _ in FRONT_LAYERS for w in r[k]])
         f = f'{base}assets/home/{ar.lower()}'
-        cap = (f'<p class="credit"><span class="caption"><a href="{archive("/-/galleries/archive?search=" + ar, "image")}">{ar}</a> · {e(r["place"])}</span> '
+        cap = (f'<p class="credit"><span class="caption">{ar} · {e(r["place"])}</span> '
                f'<span>{e(CREDIT)}</span></p>')
         shots += (f'<figure class="frame{" on" if on else ""}" data-shot="{ar}" data-kws="{e(kws)}">'
                   f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 62vw, 92vw" '
@@ -2595,7 +2597,7 @@ def front_band(base):
         f = f'{base}assets/home/{ar.lower()}'
         # the captions stand in a row of their own under the band, so that the slices are exactly as high as the photograph
         caps += (f'<p class="credit cap{" on" if i == 0 else ""}"><span class="caption"><span class="record-title">{e(r["title"])}</span>'
-                 f'<a href="{archive("/-/galleries/archive?search=" + ar, "image")}">{ar}</a> · {e(r["place"])}</span> <span>{e(CREDIT)}</span></p>')
+                 f'{ar} · {e(r["place"])}</span> <span>{e(CREDIT)}</span></p>')
         mid += (f'<figure class="frame{" on" if i == 0 else ""}" data-shot="{ar}" data-kws="{e(kws)}">'
                 f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 46vw, 92vw" '
                 f'width="1280" height="853" alt="{e(r["desc"])}" loading="lazy" decoding="async"></figure>')
@@ -2654,7 +2656,7 @@ def front_square(base):
         kws = "|".join(dict.fromkeys([t["name"].lower()] + [w for k, _ in FRONT_LAYERS for w in r[k]]))
         f = f'{base}assets/home/{ar.lower()}'
         cap = (f'<p class="credit"><span class="caption"><span class="record-title">{e(r["title"])}</span>'
-               f'<a href="{archive("/-/galleries/archive?search=" + ar, "image")}">{ar}</a> · {e(r["place"])}</span> <span>{e(CREDIT)}</span></p>')
+               f'{ar} · {e(r["place"])}</span> <span>{e(CREDIT)}</span></p>')
         shots += (f'<figure class="frame{" on" if i == 0 else ""}" data-shot="{ar}" data-kws="{e(kws)}">'
                   f'<img class="feature-photo" src="{f}-1280.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 46vw, 92vw" '
                   f'width="1280" height="853" alt="{e(r["desc"])}" loading="lazy" decoding="async">{cap}</figure>')
@@ -3356,8 +3358,8 @@ def tpl_images(base):
     pages = "".join(f"<li><span>{e(k)}</span><span>{v}</span></li>" for k, v in by_page.items())
     ratios = " · ".join(f"{v} at {k}" for k, v in sorted(by_ratio.items(), key=lambda kv: -kv[1]))
     return (sec(head("Images", f"Every image position on the site: {len(SLOTS)} slots, {len(PICKS)} filled. Choosing the images is filling these slots. "
-                     "A photograph is entered in PICKS in src/build.py under its slot, with its AR ID, place and year; its caption and its "
-                     "link into the archive then build themselves. By proportion: " + ratios + ".", level=1), "page-head")
+                     "A photograph is entered in PICKS in src/build.py under its slot, with its AR ID, place and year; its caption then "
+                     "builds itself. The AR ID is shown as plain text, never as a link. By proportion: " + ratios + ".", level=1), "page-head")
             + sec(head("By page") + f'<ul class="dev-list">{pages}</ul>')
             + sec(head("Every slot", "Shown width is on a 1,440 px screen; the file is at least twice that. A full-bleed photograph is as wide as the window.")
                   + '<div class="table-scroll"><table class="dev-table"><thead><tr><th>Slot</th><th>Page</th><th>Shown as</th><th>Proportion</th>'

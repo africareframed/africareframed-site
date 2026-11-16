@@ -1183,10 +1183,12 @@ INTRO_HOME = [
 # Partnerships (until that page is rebuilt: to How access works and to Sponsor a collection). And Build it names the
 # exhibition too, as the Partner portal's card Build with us does. Both are drafts; the labels of the ways on are the long
 # forms of the two names.
-HOME_PARTNERSHIPS = [   # the terms (a label), the role, its text, its way on (label, address under partners/)
-    ("Always free", "Use it", "NGOs, media, educational and public institutions use the images in their own reports, campaigns and classrooms.",
+# The label over each name says how that way adds to the archive (Thomas, 16 November 2026, 17:28: "By sharing" over
+# Use it, "By production" over Build it; they were the terms, "Always free" and "By collection"). Draft.
+HOME_PARTNERSHIPS = [   # the label, the role, its text, its way on (label, address under partners/)
+    ("By sharing", "Use it", "NGOs, media, educational and public institutions use the images in their own reports, campaigns and classrooms.",
      ("Use the images", "#use")),
-    ("By collection", "Build it", "A company or another partner makes a new collection possible and is named on it. Photographers make it on location, credited and paid. An exhibition can start the same way.",
+    ("By production", "Build it", "A company or another partner makes a new collection possible and is named on it. Photographers make it on location, credited and paid. An exhibition can start the same way.",
      ("Build a collection", "#sponsor")),
 ]
 # The principles' own sentence and its detail, on About since 13 November 2026 (they stood on Home beside Principles).

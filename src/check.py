@@ -32,7 +32,8 @@ BUDGET_BY_SLUG = {"waste-to-value": None,                       # a sponsored co
                   # "add it"). It stood at 349 of its 350 words; the new part is 43. The budget follows the instruction.
                   # 14 November 2026 (Thomas, 08:39): the supporters stand on Partners too, under the six words of their heading,
                   # "Our work has been supported by". The page stood at 395; the budget follows the instruction once more.
-                  "partners": 406,
+                  "partners": None,   # 16 November 2026 (Thomas, 20:59 and 21:01): Partnerships is rebuilt as chapters with
+                  # sub-chapters and a real intro, to inspire and not only to state; it has no word budget, as the portal has none.
                   # The Partner portal is a service page for partners, built from tasks, and has no word budget
                   # (Thomas, 16 November 2026, 10:28): its answers are short and most stand closed.
                   "portal": None}

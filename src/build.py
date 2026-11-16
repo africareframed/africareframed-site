@@ -1267,24 +1267,51 @@ PLACES = [  # collection page 5: places and series (Keywording Guide 9, 11b; the
     ("Kenya", "Nairobi: cafés, offices and campuses; tea fields and a farming village outside the city."),
     ("The Gambia", "Banjul: a culinary training, women in trades, small businesses and studio portraits. Series: Culinary training, Banjul · Women in trades, Banjul."),
 ]
-# Partnerships, rebuilt 16 November 2026 (Thomas, 18:59; the canvas' column of 18:45: one flow in six sections). Two ways
-# into the archive, Use it and Build it, whose shape is known in advance, and beside them what is shaped case by case:
-# workshops, exhibitions and other projects. Every line is a draft for Thomas (Website - copy, section 5). The texts are
-# made from what the site already says: SPONSOR_TEXT and the Waste to Value page's invitation (Build), About's chapters
-# (Make), the Partner portal (the working day). What a partner who builds gets beyond the archive is not promised here.
-PARTNERS_DOORS = [("#use", "By sharing", "Use it", "Partners take the pictures to their own audiences."),
-                  ("#build", "By production", "Build it", "A partner makes a new collection possible, and it joins the archive.")]
-PARTNERS_BESIDE = ("Beside the archive, we make workshops, exhibitions and other projects with partners.", "Make something with us")
-USE_COMPANY = "A company comes in by building a collection."
-BUILD_TEXT = [
-    "What partners use and ask for shows what to build next. A new collection starts with a partner and a theme: one close to the partner’s work, or one it wants to support, never its own operations.",
-    "We find the people and places that show it and work with photographers from the countries concerned. The partner is named on the collection, and the collection joins the archive, where every partner can use it.",
-    "One example of such work is the BESTSELLER FOUNDATION Waste to Value Collection, made for the foundation and the seven companies it shows.",
+# Partnerships, rebuilt 16 November 2026. First at 19:04 as one flow in six short sections (Thomas, 18:59). Then, the same
+# evening (Thomas, 20:59 and 21:01: it looks very thin; real chapters with sub-chapters, as on Home and the Partner portal;
+# a real intro; the supporters high on the page as validation; the page is about why partnerships across sectors matter,
+# and it should inspire, since the facts can be had by asking): chapters in Home's form, each with its sub-chapters, and
+# no word budget. The thought comes from the Strategic Platform and the Concept Note: people work together through shared
+# stories; one story can serve several partners, each for its own reason; "we create the shared stories, events and
+# exhibitions where people meet. What they build from there is theirs." Said as producers and hosts, concretely, never as
+# an offer; no prices, no policy names, and nothing of the reasoning the Platform keeps internal.
+# Every line is a draft for Thomas unless it is one of the approved lines named below (Website - copy, section 5).
+PARTNERS_LINE = "When partners share a picture, they begin to tell the same story."
+PARTNERS_INTRO = [
+    "Africa Reframed is built for collaboration across sectors, between Europe and Africa.",
+    "A company, an NGO, a development fund, an embassy and a university each work with Africa in their own way and speak to their own audience. A photograph is something they can share: one collection can serve all of them, each for its own reason.",
+    "We make the pictures, the collections and the exhibitions that partners meet around. What they build from there is theirs.",
+    "The work has been made across sectors from the start: with a ministry, foundations, a broadcaster, a trade union agency and an arts centre.",
 ]
-MAKE_LEAD = "Workshops, exhibitions and other projects, each shaped around what the partner has in mind."
-MAKE_ITEMS = [  # what was made, who it was made with, and where it is told in full (About)
-    ("A workshop", "Built with photography schools, photographers’ unions and press associations in Bamako, Freetown, Nairobi and Banjul.", "about/#workshops"),
-    ("An exhibition", "Africa Reframed at Øksnehallen, Copenhagen, 2016: produced with DGI-byen and supported by Danida and Augustinus Fonden.", "about/#exhibitions"),
+PARTNERS_WAYS = ("Ways to take part", "There are two ways into the archive, and a third beside it.",
+                 "Use it, and the pictures reach your audience. Build it, and a new collection exists for every partner. Or make something with us, shaped around what you have in mind.")
+PARTNERS_BESIDE = ("Beside the archive, we make workshops, exhibitions and other projects with partners.", "Make something with us")
+USE_CHAPTER = ("Use it", "Take the pictures into your own work, and they reach an audience we could not reach alone.",
+               ["The archive holds photographs of contemporary African life: people learning, working, living connected lives in modern cities and making culture. Partners put them in reports, campaigns, classrooms and the press."])
+USE_PHOTOS = ["AR-1350", "AR-1137", "AR-1628"]   # Bamako, Nairobi and Banjul, from the ten Thomas chose for Home
+USE_SUBS = [
+    ("Who it is for", "NGOs, media, educational institutions, embassies, ministries and development finance institutions. For them the archive is free, and each organisation is approved by name."),
+    ("What you find", "1,122 photographs from Bamako, Nairobi and Banjul, in five themes. Every image has its keywords, its place and a number of its own, and comes at full size."),
+    ("What a use does", "Each download is a licence for one stated use, so the pictures can be followed out into the world. What partners use, and what they look for and do not find, guides what we photograph next."),
+    ("How to start", "Tell us who you are and how you will use the images. We read every request ourselves and answer within a working day."),
+]
+USE_COMPANY = "A company comes in by building a collection."
+BUILD_CHAPTER = ("Build it", "A partner makes a new collection possible, and it becomes part of an archive that many organisations use.",
+                 ["What partners use and ask for shows what to build next. A collection is a body of new photographs on one theme, made on location, with the stories of the people in it."])
+BUILD_SUBS = [
+    ("It starts with a theme", "One close to the partner’s work, or one it wants to support: a sector, a skill, a city, a change under way. Never the partner’s own operations."),
+    ("Made where it happens", "We find the people and places that show the theme and work with photographers from the countries concerned. Every photographer is credited and paid."),
+    ("The partner’s name on it", "The partner is named on the collection wherever it is shown. What the images show stays with us: name and stage, never editorial control."),
+    ("Shared by everyone", "The collection joins the archive, where every partner can use it. The partner, the people in the pictures and other organisations each tell their part with the same images."),
+]
+BUILD_EXAMPLE = "One example of such work is the BESTSELLER FOUNDATION Waste to Value Collection, made for the foundation and the seven companies it shows."
+MAKE_CHAPTER = ("Make something with us", "A workshop, an exhibition, a project across sectors: some things are shaped case by case.",
+                ["Beside the archive, we make things together with partners: a school, a union, a venue, an organisation with something to show. Each starts with what the partner has in mind."])
+MAKE_SUBS = [
+    ("Workshops", "On visual storytelling and the market for photographs, built with photography schools, photographers’ unions and press associations: in Bamako, Freetown, Nairobi and Banjul so far."),
+    ("Exhibitions", "Africa Reframed at Øksnehallen in Copenhagen, 2016: 5,000 square metres and more than 300 works, produced with DGI-byen and supported by Danida and Augustinus Fonden."),
+    ("Across sectors", "A project can gather several partners around one theme: a company, an organisation on the ground, an institution that hosts. Each brings its part, and each tells the story to its own audience."),
+    ("Your own idea", "Tell us what you have in mind. A few lines are enough to start."),
 ]
 MAKE_CONTACT = ("Tell us what you have in mind", "A workshop, an exhibition or a project of your own: a few lines are enough.")
 PARTNERS_STEPS = [("Request access", "To use the archive: a short form, answered within a working day."),
@@ -2282,12 +2309,14 @@ def turn_pattern(way_out=False):
             f'<g fill="#ffffff">{poly}</g></svg>')
 
 
-def home_partnerships(base):
-    """Home's third chapter, on the pale ground: a text block with its way on, and the two ways to take part as panels."""
-    title, line, detail = HOME_CHAPTERS["partnerships"]
+def home_partnerships(base, here=None):
+    """Home's third chapter, on the pale ground: a text block with its way on, and the two ways to take part as panels.
+    here (Partnerships, 16 November 2026): the same two cards on the page they lead to, under that page's own text; their
+    ways on then lead down the page, and under the cards stands the line for what is made beside the archive."""
+    title, line, detail = here or HOME_CHAPTERS["partnerships"]
+    on_to = "" if here else f'<p class="doors">{way_on(base + "partners/", "How partners take part")}</p>'
     head = (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
-            f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}'
-            f'<p class="doors">{way_on(base + "partners/", "How partners take part")}</p></div></div>')
+            f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}{on_to}</div></div>')
     for terms, role, text, on in HOME_PARTNERSHIPS:
         limit("item title", role); limit("item line", text)
     # Cards with two sides (Thomas, 14 November 2026, 09:35, after the supporters' cells on Partners): at rest a card shows
@@ -2301,7 +2330,7 @@ def home_partnerships(base):
     cards = "".join(f'<li class="flip"><div class="face front"><p class="kicker">{e(terms)}</p><h3>{e(role)}</h3></div>'
                     f'<button type="button" class="flip-more" aria-expanded="false" aria-label="{e(role)}: what it means"><span class="plus" aria-hidden="true"></span></button>'
                     f'<div class="face back"><p class="kicker">{e(terms)}</p><p class="flip-title">{e(role)}</p>{draft(text)}'
-                    f'<p class="flip-on">{way_on(base + "partners/" + on[1], on[0])}</p></div></li>'
+                    f'<p class="flip-on">{way_on(on[1] if here else base + "partners/" + on[1], on[0])}</p></div></li>'
                     for terms, role, text, on in HOME_PARTNERSHIPS)
     flip = ("<script>(function(){var u=document.querySelector('.panels');if(!u)return;u.classList.add('flips');"
             "[].forEach.call(u.querySelectorAll('.flip'),function(c){var b=c.querySelector('.flip-more');"
@@ -2316,8 +2345,10 @@ def home_partnerships(base):
     # No stripes since 13 November 2026, 15:05 (Thomas, 15:03): the part stands on the plain pale ground, as the first
     # section does. The page is calmer and the eye stays on the content; the pattern opens the page in the photograph and
     # closes it in the footer. turn_pattern() is kept, unused, with the drawing as it was settled that morning.
-    return mod("items", "two ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels sun two">{cards}</ul>{flip}',
-               cls="on-ground turn joined", sid="partnerships")
+    beside = (f'<div class="cols cycle-beside"><div class="c7-12 c-offset">{draft(PARTNERS_BESIDE[0])}<p class="doors">{way_on("#make", PARTNERS_BESIDE[1])}</p></div></div>'
+              if here else "")
+    return mod("items", "two ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels sun two">{cards}</ul>{beside}{flip}',
+               cls="on-ground turn" if here else "on-ground turn joined", sid="ways" if here else "partnerships")
 
 
 def premise(section):
@@ -3196,34 +3227,52 @@ def tpl_partners(p, base):
     # 14 November 2026 (Thomas, 08:39): under the doors stand the eight supporters from About, as a ruled grid. For an hour
     # each door also carried a photograph from the archive; Thomas took them off at 09:01 (see door()). The page may get a
     # header photograph instead; that is still to look into.
-    # 16 November 2026, 19:00 (Thomas, 18:59): rebuilt from the canvas' column, one flow in six sections. 1 the archive,
-    # shared: the two ways as two panels with an arrow each way between them, and under them one line for what is made
-    # beside the archive; 2 use the images; 3 build a collection; 4 make something with us, as short parts that refer to
-    # About; 5 the supporters, the proof for 3 and 4; 6 the step. Gone from the page: the third door and Craft a collection
-    # (photographers and other creators are received elsewhere, still to settle), and the rules for using the images,
-    # which live on the Partner portal (one home for each thing). The page before this stands in the history at f051962.
-    doors = [door(h, k, t, l, dark=(n == 0)) for n, (h, k, t, l) in enumerate(PARTNERS_DOORS)]
-    cycle = (f'<div class="door-panels cycle">{doors[0]}<span class="cycle-arrows" aria-hidden="true"><span>→</span><span>←</span></span>{doors[1]}</div>'
-             f'<div class="cols cycle-beside"><div class="c7-12 c-offset">{draft(PARTNERS_BESIDE[0])}<p class="doors">{way_on("#make", PARTNERS_BESIDE[1])}</p></div></div>')
-    def part(x):
-        pic = (f'<a class="frame part-photo" href="{base}{x[2]}"><img src="{base}{HOME_DOCUMENT["file"]}-1280.jpg" alt="{e(HOME_DOCUMENT["alt"])}" width="1280" height="720" loading="lazy" decoding="async"></a>'
-               if x[0] == "A workshop" else
-               f'<a class="part-photo" href="{base}{x[2]}">{frame("Africa Reframed at Øksnehallen, 2016: a photograph to choose", "3/2", role="half", own=False, cap=False)}</a>')
-        # each photograph is a link to the chapter on About where it is shown in full, with its credit (rule 15)
-        return (x[0], x[1], None, dict(href=base + x[2], image=pic))
+    # 16 November 2026, 21:30 (Thomas, 20:59 and 21:01): chapters in Home's form, each with sub-chapters, and a real intro.
+    # 1 the bold line and the text that says why across sectors, on the pale ground; 2 who has supported the work, high on
+    # the page as validation, each cell saying what it supported; 3 the workshop photograph; 4 the ways to take part, as
+    # Home's two cards with the line for the third path; 5 Use it; 6 Build it, on the pale ground; 7 Make something with
+    # us; 8 how we work, the four principles; 9 the step. Off the page since 19:04: the third door, Craft a collection,
+    # and the rules for using the images (they live on the Partner portal). The page of 19:04 stands in the history at 732688f.
+    def chapter_head(title, lead, paras, sid, extra="", ground=False, links=None):
+        body = draft(limit("lead", lead), "p", "lead") + "".join(draft(x) for x in paras)
+        if links:
+            body += f'<p class="doors">{"".join(links)}</p>'
+        head = (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(limit("heading", title))}</h2></div>'
+                f'<div class="c7-12">{body}</div></div>')
+        return mod("text", "a chapter: its title, its lead and its text, then its parts", head + extra, cls="p-chapter on-ground" if ground else "p-chapter", sid=sid)
+    def subs(items):
+        for a, b in items:
+            limit("item title", a); limit("item line", b)
+        return '<ul class="principles subs">' + "".join(f"<li><h3>{e(a)}</h3>{draft(b)}</li>" for a, b in items) + "</ul>"
+    def pic(ar):
+        r = FRONT_RECORDS[ar]
+        f = f'{base}assets/home/{ar.lower()}'
+        return (f'<figure class="frame"><img src="{f}-800.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 30vw, 92vw" width="800" height="533" '
+                f'alt="{e(r["desc"])}" loading="lazy" decoding="async">{credit_line(cap=f"{ar} · {e(r["place"])}")}</figure>')
+    head = mod("page-head", "the bold line, and the text that opens the page",
+               f'<div class="cols"><div class="p-words c1-9"><p class="kicker">{e(p["title"])}</p><h1>{e(limit("headline", PARTNERS_LINE))}</h1><p class="doors">{way_on("#ways", "The ways to take part")}</p></div></div>'
+               f'<div class="cols"><div class="c7-12">{draft(limit("lead", PARTNERS_INTRO[0]), "p", "lead")}{"".join(draft(x) for x in PARTNERS_INTRO[1:])}</div></div>', cls="premise p-head")
     use_links = [button(base + "request-access/", "Request access", quiet=True),
                  button(base + "partner-portal/#rights", "What the licence covers →", quiet=True)]
+    use = chapter_head(*USE_CHAPTER, sid="use",
+                       extra=f'<div class="pic-row">{"".join(pic(a) for a in USE_PHOTOS)}</div>{subs(USE_SUBS)}'
+                             f'<div class="cols p-on"><div class="c7-12 c-offset"><p class="doors">{"".join(use_links)}</p>{draft(USE_COMPANY, "p", "small")}</div></div>')
+    build = chapter_head(*BUILD_CHAPTER, sid="build", ground=True,
+                         extra=subs(BUILD_SUBS) + f'<div class="cols p-on"><div class="c7-12 c-offset">{draft(BUILD_EXAMPLE)}'
+                               f'<p class="doors">{button(base + "collections/waste-to-value/", "See the Waste to Value Collection →", quiet=True)}</p>'
+                               f'<div class="contact-box"><p class="kicker">Talk to us about a collection</p><p class="h-big"><a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p></div></div></div>')
+    make = chapter_head(*MAKE_CHAPTER, sid="make",
+                        extra=subs(MAKE_SUBS) + f'<div class="cols p-on"><div class="c7-12 c-offset">'
+                              f'<p class="doors">{way_on(base + "about/#workshops", "The workshops, on About")} {way_on(base + "about/#exhibitions", "The exhibition, on About")}</p>'
+                              f'<div class="contact-box"><p class="kicker">{e(MAKE_CONTACT[0])}</p><p class="h-big"><a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p></div></div></div>')
     step_doors = [door(base + "request-access/", "", PARTNERS_STEPS[0][0], PARTNERS_STEPS[0][1], dark=True),
                   door("mailto:" + EMAIL_PARTNERS, "", PARTNERS_STEPS[1][0], PARTNERS_STEPS[1][1])]
-    return (m_page_head(p["title"], PARTNERS_STATEMENT, statement_draft=True, doors=mod("doors", "a, the two ways with an arrow each way", cycle))
-            + m_text("Use the images", [ACCESS_WHO], "a", is_draft=False, sid="use")
-            + m_items(None, ACCESS_STEPS, "b", tight=True)
-            + mod("doors", "c, the ways on", f'<div class="cols"><div class="c7-12 c-offset"><p class="doors">{"".join(use_links)}</p>{draft(USE_COMPANY, "p", "small")}</div></div>', tight=True)
-            + m_text("Build a collection", BUILD_TEXT, "c", contact=("Talk to us about a collection", EMAIL_PARTNERS), sid="build",
-                     links=[button(base + "collections/waste-to-value/", "See the Waste to Value Collection →", quiet=True)])
-            + m_items("Make something with us", [part(x) for x in MAKE_ITEMS], "d", lead=draft(MAKE_LEAD), sid="make", cols=2, credit=False)
-            + m_doors("d", kicker=MAKE_CONTACT[0], address=EMAIL_PARTNERS, line=MAKE_CONTACT[1], tight=True)
+    return (head
             + m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base)
+            + m_document(base, HOME_DOCUMENT)
+            + home_partnerships(base, here=PARTNERS_WAYS)
+            + use + build + make
+            + m_items("How we work", PRINCIPLES, "a", lead=f'<p class="lead">{e(PRINCIPLES_LINE)}</p><p class="doors">{way_on(base + "about/", "About Africa Reframed")}</p>', is_draft=False, sid="how-we-work", cls="four")
             + m_doors("a", doors=step_doors, sid="step")
             # who already uses the archive: partners by name and examples of use, once there are any (rule 27).
             + m_partners(10, "Partners by name") + m_use("b", "In use", tight=True))
@@ -5039,6 +5088,14 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .door-panels.cycle{position:relative}
 .cycle-arrows{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:var(--fs-text);line-height:1}
 .cycle-beside{margin-top:32px}.cycle-beside p{margin:0}.cycle-beside .doors{margin:8px 0 0}
+/* Partnerships as chapters (16 November 2026, 21:30): the head with the bold line; a chapter's parts under rules, two
+   across; a row of three photographs from the archive; the ways on under a chapter. */
+.p-words{padding-top:64px;padding-bottom:32px}.p-words .kicker{margin:0 0 16px}.p-words h1{max-width:22ch}.p-words .doors{margin:24px 0 0}
+.p-head .lead{margin:0 0 12px}
+.principles.subs{grid-template-columns:repeat(2,minmax(0,1fr))}.principles.subs h3{margin:0 0 8px}
+.pic-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);margin:0 0 64px}
+.pic-row img{display:block;width:100%;height:auto}
+.p-on{margin-top:32px}.p-on .doors{margin:0 0 16px}
 .part-photo{display:block}.part-photo img{display:block;width:100%;height:auto;aspect-ratio:3 / 2;object-fit:cover}
 @media (min-width:768px){.door-panels.three{grid-template-columns:repeat(3,1fr)}}
 /* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive
@@ -5298,6 +5355,7 @@ body.show-grid .grid-overlay{display:block}
   .opening-img{aspect-ratio:3/2}  /* 3:2 on phones so the core line sits in the first screen (4:5 pushed it below) */
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}
   .cycle-arrows{display:none}
+  .principles.subs,.pic-row{grid-template-columns:1fr}.pic-row{gap:32px}
   .grid-2{gap:32px}
   .split{gap:24px}
   .contact-box{margin-top:0}

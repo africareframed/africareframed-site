@@ -849,6 +849,14 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .door-panels.cycle{position:relative}
 .cycle-arrows{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:var(--fs-text);line-height:1}
 .cycle-beside{margin-top:32px}.cycle-beside p{margin:0}.cycle-beside .doors{margin:8px 0 0}
+/* Partnerships as chapters (16 November 2026, 21:30): the head with the bold line; a chapter's parts under rules, two
+   across; a row of three photographs from the archive; the ways on under a chapter. */
+.p-words{padding-top:64px;padding-bottom:32px}.p-words .kicker{margin:0 0 16px}.p-words h1{max-width:22ch}.p-words .doors{margin:24px 0 0}
+.p-head .lead{margin:0 0 12px}
+.principles.subs{grid-template-columns:repeat(2,minmax(0,1fr))}.principles.subs h3{margin:0 0 8px}
+.pic-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);margin:0 0 64px}
+.pic-row img{display:block;width:100%;height:auto}
+.p-on{margin-top:32px}.p-on .doors{margin:0 0 16px}
 .part-photo{display:block}.part-photo img{display:block;width:100%;height:auto;aspect-ratio:3 / 2;object-fit:cover}
 @media (min-width:768px){.door-panels.three{grid-template-columns:repeat(3,1fr)}}
 /* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive
@@ -1108,6 +1116,7 @@ body.show-grid .grid-overlay{display:block}
   .opening-img{aspect-ratio:3/2}  /* 3:2 on phones so the core line sits in the first screen (4:5 pushed it below) */
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}
   .cycle-arrows{display:none}
+  .principles.subs,.pic-row{grid-template-columns:1fr}.pic-row{gap:32px}
   .grid-2{gap:32px}
   .split{gap:24px}
   .contact-box{margin-top:0}

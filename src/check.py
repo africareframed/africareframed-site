@@ -203,8 +203,10 @@ def css_findings():
     return dict(spacing_off=dict(sorted(off.items(), key=lambda x: -x[1])), font_sizes=sizes,
                 # one transition is allowed since 14 November 2026 (Thomas, 16:50): the arrow of a way on moves when the
                 # reader points at the link; the stylesheet marks those lines, and they are left out of the count
+                # a second one since 16 November 2026 (Thomas, 12:37): the form on the Partner portal rolls out under its
+                # cards and back, marked desk:motion in the stylesheet
                 motion=len(re.findall(r"transition|animation|@keyframes",
-                                      re.sub(r"/\*.*?\*/", "", re.sub(r"(?s)/\* way:motion \*/.*?/\* way:motion end \*/", "", build.CSS), flags=re.S))))
+                                      re.sub(r"/\*.*?\*/", "", re.sub(r"(?s)/\* (way|desk):motion \*/.*?/\* \1:motion end \*/", "", build.CSS), flags=re.S))))
 
 
 def run(only=None):

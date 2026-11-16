@@ -895,14 +895,38 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .desk .mod.band .cols{border-top:2px solid var(--ink);padding-top:24px}
 .sheet{background:#fff;padding:32px}
 .task-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gutter);margin-top:32px}
-.task{background:#fff;padding:24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;min-height:208px}
+.task{background:#fff;padding:24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;min-height:208px;
+  font:inherit;letter-spacing:inherit;color:var(--ink);text-align:left;border:0;border-radius:0;cursor:pointer;appearance:none;-webkit-appearance:none}
+.task.on{background:var(--ink);color:#fff}
+.task.on > span,.task.on .go{color:#fff}
+.task:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .task strong{font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em;text-wrap:balance}
 .task > span{color:var(--ink-soft)}
 .task .go{margin-top:auto;padding-top:16px;color:var(--ink);font-weight:600}
 .task:hover strong{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
-.write{margin-top:var(--gutter)}
-.write .form{max-width:none;margin-top:0}
-.write .form label:first-child{margin-top:0}
+/* The form is folded away until a card is pressed, then rolls out under the cards. This is the one thing that moves on
+   the page, and with the arrow of a way on and the footer's close the only motion on the site (Thomas, 16 November 2026,
+   12:37, an exception to Quality rules, rule 20, for opening and closing on the Partner portal only): a fifth of a
+   second, no fading, and none at all for a reader who has asked her device to reduce motion. */
+.write{grid-column:1/-1;display:grid;grid-template-rows:0fr}
+.write.open{grid-template-rows:1fr}
+.write.gone{display:none}
+.write-clip{overflow:hidden;min-height:0;visibility:hidden}
+.write.open .write-clip{visibility:visible}
+/* desk:motion */
+.write{transition:grid-template-rows .2s ease-out}
+.write-clip{transition:visibility 0s .2s}
+.write.open .write-clip{transition-delay:0s}
+@media (prefers-reduced-motion:reduce){.write,.write-clip{transition:none}}
+/* desk:motion end */
+.write .form{max-width:none;margin:0;gap:16px}
+.write .form label{margin-top:0}
+.write .form .button{margin-top:8px}
+.write-line{margin:0}
+.by-mail{margin:24px 0 0}
+.f-row{display:grid;gap:8px}
+.f-row[hidden]{display:none}
+.f-row label{display:block}
 .spine{font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em;margin:0 0 12px}
 .guide + .guide{margin-top:32px}
 .guide .acc{background:#fff;border:0;padding:0 24px}
@@ -916,7 +940,7 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .copy-line{display:flex;gap:16px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:8px 0}
 .copy{font:inherit;font-weight:600;min-height:48px;padding:0 16px;border:1px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;flex:none}
 @media (max-width:1023px){.task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:767px){.task-grid{grid-template-columns:1fr}.task{min-height:0}.sheet{padding:24px 16px}.guide .acc{padding:0 16px}}
+@media (max-width:767px){.task-grid{grid-template-columns:1fr}.task{min-height:0}.sheet{padding:24px 16px}.guide .acc{padding:0 16px}.write .c1-4{display:none}}   /* on a phone the form opens right under its card, which already says what it is */
 
 /* Development: the type page */
 .type-row{border-top:1px solid var(--line);padding:24px 0 16px}

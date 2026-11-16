@@ -958,7 +958,7 @@ def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=No
 
 
 # 2.15 Form, connected (16 November 2026): the fields of one form, sent to the intake. A field is (name, label, options).
-def intake_field(name, label, kind="text", required=False, options=None, hint=None, auto=None, fid=""):
+def intake_field(name, label, kind="text", required=False, options=None, hint=None, auto=None, fid="", only=None):
     req = " required" if required else ""
     ac = f' autocomplete="{auto}"' if auto else ""
     opt = "" if required else ' <span class="opt">optional</span>'
@@ -967,12 +967,15 @@ def intake_field(name, label, kind="text", required=False, options=None, hint=No
         opt = ""
     elif kind == "textarea":
         ctl = f'<textarea id="{fid}" name="{name}" rows="4"{req}></textarea>'
+    elif kind == "hidden":
+        return f'<input type="hidden" name="{name}" value="{e(options or "")}">'
     elif kind == "file":
         ctl = f'<input id="{fid}" name="{name}" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.docx,.pptx,.xlsx,.txt">'
     else:
         ctl = f'<input id="{fid}" name="{name}" type="{kind}"{req}{ac}>'
     h = f'<span class="f-hint draft">{e(hint)}</span>' if hint else ""
-    return f'<label for="{fid}">{e(label)}{opt}</label>{ctl}{h}'
+    only = f' data-for="{only}"' if only else ""
+    return f'<div class="f-row"{only}><label for="{fid}">{e(label)}{opt}</label>{ctl}{h}</div>'
 
 
 def intake_form(form, title, fields, button_label, thanks, checks=(), sid=None):
@@ -992,7 +995,6 @@ def intake_script():
 function lab(f,el){var l=f.querySelector('label[for="'+el.id+'"]');return l?l.firstChild.textContent.trim():el.name}
 [].slice.call(document.querySelectorAll('form.intake')).forEach(function(f){
 var st=f.querySelector('.form-status'),btn=f.querySelector('button[type=submit]');
-var kind=f.querySelector('[name=kind]');if(kind&&qs('kind'))kind.value=qs('kind');
 var col=f.querySelector('[name=colleague]');if(col&&qs('colleague'))col.checked=true;
 function say(html,bad){st.innerHTML=html;st.className='form-status'+(bad?' bad':'')}
 function asMail(){var lines=[];[].slice.call(f.querySelectorAll('input,select,textarea')).forEach(function(el){
@@ -1001,25 +1003,43 @@ lines.push(lab(f,el)+': '+(el.tagName==='SELECT'?el.options[el.selectedIndex].te
 return 'mailto:'+MAIL+'?subject='+encodeURIComponent(f.getAttribute('aria-label'))+'&body='+encodeURIComponent(lines.join('\n\n'))}
 function fail(){say('It did not go through. <a href="'+asMail()+'">Send it as an email instead</a>.',true);btn.disabled=false}
 f.addEventListener('submit',function(ev){ev.preventDefault();var bad=null;
-[].slice.call(f.querySelectorAll('[required]')).forEach(function(el){var v=el.value.trim(),ok=v&&(el.type!=='email'||/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v));
+[].slice.call(f.querySelectorAll('[required]')).forEach(function(el){var rw=el.closest('.f-row');if(rw&&rw.hidden)return;var v=el.value.trim(),ok=v&&(el.type!=='email'||/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v));
 el.setAttribute('aria-invalid',ok?'false':'true');if(!ok&&!bad)bad=el});
 if(bad){say('Please fill in: '+lab(f,bad)+'.',true);bad.focus();return}
 var d={key:KEY,form:f.getAttribute('data-form'),page:location.pathname,source:qs('src')||document.referrer,elapsed:Date.now()-T0};
-[].slice.call(f.querySelectorAll('input,select,textarea')).forEach(function(el){if(!el.name||el.type==='file')return;d[el.name]=el.type==='checkbox'?el.checked:el.value.trim()});
+[].slice.call(f.querySelectorAll('input,select,textarea')).forEach(function(el){var r=el.closest('.f-row');if(!el.name||el.type==='file'||(r&&r.hidden))return;d[el.name]=el.type==='checkbox'?el.checked:el.value.trim()});
 if(/[?&]test=1/.test(location.search))d.test=true;
-var file=f.querySelector('input[type=file]');file=file&&file.files&&file.files[0];
+var file=f.querySelector('input[type=file]');file=file&&!file.closest('.f-row').hidden&&file.files&&file.files[0];
 if(d.form==='message'&&!d.text&&!d.link&&!file){say('Write a line, add a link or attach a file.',true);return}
 if(file&&file.size>10*1024*1024){say('The file is larger than 10 MB. Send a link to it instead.',true);return}
 if(!URL_){fail();return}
 btn.disabled=true;say('Sending…');
 function send(){fetch(URL_,{method:'POST',body:JSON.stringify(d)}).then(function(r){return r.json()}).then(function(r){
 if(r&&r.ok){var p=document.createElement('p');p.className='form-done';p.setAttribute('role','status');p.tabIndex=-1;
-p.textContent='Thank you. '+f.getAttribute('data-thanks')+(r.id?' Your reference is '+r.id+'.':'');f.parentNode.replaceChild(p,f);p.focus()}
+p.textContent='Thank you. '+f.getAttribute('data-thanks')+(r.id?' Your reference is '+r.id+'.':'');f.parentNode.replaceChild(p,f);p.focus();[].slice.call(document.querySelectorAll('.task.on .go')).forEach(function(g){g.textContent='Sent'})}
 else if(r&&r.error==='file type'){say('We cannot take that kind of file. Send a PDF, an image or an Office document, or a link.',true);btn.disabled=false}
 else if(r&&r.error==='file size'){say('The file is larger than 10 MB. Send a link to it instead.',true);btn.disabled=false}
 else fail()}).catch(fail)}
 if(file){var rd=new FileReader();rd.onload=function(){d.file={name:file.name,type:file.type,data:String(rd.result).split(',')[1]};send()};rd.onerror=fail;rd.readAsDataURL(file)}else send()})});
-[].slice.call(document.querySelectorAll('[data-kind]')).forEach(function(a){a.addEventListener('click',function(){var k=document.querySelector('form.intake [name=kind]');if(k)k.value=a.getAttribute('data-kind')})});
+var grid=document.querySelector('.task-grid'),panel=document.getElementById('write'),cards=grid?[].slice.call(grid.querySelectorAll('.task')):[],timer;
+function setKind(c){var k=c.getAttribute('data-kind'),f=panel.querySelector('form'),t=f.querySelector('[name=text]');
+f.querySelector('[name=kind]').value=k;panel.querySelector('.write-title').textContent=c.querySelector('strong').textContent;
+panel.querySelector('.write-line').textContent=c.querySelector('.task-line').textContent;
+[].slice.call(f.querySelectorAll('.f-row[data-for]')).forEach(function(r){r.hidden=r.getAttribute('data-for').split(' ').indexOf(k)<0});
+var l=f.querySelector('label[for="'+t.id+'"]');l.firstChild.textContent=c.getAttribute('data-ask');
+var o=l.querySelector('.opt');if(o)o.hidden=k!=='made';if(k==='made')t.removeAttribute('required');else t.setAttribute('required','');
+var st=f.querySelector('.form-status');if(st)st.textContent=''}
+function place(c){var n=getComputedStyle(grid).gridTemplateColumns.split(' ').length,i=cards.indexOf(c),last=cards[Math.min(cards.length-1,Math.ceil((i+1)/n)*n-1)];
+if(last.nextSibling!==panel)grid.insertBefore(panel,last.nextSibling)}
+function shut(){clearTimeout(timer);cards.forEach(function(c){c.classList.remove('on');c.setAttribute('aria-expanded','false');c.querySelector('.go').textContent=c.getAttribute('data-go')});
+panel.classList.remove('open');timer=setTimeout(function(){panel.classList.add('gone')},220)}
+function show(c,quick){clearTimeout(timer);if(!panel.querySelector('form')){return}
+var was=panel.classList.contains('open');cards.forEach(function(x){var on=x===c;x.classList.toggle('on',on);x.setAttribute('aria-expanded',on?'true':'false');x.querySelector('.go').textContent=on?'Close ↑':x.getAttribute('data-go')});
+setKind(c);place(c);panel.classList.remove('gone');if(quick||was){panel.classList.add('open')}else{panel.offsetHeight;panel.classList.add('open')}}
+cards.forEach(function(c){c.addEventListener('click',function(){if(c.classList.contains('on'))shut();else show(c)})});
+[].slice.call(document.querySelectorAll('a[data-kind]')).forEach(function(a){a.addEventListener('click',function(ev){var c=grid&&grid.querySelector('.task[data-kind="'+a.getAttribute('data-kind')+'"]');
+if(c){ev.preventDefault();show(c,true);c.scrollIntoView();c.focus()}})});
+if(grid&&qs('kind')){var c0=grid.querySelector('.task[data-kind="'+qs('kind')+'"]');if(c0){show(c0,true);c0.scrollIntoView()}}
 function openHash(){var el=location.hash&&document.getElementById(location.hash.slice(1));if(el&&el.tagName==='DETAILS')el.open=true}
 openHash();window.addEventListener('hashchange',openHash);
 [].slice.call(document.querySelectorAll('details.acc[id]')).forEach(function(dn){dn.addEventListener('toggle',function(){if(dn.open&&history.replaceState)history.replaceState(null,'','#'+dn.id)})});
@@ -3141,7 +3161,7 @@ def tpl_partners(p, base):
 # the archive again, and how one becomes a partner is told on Partnerships. No word budget (Thomas, 10:28): its rules are
 # a help page's. Every text is a draft for Thomas (Website – copy, section 6); the steps in the archive were read on the
 # archive itself on 16 November 2026 as the test partner.
-PORTAL_STATEMENT = "For partners: the way into the archive, how it works and how we work together."
+PORTAL_STATEMENT = "Open the archive, find what you need, and tell us what you made."
 PORTAL_TASKS = [("made", "Show us what you made", "A link, a screenshot or a document, with a comment if you like."),
                 ("missing", "Tell us what is missing", "Images you looked for and did not find."),
                 ("feedback", "Give us feedback", "On the archive, the images or this page. A line is enough."),
@@ -3150,8 +3170,8 @@ PORTAL_LICENCE = "Images are always free for partners. Each use has its own lice
 
 
 def tpl_portal(p, base):
-    doors = [door(archive("/-/galleries/archive", "portal"), "Partners", "Open the archive →", "Log in with your partner account. Signed in already? Straight to the images.", dark=True),
-             door(base + "partners/", "New partners", "Become a partner →", "Partnerships tells what it is to be a partner and how to apply.")]
+    doors = [door(archive("/-/galleries/archive", "portal"), "Partners", "Open the archive →", "Log in to your account. Signed in already? Straight to the images.", dark=True),
+             door(base + "partners/", "New partners", "Become a partner →", "Not a partner yet? See what a partnership involves and who can apply.")]
     d = lambda text: f'<span class="draft">{e(text)}</span>'
     para = lambda text: f'<p>{d(text)}</p>'
     ul = lambda items: '<ul>' + "".join(f'<li>{d(x)}</li>' for x in items) + '</ul>'
@@ -3160,22 +3180,25 @@ def tpl_portal(p, base):
         return f'<p class="doors"><a class="button quiet" href="{href}"{k}>{e(label)}</a></p>'
     copy = lambda line: f'<div class="copy-line"><span>{e(line)}</span><button type="button" class="copy" data-copy="{e(line)}">Copy</button></div>'
 
-    tasks = "".join(f'<a class="task" href="#write" data-kind="{k}"><strong>{d(t)}</strong><span>{d(l)}</span><span class="go">Write it here ↓</span></a>' for k, t, l in PORTAL_TASKS)
-    partnership = (f'<div class="cols"><div class="c1-4">{heading("The partnership")}</div><div class="c7-12">'
-                   + para("A partnership goes both ways. None of this is required, and every message is read and answered.") + '</div></div>'
-                   + f'<div class="task-grid">{tasks}</div>')
-
-    form = intake_form("message", "Write to us", [
-        ("kind", "What is it about?", dict(kind="select", options=MESSAGE_KINDS)),
+    # The four cards work as tabs (Thomas, 16 November 2026, 12:35): the form is folded away until a card is pressed,
+    # then opens under the cards, about that task and with that task's fields only.
+    asks = {"made": "A comment", "missing": "What you looked for", "feedback": "Your feedback", "bigger": "What you have in mind"}
+    tasks = "".join(f'<button type="button" class="task" data-kind="{k}" data-ask="{e(asks[k])}" data-go="Write it here ↓" aria-expanded="false" aria-controls="write">'
+                    f'<strong>{d(t)}</strong><span class="task-line">{d(l)}</span><span class="go">Write it here ↓</span></button>' for k, t, l in PORTAL_TASKS)
+    form = intake_form("message", "Talk to us", [
+        ("kind", "", dict(kind="hidden", options="made")),
+        ("link", "A link", dict(kind="url", hint="To the page, the post or the publication.", only="made")),
+        ("file", "A file", dict(kind="file", hint="A screenshot, a PDF or a document, up to 10 MB.", only="made")),
         ("text", "Your message", dict(kind="textarea")),
-        ("link", "A link", dict(kind="url", hint="To the page, the post or the publication.")),
-        ("file", "A file", dict(kind="file", hint="A screenshot, a PDF or a document, up to 10 MB.")),
         ("organisation", "Organisation", dict(required=True, auto="organization")),
         ("email", "Email", dict(kind="email", required=True, auto="email"))],
         "Send", "Your message is with us, and we answer every one.")
-    write = (f'<div class="sheet write" id="write"><div class="cols"><div class="c1-4">{heading("Write to us", 3, "h-big")}'
-             + f'<p class="small">{d("Or by email:")} <a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p></div>'
-             + f'<div class="c7-12">{form}</div></div></div>')
+    write = (f'<div class="write gone" id="write"><div class="write-clip"><div class="sheet"><div class="cols"><div class="c1-4"><h3 class="h-big write-title">Talk to us</h3>'
+             + f'<p class="small write-line"></p></div><div class="c7-12">{form}</div></div></div></div></div>')
+    partnership = (f'<div class="cols"><div class="c1-4">{heading("Talk to us")}</div><div class="c7-12">'
+                   + para("A good partnership goes both ways. We appreciate hearing from you, and we answer every message.") + '</div></div>'
+                   + f'<div class="task-grid">{tasks}{write}</div>'
+                   + f'<p class="small by-mail">{d("Or by email:")} <a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p>')
 
     spine = (f'<div class="cols"><div class="c1-4">{heading("How it works")}</div><div class="c7-12">'
              f'<p class="spine">Find → collect → license → use</p>{para(PORTAL_LICENCE)}</div></div>')
@@ -3232,7 +3255,7 @@ def tpl_portal(p, base):
         accs = "".join(f'<details class="acc" id="{i}"><summary>{d(q)}<span class="plus" aria-hidden="true"></span></summary>{a}</details>' for i, q, a in items)
         guide += f'<div class="cols guide"><div class="c1-4">{heading(title)}</div><div class="c7-12">{accs}</div></div>'
 
-    desk = (mod("items", "the partnership, as tasks", partnership + write, sid="partnership")
+    desk = (mod("items", "talk to us, the tasks as tabs", partnership, sid="talk-to-us")
             + mod("text", "how it works", spine, sid="how-it-works")
             + mod("items", "c, the guide, each answer with its address", guide, sid="guide", tight=True)
             + m_doors("d", kicker="Get help", address=EMAIL_PARTNERS, line="Something not answered here? Write to us. We answer within a working day.", sid="help"))
@@ -4985,14 +5008,38 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .desk .mod.band .cols{border-top:2px solid var(--ink);padding-top:24px}
 .sheet{background:#fff;padding:32px}
 .task-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gutter);margin-top:32px}
-.task{background:#fff;padding:24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;min-height:208px}
+.task{background:#fff;padding:24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;min-height:208px;
+  font:inherit;letter-spacing:inherit;color:var(--ink);text-align:left;border:0;border-radius:0;cursor:pointer;appearance:none;-webkit-appearance:none}
+.task.on{background:var(--ink);color:#fff}
+.task.on > span,.task.on .go{color:#fff}
+.task:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .task strong{font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em;text-wrap:balance}
 .task > span{color:var(--ink-soft)}
 .task .go{margin-top:auto;padding-top:16px;color:var(--ink);font-weight:600}
 .task:hover strong{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
-.write{margin-top:var(--gutter)}
-.write .form{max-width:none;margin-top:0}
-.write .form label:first-child{margin-top:0}
+/* The form is folded away until a card is pressed, then rolls out under the cards. This is the one thing that moves on
+   the page, and with the arrow of a way on and the footer's close the only motion on the site (Thomas, 16 November 2026,
+   12:37, an exception to Quality rules, rule 20, for opening and closing on the Partner portal only): a fifth of a
+   second, no fading, and none at all for a reader who has asked her device to reduce motion. */
+.write{grid-column:1/-1;display:grid;grid-template-rows:0fr}
+.write.open{grid-template-rows:1fr}
+.write.gone{display:none}
+.write-clip{overflow:hidden;min-height:0;visibility:hidden}
+.write.open .write-clip{visibility:visible}
+/* desk:motion */
+.write{transition:grid-template-rows .2s ease-out}
+.write-clip{transition:visibility 0s .2s}
+.write.open .write-clip{transition-delay:0s}
+@media (prefers-reduced-motion:reduce){.write,.write-clip{transition:none}}
+/* desk:motion end */
+.write .form{max-width:none;margin:0;gap:16px}
+.write .form label{margin-top:0}
+.write .form .button{margin-top:8px}
+.write-line{margin:0}
+.by-mail{margin:24px 0 0}
+.f-row{display:grid;gap:8px}
+.f-row[hidden]{display:none}
+.f-row label{display:block}
 .spine{font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em;margin:0 0 12px}
 .guide + .guide{margin-top:32px}
 .guide .acc{background:#fff;border:0;padding:0 24px}
@@ -5006,7 +5053,7 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .copy-line{display:flex;gap:16px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:8px 0}
 .copy{font:inherit;font-weight:600;min-height:48px;padding:0 16px;border:1px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;flex:none}
 @media (max-width:1023px){.task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:767px){.task-grid{grid-template-columns:1fr}.task{min-height:0}.sheet{padding:24px 16px}.guide .acc{padding:0 16px}}
+@media (max-width:767px){.task-grid{grid-template-columns:1fr}.task{min-height:0}.sheet{padding:24px 16px}.guide .acc{padding:0 16px}.write .c1-4{display:none}}   /* on a phone the form opens right under its card, which already says what it is */
 
 /* Development: the type page */
 .type-row{border-top:1px solid var(--line);padding:24px 0 16px}

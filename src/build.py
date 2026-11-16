@@ -1185,15 +1185,22 @@ INTRO_HOME = [
 # forms of the two names.
 # The label over each name says how that way adds to the archive (Thomas, 16 November 2026, 17:28: "By sharing" over
 # Use it, "By production" over Build it; they were the terms, "Always free" and "By collection"). Draft.
-# The two texts are of one length, so the cards line up when both show their text; the photographers are no longer named
-# on Build it (Thomas, 16 November 2026, 17:37). Use it names working together too: an exhibition made with us (Thomas, 17:43).
-# No entrance for photographers and other creators on Home: they are another kind of enquiry, and their place is open.
+# The two texts are of one length, so the cards line up when both show their text.
+# The two cards are the two ways into the archive and name nothing else (Thomas, 16 November 2026, 18:04 and 18:33): Use
+# it takes pictures from the archive, Build it adds a collection to it. Workshops, exhibitions and other projects shaped
+# case by case are a path of their own, named in one quiet line under the cards (HOME_BEYOND). Photographers and other
+# creators are not named on Home (17:43). The labels stay "By sharing" and "By production" (Thomas, 18:33).
 HOME_PARTNERSHIPS = [   # the label, the role, its text, its way on (label, address under partners/)
-    ("By sharing", "Use it", "NGOs, media, educational and public institutions use the images in reports, campaigns and classrooms, or in an exhibition made with us.",
+    ("By sharing", "Use it", "NGOs, media, educational and public institutions use the images in their own reports, campaigns and classrooms.",
      ("Use the images", "#use")),
-    ("By production", "Build it", "A company or another partner makes a new collection possible and is named on it. An exhibition can start the same way.",
+    ("By production", "Build it", "A company or another partner makes a new collection possible and is named on it. Every partner can then use it.",
      ("Build a collection", "#sponsor")),
 ]
+# The quiet line under the two cards (Thomas, 16 November 2026, 18:33): what is made with partners beside the archive. It
+# stands before the workshop photograph and the supporters, which show one such project and who backed the others.
+# It stands on the right half, where this part's text stands above the cards. Draft. Its way on leads to the supporters on Partnerships until that page has a part of its own for it.
+HOME_BEYOND = ("Beyond the archive, we make workshops and exhibitions together with partners, in Africa and in Europe.",
+               ("Make something with us", "#supported"))
 # The principles' own sentence and its detail, on About since 13 November 2026 (they stood on Home beside Principles).
 PRINCIPLES_LINE = "Behind every image and every collaboration."
 PRINCIPLES_DETAIL = ("An organisation that uses our images puts its own name beside them, and a sponsor puts its name on a whole "
@@ -2291,7 +2298,8 @@ def home_partnerships(base):
     # No stripes since 13 November 2026, 15:05 (Thomas, 15:03): the part stands on the plain pale ground, as the first
     # section does. The page is calmer and the eye stays on the content; the pattern opens the page in the photograph and
     # closes it in the footer. turn_pattern() is kept, unused, with the drawing as it was settled that morning.
-    return mod("items", "two ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels sun two">{cards}</ul>{flip}',
+    return mod("items", "two ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels sun two">{cards}</ul>'
+               f'<div class="cols beyond"><div class="c7-12">{draft(limit("item line", HOME_BEYOND[0]))}<p class="doors">{way_on(base + "partners/" + HOME_BEYOND[1][1], HOME_BEYOND[1][0])}</p></div></div>{flip}',
                cls="on-ground turn joined", sid="partnerships")
 
 
@@ -4631,6 +4639,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:420;line-height:1.15}
 .panels.flips .flip.open .back,.panels.flips .flip:has(.flip-more:focus-visible) .back,.panels.flips .flip:has(.way:focus-visible) .back{visibility:visible}
 .panels.flips .flip.open .plus::after,.panels.flips .flip:has(.flip-more:focus-visible) .plus::after,.panels.flips .flip:has(.way:focus-visible) .plus::after{display:none}
 .panels .back{display:flex;flex-direction:column}
+.beyond{margin:32px 0 0}.beyond p{margin:0}.beyond .doors{margin:8px 0 0}   /* the quiet line under the two cards (16 November 2026) */
 .panels .flip-on{margin:auto 0 -8px;padding-top:8px}   /* the way on stands at the foot of the side with the text, at one height on
    both cards also where one text runs a line longer than the other (16 November 2026) */
 @media (hover:hover){

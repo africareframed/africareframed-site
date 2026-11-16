@@ -3389,19 +3389,33 @@ def tpl_portal(p, base):
             + f'<div class="desk">{desk}</div>')
 
 
-# Become a partner, on trial at /dev/become-a-partner/ (Thomas, 16 November 2026, 21:44 to 23:09). The Partnerships page did
+# Become a partner, on trial at /dev/become-a-partner/ (Thomas, 16 November 2026, 21:44 to 23:21). The Partnerships page did
 # not work as a page that argues for partnership; what belongs to it alone is who can ask and the first step. So this is
-# the Partner portal's counterpart for a reader who is considering: built from her questions, overview first, each answer
-# folded and with its own address. It is full of information on purpose, and nothing on it is an offer: what building or
-# making costs is talked through. The Partnerships page stands untouched beside it until Thomas has compared the two.
-# Every line is a draft unless it is an approved line used unchanged (ACCESS_WHO, the consent line). Left out because the
-# answer is not known: whether organisations in Africa are approved on the same terms, who decides on a request, and
-# where a photographer turns. The two entrances that say Write to us are an address until the intake has a kind for them.
+# the Partner portal's counterpart for a reader who is considering: built from her questions, and full of information on
+# purpose. Second version, 23:45, after Thomas's fear that it looked too like the portal and Claude's critique: the two
+# differ by role, not by a new colour. This page stands outside the door, so it shows photographs and opens with Home's
+# yellow; its answers are ruled lists on white, where the portal has white sheets on the pale ground. Three tracks, one
+# for each way, each ending in its own first step with the form folded into the page; what repeats the portal is a line
+# and a link. Nothing on it is an offer: what building or making costs is talked through.
+# The forms are the site's own (src/intake/README.md): the request for access, unchanged, and the message form with the
+# kind "bigger", which the script files as Build with us; both tracks' messages land there until the script has a kind
+# for each. The Partnerships page stands untouched beside this one until Thomas has compared the two.
+# Every line is a draft unless it is an approved line used unchanged (ACCESS_WHO). Left out because the answer is not
+# known: whether organisations in Africa are approved on the same terms, who decides on a request, where a photographer turns.
 APPLY_STATEMENT = "See who the archive is for, what a partnership involves and how to ask. We answer within a working day."
-APPLY_DOORS = [("request-access/", "Use the archive", "Free for non-profit and public organisations. Ask with a short form →"),
-               ("mailto:", "Build a collection", "A company or another partner makes a new collection possible. Write to us →"),
-               ("mailto:", "Make something with us", "A workshop, an exhibition or a project of your own. Write to us →")]
-APPLY_SPINE = ("Ask → our answer → log in → use", "A request is a short form. We read every one ourselves, and you have our answer within a working day.")
+APPLY_PHOTOS = ["AR-1350", "AR-1137", "AR-1628"]
+APPLY_WAYS = [("use", "By sharing", "Use the archive", "Free for non-profit and public organisations.", "The questions and the form ↓"),
+              ("build", "By production", "Build a collection", "A partner makes a new collection possible, and it joins the archive.", "The questions and how to start ↓"),
+              ("make", "Beside the archive", "Make something with us", "A workshop, an exhibition or a project of your own.", "The questions and how to start ↓")]
+
+
+def ar_pic(base, ar):
+    """A photograph from the ten on Home, with its number and place and the credit line."""
+    r = FRONT_RECORDS[ar]
+    f = f'{base}assets/home/{ar.lower()}'
+    cap = f'{ar} · {r["place"]}'
+    return (f'<figure class="frame"><img src="{f}-800.jpg" srcset="{f}-800.jpg 800w, {f}-1280.jpg 1280w" sizes="(min-width:1024px) 30vw, 92vw" width="800" height="533" '
+            f'alt="{e(r["desc"])}" loading="lazy" decoding="async">{credit_line(cap=e(cap))}</figure>')
 
 
 def tpl_apply(p, base):
@@ -3409,52 +3423,50 @@ def tpl_apply(p, base):
     para = lambda text: f'<p>{d(text)}</p>'
     def way(href, label):
         return f'<p class="doors"><a class="button quiet" href="{href}">{e(label)}</a></p>'
-    mail = f'<p><a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p>'
-    doors = [door((base + h) if not h.startswith("mailto:") else "mailto:" + EMAIL_PARTNERS, "", t, l, dark=(n == 0)) for n, (h, t, l) in enumerate(APPLY_DOORS)]
-    entrances = mod("doors", "a, the three entrances", f'<div class="door-panels three">{"".join(doors)}</div>'
-                    + note("On trial beside the Partnerships page, which is unchanged. Use the archive leads to the request form; the other two are an address for now."))
-    spine = (f'<div class="cols"><div class="c1-4">{heading("How it goes")}</div><div class="c7-12">'
-             f'<p class="spine">{e(APPLY_SPINE[0])}</p>{para(APPLY_SPINE[1])}</div></div>')
-    groups = [
-        ("Who can become a partner", [
+    script = intake_script()
+    once = lambda html: html.replace(script, "")           # the forms share one script; it stands once, after the last form
+    def message(prefix, label):
+        f = intake_form("message", label, [
+            ("kind", "", dict(kind="hidden", options="bigger")),
+            ("text", "What you have in mind", dict(kind="textarea", required=True)),
+            ("name", "Your name", dict(auto="name")),
+            ("organisation", "Organisation", dict(required=True, auto="organization")),
+            ("email", "Email", dict(kind="email", required=True, auto="email"))],
+            "Send", "What you have in mind is with us.")
+        return once(f).replace('id="message-', f'id="{prefix}-').replace('for="message-', f'for="{prefix}-')
+    def step(i, label, form, line):
+        return (f'<details class="acc step" id="{i}"><summary><strong>{d(label)}</strong><span class="plus" aria-hidden="true"></span></summary>'
+                f'{para(line)}{form}</details>')
+    cards = "".join(f'<li><a class="way-card" href="#{k}"><span class="kicker">{d(kick)}</span><strong>{d(t)}</strong><span class="way-line">{d(l)}</span>'
+                    f'<span class="go">{e(go)}</span></a></li>' for k, kick, t, l, go in APPLY_WAYS)
+    top = mod("items", "the three ways as yellow cards, each leading down to its own questions and first step",
+              f'<div class="pic-row">{"".join(ar_pic(base, a) for a in APPLY_PHOTOS)}</div><ul class="way-cards">{cards}</ul>'
+              + note("On trial beside the Partnerships page, which is unchanged. The forms are live: a request or a message sent from here reaches the Partner database."),
+              sid="ways", tight=True)
+    tracks = [
+        ("use", "Use the archive", "Take the pictures into your own work. The archive is free for the organisations we approve.", [
             ("who", "Is the archive for an organisation like ours?",
              f'<p>{e(ACCESS_WHO)}</p>' + para("Cultural institutions and foundations ask in the same way.")),
-            ("company", "Can a company become a partner?",
-             para("Yes. A company comes in by building a collection: it makes a new collection possible, and from then on it uses the archive like every other partner.")
-             + way("#collection-start", "How a collection starts ↓")),
             ("by-name", "What does approved by name mean?",
-             para("Each organisation is approved before it gets access, and each person has a login of their own. That is how we know where the images go."))]),
-        ("What a partner gets", [
+             para("Each organisation is approved before it gets access, and each person has a login of their own. That is how we know where the images go.")),
             ("archive", "What is in the archive?",
              para("1,122 photographs of contemporary African life from Bamako, Nairobi and Banjul, in five themes: Learning, Work and enterprise, Everyday digital, City life, and Creativity and culture.")
              + way(base + "collections/house-collection/", "The House Collection →")),
-            ("cost", "What does it cost?",
-             para("Nothing. Images are always free for partners.")),
+            ("cost", "What does it cost?", para("Nothing. Images are always free for partners.")),
             ("files", "What do we get when we download?",
              para("The original file, 6,000 pixels wide, comes to your email together with its licence.")),
-            ("colleagues", "Can several of us have access?",
-             para("Yes. An organisation starts with one account and adds colleagues by asking for them. Each person has a login of their own.")),
-            ("inside", "What is it like on the inside?",
-             para("The Partner portal shows how partners find, collect, download and use the images.") + way(base + "partner-portal/", "The Partner portal →"))]),
-        ("What it asks of you", [
-            ("licence", "Why does each image come with a licence?",
-             para("The licence is your permission in writing, for the use you chose. It is free, every time, and a new use is a new download with a licence of its own.")),
-            ("covers", "What may we do with the images?",
-             para("Use them for the purpose you chose, anywhere in the world, with the credit line beside them. The licence does not cover resale, political campaigning or advertising for products, and an image is never altered or used to train AI models.")
-             + way(base + "partner-portal/#rights", "What the licence covers →")),
-            ("report", "Do we have to report how we use them?",
-             para("No. The licence already says where an image will appear. Showing us what you made is welcome, and never required."))]),
-        ("Asking for access", [
             ("form", "What does the form ask?",
-             para("Your organisation, its type and its country, your name and role, your email, and how you will use the images. You can also tell us what imagery you are looking for.")
-             + way(base + "request-access/", "Request access →")),
+             para("Your organisation, its type and its country, your name and role, your email, and how you will use the images. You can also tell us what imagery you are looking for.")),
             ("time", "How long does it take?",
              para("We read every request ourselves, and you have our answer within a working day. A confirmation with a reference comes to your email at once.")),
             ("details", "What do you do with what we tell you?",
-             para("The form asks you to agree to one thing: that how you use the images may be reported, without personal details, to the funders who make new collections possible."))]),
-        ("Building a collection", [
+             para("The form asks you to agree to one thing: that how you use the images may be reported, without personal details, to the funders who make new collections possible."))],
+         step("ask", "Ask for access", once(request_form()), "A short form. We read every request ourselves.")),
+        ("build", "Build a collection", "A partner makes a new collection possible, and it joins the archive, where every partner can use it.", [
             ("collection-start", "How does a collection start?",
              para("With a partner and a theme: one close to the partner’s work, or one it wants to support. A sector, a skill, a city, a change under way. Never the partner’s own operations.")),
+            ("company", "How does a company take part?",
+             para("By building a collection. A company makes a new collection possible and is named on it.")),
             ("collection-made", "Who makes it?",
              para("We find the people and places that show the theme and work with photographers from the countries concerned. Every photographer is credited and paid.")),
             ("collection-name", "Where does our name stand?",
@@ -3464,29 +3476,40 @@ def tpl_apply(p, base):
             ("collection-example", "Is there an example?",
              para(BUILD_EXAMPLE) + way(base + "collections/waste-to-value/", "See the Waste to Value Collection →")),
             ("collection-cost", "What does it cost?",
-             para("That depends on the theme and the places. Write to us and we talk it through.") + mail)]),
-        ("Making something together", [
-            ("make", "What can we make together?",
+             para("That depends on the theme and the places. Write to us and we talk it through."))],
+         step("write-collection", "Write to us about a collection", message("build", "Build a collection"), "A few lines are enough. We answer within a working day.")),
+        ("make", "Make something with us", "A workshop, an exhibition, a project across sectors: some things are shaped case by case.", [
+            ("make-what", "What can we make together?",
              para("Workshops, exhibitions and other projects, each shaped around what the partner has in mind. A project can gather several partners around one theme.")),
             ("make-workshops", "What have the workshops been?",
              para(MAKE_SUBS[0][1]) + way(base + "about/#workshops", "The workshops, on About →")),
             ("make-exhibitions", "And the exhibitions?",
              para(MAKE_SUBS[1][1]) + way(base + "about/#exhibitions", "The exhibition, on About →")),
-            ("make-start", "How do we start?",
-             para("Tell us what you have in mind. A few lines are enough.") + mail)]),
+            ("make-cost", "What does it cost?",
+             para("That depends on what we make. Tell us what you have in mind and we talk it through."))],
+         step("write-project", "Tell us what you have in mind", message("make", "Make something with us"), "A few lines are enough. We answer within a working day.")),
     ]
-    guide = ""
-    for title, items in groups:
+    body = ""
+    for k, title, lead, items, last in tracks:
         accs = "".join(f'<details class="acc" id="{i}"><summary>{d(q)}<span class="plus" aria-hidden="true"></span></summary>{a}</details>' for i, q, a in items)
-        guide += f'<div class="cols guide"><div class="c1-4">{heading(title)}</div><div class="c7-12">{accs}</div></div>'
-    desk = (mod("text", "how it goes", spine, sid="how-it-goes")
-            + mod("items", "c, the guide, each answer with its address", guide, sid="guide", tight=True)
-            + m_doors("d", kicker="Get help", address=EMAIL_PARTNERS, line="Something not answered here? Write to us. We answer within a working day.", sid="help"))
-    return (m_page_head(p["title"], APPLY_STATEMENT, statement_draft=True, doors=entrances)
-            + f'<div class="desk">{desk}</div>')
+        body += mod("items", "a way in: its questions as a ruled list, then its first step",
+                    f'<div class="cols track"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2>{draft(lead, "p", "track-lead")}</div>'
+                    f'<div class="c7-12">{accs}{last}</div></div>', sid=k)
+    inside = [("licence-here", "A licence with every image", "Each download comes with a free licence for the use you chose.", "partner-portal/#why-licence", "Why a licence →"),
+              ("covers-here", "What the licence covers", "The use you chose, anywhere in the world, with the credit line beside the image.", "partner-portal/#rights", "What it covers →"),
+              ("colleagues-here", "Colleagues", "Each person has a login of their own, and colleagues are added by asking.", "partner-portal/#colleague", "Adding a colleague →")]
+    shared = mod("items", "what holds for every partner: a line each, told in full on the Partner portal",
+                 f'<div class="cols track"><div class="c1-4">{heading("Once you are a partner")}</div><div class="c7-12"><ul class="principles subs">'
+                 + "".join(f'<li id="{i}"><h3>{e(t)}</h3>{para(l)}<p class="doors">{way_on(base + h, lab)}</p></li>' for i, t, l, h, lab in inside)
+                 + '</ul></div></div>', sid="as-a-partner")
+    return (m_page_head(p["title"], APPLY_STATEMENT, statement_draft=True) + top + body + shared
+            + m_doors("d", kicker="Get help", address=EMAIL_PARTNERS, line="Something not answered here? Write to us. We answer within a working day.", sid="help")
+            + script)
 
 
-def tpl_form(p, base):
+def request_form():
+    """The request for access, as the site sends it to the intake (src/intake/README.md). One definition, so the form on
+    Request access and the same form on another page cannot drift apart."""
     fields = [("organisation", "Organisation", dict(required=True, auto="organization")),
               ("org_type", "Type of organisation", dict(kind="select", options=[(x, x) for x in ORG_TYPES])),
               ("country", "Country", dict(required=True, auto="country-name")),
@@ -3496,11 +3519,15 @@ def tpl_form(p, base):
               ("focus", "Focus of your work", dict()),
               ("use", "How you will use the images", dict(kind="textarea", required=True)),
               ("looking_for", "What imagery you are looking for", dict(kind="textarea"))]
-    aside = heading("What happens next", 3) + '<ol class="next-steps">' + "".join(f"<li><strong>{e(a)}</strong> <span class=\"draft\">{e(b)}</span></li>" for a, b in REQUEST_NEXT) + "</ol>" + draft(REQUEST_FOOT, "p", "small")
-    after = f'<p class="small">Read <a href="{base}partner-portal/#rights">what the licence covers</a> first.</p>'
-    form = intake_form("request", "Request access", fields, "Send the request",
+    return intake_form("request", "Request access", fields, "Send the request",
                        "Your request is with us. We read every request ourselves, and you have our answer within a working day.",
                        checks=[("colleague", "I am asking for a colleague at an organisation that is already a partner."), ("consent", REQUEST_CONSENT)])
+
+
+def tpl_form(p, base):
+    aside = heading("What happens next", 3) + '<ol class="next-steps">' + "".join(f"<li><strong>{e(a)}</strong> <span class=\"draft\">{e(b)}</span></li>" for a, b in REQUEST_NEXT) + "</ol>" + draft(REQUEST_FOOT, "p", "small")
+    after = f'<p class="small">Read <a href="{base}partner-portal/#rights">what the licence covers</a> first.</p>'
+    form = request_form()
     inner = f'<div class="cols"><div class="c1-6">{form}{after}</div><div class="c7-12"><aside class="facts-box">{aside}</aside></div></div>'
     return m_page_head(p["title"], ACCESS_WHO) + mod("form", "a, the long form with an aside, connected", inner)
 
@@ -5182,7 +5209,18 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
 /* Partnerships, 16 November 2026: the two ways as two panels with an arrow each way in the gutter between them; under
    them, on the right half, one line for what is made beside the archive. */
-.door-panels.three{grid-template-columns:repeat(3,minmax(0,1fr))}   /* Become a partner, on trial (16 November 2026) */
+/* Become a partner, on trial (16 November 2026): the three ways as yellow cards that lead down the page; a way's
+   questions as a ruled list on white beside its title; its first step as the last, heavier line of the list. */
+.way-cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
+.way-card{display:flex;flex-direction:column;min-height:240px;padding:24px;background:var(--accent);color:var(--ink);text-decoration:none}
+.way-card .kicker{margin:0 0 auto;color:var(--ink)}
+.way-card strong{font-size:var(--fs-head);font-weight:600;line-height:1.2;margin:32px 0 8px}
+.way-card .way-line{font-size:var(--fs-text);min-height:3.2em}
+.way-card .go{margin-top:16px;font-size:var(--fs-small);text-decoration:underline;text-underline-offset:3px}
+.way-card:hover,.way-card:focus-visible{background:var(--ink);color:var(--paper)}.way-card:hover .kicker,.way-card:focus-visible .kicker{color:var(--paper)}
+.track .chapter-title{margin:0 0 16px}.track-lead{margin:0;max-width:34ch}
+.acc.step{border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}.acc.step summary{padding:24px 0}.acc.step summary strong{font-size:var(--fs-head);font-weight:600}
+.acc.step .form{margin:16px 0 32px}
 .door-panels.cycle{position:relative}
 .cycle-arrows{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:var(--fs-text);line-height:1}
 .cycle-beside{margin-top:32px}.cycle-beside p{margin:0}.cycle-beside .doors{margin:8px 0 0}
@@ -5453,7 +5491,7 @@ body.show-grid .grid-overlay{display:block}
   .opening-img{aspect-ratio:3/2}  /* 3:2 on phones so the core line sits in the first screen (4:5 pushed it below) */
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}
   .cycle-arrows{display:none}
-  .principles.subs,.door-panels.three,.pic-row{grid-template-columns:1fr}.pic-row{gap:32px}
+  .principles.subs,.way-cards,.pic-row{grid-template-columns:1fr}.way-card{min-height:0}.pic-row{gap:32px}
   .grid-2{gap:32px}
   .split{gap:24px}
   .contact-box{margin-top:0}

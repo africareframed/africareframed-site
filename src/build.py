@@ -2,7 +2,8 @@
 """Generate the Africa Reframed main site as a live wireframe (version 4, 6 November 2026: arranged by the page priorities).
 
 Structure from "Website – Site map and user flows" (05 Website on the Drive): 16 pages from 9 templates.
-Header: Themes · Collections · Partners · About | Log in (Log in opens the Partner portal; About moved up from the footer, Thomas, 9 November 2026); the archive adds its own
+Header: Collections · Partners · About | Partner portal (the last item read Log in until 16 November 2026; Thomas, 09:49: it leads to the Partner portal, so it says so, and the
+menu keeps its partner focus; About moved up from the footer, Thomas, 9 November 2026); the archive adds its own
 tools on its side, Browse images · Lightbox, and this site shows them too to a partner it remembers (PARTNER_SCRIPT, 10 November 2026). Footer: the about line, then About · Press · Contact · Privacy · Request access · Terms.
 
 Wireframe conventions: grey boxes with a cross are images still to choose, at the size and proportion they will
@@ -3812,7 +3813,7 @@ LAYOUT = """<!doctype html>
       <span class="divider" aria-hidden="true"></span>
       <a class="partner-only" href="{archive_browse}">Browse images</a>
       <a class="partner-only" href="{archive_lightbox}">Lightbox</a>
-      <a href="{base}partner-portal/"{cur_portal}>Log in</a>
+      <a href="{base}partner-portal/"{cur_portal}>Partner portal</a>
     </nav>
   </div>
 </header>
@@ -3962,6 +3963,9 @@ a{color:inherit}
 /* The partner menu: the archive's tools show only to a visitor this browser remembers coming back from the archive
    (PARTNER_SCRIPT); so does the strip's switch to the public menu. */
 html:not(.is-partner) .partner-only,html:not(.is-partner) .partner-switch{display:none}
+/* With Partner portal in place of Log in (16 November 2026) a partner's menu holds six items. Between 1,024 and 1,099 px
+   they stand 16 px apart, not 24, so the menu keeps to the right-hand margin. */
+@media (min-width:1024px) and (max-width:1099px){html.is-partner .menu{gap:16px}}
 .menu-toggle{display:none;background:none;border:0;padding:8px;cursor:pointer;width:44px;height:44px;flex-direction:column;justify-content:center;gap:5px}
 .menu-toggle span{display:block;height:2px;background:var(--ink)}
 

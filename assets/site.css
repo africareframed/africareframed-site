@@ -56,6 +56,9 @@ a{color:inherit}
 /* The partner menu: the archive's tools show only to a visitor this browser remembers coming back from the archive
    (PARTNER_SCRIPT); so does the strip's switch to the public menu. */
 html:not(.is-partner) .partner-only,html:not(.is-partner) .partner-switch{display:none}
+/* With Partner portal in place of Log in (16 November 2026) a partner's menu holds six items. Between 1,024 and 1,099 px
+   they stand 16 px apart, not 24, so the menu keeps to the right-hand margin. */
+@media (min-width:1024px) and (max-width:1099px){html.is-partner .menu{gap:16px}}
 .menu-toggle{display:none;background:none;border:0;padding:8px;cursor:pointer;width:44px;height:44px;flex-direction:column;justify-content:center;gap:5px}
 .menu-toggle span{display:block;height:2px;background:var(--ink)}
 

@@ -358,7 +358,7 @@ main{padding-bottom:var(--section)}
 /* Home's three cards are yellow at rest and white on the side with the text; the workshop photograph joins their ground (14 November 2026). */
 .panels.sun.flips .flip{background:var(--accent)}
 .panels.sun.flips .front .kicker{color:var(--ink)}
-.panels.sun.flips .flip.open,.panels.sun.flips .flip:has(.flip-more:focus-visible){background:var(--paper)}
+.panels.sun.flips .flip.open,.panels.sun.flips .flip:has(.flip-more:focus-visible),.panels.sun.flips .flip:has(.way:focus-visible){background:var(--paper)}
 @media (hover:hover){.panels.sun.flips .flip:hover{background:var(--paper)}}
 .mod.on-ground.joined{padding-bottom:64px}
 .mod.mod-photo.on-ground.join{margin-top:0;padding-top:0;padding-bottom:0}   /* the white before the footer is the page's own 96 px */
@@ -475,9 +475,10 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:420;line-height:1.15}
 .flip-more .plus{position:absolute;left:16px;top:16px;width:12px;height:12px}
 .flip-more .plus::before,.flip-more .plus::after{content:"";position:absolute;background:var(--ink);left:0;top:5px;width:12px;height:2px}
 .flip-more .plus::after{transform:rotate(90deg)}
-.panels.flips .flip.open .front,.panels.flips .flip:has(.flip-more:focus-visible) .front{visibility:hidden}
-.panels.flips .flip.open .back,.panels.flips .flip:has(.flip-more:focus-visible) .back{visibility:visible}
-.panels.flips .flip.open .plus::after,.panels.flips .flip:has(.flip-more:focus-visible) .plus::after{display:none}
+.panels.flips .flip.open .front,.panels.flips .flip:has(.flip-more:focus-visible) .front,.panels.flips .flip:has(.way:focus-visible) .front{visibility:hidden}
+.panels.flips .flip.open .back,.panels.flips .flip:has(.flip-more:focus-visible) .back,.panels.flips .flip:has(.way:focus-visible) .back{visibility:visible}
+.panels.flips .flip.open .plus::after,.panels.flips .flip:has(.flip-more:focus-visible) .plus::after,.panels.flips .flip:has(.way:focus-visible) .plus::after{display:none}
+.panels .flip-on{margin:8px 0 -8px}   /* the way on at the foot of the side with the text (16 November 2026) */
 @media (hover:hover){
   .panels.flips .flip:hover .front{visibility:hidden}
   .panels.flips .flip:hover .back{visibility:visible}

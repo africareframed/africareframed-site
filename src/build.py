@@ -1179,9 +1179,15 @@ INTRO_HOME = [
 # channels" is out, since what a partner who builds gets is still to settle. Until then the three cards read:
 #   ("By collection", "Sponsor it", "A company or foundation makes a new collection possible, is named on it, and uses the whole archive in its own channels.")
 #   ("On commission", "Craft it", "Photographers and other creators make the collections on location. Every image is credited, and the work is paid.")
-HOME_PARTNERSHIPS = [   # the terms (a label), the role, its text
-    ("Always free", "Use it", "NGOs, media, educational and public institutions use the images in their own reports, campaigns and classrooms."),
-    ("By collection", "Build it", "A company or another partner makes a new collection possible and is named on it. Photographers make it on location, credited and paid."),
+# 16 November 2026 (Thomas, 17:18): each card's side with the text ends in a way on, words with the arrow, to its part of
+# Partnerships (until that page is rebuilt: to How access works and to Sponsor a collection). And Build it names the
+# exhibition too, as the Partner portal's card Build with us does. Both are drafts; the labels of the ways on are the long
+# forms of the two names.
+HOME_PARTNERSHIPS = [   # the terms (a label), the role, its text, its way on (label, address under partners/)
+    ("Always free", "Use it", "NGOs, media, educational and public institutions use the images in their own reports, campaigns and classrooms.",
+     ("Use the images", "#use")),
+    ("By collection", "Build it", "A company or another partner makes a new collection possible and is named on it. Photographers make it on location, credited and paid. An exhibition can start the same way.",
+     ("Build a collection", "#sponsor")),
 ]
 # The principles' own sentence and its detail, on About since 13 November 2026 (they stood on Home beside Principles).
 PRINCIPLES_LINE = "Behind every image and every collaboration."
@@ -2252,7 +2258,7 @@ def home_partnerships(base):
     head = (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
             f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}'
             f'<p class="doors">{way_on(base + "partners/", "How partners take part")}</p></div></div>')
-    for terms, role, text in HOME_PARTNERSHIPS:
+    for terms, role, text, on in HOME_PARTNERSHIPS:
         limit("item title", role); limit("item line", text)
     # Cards with two sides (Thomas, 14 November 2026, 09:35, after the supporters' cells on Partners): at rest a card shows
     # its terms and its name, large, with a plus in its corner; pointing at it, or tapping it on a phone, shows the side
@@ -2261,14 +2267,22 @@ def home_partnerships(base):
     # 14 November 2026, 16:39 and 16:50 (Thomas): at rest the cards are yellow, and white on the side with the text. The
     # yellow no longer has one job only: it marks where the reader acts, here the three ways to take part, elsewhere the
     # way into the archive. Under the cards, on the same pale ground, stands the workshop photograph.
+    # The button stands before the side with the text, so that the keyboard goes from the plus to the way on.
     cards = "".join(f'<li class="flip"><div class="face front"><p class="kicker">{e(terms)}</p><h3>{e(role)}</h3></div>'
-                    f'<div class="face back"><p class="kicker">{e(terms)}</p><p class="flip-title">{e(role)}</p>{draft(text)}</div>'
-                    f'<button type="button" class="flip-more" aria-expanded="false" aria-label="{e(role)}: what it means"><span class="plus" aria-hidden="true"></span></button></li>'
-                    for terms, role, text in HOME_PARTNERSHIPS)
+                    f'<button type="button" class="flip-more" aria-expanded="false" aria-label="{e(role)}: what it means"><span class="plus" aria-hidden="true"></span></button>'
+                    f'<div class="face back"><p class="kicker">{e(terms)}</p><p class="flip-title">{e(role)}</p>{draft(text)}'
+                    f'<p class="flip-on">{way_on(base + "partners/" + on[1], on[0])}</p></div></li>'
+                    for terms, role, text, on in HOME_PARTNERSHIPS)
     flip = ("<script>(function(){var u=document.querySelector('.panels');if(!u)return;u.classList.add('flips');"
             "[].forEach.call(u.querySelectorAll('.flip'),function(c){var b=c.querySelector('.flip-more');"
-            "c.addEventListener('click',function(){if(window.matchMedia&&matchMedia('(hover:hover)').matches&&!b.matches(':focus-visible'))return;"
-            "var o=c.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});});})();</script>")
+            "c.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('a'))return;if(window.matchMedia&&matchMedia('(hover:hover)').matches&&!b.matches(':focus-visible'))return;"
+            "if(c.classList.contains('kb')){c.classList.remove('kb');return;}"
+            "var o=c.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});"
+            # With the keyboard the card opens when its plus takes focus and stays open while focus is inside it, so that
+            # the way on can be reached: a side shown only by the plus's own focus is hidden again before the link can take it.
+            "b.addEventListener('focus',function(){if(b.matches(':focus-visible')&&!c.classList.contains('open')){c.classList.add('open','kb');b.setAttribute('aria-expanded','true');}});"
+            "c.addEventListener('focusout',function(ev){if(c.classList.contains('kb')&&!c.contains(ev.relatedTarget)){c.classList.remove('open','kb');b.setAttribute('aria-expanded','false');}});"
+            "});})();</script>")
     # No stripes since 13 November 2026, 15:05 (Thomas, 15:03): the part stands on the plain pale ground, as the first
     # section does. The page is calmer and the eye stays on the content; the pattern opens the page in the photograph and
     # closes it in the footer. turn_pattern() is kept, unused, with the drawing as it was settled that morning.
@@ -4491,7 +4505,7 @@ main{padding-bottom:var(--section)}
 /* Home's three cards are yellow at rest and white on the side with the text; the workshop photograph joins their ground (14 November 2026). */
 .panels.sun.flips .flip{background:var(--accent)}
 .panels.sun.flips .front .kicker{color:var(--ink)}
-.panels.sun.flips .flip.open,.panels.sun.flips .flip:has(.flip-more:focus-visible){background:var(--paper)}
+.panels.sun.flips .flip.open,.panels.sun.flips .flip:has(.flip-more:focus-visible),.panels.sun.flips .flip:has(.way:focus-visible){background:var(--paper)}
 @media (hover:hover){.panels.sun.flips .flip:hover{background:var(--paper)}}
 .mod.on-ground.joined{padding-bottom:64px}
 .mod.mod-photo.on-ground.join{margin-top:0;padding-top:0;padding-bottom:0}   /* the white before the footer is the page's own 96 px */
@@ -4608,9 +4622,10 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:420;line-height:1.15}
 .flip-more .plus{position:absolute;left:16px;top:16px;width:12px;height:12px}
 .flip-more .plus::before,.flip-more .plus::after{content:"";position:absolute;background:var(--ink);left:0;top:5px;width:12px;height:2px}
 .flip-more .plus::after{transform:rotate(90deg)}
-.panels.flips .flip.open .front,.panels.flips .flip:has(.flip-more:focus-visible) .front{visibility:hidden}
-.panels.flips .flip.open .back,.panels.flips .flip:has(.flip-more:focus-visible) .back{visibility:visible}
-.panels.flips .flip.open .plus::after,.panels.flips .flip:has(.flip-more:focus-visible) .plus::after{display:none}
+.panels.flips .flip.open .front,.panels.flips .flip:has(.flip-more:focus-visible) .front,.panels.flips .flip:has(.way:focus-visible) .front{visibility:hidden}
+.panels.flips .flip.open .back,.panels.flips .flip:has(.flip-more:focus-visible) .back,.panels.flips .flip:has(.way:focus-visible) .back{visibility:visible}
+.panels.flips .flip.open .plus::after,.panels.flips .flip:has(.flip-more:focus-visible) .plus::after,.panels.flips .flip:has(.way:focus-visible) .plus::after{display:none}
+.panels .flip-on{margin:8px 0 -8px}   /* the way on at the foot of the side with the text (16 November 2026) */
 @media (hover:hover){
   .panels.flips .flip:hover .front{visibility:hidden}
   .panels.flips .flip:hover .back{visibility:visible}

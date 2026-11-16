@@ -457,6 +457,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:420;line-height:1.15}
 .mod.turn > .wrap > .turn-pattern.way-out{left:auto;right:var(--margin);top:auto;bottom:calc(-1 * var(--out));height:calc(var(--out) - 24px);aspect-ratio:auto;overflow:visible;clip-path:inset(-40px -200px 0 -200px);transform:rotate(180deg)}
 .mod.turn .chapter-head.cols .doors{margin:16px 0 0}
 .panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
+.panels.two{grid-template-columns:repeat(2,minmax(0,1fr))}   /* two ways to take part since 16 November 2026: each card runs to the half, the page's one right-hand line */
 .panels li{background:var(--paper);padding:24px 24px 32px;max-width:none}
 .panels h3,.panels .flip-title{font-size:var(--fs-head);font-weight:600;line-height:1.15;margin:0 0 12px}
 .panels p{margin:0}
@@ -1018,7 +1019,7 @@ body.show-grid .grid-overlay{display:block}
 @media (max-width:1023px){
   .mod.turn > .wrap > .turn-pattern{left:0;width:100%;height:calc(var(--section) - 16px);aspect-ratio:auto;overflow:hidden}
   .mod.turn > .wrap > .turn-pattern.way-out{left:0;right:auto;height:calc(var(--out) - 24px);clip-path:inset(-40px 0 0 0)}   /* no title column here: a short band along the top edge */
-  .panels{grid-template-columns:1fr;gap:16px}
+  .panels,.panels.two{grid-template-columns:1fr;gap:16px}
   .action > *,.action > .doors{grid-column:1 / -1}
   .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}
   :root{--fs-title:32px;--fs-display:44px;--cols:8;--gutter:24px;--margin:32px;--logo-w:192px;--section:80px;--section-head:56px;--section-tight:28px}

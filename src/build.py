@@ -1170,10 +1170,18 @@ INTRO_HOME = [
 # Since 11:15 (Thomas, 11:05): the small line at the top of each card is back, since the cards were more elegant with it; it
 # now names the role's terms, not a kind of person (always free; by collection; on commission). And the three texts are of
 # one length (111 to 119 characters, three lines each at desktop width), so that the cards stand as equals.
+# 16 November 2026 (Thomas, 16:53 to 17:06): two ways to take part, Use it and Build it, in place of three (Use it, Sponsor
+# it, Craft it). They are acts, not kinds of organisation: every partner uses the archive under the same free licence, and
+# whoever builds also uses; a non-profit or public organisation, a foundation among them, becomes a partner by asking, and a
+# company by building. Sponsoring and making are roles inside Build it. Shape it was weighed as a third and set aside: both
+# those who use and those who build shape the archive, so it is said in the text above the cards and is no gate. Use it
+# keeps its text. Build it's text is a draft, made from the two cards it replaces; "uses the whole archive in its own
+# channels" is out, since what a partner who builds gets is still to settle. Until then the three cards read:
+#   ("By collection", "Sponsor it", "A company or foundation makes a new collection possible, is named on it, and uses the whole archive in its own channels.")
+#   ("On commission", "Craft it", "Photographers and other creators make the collections on location. Every image is credited, and the work is paid.")
 HOME_PARTNERSHIPS = [   # the terms (a label), the role, its text
     ("Always free", "Use it", "NGOs, media, educational and public institutions use the images in their own reports, campaigns and classrooms."),
-    ("By collection", "Sponsor it", "A company or foundation makes a new collection possible, is named on it, and uses the whole archive in its own channels."),
-    ("On commission", "Craft it", "Photographers and other creators make the collections on location. Every image is credited, and the work is paid."),
+    ("By collection", "Build it", "A company or another partner makes a new collection possible and is named on it. Photographers make it on location, credited and paid."),
 ]
 # The principles' own sentence and its detail, on About since 13 November 2026 (they stood on Home beside Principles).
 PRINCIPLES_LINE = "Behind every image and every collaboration."
@@ -1205,8 +1213,12 @@ HOME_CHAPTERS = dict(
                   # Since 13:00: the sentence of belief ("A picture that Europe can trust cannot come from one voice") is out:
                   # a belief belongs to the first block. "On the same terms" is out: the three panels beneath carry three
                   # different terms. "Shared" from the first block is paid off here. Draft.
-                  "The archive is a shared resource: what one partner makes possible, every partner can use. That is how the "
-                  "stories become shared, and how the archive grows. There are three ways to take part."),
+                  # 16 November 2026 (Thomas, 17:06): the text says that both shape the archive and that using is a
+                  # contribution too, at about the length it had. Draft. Until then: "The archive is a shared resource:
+                  # what one partner makes possible, every partner can use. That is how the stories become shared, and
+                  # how the archive grows. There are three ways to take part."
+                  "The archive is a shared resource. Those who use it carry its pictures to their own audiences. Those who "
+                  "build it make new collections possible. Both shape what it becomes. There are two ways to take part."),
     # about=("More than an archive", "Alongside the archive, we show African artists to European audiences and connect African
     # photographers with the international picture market."), with the button More about us: off Home since 13 November 2026.
 )
@@ -2235,7 +2247,7 @@ def turn_pattern(way_out=False):
 
 
 def home_partnerships(base):
-    """Home's third chapter, on the pale ground: a text block with its way on, and the three roles as white panels."""
+    """Home's third chapter, on the pale ground: a text block with its way on, and the two ways to take part as panels."""
     title, line, detail = HOME_CHAPTERS["partnerships"]
     head = (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
             f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}'
@@ -2260,7 +2272,7 @@ def home_partnerships(base):
     # No stripes since 13 November 2026, 15:05 (Thomas, 15:03): the part stands on the plain pale ground, as the first
     # section does. The page is calmer and the eye stays on the content; the pattern opens the page in the photograph and
     # closes it in the footer. turn_pattern() is kept, unused, with the drawing as it was settled that morning.
-    return mod("items", "three ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels sun">{cards}</ul>{flip}',
+    return mod("items", "two ways to take part, in white panels on the plain pale ground", head + f'<ul class="panels sun two">{cards}</ul>{flip}',
                cls="on-ground turn joined", sid="partnerships")
 
 
@@ -4578,6 +4590,7 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:420;line-height:1.15}
 .mod.turn > .wrap > .turn-pattern.way-out{left:auto;right:var(--margin);top:auto;bottom:calc(-1 * var(--out));height:calc(var(--out) - 24px);aspect-ratio:auto;overflow:visible;clip-path:inset(-40px -200px 0 -200px);transform:rotate(180deg)}
 .mod.turn .chapter-head.cols .doors{margin:16px 0 0}
 .panels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
+.panels.two{grid-template-columns:repeat(2,minmax(0,1fr))}   /* two ways to take part since 16 November 2026: each card runs to the half, the page's one right-hand line */
 .panels li{background:var(--paper);padding:24px 24px 32px;max-width:none}
 .panels h3,.panels .flip-title{font-size:var(--fs-head);font-weight:600;line-height:1.15;margin:0 0 12px}
 .panels p{margin:0}
@@ -5139,7 +5152,7 @@ body.show-grid .grid-overlay{display:block}
 @media (max-width:1023px){
   .mod.turn > .wrap > .turn-pattern{left:0;width:100%;height:calc(var(--section) - 16px);aspect-ratio:auto;overflow:hidden}
   .mod.turn > .wrap > .turn-pattern.way-out{left:0;right:auto;height:calc(var(--out) - 24px);clip-path:inset(-40px 0 0 0)}   /* no title column here: a short band along the top edge */
-  .panels{grid-template-columns:1fr;gap:16px}
+  .panels,.panels.two{grid-template-columns:1fr;gap:16px}
   .action > *,.action > .doors{grid-column:1 / -1}
   .logos.supporters{grid-template-columns:repeat(4,minmax(0,1fr))}
   :root{--fs-title:32px;--fs-display:44px;--cols:8;--gutter:24px;--margin:32px;--logo-w:192px;--section:80px;--section-head:56px;--section-tight:28px}

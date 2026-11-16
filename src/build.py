@@ -3166,7 +3166,7 @@ PORTAL_TASKS = [("made", "Show us what you made", "A link, a screenshot or a doc
                 ("missing", "Tell us what is missing", "Images you looked for and did not find."),
                 ("feedback", "Give us feedback", "On the archive, the images or this page. A line is enough."),
                 ("bigger", "Work on something bigger", "A collection, an exhibition, a campaign: tell us what you have in mind.")]
-PORTAL_LICENCE = "Images are always free for partners. Each use has its own licence: it comes with the download, and it tells us where the image will appear."
+PORTAL_LICENCE = "Images are always free for partners. Each download comes with its own licence: your permission in writing, for the use you chose."
 
 
 def tpl_portal(p, base):
@@ -3197,8 +3197,7 @@ def tpl_portal(p, base):
              + f'<p class="small write-line"></p></div><div class="c7-12">{form}</div></div></div></div></div>')
     partnership = (f'<div class="cols"><div class="c1-4">{heading("Talk to us")}</div><div class="c7-12">'
                    + para("A good partnership goes both ways. We appreciate hearing from you, and we answer every message.") + '</div></div>'
-                   + f'<div class="task-grid">{tasks}{write}</div>'
-                   + f'<p class="small by-mail">{d("Or by email:")} <a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p>')
+                   + f'<div class="task-grid">{tasks}{write}</div>')
 
     spine = (f'<div class="cols"><div class="c1-4">{heading("How it works")}</div><div class="c7-12">'
              f'<p class="spine">Find → collect → license → use</p>{para(PORTAL_LICENCE)}</div></div>')
@@ -3212,16 +3211,17 @@ def tpl_portal(p, base):
             ("photo-id", "Tell us exactly which image you mean",
              para("Every image has a number, such as AR-1645. Search for the number in the archive to go straight to the image, and quote it when you write to us.")),
             ("find-missing", "Cannot find what you need?",
-             para("Tell us what you looked for. We keep a record of what partners ask for.") + way("#write", "Tell us what is missing ↑", "missing"))]),
+             para("Tell us what you looked for. We answer, and what partners ask for guides what we photograph next.") + way("#write", "Tell us what is missing ↑", "missing"))]),
         ("Collect and license", [
             ("collect", "Gather a selection",
              para("Under an image, press Add to selection. Your selection is under Lightbox in the menu, and the selections you save are listed in My account.")),
             ("download", "Download an image",
              para("Press Download (free licence) and choose how you will use the image: in a report or publication, a funding application, a presentation, on your website or social media, in the press, at an exhibition or event, in teaching, or another use that you describe.")
              + para("In the comment, name the project or the publication. The original file, 6,000 pixels wide, comes to your email together with the terms.")),
-            ("why-licence", "Why a licence, when it is free?",
-             para("The images are rights-managed: each use is agreed, and nobody holds a stock of images for uses not yet known. So every use has its own licence, free of charge, and a new use means a new download.")
-             + para("The licence tells us where the image appears. That is how we show the people and organisations who fund the archive that it is used."))]),
+            ("why-licence", "Why does each image come with a licence?",
+             para("The licence is your permission in writing. It comes to your email with the image, for the use you chose, so you can always show a colleague, a publisher or a funder that you have the right to use it.")
+             + para("It is free, every time. A new use is a new download, with a licence of its own.")
+             + para("Each licence also shows where the images are used. That record is what makes new collections possible."))]),
         ("Use", [
             ("rights", "What you may do, at a glance",
              ul(["Use the image for the purpose you chose at download, anywhere in the world.",
@@ -5036,7 +5036,6 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .write .form label{margin-top:0}
 .write .form .button{margin-top:8px}
 .write-line{margin:0}
-.by-mail{margin:24px 0 0}
 .f-row{display:grid;gap:8px}
 .f-row[hidden]{display:none}
 .f-row label{display:block}

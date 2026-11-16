@@ -923,7 +923,6 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .write .form label{margin-top:0}
 .write .form .button{margin-top:8px}
 .write-line{margin:0}
-.by-mail{margin:24px 0 0}
 .f-row{display:grid;gap:8px}
 .f-row[hidden]{display:none}
 .f-row label{display:block}

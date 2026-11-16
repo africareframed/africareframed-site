@@ -1185,10 +1185,12 @@ INTRO_HOME = [
 # forms of the two names.
 # The label over each name says how that way adds to the archive (Thomas, 16 November 2026, 17:28: "By sharing" over
 # Use it, "By production" over Build it; they were the terms, "Always free" and "By collection"). Draft.
+# The two texts are of one length, so the cards line up when both show their text; the photographers are no longer named
+# on Build it (Thomas, 16 November 2026, 17:37).
 HOME_PARTNERSHIPS = [   # the label, the role, its text, its way on (label, address under partners/)
     ("By sharing", "Use it", "NGOs, media, educational and public institutions use the images in their own reports, campaigns and classrooms.",
      ("Use the images", "#use")),
-    ("By production", "Build it", "A company or another partner makes a new collection possible and is named on it. Photographers make it on location, credited and paid. An exhibition can start the same way.",
+    ("By production", "Build it", "A company or another partner makes a new collection possible and is named on it. An exhibition can start the same way.",
      ("Build a collection", "#sponsor")),
 ]
 # The principles' own sentence and its detail, on About since 13 November 2026 (they stood on Home beside Principles).

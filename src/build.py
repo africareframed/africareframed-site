@@ -2150,6 +2150,7 @@ PRESS_FACTS = [("1,122 images", "in the House Collection, from Mali, Kenya and T
 PRIVACY = [("What we collect", "Your organisation, your name and role, your email address, how you expect to use the images, and the answers you give in the partner forms."),
            ("Why", "To approve access and keep in touch, and to report how the images are used, without personal details, to the funders who make new collections possible, with your consent."),
            ("How long, and your rights", "We keep your details while your organisation has access and for one year after. You can ask to see, change or delete them at any time."),
+           ("Where it is kept", "What you send through the forms on this site is stored in our Google Workspace account and reaches us by email. A file you attach is kept in the same place."),
            ("On your device", "If you come to this site from the archive, your browser remembers it for 30 days, so the menu shows the archive’s links. Nothing is sent to us or anyone else, and clearing this site’s data in your browser removes it."),
            ("Who to write to", "hello@africareframed.com.")]
 

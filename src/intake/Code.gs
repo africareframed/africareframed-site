@@ -12,8 +12,8 @@
  */
 
 const CONFIG = {
-  // The two addresses on the Drive are not kept in this public file. They stand in a second file of the script
-  // project, Ids.gs:  const IDS = { SHEET_ID: '…', FOLDER_ID: '…' };
+  // The two addresses on the Drive are not kept in this public file. They stand in the first line of the copy in
+  // the script project, above this text:  const IDS = { SHEET_ID: '…', FOLDER_ID: '…' };
   get SHEET_ID() { return IDS.SHEET_ID; },
   get FOLDER_ID() { return IDS.FOLDER_ID; },
   NOTIFY: 'partnerships@africareframed.com',

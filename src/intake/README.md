@@ -11,10 +11,10 @@ How messages from africareframed.com reach us.
 
 The script runs in the Google account td@africareframed.com as "Execute as: Me", "Who has access: Anyone". It must
 stay in that account's own Drive: a web app stops working if it is moved to a shared drive. The spreadsheet and the
-folder are on the shared drive. Their two addresses stand in a second file of the script project, `Ids.gs`, and not
-in this public repository.
+folder are on the shared drive. Their two addresses stand in the first line of the copy in the script project
+(`const IDS = { SHEET_ID: '…', FOLDER_ID: '…' };`) and not in this public repository.
 
-To change the script: edit `Code.gs` here, paste it into the script project, then Deploy > Manage deployments >
-edit > New version. The web app keeps its address, which the site holds as INTAKE_URL in `src/build.py`.
+To change the script: edit `Code.gs` here, paste it into the script project under that first line, then Deploy >
+Manage deployments > edit > New version. The web app keeps its address, which the site holds as INTAKE_URL in `src/build.py`.
 
 Every Monday at 08:00 the script sends a summary of the week. If it stops coming, the script has stopped.

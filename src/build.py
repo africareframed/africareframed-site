@@ -1186,9 +1186,10 @@ INTRO_HOME = [
 # The label over each name says how that way adds to the archive (Thomas, 16 November 2026, 17:28: "By sharing" over
 # Use it, "By production" over Build it; they were the terms, "Always free" and "By collection"). Draft.
 # The two texts are of one length, so the cards line up when both show their text; the photographers are no longer named
-# on Build it (Thomas, 16 November 2026, 17:37).
+# on Build it (Thomas, 16 November 2026, 17:37). Use it names working together too: an exhibition made with us (Thomas, 17:43).
+# No entrance for photographers and other creators on Home: they are another kind of enquiry, and their place is open.
 HOME_PARTNERSHIPS = [   # the label, the role, its text, its way on (label, address under partners/)
-    ("By sharing", "Use it", "NGOs, media, educational and public institutions use the images in their own reports, campaigns and classrooms.",
+    ("By sharing", "Use it", "NGOs, media, educational and public institutions use the images in reports, campaigns and classrooms, or in an exhibition made with us.",
      ("Use the images", "#use")),
     ("By production", "Build it", "A company or another partner makes a new collection possible and is named on it. An exhibition can start the same way.",
      ("Build a collection", "#sponsor")),
@@ -4629,7 +4630,9 @@ h2.kicker,h3.kicker,h4.kicker{font-weight:420;line-height:1.15}
 .panels.flips .flip.open .front,.panels.flips .flip:has(.flip-more:focus-visible) .front,.panels.flips .flip:has(.way:focus-visible) .front{visibility:hidden}
 .panels.flips .flip.open .back,.panels.flips .flip:has(.flip-more:focus-visible) .back,.panels.flips .flip:has(.way:focus-visible) .back{visibility:visible}
 .panels.flips .flip.open .plus::after,.panels.flips .flip:has(.flip-more:focus-visible) .plus::after,.panels.flips .flip:has(.way:focus-visible) .plus::after{display:none}
-.panels .flip-on{margin:8px 0 -8px}   /* the way on at the foot of the side with the text (16 November 2026) */
+.panels .back{display:flex;flex-direction:column}
+.panels .flip-on{margin:auto 0 -8px;padding-top:8px}   /* the way on stands at the foot of the side with the text, at one height on
+   both cards also where one text runs a line longer than the other (16 November 2026) */
 @media (hover:hover){
   .panels.flips .flip:hover .front{visibility:hidden}
   .panels.flips .flip:hover .back{visibility:visible}

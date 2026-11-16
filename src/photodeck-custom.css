@@ -62,3 +62,8 @@ p.short_message { letter-spacing: .022em; }
 .media_detail_meta_wrapper .media_copyright, .component > .title { font-weight: 600; }
 /* Text blocks and descriptions are left-aligned, as on the main site (the theme justifies them) */
 #block_main #component_mainc .text_block, .galleries.thumbs_relaxed .thumb_description, .medias-list.thumbs_relaxed .thumb_description { text-align: left; }
+/* The menu holds seven items since its last one reads Partner portal (16 Nov 2026). Between 1,025 and 1,099 px the logo is 192 px wide and the menu 16 px, so the menu stays on one line. */
+@media screen and (min-width: 1025px) and (max-width: 1099px) {
+  #block_navib #component_logo a, #block_navib #component_logo img { width: 192px; }
+  #block_navib #component_menu .menu_item a { font-size: 16px; }
+}

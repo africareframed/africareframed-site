@@ -3165,7 +3165,7 @@ def tpl_partners(p, base):
 PORTAL_STATEMENT = "Open the archive, find what you need, and tell us what you made. We are here if you need us."
 PORTAL_TASKS = [("made", "Show us what you made", "A link, a screenshot or a document, with a comment if you like."),
                 ("missing", "Tell us what is missing", "Images you looked for and did not find."),
-                ("feedback", "Give us feedback", "On the archive, the images or this page. A line is enough."),
+                ("feedback", "Give us feedback", "All kinds are welcome: on the archive, the images or how we work together."),
                 ("bigger", "Build with us", "A new collection, an exhibition: tell us what you have in mind.")]
 PORTAL_LICENCE = "Images are always free for partners. Each download comes with its own licence: your permission in writing, for the use you chose."
 

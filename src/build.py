@@ -3171,7 +3171,7 @@ PORTAL_LICENCE = "Images are always free for partners. Each use has its own lice
 
 def tpl_portal(p, base):
     doors = [door(archive("/-/galleries/archive", "portal"), "Partners", "Open the archive →", "Log in to your account. Signed in already? Straight to the images.", dark=True),
-             door(base + "partners/", "New partners", "Become a partner →", "Not a partner yet? See what a partnership involves and who can apply.")]
+             door(base + "partners/", "New partners", "Not a partner yet?", "See what a partnership involves and who can apply →")]
     d = lambda text: f'<span class="draft">{e(text)}</span>'
     para = lambda text: f'<p>{d(text)}</p>'
     ul = lambda items: '<ul>' + "".join(f'<li>{d(x)}</li>' for x in items) + '</ul>'

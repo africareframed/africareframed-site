@@ -2,7 +2,8 @@
 """Generate the Africa Reframed main site as a live wireframe (version 4, 6 November 2026: arranged by the page priorities).
 
 Structure from "Website – Site map and user flows" (05 Website on the Drive): 16 pages from 9 templates.
-Header: Collections · Partners · About | Partner portal (the last item read Log in until 16 November 2026; Thomas, 09:49: it leads to the Partner portal, so it says so, and the
+Header: Collections · Partnerships · About | Partner portal (the second item read Partners until 16 November 2026, 10:00: the page tells how one takes part, which is
+the relationship and not a list of partners, and Home's third part already carries the word; its address stays /partners/; the last item read Log in until 16 November 2026; Thomas, 09:49: it leads to the Partner portal, so it says so, and the
 menu keeps its partner focus; About moved up from the footer, Thomas, 9 November 2026); the archive adds its own
 tools on its side, Browse images · Lightbox, and this site shows them too to a partner it remembers (PARTNER_SCRIPT, 10 November 2026). Footer: the about line, then About · Press · Contact · Privacy · Request access · Terms.
 
@@ -3436,7 +3437,7 @@ PAGES = [
     dict(path="collections/waste-to-value/", title=WTV, slug="waste-to-value", tpl="collection", nav="collections",
          collection=WTV_COLLECTION,
          desc="Seven young companies in Kenya, Uganda and Rwanda turning waste into fuel, building materials, packaging and services, photographed for BESTSELLER FOUNDATION."),
-    dict(path="partners/", title="Partners", slug="partners", tpl="partners", nav="partners",
+    dict(path="partners/", title="Partnerships", slug="partners", tpl="partners", nav="partners",
          desc="How organisations use the Africa Reframed archive, the rules for using the images, and how companies sponsor a collection."),
     dict(path="partner-portal/", title="Partner portal", slug="portal", tpl="portal", nav="portal",
          desc="Log in to the Africa Reframed archive, report a use, request imagery and see what is new for partners."),
@@ -3473,9 +3474,9 @@ TEMPLATE_NAMES = {"home": "Home", "themes": "Index", "collections": "Index", "th
 WEEK_AIM = ("By Friday: a working site. Every main page built as Home is, with draft text in place. After that the text, in a round of its own; "
             "by the end of November the final site runs in closed preview.")
 WEEK_PLAN = [
-    ("Mon 16", "Partners: the how", "Thomas: the names of the three ways",
+    ("Mon 16", "Partnerships: the how", "Thomas: the names of the three ways",
      [("The page built as the long form of the how", False),
-      ("The three ways named, on Partners and on Home’s cards", False),
+      ("The three ways named, on Partnerships and on Home’s cards", False),
       ("Collaborate: where the word stands", False),
       ("A header photograph: yes or no", False),
       ("The links in the new form, words and an arrow", False)]),
@@ -3504,7 +3505,7 @@ WEEK_PLAN = [
 # for us what each section should communicate ... note this in the work doc on the site also, so we remember it").
 # The design guide holds each of these in full; here they are one line each.
 WEEK_GUIDES = [
-    ("Why, what, how", "Each page answers one question. About: why this exists. The collections: what it is. Partners: how one takes part. "
+    ("Why, what, how", "Each page answers one question. About: why this exists. The collections: what it is. Partnerships: how one takes part. "
                        "Home answers all three, one part each, and each part leads to the page that answers the same question at length. "
                        "Before a page is built, say which question it answers; every part of it serves that, or goes."),
     ("One order in every part", "The title on the left. On the right a sentence, about three lines, and the way on. Then what the text opens."),
@@ -3808,7 +3809,7 @@ LAYOUT = """<!doctype html>
     </button>
     <nav class="menu" id="menu" aria-label="Main">
       <a href="{base}collections/house-collection/"{cur_collections}>Collections</a>
-      <a href="{base}partners/"{cur_partners}>Partners</a>
+      <a href="{base}partners/"{cur_partners}>Partnerships</a>
       <a href="{base}about/"{cur_about}>About</a>
       <span class="divider" aria-hidden="true"></span>
       <a class="partner-only" href="{archive_browse}">Browse images</a>
@@ -3964,8 +3965,9 @@ a{color:inherit}
    (PARTNER_SCRIPT); so does the strip's switch to the public menu. */
 html:not(.is-partner) .partner-only,html:not(.is-partner) .partner-switch{display:none}
 /* With Partner portal in place of Log in (16 November 2026) a partner's menu holds six items. Between 1,024 and 1,099 px
-   they stand 16 px apart, not 24, so the menu keeps to the right-hand margin. */
-@media (min-width:1024px) and (max-width:1099px){html.is-partner .menu{gap:16px}}
+   they stand 16 px apart, not 24, and with Partnerships in place of Partners (the same day) the logo is 192 px there, so the
+   menu keeps to the right-hand margin and clear of the logo. */
+@media (min-width:1024px) and (max-width:1099px){html.is-partner .menu{gap:16px}html.is-partner{--logo-w:192px}}
 .menu-toggle{display:none;background:none;border:0;padding:8px;cursor:pointer;width:44px;height:44px;flex-direction:column;justify-content:center;gap:5px}
 .menu-toggle span{display:block;height:2px;background:var(--ink)}
 

@@ -933,6 +933,7 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .guide .acc:last-child{border-bottom:0}
 .guide .acc summary{min-height:56px;gap:16px}
 .guide .acc ul{margin:0 0 16px;padding-left:24px}
+.guide .acc p + ul{margin-top:-8px}
 .guide .acc li{margin:4px 0}
 .guide .acc .doors{margin:0 0 24px}
 .guide .acc > p:last-child,.guide .acc > ul:last-child,.guide .acc > .copy-line:last-child{margin-bottom:24px}

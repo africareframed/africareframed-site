@@ -938,7 +938,8 @@ def door(href, kicker, title, line, dark=False):
     # doors): a picture there claims a connection to what the door leads to, and an archive photograph has none.
     limit("door kicker", kicker); limit("door title", title); limit("door line", line)
     kind = " archive" if href.startswith(ARCHIVE) else ""
-    return (f'<a class="panel{kind}" href="{href}"><span class="kicker">{e(kicker)}</span>'
+    k = f'<span class="kicker">{e(kicker)}</span>' if kicker else ""
+    return (f'<a class="panel{kind}" href="{href}">{k}'
             f'<strong>{e(title)}</strong>{f"<span>{e(line)}</span>" if line else ""}</a>')
 
 
@@ -3161,7 +3162,7 @@ def tpl_partners(p, base):
 # the archive again, and how one becomes a partner is told on Partnerships. No word budget (Thomas, 10:28): its rules are
 # a help page's. Every text is a draft for Thomas (Website – copy, section 6); the steps in the archive were read on the
 # archive itself on 16 November 2026 as the test partner.
-PORTAL_STATEMENT = "Open the archive, find what you need, and tell us what you made."
+PORTAL_STATEMENT = "Welcome, it is good to have you here. We help you find the right images and put them to use."
 PORTAL_TASKS = [("made", "Show us what you made", "A link, a screenshot or a document, with a comment if you like."),
                 ("missing", "Tell us what is missing", "Images you looked for and did not find."),
                 ("feedback", "Give us feedback", "On the archive, the images or this page. A line is enough."),
@@ -3170,8 +3171,8 @@ PORTAL_LICENCE = "Images are always free for partners. Each download comes with 
 
 
 def tpl_portal(p, base):
-    doors = [door(archive("/-/galleries/archive", "portal"), "Partners", "Open the archive →", "Log in to your account. Signed in already? Straight to the images.", dark=True),
-             door(base + "partners/", "New partners", "Not a partner yet?", "See what a partnership involves and who can apply →")]
+    doors = [door(archive("/-/galleries/archive", "portal"), "", "Open the archive →", "Log in to your account. Signed in already? Straight to the images.", dark=True),
+             door(base + "partners/", "", "Not a partner yet?", "See what a partnership involves and who can apply →")]
     d = lambda text: f'<span class="draft">{e(text)}</span>'
     para = lambda text: f'<p>{d(text)}</p>'
     ul = lambda items: '<ul>' + "".join(f'<li>{d(x)}</li>' for x in items) + '</ul>'
@@ -3200,7 +3201,7 @@ def tpl_portal(p, base):
                    + f'<div class="task-grid">{tasks}{write}</div>')
 
     spine = (f'<div class="cols"><div class="c1-4">{heading("How it works")}</div><div class="c7-12">'
-             f'<p class="spine">Find → collect → license → use</p>{para(PORTAL_LICENCE)}</div></div>')
+             f'<p class="spine">Find → collect → download → use</p>{para(PORTAL_LICENCE)}</div></div>')
 
     groups = [
         ("Find", [
@@ -3208,29 +3209,32 @@ def tpl_portal(p, base):
              para("Open Browse images and use the search tab. Every image carries keywords for what it shows, its theme, its city and its country. A click on a keyword under an image shows every image that shares it.")
              + para("The five themes are listed on the House Collection page, each with a link into the archive.")
              + way(base + "collections/house-collection/", "The five themes →")),
-            ("photo-id", "Tell us exactly which image you mean",
-             para("Every image has a number, such as AR-1645. Search for the number in the archive to go straight to the image, and quote it when you write to us.")),
+            ("photo-id", "Find an image by its number",
+             para("Every image has a number, such as AR-1645. Search for it in the archive to go straight to the image, and quote it when you write to us, so we know exactly which one you mean.")),
             ("find-missing", "Cannot find what you need?",
              para("Tell us what you looked for. We answer, and what partners ask for guides what we photograph next.") + way("#write", "Tell us what is missing ↑", "missing"))]),
-        ("Collect and license", [
+        ("Collect and download", [
             ("collect", "Gather a selection",
              para("Under an image, press Add to selection. Your selection is under Lightbox in the menu, and the selections you save are listed in My account.")),
             ("download", "Download an image",
              para("Press Download (free licence) and choose how you will use the image: in a report or publication, a funding application, a presentation, on your website or social media, in the press, at an exhibition or event, in teaching, or another use that you describe.")
-             + para("In the comment, name the project or the publication. The original file, 6,000 pixels wide, comes to your email together with the terms.")),
+             + para("A comment on the project or the publication is welcome. The original file, 6,000 pixels wide, comes to your email together with the terms.")),
             ("why-licence", "Why does each image come with a licence?",
              para("The licence is your permission in writing. It comes to your email with the image, for the use you chose, so you can always show a colleague, a publisher or a funder that you have the right to use it.")
              + para("It is free, every time. A new use is a new download, with a licence of its own.")
              + para("Each licence also shows where the images are used. That record is what makes new collections possible."))]),
         ("Use", [
-            ("rights", "What you may do, at a glance",
-             ul(["Use the image for the purpose you chose at download, anywhere in the world.",
-                 "Crop it and adjust its colour. Change nothing else in it.",
-                 "Credit every use.",
-                 "Do not resell the image or pass the licence on.",
-                 "Do not use it in political campaigning or to advertise products.",
-                 "Do not place the people shown in a degrading or misleading context.",
-                 "Do not use it to train AI models."])
+            ("rights", "What the licence covers, at a glance",
+             f'<p><strong>{d("It covers")}</strong></p>'
+             + ul(["The use you chose at download, anywhere in the world.",
+                   "Cropping and colour adjustment."])
+             + f'<p><strong>{d("It does not cover")}</strong></p>'
+             + ul(["Resale, or passing the licence on.",
+                   "Political campaigning, or advertising for products.",
+                   "Changes to what an image shows.",
+                   "Training AI models."])
+             + para("Every use carries the credit line.")
+             + para("The people in the images are real. Show them in contexts they would recognise, with captions that are true.")
              + way(archive("/terms", "portal-terms"), "The full terms →")),
             ("credit", "The credit line, ready to copy",
              para("On or beside the image, on every use.") + copy(CREDIT) + copy("Photo: Africa Reframed / BESTSELLER FOUNDATION Waste to Value Collection")),
@@ -5046,6 +5050,7 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .guide .acc:last-child{border-bottom:0}
 .guide .acc summary{min-height:56px;gap:16px}
 .guide .acc ul{margin:0 0 16px;padding-left:24px}
+.guide .acc p + ul{margin-top:-8px}
 .guide .acc li{margin:4px 0}
 .guide .acc .doors{margin:0 0 24px}
 .guide .acc > p:last-child,.guide .acc > ul:last-child,.guide .acc > .copy-line:last-child{margin-bottom:24px}

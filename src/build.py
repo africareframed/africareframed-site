@@ -66,7 +66,7 @@ EMAIL_MAIN, EMAIL_PRESS, EMAIL_PARTNERS = ("hello@africareframed.com", "press@af
 # empty, or when the script cannot be reached, the form offers the same text as an email, so nothing is lost.
 # Nothing is asked of Google before the reader presses Send (Quality rules, rule 28).
 # ---------------------------------------------------------------------------------------------
-INTAKE_URL = "https://script.google.com/macros/s/AKfycbzO0N9cHGMHVPJEbiD81bvHEJONVnKIFZ_JSMRQHqpHAqWjDYDyIl5ypry-gmZZ3yLe/exec"   # the web app, deployed 16 November 2026, 11:52 (version 1)
+INTAKE_URL = "https://script.google.com/macros/s/AKfycbzO0N9cHGMHVPJEbiD81bvHEJONVnKIFZ_JSMRQHqpHAqWjDYDyIl5ypry-gmZZ3yLe/exec"   # the web app, deployed 16 November 2026, 11:52; its address stays the same from version to version
 INTAKE_KEY = "ar-intake-2026"   # not a secret: it tells our own forms from stray posts
 ORG_TYPES = ["NGO", "Media", "Educational institution", "Embassy or ministry", "Development finance institution", "Company", "Other"]
 MESSAGE_KINDS = [("made", "Show us what you made"), ("missing", "Tell us what is missing"), ("feedback", "Feedback"),
@@ -3280,7 +3280,7 @@ def tpl_form(p, base):
     aside = heading("What happens next", 3) + '<ol class="next-steps">' + "".join(f"<li><strong>{e(a)}</strong> <span class=\"draft\">{e(b)}</span></li>" for a, b in REQUEST_NEXT) + "</ol>" + draft(REQUEST_FOOT, "p", "small")
     after = f'<p class="small">Read <a href="{base}partners/#using-the-images">the rules for using the images</a> first.</p>'
     form = intake_form("request", "Request access", fields, "Send the request",
-                       "Your request is with us. We reply within a working day, and the welcome email that follows opens your account.",
+                       "Your request is with us. We read every request ourselves, and you have our answer within a working day.",
                        checks=[("colleague", "I am asking for a colleague at an organisation that is already a partner."), ("consent", REQUEST_CONSENT)])
     inner = f'<div class="cols"><div class="c1-6">{form}{after}</div><div class="c7-12"><aside class="facts-box">{aside}</aside></div></div>'
     return m_page_head(p["title"], ACCESS_WHO) + mod("form", "a, the long form with an aside, connected", inner)

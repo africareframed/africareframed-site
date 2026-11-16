@@ -172,24 +172,34 @@ function notify_(sheetName, id, row, ss, email, flags) {
   });
 }
 
-/** The confirmation to the sender. The words are drafts for Thomas (Website – copy, section 6). */
+/**
+ * The confirmation to the sender. It names what she sent, in the words of the card she pressed (How we speak –
+ * working notes, Trial 2, version A; Thomas, 16 November 2026, 14:29). The words are drafts.
+ */
+const SENT = {
+  made: 'What you made',
+  missing: 'Your note on what is missing',
+  feedback: 'Your feedback',
+  bigger: 'What you have in mind'
+};
+
 function confirm_(form, id, d, email) {
   const name = clean_(d.name).split(' ')[0];
-  const hello = name ? 'Dear ' + name + ',' : 'Hello,';
+  const hello = name ? 'Dear ' + name + ',\n\n' : '';
   let subject, text;
   if (form === 'request') {
     subject = 'Africa Reframed: we have your request (' + id + ')';
-    text = 'Thank you for asking for access to the Africa Reframed archive. We read every request ourselves and answer within a working day.';
+    text = 'Thank you. Your request is with us. We read every request ourselves, and you have our answer within a working day.';
   } else {
     subject = 'Africa Reframed: we have your message (' + id + ')';
-    text = 'Thank you for writing to us. Your message is with us.';
+    text = 'Thank you. ' + (SENT[d.kind] || 'Your message') + ' is with us.';
   }
   MailApp.sendEmail({
     to: email,
     replyTo: CONFIG.REPLY_TO,
     name: CONFIG.SENDER_NAME,
     subject: subject,
-    body: hello + '\n\n' + text + '\n\nIf you did not send this, or want to add something, answer this email.\n\nAfrica Reframed\nReference: ' + id
+    body: hello + text + '\n\nTo add something, answer this email. If it was not you who wrote, tell us the same way.\n\nAfrica Reframed\nReference: ' + id
   });
 }
 

@@ -32,7 +32,10 @@ BUDGET_BY_SLUG = {"waste-to-value": None,                       # a sponsored co
                   # "add it"). It stood at 349 of its 350 words; the new part is 43. The budget follows the instruction.
                   # 14 November 2026 (Thomas, 08:39): the supporters stand on Partners too, under the six words of their heading,
                   # "Our work has been supported by". The page stood at 395; the budget follows the instruction once more.
-                  "partners": 406}
+                  "partners": 406,
+                  # The Partner portal is a service page for partners, built from tasks, and has no word budget
+                  # (Thomas, 16 November 2026, 10:28): its answers are short and most stand closed.
+                  "portal": None}
 # The plan of 11 November 2026: what the site is steered towards, measured on the key pages at 1,440 px. A miss is listed,
 # it does not fail the gate: small print at most 15% of the letters; the first screen's largest type at least 2.5 times the
 # text; no more than two sections in a row in one layout.

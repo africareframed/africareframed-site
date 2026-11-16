@@ -13,6 +13,7 @@ already exist in the master documents (each carries its source in a comment). "C
 the header hides the notes.
 Run: python3 src/build.py  (writes the pages and assets/ into the repository root)
 """
+import json
 import html
 import math
 import pathlib
@@ -58,6 +59,18 @@ USE_KINDS = ["report or publication", "grant or funding application", "presentat
              "press and editorial", "exhibition or event", "education or training material", "other use"]
 EMAIL_MAIN, EMAIL_PRESS, EMAIL_PARTNERS = ("hello@africareframed.com", "press@africareframed.com",
                                            "partnerships@africareframed.com")                 # Start here, Addresses
+# ---------------------------------------------------------------------------------------------
+# The intake (16 November 2026; Thomas, 10:51 and 10:56): the site's own forms. A form sends its fields to a Google
+# Apps Script web app (src/intake/Code.gs, with its read-me), which writes a row to the spreadsheet Partner database
+# (Drive, 06 Partners), saves an attached file, tells us by email and confirms to the sender. While INTAKE_URL is
+# empty, or when the script cannot be reached, the form offers the same text as an email, so nothing is lost.
+# Nothing is asked of Google before the reader presses Send (Quality rules, rule 28).
+# ---------------------------------------------------------------------------------------------
+INTAKE_URL = ""
+INTAKE_KEY = "ar-intake-2026"   # not a secret: it tells our own forms from stray posts
+ORG_TYPES = ["NGO", "Media", "Educational institution", "Embassy or ministry", "Development finance institution", "Company", "Other"]
+MESSAGE_KINDS = [("made", "Show us what you made"), ("missing", "Tell us what is missing"), ("feedback", "Feedback"),
+                 ("bigger", "Something bigger"), ("question", "A question")]
 HOUSE_LINE = "Africa Reframed’s own collection: 1,122 images from Mali, Kenya and The Gambia."
 # Draft, 11 November 2026: the Keywording Guide's statement (section 2) ran to 27 words against the limit of 25; the range of
 # IDs stays in the facts. The master's wording: "Africa Reframed’s own collection: 1,122 images, AR‑1000 to AR‑2121, made in
@@ -942,6 +955,77 @@ def m_doors(variant, *, doors=None, count=None, count2=None, main=None, quiet=No
         inner = f'<div class="cols"><div class="c1-4">{heading(kicker)}</div><div class="c7-12"><p class="h-big"><a href="mailto:{address}">{address}</a></p>{draft(line, "p", "small") if line else ""}</div></div>'
         return mod("doors", "d, the contact band", inner, cls="band", sid=sid, tight=tight)
     return mod("doors", "c, the ways on", f'<div class="cols"><div class="{"c1-12" if left else "c7-12 c-offset"}"><p class="doors">{"".join(links)}</p></div></div>', sid=sid, tight=tight)
+
+
+# 2.15 Form, connected (16 November 2026): the fields of one form, sent to the intake. A field is (name, label, options).
+def intake_field(name, label, kind="text", required=False, options=None, hint=None, auto=None, fid=""):
+    req = " required" if required else ""
+    ac = f' autocomplete="{auto}"' if auto else ""
+    opt = "" if required else ' <span class="opt">optional</span>'
+    if kind == "select":
+        ctl = f'<select id="{fid}" name="{name}"{req}>' + "".join(f'<option value="{e(v)}">{e(l)}</option>' for v, l in options) + "</select>"
+        opt = ""
+    elif kind == "textarea":
+        ctl = f'<textarea id="{fid}" name="{name}" rows="4"{req}></textarea>'
+    elif kind == "file":
+        ctl = f'<input id="{fid}" name="{name}" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.docx,.pptx,.xlsx,.txt">'
+    else:
+        ctl = f'<input id="{fid}" name="{name}" type="{kind}"{req}{ac}>'
+    h = f'<span class="f-hint draft">{e(hint)}</span>' if hint else ""
+    return f'<label for="{fid}">{e(label)}{opt}</label>{ctl}{h}'
+
+
+def intake_form(form, title, fields, button_label, thanks, checks=(), sid=None):
+    rows = "".join(intake_field(f[0], f[1], fid=f"{form}-{f[0]}", **f[2]) for f in fields)
+    for name, text in checks:
+        rows += f'<label class="check"><input type="checkbox" name="{name}"> <span class="draft">{e(text)}</span></label>'
+    trap = '<div class="trap"><label>Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>'
+    a = f' id="{sid}"' if sid else ""
+    return (f'<form class="form intake"{a} data-form="{form}" data-thanks="{e(thanks)}" aria-label="{e(title)}" novalidate>{rows}{trap}'
+            f'<button type="submit" class="button">{e(button_label)}</button>'
+            f'<p class="form-status" role="status" aria-live="polite"></p></form>' + intake_script())
+
+
+def intake_script():
+    return ("<script>(function(){var URL_=" + json.dumps(INTAKE_URL) + ",KEY=" + json.dumps(INTAKE_KEY) + ",MAIL=" + json.dumps(EMAIL_PARTNERS) + ",T0=Date.now();document.addEventListener('DOMContentLoaded',function(){"
+            r"""function qs(k){var m=new RegExp('[?&]'+k+'=([^&#]*)').exec(location.search);return m?decodeURIComponent(m[1].replace(/\+/g,' ')):''}
+function lab(f,el){var l=f.querySelector('label[for="'+el.id+'"]');return l?l.firstChild.textContent.trim():el.name}
+[].slice.call(document.querySelectorAll('form.intake')).forEach(function(f){
+var st=f.querySelector('.form-status'),btn=f.querySelector('button[type=submit]');
+var kind=f.querySelector('[name=kind]');if(kind&&qs('kind'))kind.value=qs('kind');
+var col=f.querySelector('[name=colleague]');if(col&&qs('colleague'))col.checked=true;
+function say(html,bad){st.innerHTML=html;st.className='form-status'+(bad?' bad':'')}
+function asMail(){var lines=[];[].slice.call(f.querySelectorAll('input,select,textarea')).forEach(function(el){
+if(el.name==='website'||el.type==='file'||el.type==='checkbox'||!el.value)return;
+lines.push(lab(f,el)+': '+(el.tagName==='SELECT'?el.options[el.selectedIndex].text:el.value))});
+return 'mailto:'+MAIL+'?subject='+encodeURIComponent(f.getAttribute('aria-label'))+'&body='+encodeURIComponent(lines.join('\n\n'))}
+function fail(){say('It did not go through. <a href="'+asMail()+'">Send it as an email instead</a>.',true);btn.disabled=false}
+f.addEventListener('submit',function(ev){ev.preventDefault();var bad=null;
+[].slice.call(f.querySelectorAll('[required]')).forEach(function(el){var v=el.value.trim(),ok=v&&(el.type!=='email'||/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v));
+el.setAttribute('aria-invalid',ok?'false':'true');if(!ok&&!bad)bad=el});
+if(bad){say('Please fill in: '+lab(f,bad)+'.',true);bad.focus();return}
+var d={key:KEY,form:f.getAttribute('data-form'),page:location.pathname,source:qs('src')||document.referrer,elapsed:Date.now()-T0};
+[].slice.call(f.querySelectorAll('input,select,textarea')).forEach(function(el){if(!el.name||el.type==='file')return;d[el.name]=el.type==='checkbox'?el.checked:el.value.trim()});
+if(/[?&]test=1/.test(location.search))d.test=true;
+var file=f.querySelector('input[type=file]');file=file&&file.files&&file.files[0];
+if(d.form==='message'&&!d.text&&!d.link&&!file){say('Write a line, add a link or attach a file.',true);return}
+if(file&&file.size>10*1024*1024){say('The file is larger than 10 MB. Send a link to it instead.',true);return}
+if(!URL_){fail();return}
+btn.disabled=true;say('Sending…');
+function send(){fetch(URL_,{method:'POST',body:JSON.stringify(d)}).then(function(r){return r.json()}).then(function(r){
+if(r&&r.ok){var p=document.createElement('p');p.className='form-done';p.setAttribute('role','status');p.tabIndex=-1;
+p.textContent='Thank you. '+f.getAttribute('data-thanks')+(r.id?' Your reference is '+r.id+'.':'');f.parentNode.replaceChild(p,f);p.focus()}
+else if(r&&r.error==='file type'){say('We cannot take that kind of file. Send a PDF, an image or an Office document, or a link.',true);btn.disabled=false}
+else if(r&&r.error==='file size'){say('The file is larger than 10 MB. Send a link to it instead.',true);btn.disabled=false}
+else fail()}).catch(fail)}
+if(file){var rd=new FileReader();rd.onload=function(){d.file={name:file.name,type:file.type,data:String(rd.result).split(',')[1]};send()};rd.onerror=fail;rd.readAsDataURL(file)}else send()})});
+[].slice.call(document.querySelectorAll('[data-kind]')).forEach(function(a){a.addEventListener('click',function(){var k=document.querySelector('form.intake [name=kind]');if(k)k.value=a.getAttribute('data-kind')})});
+function openHash(){var el=location.hash&&document.getElementById(location.hash.slice(1));if(el&&el.tagName==='DETAILS')el.open=true}
+openHash();window.addEventListener('hashchange',openHash);
+[].slice.call(document.querySelectorAll('details.acc[id]')).forEach(function(dn){dn.addEventListener('toggle',function(){if(dn.open&&history.replaceState)history.replaceState(null,'','#'+dn.id)})});
+[].slice.call(document.querySelectorAll('button.copy')).forEach(function(b){b.addEventListener('click',function(){var t=b.getAttribute('data-copy');
+if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){b.textContent='Copied'})})});
+})})();</script>""")
 
 
 # 2.13 Item list: (a) plain under rules, (b) numbered steps, (c) accordion, (d) with images, (e) chips.
@@ -3050,33 +3134,128 @@ def tpl_partners(p, base):
             + m_partners(10, "Partners by name") + m_use("b", "In use", tight=True))
 
 
+# The Partner portal (16 November 2026; Website – core pages and sections, Decided): a service home for people who already
+# are partners, built from tasks. Two entrances at the top; the partnership as four invitations and one short form; the
+# guide, find, collect and license, use, your account, as questions that each have their own address. It does not show
+# the archive again, and how one becomes a partner is told on Partnerships. No word budget (Thomas, 10:28): its rules are
+# a help page's. Every text is a draft for Thomas (Website – copy, section 6); the steps in the archive were read on the
+# archive itself on 16 November 2026 as the test partner.
+PORTAL_STATEMENT = "For partners: the way into the archive, how it works and how we work together."
+PORTAL_TASKS = [("made", "Show us what you made", "A link, a screenshot or a document, with a comment if you like."),
+                ("missing", "Tell us what is missing", "Images you looked for and did not find."),
+                ("feedback", "Give us feedback", "On the archive, the images or this page. A line is enough."),
+                ("bigger", "Work on something bigger", "A collection, an exhibition, a campaign: tell us what you have in mind.")]
+PORTAL_LICENCE = "Images are always free for partners. Each use has its own licence: it comes with the download, and it tells us where the image will appear."
+
+
 def tpl_portal(p, base):
-    doors = [door(archive("/-/galleries/archive", "portal"), "Partners", "Partner log in →", "Signed in already? This takes you straight to the images.", dark=True),
-             door(base + "request-access/", "New partners", "Request access", "Free for selected non-profit and public partners.")]
-    forms = [("Report a use", "Where an image appeared, and what you need next.", [("Where it appeared", "text"), ("Link", "url"), ("Date", "text"), ("What you need next", "textarea"), ("Organisation", "text"), ("Email", "email")]),
-             ("Request imagery", "Can’t find what you need?", [("What you are looking for", "textarea"), ("For what", "text"), ("By when", "text"), ("Organisation", "text"), ("Email", "email")]),
-             ("What are you working on?", "The yearly question, any time.", [("Your project", "textarea"), ("Link", "url"), ("Organisation", "text"), ("Email", "email")])]
-    # 1 who it is for and the two doors; 2 report a use; 3 request imagery and what are you working on; 4 news and numbers; 5 the rules reminder; 6 a feedback call.
-    return (m_page_head(p["title"], PORTAL_LEAD, statement_draft=True, doors=m_doors("a", doors=doors))
-            + m_form("b", title="The partner’s desk", forms=forms, sid="desk",
-                     lead=draft("The one place to tell us how the images are used and what you need next. Every answer lands with us, and we answer.", "p"))
-            + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="Partner news")
-            + m_use("c", "News", tight=True)
-            + m_text("The rules in short", [PORTAL_RULES], "a", links=[button(base + "partners/#using-the-images", "All the rules", quiet=True),
-                                                                    button(archive("/client", "portal-history"), "Your download history", quiet=True)], sid="rules")
-            + m_form("c", title="Talk to us", button_label="Book a feedback call", sid="call", tight=True,
-                     lead=draft("Optional, never required: a short call about what is missing and what you are working on.", "p", "small")))
+    doors = [door(archive("/-/galleries/archive", "portal"), "Partners", "Open the archive →", "Log in with your partner account. Signed in already? Straight to the images.", dark=True),
+             door(base + "partners/", "New partners", "Become a partner →", "Partnerships tells what it is to be a partner and how to apply.")]
+    d = lambda text: f'<span class="draft">{e(text)}</span>'
+    para = lambda text: f'<p>{d(text)}</p>'
+    ul = lambda items: '<ul>' + "".join(f'<li>{d(x)}</li>' for x in items) + '</ul>'
+    def way(href, label, kind=None):
+        k = f' data-kind="{kind}"' if kind else ""
+        return f'<p class="doors"><a class="button quiet" href="{href}"{k}>{e(label)}</a></p>'
+    copy = lambda line: f'<div class="copy-line"><span>{e(line)}</span><button type="button" class="copy" data-copy="{e(line)}">Copy</button></div>'
+
+    tasks = "".join(f'<a class="task" href="#write" data-kind="{k}"><strong>{d(t)}</strong><span>{d(l)}</span><span class="go">Write it here ↓</span></a>' for k, t, l in PORTAL_TASKS)
+    partnership = (f'<div class="cols"><div class="c1-4">{heading("The partnership")}</div><div class="c7-12">'
+                   + para("A partnership goes both ways. None of this is required, and every message is read and answered.") + '</div></div>'
+                   + f'<div class="task-grid">{tasks}</div>')
+
+    form = intake_form("message", "Write to us", [
+        ("kind", "What is it about?", dict(kind="select", options=MESSAGE_KINDS)),
+        ("text", "Your message", dict(kind="textarea")),
+        ("link", "A link", dict(kind="url", hint="To the page, the post or the publication.")),
+        ("file", "A file", dict(kind="file", hint="A screenshot, a PDF or a document, up to 10 MB.")),
+        ("organisation", "Organisation", dict(required=True, auto="organization")),
+        ("email", "Email", dict(kind="email", required=True, auto="email"))],
+        "Send", "Your message is with us, and we answer every one.")
+    write = (f'<div class="sheet write" id="write"><div class="cols"><div class="c1-4">{heading("Write to us", 3, "h-big")}'
+             + f'<p class="small">{d("Or by email:")} <a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p></div>'
+             + f'<div class="c7-12">{form}</div></div></div>')
+
+    spine = (f'<div class="cols"><div class="c1-4">{heading("How it works")}</div><div class="c7-12">'
+             f'<p class="spine">Find → collect → license → use</p>{para(PORTAL_LICENCE)}</div></div>')
+
+    groups = [
+        ("Find", [
+            ("find-search", "Search by keyword, theme and place",
+             para("Open Browse images and use the search tab. Every image carries keywords for what it shows, its theme, its city and its country. A click on a keyword under an image shows every image that shares it.")
+             + para("The five themes are listed on the House Collection page, each with a link into the archive.")
+             + way(base + "collections/house-collection/", "The five themes →")),
+            ("photo-id", "Tell us exactly which image you mean",
+             para("Every image has a number, such as AR-1645. Search for the number in the archive to go straight to the image, and quote it when you write to us.")),
+            ("find-missing", "Cannot find what you need?",
+             para("Tell us what you looked for. We keep a record of what partners ask for.") + way("#write", "Tell us what is missing ↑", "missing"))]),
+        ("Collect and license", [
+            ("collect", "Gather a selection",
+             para("Under an image, press Add to selection. Your selection is under Lightbox in the menu, and the selections you save are listed in My account.")),
+            ("download", "Download an image",
+             para("Press Download (free licence) and choose how you will use the image: in a report or publication, a funding application, a presentation, on your website or social media, in the press, at an exhibition or event, in teaching, or another use that you describe.")
+             + para("In the comment, name the project or the publication. The original file, 6,000 pixels wide, comes to your email together with the terms.")),
+            ("why-licence", "Why a licence, when it is free?",
+             para("The images are rights-managed: each use is agreed, and nobody holds a stock of images for uses not yet known. So every use has its own licence, free of charge, and a new use means a new download.")
+             + para("The licence tells us where the image appears. That is how we show the people and organisations who fund the archive that it is used."))]),
+        ("Use", [
+            ("rights", "What you may do, at a glance",
+             ul(["Use the image for the purpose you chose at download, anywhere in the world.",
+                 "Crop it and adjust its colour. Change nothing else in it.",
+                 "Credit every use.",
+                 "Do not resell the image or pass the licence on.",
+                 "Do not use it in political campaigning or to advertise products.",
+                 "Do not place the people shown in a degrading or misleading context.",
+                 "Do not use it to train AI models."])
+             + way(archive("/terms", "portal-terms"), "The full terms →")),
+            ("credit", "The credit line, ready to copy",
+             para("On or beside the image, on every use.") + copy(CREDIT) + copy("Photo: Africa Reframed / BESTSELLER FOUNDATION Waste to Value Collection")),
+            ("before-publishing", "Before you publish",
+             ul(["The credit line stands on or beside the image.",
+                 "The caption says what the image shows, and where.",
+                 "The use is the one you chose at download. For a new use, download the image again."]))]),
+        ("Your account", [
+            ("password", "Forgot your password?",
+             para("Write to us and we get you back in.") + f'<p><a href="mailto:{EMAIL_PARTNERS}">{EMAIL_PARTNERS}</a></p>'),
+            ("profile", "Change your name, email or password",
+             para("In the archive, open My account and then My profile.") + way(archive("/client", "portal-account"), "My account in the archive →")),
+            ("colleague", "Can I add a colleague?",
+             para("Yes. Each person has a login of their own, so ask for access for your colleague.")
+             + way(base + "request-access/?colleague=1", "Ask for access for a colleague →")),
+            ("licences", "Find an earlier download",
+             para("My account in the archive lists your earlier downloads, with their dates and terms. Each download also came to your email with its terms.")
+             + way(archive("/client", "portal-history"), "My account in the archive →"))]),
+    ]
+    guide = ""
+    for title, items in groups:
+        accs = "".join(f'<details class="acc" id="{i}"><summary>{d(q)}<span class="plus" aria-hidden="true"></span></summary>{a}</details>' for i, q, a in items)
+        guide += f'<div class="cols guide"><div class="c1-4">{heading(title)}</div><div class="c7-12">{accs}</div></div>'
+
+    desk = (mod("items", "the partnership, as tasks", partnership + write, sid="partnership")
+            + mod("text", "how it works", spine, sid="how-it-works")
+            + mod("items", "c, the guide, each answer with its address", guide, sid="guide", tight=True)
+            + m_doors("d", kicker="Get help", address=EMAIL_PARTNERS, line="Something not answered here? Write to us. We answer within a working day.", sid="help"))
+    return (m_page_head(p["title"], PORTAL_STATEMENT, statement_draft=True, doors=m_doors("a", doors=doors))
+            + f'<div class="desk">{desk}</div>')
 
 
 def tpl_form(p, base):
-    fields = [("Organisation", "text"), ("Your role", "text"), ("Type of organisation", "select"), ("Country", "text"), ("Focus of your work", "text"),
-              ("How you will use the images", "textarea"), ("What imagery you are looking for", "textarea"), ("Email", "email")]
+    fields = [("organisation", "Organisation", dict(required=True, auto="organization")),
+              ("org_type", "Type of organisation", dict(kind="select", options=[(x, x) for x in ORG_TYPES])),
+              ("country", "Country", dict(required=True, auto="country-name")),
+              ("name", "Your name", dict(required=True, auto="name")),
+              ("role", "Your role", dict(auto="organization-title")),
+              ("email", "Email", dict(kind="email", required=True, auto="email")),
+              ("focus", "Focus of your work", dict()),
+              ("use", "How you will use the images", dict(kind="textarea", required=True)),
+              ("looking_for", "What imagery you are looking for", dict(kind="textarea"))]
     aside = heading("What happens next", 3) + '<ol class="next-steps">' + "".join(f"<li><strong>{e(a)}</strong> <span class=\"draft\">{e(b)}</span></li>" for a, b in REQUEST_NEXT) + "</ol>" + draft(REQUEST_FOOT, "p", "small")
-    after = (f'<p class="small">Read <a href="{base}partners/#using-the-images">the rules for using the images</a> first. '
-             f'Until this form is connected, requests go through <a href="{archive("/contact", "request")}">the archive’s request form</a>.</p>')
-    return (m_page_head(p["title"], ACCESS_WHO)
-            + m_form("a", title="Request access", fields=fields, aside=aside, consent=REQUEST_CONSENT, button_label="Send the request", after=after)
-            + m_text("Thank you", ["Your request is with us. We reply within a working day, and the welcome email that follows opens your account."], "a", sid="thanks"))
+    after = f'<p class="small">Read <a href="{base}partners/#using-the-images">the rules for using the images</a> first.</p>'
+    form = intake_form("request", "Request access", fields, "Send the request",
+                       "Your request is with us. We reply within a working day, and the welcome email that follows opens your account.",
+                       checks=[("colleague", "I am asking for a colleague at an organisation that is already a partner."), ("consent", REQUEST_CONSENT)])
+    inner = f'<div class="cols"><div class="c1-6">{form}{after}</div><div class="c7-12"><aside class="facts-box">{aside}</aside></div></div>'
+    return m_page_head(p["title"], ACCESS_WHO) + mod("form", "a, the long form with an aside, connected", inner)
 
 
 def tpl_press(p, base):
@@ -4783,6 +4962,50 @@ main input[type=checkbox]:checked{background:var(--ink);box-shadow:inset 0 0 0 4
 .form .button{justify-self:start;margin-top:16px}
 .next-steps{padding-left:24px;margin:8px 0 16px}
 .next-steps li{margin:8px 0}
+.opt,.f-hint{font-size:var(--fs-small);color:var(--ink-soft)}
+.opt{margin-left:8px}
+.f-hint{display:block}
+.trap{display:none}
+main [aria-invalid=true]{border-width:2px;border-color:var(--ink)}
+main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
+.form-status{min-height:24px;margin:8px 0 0}
+.form-status.bad{font-weight:600}
+.form-done{border-top:2px solid var(--ink);padding-top:16px;font-size:var(--fs-head);font-weight:600;line-height:1.15;max-width:24em}
+.form .button{cursor:pointer;font:inherit;font-weight:600}
+.form .button:disabled{opacity:.5;cursor:default}
+
+/* The Partner portal (16 November 2026): a service page for partners. Its body stands on the pale ground and its
+   parts are white sheets; the type, the header and the close are the site's own. Denser than the other pages. */
+.desk{background:var(--wash);margin-top:var(--section-head);padding-bottom:var(--section)}
+.desk .mod{padding-top:var(--section-head)}
+.desk .mod::before{top:calc(var(--section-head) - 22px)}
+.desk .mod.tight{padding-top:32px}
+.desk .mod.tight::before{top:8px}
+.desk .mod.band .cols{border-top:2px solid var(--ink);padding-top:24px}
+.sheet{background:#fff;padding:32px}
+.task-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gutter);margin-top:32px}
+.task{background:#fff;padding:24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;min-height:208px}
+.task strong{font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em;text-wrap:balance}
+.task > span{color:var(--ink-soft)}
+.task .go{margin-top:auto;padding-top:16px;color:var(--ink);font-weight:600}
+.task:hover strong{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.write{margin-top:var(--gutter)}
+.write .form{max-width:none;margin-top:0}
+.write .form label:first-child{margin-top:0}
+.spine{font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em;margin:0 0 12px}
+.guide + .guide{margin-top:32px}
+.guide .acc{background:#fff;border:0;padding:0 24px}
+.guide .acc + .acc{margin-top:4px}
+.guide .acc:last-child{border-bottom:0}
+.guide .acc summary{min-height:56px;gap:16px}
+.guide .acc ul{margin:0 0 16px;padding-left:24px}
+.guide .acc li{margin:4px 0}
+.guide .acc .doors{margin:0 0 24px}
+.guide .acc > p:last-child,.guide .acc > ul:last-child,.guide .acc > .copy-line:last-child{margin-bottom:24px}
+.copy-line{display:flex;gap:16px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:8px 0}
+.copy{font:inherit;font-weight:600;min-height:48px;padding:0 16px;border:1px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;flex:none}
+@media (max-width:1023px){.task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:767px){.task-grid{grid-template-columns:1fr}.task{min-height:0}.sheet{padding:24px 16px}.guide .acc{padding:0 16px}}
 
 /* Development: the type page */
 .type-row{border-top:1px solid var(--line);padding:24px 0 16px}

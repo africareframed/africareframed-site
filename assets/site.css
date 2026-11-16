@@ -873,6 +873,50 @@ main input[type=checkbox]:checked{background:var(--ink);box-shadow:inset 0 0 0 4
 .form .button{justify-self:start;margin-top:16px}
 .next-steps{padding-left:24px;margin:8px 0 16px}
 .next-steps li{margin:8px 0}
+.opt,.f-hint{font-size:var(--fs-small);color:var(--ink-soft)}
+.opt{margin-left:8px}
+.f-hint{display:block}
+.trap{display:none}
+main [aria-invalid=true]{border-width:2px;border-color:var(--ink)}
+main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
+.form-status{min-height:24px;margin:8px 0 0}
+.form-status.bad{font-weight:600}
+.form-done{border-top:2px solid var(--ink);padding-top:16px;font-size:var(--fs-head);font-weight:600;line-height:1.15;max-width:24em}
+.form .button{cursor:pointer;font:inherit;font-weight:600}
+.form .button:disabled{opacity:.5;cursor:default}
+
+/* The Partner portal (16 November 2026): a service page for partners. Its body stands on the pale ground and its
+   parts are white sheets; the type, the header and the close are the site's own. Denser than the other pages. */
+.desk{background:var(--wash);margin-top:var(--section-head);padding-bottom:var(--section)}
+.desk .mod{padding-top:var(--section-head)}
+.desk .mod::before{top:calc(var(--section-head) - 22px)}
+.desk .mod.tight{padding-top:32px}
+.desk .mod.tight::before{top:8px}
+.desk .mod.band .cols{border-top:2px solid var(--ink);padding-top:24px}
+.sheet{background:#fff;padding:32px}
+.task-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gutter);margin-top:32px}
+.task{background:#fff;padding:24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;min-height:208px}
+.task strong{font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em;text-wrap:balance}
+.task > span{color:var(--ink-soft)}
+.task .go{margin-top:auto;padding-top:16px;color:var(--ink);font-weight:600}
+.task:hover strong{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.write{margin-top:var(--gutter)}
+.write .form{max-width:none;margin-top:0}
+.write .form label:first-child{margin-top:0}
+.spine{font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em;margin:0 0 12px}
+.guide + .guide{margin-top:32px}
+.guide .acc{background:#fff;border:0;padding:0 24px}
+.guide .acc + .acc{margin-top:4px}
+.guide .acc:last-child{border-bottom:0}
+.guide .acc summary{min-height:56px;gap:16px}
+.guide .acc ul{margin:0 0 16px;padding-left:24px}
+.guide .acc li{margin:4px 0}
+.guide .acc .doors{margin:0 0 24px}
+.guide .acc > p:last-child,.guide .acc > ul:last-child,.guide .acc > .copy-line:last-child{margin-bottom:24px}
+.copy-line{display:flex;gap:16px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:8px 0}
+.copy{font:inherit;font-weight:600;min-height:48px;padding:0 16px;border:1px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;flex:none}
+@media (max-width:1023px){.task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:767px){.task-grid{grid-template-columns:1fr}.task{min-height:0}.sheet{padding:24px 16px}.guide .acc{padding:0 16px}}
 
 /* Development: the type page */
 .type-row{border-top:1px solid var(--line);padding:24px 0 16px}

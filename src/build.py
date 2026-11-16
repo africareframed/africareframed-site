@@ -1338,7 +1338,7 @@ WTV_COLLECTION = dict(
            "The companies came through BESTSELLER FOUNDATION’s Waste to Value Challenge, launched with Intellecap in December 2019 across Kenya, Uganda, Tanzania and Rwanda. From more than 400 applications, six were chosen for an accelerator that ran from August 2020 to March 2021, with up to USD 100,000 each and support on markets, products, business planning and finance. Alongside it, the foundation invested in a seventh: Vuma Biofuels."],
     facts=[("Companies", "7, six of them from the accelerator"), ("Countries", "Kenya, Uganda, Rwanda"),
            ("Photographers", "Paul Mbugua, Jjumba Martin, Muhire Rukundo Dieudonné"), ("Photographed", "February 2020 to May 2021"),
-           ("Programme", "Waste to Value, BESTSELLER FOUNDATION with Intellecap"), ("Access", "By request, for partners and the press")],
+           ("Programme", "Waste to Value, BESTSELLER FOUNDATION with Intellecap")],
     companies=WTV_COMPANIES,
     companies_lead="Seven companies, seven stories. Four turn waste into energy, one into building materials and one into packaging; one builds the technology to collect it.",
     grid_line="Founders, workers and products: in workshops, yards, markets and kitchens.",
@@ -1366,10 +1366,14 @@ WTV_COLLECTION = dict(
     invite=dict(title="A collection on your theme",
                 text=["This collection began with a theme close to the foundation’s own work: waste turned into value. A collection can start from any theme close to a funder’s work, or one it wants to support: a sector, a skill, a city, a change under way.",
                       "We find the people and places that show it, work with photographers from the countries concerned, and deliver the collection with its stories and its behind-the-scenes material. From there the storytelling is shared: the funder, the people in the collection and the press each tell their part with the same images. The funder’s name stands on the collection; the work stays independent."]),
-    access=dict(count=("7", "companies in the collection"), request=True, line="Access to this collection is by request, for partners and the press."),
-    sections=["story", "companies", "making", "photographers", "went", "words", "access", "sponsor", "invite"],   # behind the scenes is told with the photographers   # the stories carry the images; ends on the invitation
+    # (16 November 2026, Thomas, 16:38 and 16:42) The collection is shown here as an example of a collaboration. Its images were
+    # made for the foundation and the seven companies; they are not in the archive and are not offered to partners or to the
+    # press. So the page has no access band, no Request access button and no Press button, and its facts name no access.
+    # request=True only keeps the template from adding a link into the archive under the page head.
+    access=dict(count=("7", "companies in the collection"), request=True, line=""),
+    sections=["story", "companies", "making", "photographers", "went", "words", "sponsor", "invite"],   # behind the scenes is told with the photographers   # the stories carry the images; ends on the invitation
     card=dict(kicker="Sponsored collection", line="Seven young companies in Kenya, Uganda and Rwanda that turn waste into fuel, building materials, packaging and services.",
-              meta=["7 companies", "Kenya · Uganda · Rwanda", "Access by request"], image="A photograph from the Waste to Value Collection", credit=WTV_CREDIT),
+              meta=["7 companies", "Kenya · Uganda · Rwanda"], image="A photograph from the Waste to Value Collection", credit=WTV_CREDIT),
 )
 COLLECTIONS = [HOUSE_COLLECTION, WTV_COLLECTION]   # the order on Collections and on Home
 # About (About page – build brief, 05 Website; rebuilt 9 November 2026 with Thomas). The function pages are a machine; About is
@@ -3108,7 +3112,7 @@ def tpl_collection(p, base):
     # The head (name, statement, the lead photograph), then the collection's own sections in its order. House Collection:
     # the story, the evidence, places and series, themes and goals, Open in the archive, in use. A sponsored collection:
     # the theme, the companies, the evidence, how it was made, the photographers and behind the scenes, where the images
-    # went, the sponsor, the invitation to a collection on another theme, and access by request.
+    # went, the sponsor and the invitation to a collection on another theme. (Its access band is off since 16 November 2026.)
     c = p["collection"]
     meta = list(c.get("meta") or [])
     if "companies" in c["sections"] and meta:

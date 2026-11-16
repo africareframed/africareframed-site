@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Become a partner · Africa Reframed</title>
+<meta name="description" content="On trial: the page for a reader who is considering a partnership, built from her questions.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://africareframed.github.io/africareframed-site/dev/become-a-partner/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Africa Reframed">
+<meta property="og:title" content="Become a partner">
+<meta property="og:description" content="On trial: the page for a reader who is considering a partnership, built from her questions.">
+<meta property="og:url" content="https://africareframed.github.io/africareframed-site/dev/become-a-partner/">
+<meta property="og:image" content="https://africareframed.github.io/africareframed-site/assets/share-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="../../assets/fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="../../assets/favicon.svg?v=3" type="image/svg+xml">
+<link rel="icon" href="../../assets/favicon-32.png?v=3" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png?v=3">
+<script>
+(function(){
+  var K = 'ar-partner', now = Date.now(), q = new URLSearchParams(location.search), t = 0;
+  var back = q.get('src') === 'archive', off = q.get('partner') === 'off';
+  try {
+    if (back) localStorage.setItem(K, String(now));
+    if (off) localStorage.removeItem(K);
+    t = parseInt(localStorage.getItem(K) || '0', 10) || 0;
+    if (t && now - t > 30 * 864e5) { localStorage.removeItem(K); t = 0; }
+  } catch (err) {}
+  if (t) document.documentElement.classList.add('is-partner');
+  if (back || q.has('partner')) {
+    if (back) q.delete('src');
+    q.delete('partner');
+    var rest = q.toString();
+    try { history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash); } catch (err) {}
+  }
+})();
+</script>
+<link rel="stylesheet" href="../../assets/site.css?v=202611162310">
+</head>
+<body class="page-None tpl-apply">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="../../" aria-label="Africa Reframed, home">
+      <img src="../../assets/logo-black.svg" alt="Africa Reframed" class="brand-logo">
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="menu" id="menu" aria-label="Main">
+      <a href="../../collections/house-collection/">Collections</a>
+      <a href="../../partners/">Partnerships</a>
+      <a href="../../about/">About</a>
+      <span class="divider" aria-hidden="true"></span>
+      <a class="partner-only" href="https://archive.africareframed.com/-/galleries/archive?src=main-menu">Browse images</a>
+      <a class="partner-only" href="https://archive.africareframed.com/lightbox?src=main-menu">Lightbox</a>
+      <a href="../../partner-portal/">Partner portal</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<section class="mod mod-page-head page-head has-doors" data-mod="2.3 Page head (b, with doors)"><div class="wrap"><div class="cols"><div class="c1-4"><h1>Become a partner</h1></div><div class="c7-12 head-right"><p class="statement"><span class="draft">See who the archive is for, what a partnership involves and how to ask. We answer within a working day.</span></p></div></div><section class="mod mod-doors " data-mod="2.12 Doors and actions (a, the three entrances)"><div class="wrap"><div class="door-panels three"><a class="panel" href="../../request-access/"><strong>Use the archive</strong><span>Free for non-profit and public organisations. Ask with a short form →</span></a><a class="panel" href="mailto:partnerships@africareframed.com"><strong>Build a collection</strong><span>A company or another partner makes a new collection possible. Write to us →</span></a><a class="panel" href="mailto:partnerships@africareframed.com"><strong>Make something with us</strong><span>A workshop, an exhibition or a project of your own. Write to us →</span></a></div><p class="note">On trial beside the Partnerships page, which is unchanged. Use the archive leads to the request form; the other two are an address for now.</p></div></section></div></section><div class="desk"><section class="mod mod-text " data-mod="2.4 Text section (how it goes)" id="how-it-goes"><div class="wrap"><div class="cols"><div class="c1-4"><h2>How it goes</h2></div><div class="c7-12"><p class="spine">Ask → our answer → log in → use</p><p><span class="draft">A request is a short form. We read every one ourselves, and you have our answer within a working day.</span></p></div></div></div></section><section class="mod mod-items  tight" data-mod="2.13 Item list (c, the guide, each answer with its address)" id="guide"><div class="wrap"><div class="cols guide"><div class="c1-4"><h2>Who can become a partner</h2></div><div class="c7-12"><details class="acc" id="who"><summary><span class="draft">Is the archive for an organisation like ours?</span><span class="plus" aria-hidden="true"></span></summary><p>The archive is free for selected non-profit and public partners: NGOs, media, educational institutions, embassies, ministries and development finance institutions.</p><p><span class="draft">Cultural institutions and foundations ask in the same way.</span></p></details><details class="acc" id="company"><summary><span class="draft">Can a company become a partner?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">Yes. A company comes in by building a collection: it makes a new collection possible, and from then on it uses the archive like every other partner.</span></p><p class="doors"><a class="button quiet" href="#collection-start">How a collection starts ↓</a></p></details><details class="acc" id="by-name"><summary><span class="draft">What does approved by name mean?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">Each organisation is approved before it gets access, and each person has a login of their own. That is how we know where the images go.</span></p></details></div></div><div class="cols guide"><div class="c1-4"><h2>What a partner gets</h2></div><div class="c7-12"><details class="acc" id="archive"><summary><span class="draft">What is in the archive?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">1,122 photographs of contemporary African life from Bamako, Nairobi and Banjul, in five themes: Learning, Work and enterprise, Everyday digital, City life, and Creativity and culture.</span></p><p class="doors"><a class="button quiet" href="../../collections/house-collection/">The House Collection →</a></p></details><details class="acc" id="cost"><summary><span class="draft">What does it cost?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">Nothing. Images are always free for partners.</span></p></details><details class="acc" id="files"><summary><span class="draft">What do we get when we download?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">The original file, 6,000 pixels wide, comes to your email together with its licence.</span></p></details><details class="acc" id="colleagues"><summary><span class="draft">Can several of us have access?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">Yes. An organisation starts with one account and adds colleagues by asking for them. Each person has a login of their own.</span></p></details><details class="acc" id="inside"><summary><span class="draft">What is it like on the inside?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">The Partner portal shows how partners find, collect, download and use the images.</span></p><p class="doors"><a class="button quiet" href="../../partner-portal/">The Partner portal →</a></p></details></div></div><div class="cols guide"><div class="c1-4"><h2>What it asks of you</h2></div><div class="c7-12"><details class="acc" id="licence"><summary><span class="draft">Why does each image come with a licence?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">The licence is your permission in writing, for the use you chose. It is free, every time, and a new use is a new download with a licence of its own.</span></p></details><details class="acc" id="covers"><summary><span class="draft">What may we do with the images?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">Use them for the purpose you chose, anywhere in the world, with the credit line beside them. The licence does not cover resale, political campaigning or advertising for products, and an image is never altered or used to train AI models.</span></p><p class="doors"><a class="button quiet" href="../../partner-portal/#rights">What the licence covers →</a></p></details><details class="acc" id="report"><summary><span class="draft">Do we have to report how we use them?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">No. The licence already says where an image will appear. Showing us what you made is welcome, and never required.</span></p></details></div></div><div class="cols guide"><div class="c1-4"><h2>Asking for access</h2></div><div class="c7-12"><details class="acc" id="form"><summary><span class="draft">What does the form ask?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">Your organisation, its type and its country, your name and role, your email, and how you will use the images. You can also tell us what imagery you are looking for.</span></p><p class="doors"><a class="button quiet" href="../../request-access/">Request access →</a></p></details><details class="acc" id="time"><summary><span class="draft">How long does it take?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">We read every request ourselves, and you have our answer within a working day. A confirmation with a reference comes to your email at once.</span></p></details><details class="acc" id="details"><summary><span class="draft">What do you do with what we tell you?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">The form asks you to agree to one thing: that how you use the images may be reported, without personal details, to the funders who make new collections possible.</span></p></details></div></div><div class="cols guide"><div class="c1-4"><h2>Building a collection</h2></div><div class="c7-12"><details class="acc" id="collection-start"><summary><span class="draft">How does a collection start?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">With a partner and a theme: one close to the partner’s work, or one it wants to support. A sector, a skill, a city, a change under way. Never the partner’s own operations.</span></p></details><details class="acc" id="collection-made"><summary><span class="draft">Who makes it?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">We find the people and places that show the theme and work with photographers from the countries concerned. Every photographer is credited and paid.</span></p></details><details class="acc" id="collection-name"><summary><span class="draft">Where does our name stand?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">On the collection, wherever it is shown. What the images show stays with us: name and stage, never editorial control.</span></p></details><details class="acc" id="collection-archive"><summary><span class="draft">What becomes of the collection?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">It joins the archive, where every partner can use it. The partner, the people in the pictures and other organisations each tell their part with the same images.</span></p></details><details class="acc" id="collection-example"><summary><span class="draft">Is there an example?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">One example of such work is the BESTSELLER FOUNDATION Waste to Value Collection, made for the foundation and the seven companies it shows.</span></p><p class="doors"><a class="button quiet" href="../../collections/waste-to-value/">See the Waste to Value Collection →</a></p></details><details class="acc" id="collection-cost"><summary><span class="draft">What does it cost?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">That depends on the theme and the places. Write to us and we talk it through.</span></p><p><a href="mailto:partnerships@africareframed.com">partnerships@africareframed.com</a></p></details></div></div><div class="cols guide"><div class="c1-4"><h2>Making something together</h2></div><div class="c7-12"><details class="acc" id="make"><summary><span class="draft">What can we make together?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">Workshops, exhibitions and other projects, each shaped around what the partner has in mind. A project can gather several partners around one theme.</span></p></details><details class="acc" id="make-workshops"><summary><span class="draft">What have the workshops been?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">On visual storytelling and the market for photographs, built with photography schools, photographers’ unions and press associations: in Bamako, Freetown, Nairobi and Banjul so far.</span></p><p class="doors"><a class="button quiet" href="../../about/#workshops">The workshops, on About →</a></p></details><details class="acc" id="make-exhibitions"><summary><span class="draft">And the exhibitions?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">Africa Reframed at Øksnehallen in Copenhagen, 2016: 5,000 square metres and more than 300 works, produced with DGI-byen and supported by Danida and Augustinus Fonden.</span></p><p class="doors"><a class="button quiet" href="../../about/#exhibitions">The exhibition, on About →</a></p></details><details class="acc" id="make-start"><summary><span class="draft">How do we start?</span><span class="plus" aria-hidden="true"></span></summary><p><span class="draft">Tell us what you have in mind. A few lines are enough.</span></p><p><a href="mailto:partnerships@africareframed.com">partnerships@africareframed.com</a></p></details></div></div></div></section><section class="mod mod-doors band" data-mod="2.12 Doors and actions (d, the contact band)" id="help"><div class="wrap"><div class="cols"><div class="c1-4"><h2>Get help</h2></div><div class="c7-12"><p class="h-big"><a href="mailto:partnerships@africareframed.com">partnerships@africareframed.com</a></p><p class="small"><span class="draft">Something not answered here? Write to us. We answer within a working day.</span></p></div></div></div></section></div>
+</main>
+<footer class="site-footer">
+  <svg class="close-pattern close-wide" viewBox="0 0 720 320" preserveAspectRatio="xMaxYMin slice" aria-hidden="true" fill="#fff"><polygon points="306.9,-12 210.9,-12 175.1,50.0 223.1,133.1"/><polygon points="526.9,-12 430.9,-12 337.4,150.0 385.4,233.1"/><polygon points="746.9,-12 650.9,-12 453.5,330.0 501.5,413.1"/><polygon points="190.0,300.0 260.0,300.0 225.0,239.4"/></svg><svg class="close-pattern close-narrow" viewBox="0 0 390 160" preserveAspectRatio="xMaxYMin slice" aria-hidden="true" fill="#fff"><polygon points="196.9,-12 140.9,-12 128.2,10.0 156.2,58.5"/><polygon points="306.9,-12 250.9,-12 215.1,50.0 243.1,98.5"/><polygon points="416.9,-12 360.9,-12 302.0,90.0 330.0,138.5"/><polygon points="92.0,140.0 132.0,140.0 112.0,105.4"/></svg>
+  <div class="wrap close">
+    <div class="close-words">
+    <img src="../../assets/logo-mark-white.svg" alt="Africa Reframed" class="close-logo" width="113" height="48">
+    <p class="about-line">Spotlighting African innovation and African–European collaboration. An independent initiative established by Commerce &amp; Culture.</p>
+    <p class="images-line">Our images are never <span class="nb">AI-generated</span>.</p>
+    <p class="links">
+      <a href="../../about/">About</a> ·
+      <a href="../../press/">Press</a> ·
+      <a href="../../contact/">Contact</a> ·
+      <a href="../../privacy/">Privacy</a> ·
+      <a href="../../request-access/">Request access</a> ·
+      <a href="https://archive.africareframed.com/terms">Terms</a> ·
+      <span>&copy; Africa Reframed</span>
+    </p>
+    </div>
+  </div>
+</footer>
+<div class="wire-strip"><div class="wrap"><span>Live wireframe · grey boxes are images to choose · grey bars are text to write · yellow notes say what goes there</span><span class="strip-tools"><a class="partner-switch" href="?partner=off" title="This browser remembers you came from the archive, so the menu shows its tools. Click to see the public menu.">Public menu</a><a href="../../dev/">Development</a><a href="../../dev/modules/">Modules</a><a href="../../dev/type/">Type</a><a href="../../dev/opening/">Opening</a><a href="../../dev/front-a/">Front page</a><a href="../../dev/signs/">Collection card</a><a href="../../dev/images/">Images</a><button class="grid-toggle" type="button" aria-pressed="false" title="Show the grid (or press G)">Grid</button><button class="notes-toggle" type="button" aria-pressed="false">Clean view</button></span></div></div>
+<div class="grid-overlay" aria-hidden="true"><div class="wrap"><div class="cols"></div><div class="grid-read"></div></div></div>
+<script>
+(function(){
+  var t = document.querySelector('.menu-toggle'), m = document.getElementById('menu');
+  t.addEventListener('click', function(){
+    var open = t.getAttribute('aria-expanded') === 'true';
+    t.setAttribute('aria-expanded', String(!open));
+    m.classList.toggle('open', !open);
+  });
+  var b = document.querySelector('.notes-toggle');
+  if (!b) return;
+  function setClean(on){
+    document.body.classList.toggle('clean', on);
+    b.setAttribute('aria-pressed', String(on));
+    b.textContent = on ? 'Show notes' : 'Clean view';
+  }
+  try { setClean(localStorage.getItem('ar-clean') === '1'); } catch (err) {}
+  b.addEventListener('click', function(){
+    var on = !document.body.classList.contains('clean');
+    setClean(on);
+    try { localStorage.setItem('ar-clean', on ? '1' : '0'); } catch (err) {}
+  });
+  /* The grid overlay: the Grid button, ?grid in the address, or the key G. Draws the columns of the current width. */
+  var g = document.querySelector('.grid-toggle'), ov = document.querySelector('.grid-overlay');
+  if (!g || !ov) return;
+  var cols = ov.querySelector('.cols'), read = ov.querySelector('.grid-read');
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function draw(){
+    var n = parseInt(cssVar('--cols'), 10) || 12, h = '';
+    for (var i = 1; i <= n; i++) h += '<div class="col col-' + i + '">' + i + '</div>';
+    cols.innerHTML = h;
+    var first = cols.firstElementChild, w = first ? Math.round(first.getBoundingClientRect().width * 10) / 10 : 0;
+    var bp = window.innerWidth >= 1024 ? 'desktop' : window.innerWidth >= 768 ? 'tablet' : 'phone';
+    read.textContent = window.innerWidth + ' px · ' + bp + ' · ' + n + ' columns × ' + w + ' px · gutter ' + cssVar('--gutter')
+      + ' · margin ' + cssVar('--margin') + ' · content up to ' + cssVar('--content-max') + ' · header ' + cssVar('--header-h') + ' · logo ' + cssVar('--logo-w');
+  }
+  function setGrid(on){
+    document.body.classList.toggle('show-grid', on);
+    g.setAttribute('aria-pressed', String(on));
+    if (on) draw();
+  }
+  var want = /[?&]grid(=|&|$)/.test(location.search);
+  try { setGrid(want || localStorage.getItem('ar-grid') === '1'); } catch (err) { setGrid(want); }
+  g.addEventListener('click', function(){
+    var on = !document.body.classList.contains('show-grid');
+    setGrid(on);
+    try { localStorage.setItem('ar-grid', on ? '1' : '0'); } catch (err) {}
+  });
+  document.addEventListener('keydown', function(ev){
+    if (ev.key !== 'g' || ev.metaKey || ev.ctrlKey || ev.altKey || /input|textarea|select/i.test(ev.target.tagName)) return;
+    g.click();
+  });
+  window.addEventListener('resize', function(){ if (document.body.classList.contains('show-grid')) draw(); });
+})();
+</script>
+</body>
+</html>

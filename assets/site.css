@@ -897,7 +897,8 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .task-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gutter);margin-top:32px}
 .task{background:#fff;padding:24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;min-height:208px;
   font:inherit;letter-spacing:inherit;color:var(--ink);text-align:left;border:0;border-radius:0;cursor:pointer;appearance:none;-webkit-appearance:none}
-.task.on{background:var(--ink);color:#fff}
+.task.on{background:var(--ink);color:#fff;position:relative}
+.task.on::after{content:"";position:absolute;left:0;right:0;top:100%;height:var(--gutter);background:var(--ink)}   /* the chosen card runs down into its form */
 .task.on > span,.task.on .go{color:#fff}
 .task:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .task strong{font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em;text-wrap:balance}
@@ -919,6 +920,7 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .write.open .write-clip{transition-delay:0s}
 @media (prefers-reduced-motion:reduce){.write,.write-clip{transition:none}}
 /* desk:motion end */
+.write .sheet{border-top:4px solid var(--ink)}
 .write .form{max-width:none;margin:0;gap:16px}
 .write .form label{margin-top:0}
 .write .form .button{margin-top:8px}

@@ -39,7 +39,7 @@
   }
 })();
 </script>
-<link rel="stylesheet" href="../assets/site.css?v=202611161317">
+<link rel="stylesheet" href="../assets/site.css?v=202611161325">
 </head>
 <body class="page-request tpl-form">
 <a class="skip" href="#main">Skip to content</a>
@@ -99,7 +99,7 @@ f.querySelector('[name=kind]').value=k;panel.querySelector('.write-title').textC
 panel.querySelector('.write-line').textContent=c.querySelector('.task-line').textContent;
 [].slice.call(f.querySelectorAll('.f-row[data-for]')).forEach(function(r){r.hidden=r.getAttribute('data-for').split(' ').indexOf(k)<0});
 var l=f.querySelector('label[for="'+t.id+'"]');l.firstChild.textContent=c.getAttribute('data-ask');
-var o=l.querySelector('.opt');if(o)o.hidden=k!=='made';if(k==='made')t.removeAttribute('required');else t.setAttribute('required','');
+var o=l.querySelector('.opt');if(o)o.hidden=k!=='made';var tr=t.closest('.f-row'),fr=f.querySelector('[type=file]').closest('.f-row');fr.parentNode.insertBefore(tr,k==='made'?fr.nextSibling:fr);if(k==='made')t.removeAttribute('required');else t.setAttribute('required','');
 var st=f.querySelector('.form-status');if(st)st.textContent=''}
 function place(c){var n=getComputedStyle(grid).gridTemplateColumns.split(' ').length,i=cards.indexOf(c),last=cards[Math.min(cards.length-1,Math.ceil((i+1)/n)*n-1)];
 if(last.nextSibling!==panel)grid.insertBefore(panel,last.nextSibling)}

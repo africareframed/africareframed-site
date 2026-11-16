@@ -1028,7 +1028,7 @@ f.querySelector('[name=kind]').value=k;panel.querySelector('.write-title').textC
 panel.querySelector('.write-line').textContent=c.querySelector('.task-line').textContent;
 [].slice.call(f.querySelectorAll('.f-row[data-for]')).forEach(function(r){r.hidden=r.getAttribute('data-for').split(' ').indexOf(k)<0});
 var l=f.querySelector('label[for="'+t.id+'"]');l.firstChild.textContent=c.getAttribute('data-ask');
-var o=l.querySelector('.opt');if(o)o.hidden=k!=='made';if(k==='made')t.removeAttribute('required');else t.setAttribute('required','');
+var o=l.querySelector('.opt');if(o)o.hidden=k!=='made';var tr=t.closest('.f-row'),fr=f.querySelector('[type=file]').closest('.f-row');fr.parentNode.insertBefore(tr,k==='made'?fr.nextSibling:fr);if(k==='made')t.removeAttribute('required');else t.setAttribute('required','');
 var st=f.querySelector('.form-status');if(st)st.textContent=''}
 function place(c){var n=getComputedStyle(grid).gridTemplateColumns.split(' ').length,i=cards.indexOf(c),last=cards[Math.min(cards.length-1,Math.ceil((i+1)/n)*n-1)];
 if(last.nextSibling!==panel)grid.insertBefore(panel,last.nextSibling)}
@@ -3189,7 +3189,7 @@ def tpl_portal(p, base):
     form = intake_form("message", "Talk to us", [
         ("kind", "", dict(kind="hidden", options="made")),
         ("link", "A link", dict(kind="url", hint="To the page, the post or the publication.", only="made")),
-        ("file", "A file", dict(kind="file", hint="A screenshot, a PDF or a document, up to 10 MB.", only="made")),
+        ("file", "A file", dict(kind="file", hint="A screenshot, a PDF or a document, up to 10 MB.")),
         ("text", "Your message", dict(kind="textarea")),
         ("organisation", "Organisation", dict(required=True, auto="organization")),
         ("email", "Email", dict(kind="email", required=True, auto="email"))],
@@ -5014,7 +5014,8 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .task-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gutter);margin-top:32px}
 .task{background:#fff;padding:24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;min-height:208px;
   font:inherit;letter-spacing:inherit;color:var(--ink);text-align:left;border:0;border-radius:0;cursor:pointer;appearance:none;-webkit-appearance:none}
-.task.on{background:var(--ink);color:#fff}
+.task.on{background:var(--ink);color:#fff;position:relative}
+.task.on::after{content:"";position:absolute;left:0;right:0;top:100%;height:var(--gutter);background:var(--ink)}   /* the chosen card runs down into its form */
 .task.on > span,.task.on .go{color:#fff}
 .task:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .task strong{font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em;text-wrap:balance}
@@ -5036,6 +5037,7 @@ main input[type=file]{padding:12px;border-style:dashed;cursor:pointer}
 .write.open .write-clip{transition-delay:0s}
 @media (prefers-reduced-motion:reduce){.write,.write-clip{transition:none}}
 /* desk:motion end */
+.write .sheet{border-top:4px solid var(--ink)}
 .write .form{max-width:none;margin:0;gap:16px}
 .write .form label{margin-top:0}
 .write .form .button{margin-top:8px}

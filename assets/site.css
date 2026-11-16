@@ -844,6 +844,12 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .theme-pair{grid-template-columns:1fr;gap:24px}
 }
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
+/* Partnerships, 16 November 2026: the two ways as two panels with an arrow each way in the gutter between them; under
+   them, on the right half, one line for what is made beside the archive. */
+.door-panels.cycle{position:relative}
+.cycle-arrows{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:var(--fs-text);line-height:1}
+.cycle-beside{margin-top:32px}.cycle-beside p{margin:0}.cycle-beside .doors{margin:8px 0 0}
+.part-photo{display:block}.part-photo img{display:block;width:100%;height:auto;aspect-ratio:3 / 2;object-fit:cover}
 @media (min-width:768px){.door-panels.three{grid-template-columns:repeat(3,1fr)}}
 /* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive
    stands on the yellow. */
@@ -1101,6 +1107,7 @@ body.show-grid .grid-overlay{display:block}
   .numbers.by-kind{grid-template-columns:repeat(2,minmax(0,1fr))}
   .opening-img{aspect-ratio:3/2}  /* 3:2 on phones so the core line sits in the first screen (4:5 pushed it below) */
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}
+  .cycle-arrows{display:none}
   .grid-2{gap:32px}
   .split{gap:24px}
   .contact-box{margin-top:0}

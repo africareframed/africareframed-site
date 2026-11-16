@@ -1195,7 +1195,7 @@ HOME_PARTNERSHIPS = [   # the label, the role, its text, its way on (label, addr
     ("By sharing", "Use it", "NGOs, media, educational and public institutions use the images in their own reports, campaigns and classrooms.",
      ("Use the images", "#use")),
     ("By production", "Build it", "A company or another partner makes a new collection possible and is named on it. Every partner can then use it.",
-     ("Build a collection", "#sponsor")),
+     ("Build a collection", "#build")),
 ]
 # The principles' own sentence and its detail, on About since 13 November 2026 (they stood on Home beside Principles).
 PRINCIPLES_LINE = "Behind every image and every collaboration."
@@ -1267,6 +1267,28 @@ PLACES = [  # collection page 5: places and series (Keywording Guide 9, 11b; the
     ("Kenya", "Nairobi: cafés, offices and campuses; tea fields and a farming village outside the city."),
     ("The Gambia", "Banjul: a culinary training, women in trades, small businesses and studio portraits. Series: Culinary training, Banjul · Women in trades, Banjul."),
 ]
+# Partnerships, rebuilt 16 November 2026 (Thomas, 18:59; the canvas' column of 18:45: one flow in six sections). Two ways
+# into the archive, Use it and Build it, whose shape is known in advance, and beside them what is shaped case by case:
+# workshops, exhibitions and other projects. Every line is a draft for Thomas (Website - copy, section 5). The texts are
+# made from what the site already says: SPONSOR_TEXT and the Waste to Value page's invitation (Build), About's chapters
+# (Make), the Partner portal (the working day). What a partner who builds gets beyond the archive is not promised here.
+PARTNERS_DOORS = [("#use", "By sharing", "Use it", "Partners take the pictures to their own audiences."),
+                  ("#build", "By production", "Build it", "A partner makes a new collection possible, and it joins the archive.")]
+PARTNERS_BESIDE = ("Beside the archive, we make workshops, exhibitions and other projects with partners.", "Make something with us")
+USE_COMPANY = "A company comes in by building a collection."
+BUILD_TEXT = [
+    "What partners use and ask for shows what to build next. A new collection starts with a partner and a theme: one close to the partner’s work, or one it wants to support, never its own operations.",
+    "We find the people and places that show it and work with photographers from the countries concerned. The partner is named on the collection, and the collection joins the archive, where every partner can use it.",
+    "One example of such work is the BESTSELLER FOUNDATION Waste to Value Collection, made for the foundation and the seven companies it shows.",
+]
+MAKE_LEAD = "Workshops, exhibitions and other projects, each shaped around what the partner has in mind."
+MAKE_ITEMS = [  # what was made, who it was made with, and where it is told in full (About)
+    ("A workshop", "Built with photography schools, photographers’ unions and press associations in Bamako, Freetown, Nairobi and Banjul.", "about/#workshops"),
+    ("An exhibition", "Africa Reframed at Øksnehallen, Copenhagen, 2016: produced with DGI-byen and supported by Danida and Augustinus Fonden.", "about/#exhibitions"),
+]
+MAKE_CONTACT = ("Tell us what you have in mind", "A workshop, an exhibition or a project of your own: a few lines are enough.")
+PARTNERS_STEPS = [("Request access", "To use the archive: a short form, answered within a working day."),
+                  ("Write to us", "To build a collection or make something with us: a few lines are enough.")]
 SPONSOR_TEXT = [  # Partners 4: sponsor a collection, in general terms (brief, Partners; engine brief)
     "We make new collections with companies and foundations as sponsors. The theme is close to the sponsor’s work, or one it wants to support, never its own operations.",
     "The sponsor is named on the collection’s page and the theme page, and gets the whole archive for its own channels, for good.",
@@ -2940,13 +2962,13 @@ def tpl_front(p, base, v):
 def tpl_index_themes(p, base):
     return (m_page_head(p["title"], THEMES_LEAD, statement_draft=True) + m_themes(base, "b")
             + m_text(THEMES_SOURCE[0], [THEMES_SOURCE[1]], "a",
-                     links=[button(base + "partners/#sponsor", "Sponsor a collection on your theme →", quiet=True)]))
+                     links=[button(base + "partners/#build", "Sponsor a collection on your theme →", quiet=True)]))
 
 
 def tpl_index_collections(p, base):
     return (m_page_head(p["title"], "Each collection is a body of work with its own story and the people behind it.", statement_draft=True)
             + m_collection(base, "b", title=False)
-            + m_doors("c", links=[button(base + "partners/#sponsor", "Sponsor a collection on your theme →", quiet=True)], tight=True, left=True))
+            + m_doors("c", links=[button(base + "partners/#build", "Sponsor a collection on your theme →", quiet=True)], tight=True, left=True))
 
 
 def tpl_theme(p, base):
@@ -3116,7 +3138,7 @@ COLLECTION_SECTIONS = {
     "words": lambda c, base: cs_quotes(c["words"], "In the founders’ words"),
     "sponsor": lambda c, base: m_sponsor("collection", sponsor=c["sponsor"]),
     "invite": lambda c, base: m_text(c["invite"]["title"], c["invite"]["text"], "c", contact=("Partnerships", EMAIL_PARTNERS), sid="your-theme",
-                                     links=[button(base + "partners/#sponsor", "How sponsoring a collection works →", quiet=True)]),
+                                     links=[button(base + "partners/#build", "How sponsoring a collection works →", quiet=True)]),
     "places": lambda c, base: m_items("Three countries, three cities", [(k, t, f"Image from {k}") for k, t in PLACES], "d", credit=c.get("credit")),
     "feature": lambda c, base: m_photo("A photograph from the collection, full bleed", "21/9", "a", credit=c.get("credit")),
     # (13 November 2026) Home routes its readers here to explore the themes (Thomas, 10:06), so the themes stand as cards with
@@ -3174,23 +3196,36 @@ def tpl_partners(p, base):
     # 14 November 2026 (Thomas, 08:39): under the doors stand the eight supporters from About, as a ruled grid. For an hour
     # each door also carried a photograph from the archive; Thomas took them off at 09:01 (see door()). The page may get a
     # header photograph instead; that is still to look into.
-    doors = [door("#use", "Always free", "Use the images", "", dark=True),
-             door("#sponsor", "By collection", "Sponsor a collection", ""),
-             door("#craft", "On commission", "Craft a collection", "")]
-    # 1 the two doors; 2 how access works; 3 using the images; 4 sponsor a collection; 5 who already uses the archive; 6 request access, contact.
-    return (m_page_head(p["title"], PARTNERS_STATEMENT,
-                        statement_draft=True, doors=m_doors("a", doors=doors))
-            + m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base)
-            + m_text("How access works", [ACCESS_WHO], "a", is_draft=False, sid="use")
+    # 16 November 2026, 19:00 (Thomas, 18:59): rebuilt from the canvas' column, one flow in six sections. 1 the archive,
+    # shared: the two ways as two panels with an arrow each way between them, and under them one line for what is made
+    # beside the archive; 2 use the images; 3 build a collection; 4 make something with us, as short parts that refer to
+    # About; 5 the supporters, the proof for 3 and 4; 6 the step. Gone from the page: the third door and Craft a collection
+    # (photographers and other creators are received elsewhere, still to settle), and the rules for using the images,
+    # which live on the Partner portal (one home for each thing). The page before this stands in the history at f051962.
+    doors = [door(h, k, t, l, dark=(n == 0)) for n, (h, k, t, l) in enumerate(PARTNERS_DOORS)]
+    cycle = (f'<div class="door-panels cycle">{doors[0]}<span class="cycle-arrows" aria-hidden="true"><span>→</span><span>←</span></span>{doors[1]}</div>'
+             f'<div class="cols cycle-beside"><div class="c7-12 c-offset">{draft(PARTNERS_BESIDE[0])}<p class="doors">{way_on("#make", PARTNERS_BESIDE[1])}</p></div></div>')
+    def part(x):
+        pic = (f'<a class="frame part-photo" href="{base}{x[2]}"><img src="{base}{HOME_DOCUMENT["file"]}-1280.jpg" alt="{e(HOME_DOCUMENT["alt"])}" width="1280" height="720" loading="lazy" decoding="async"></a>'
+               if x[0] == "A workshop" else
+               f'<a class="part-photo" href="{base}{x[2]}">{frame("Africa Reframed at Øksnehallen, 2016: a photograph to choose", "3/2", role="half", own=False, cap=False)}</a>')
+        # each photograph is a link to the chapter on About where it is shown in full, with its credit (rule 15)
+        return (x[0], x[1], None, dict(href=base + x[2], image=pic))
+    use_links = [button(base + "request-access/", "Request access", quiet=True),
+                 button(base + "partner-portal/#rights", "What the licence covers →", quiet=True)]
+    step_doors = [door(base + "request-access/", "", PARTNERS_STEPS[0][0], PARTNERS_STEPS[0][1], dark=True),
+                  door("mailto:" + EMAIL_PARTNERS, "", PARTNERS_STEPS[1][0], PARTNERS_STEPS[1][1])]
+    return (m_page_head(p["title"], PARTNERS_STATEMENT, statement_draft=True, doors=mod("doors", "a, the two ways with an arrow each way", cycle))
+            + m_text("Use the images", [ACCESS_WHO], "a", is_draft=False, sid="use")
             + m_items(None, ACCESS_STEPS, "b", tight=True)
-            + m_doors("c", links=[button(base + "request-access/", "Request access", quiet=True)], tight=True)
-            + m_items("The rules for using the images", RULES, "c", lead=draft("The rules in plain language. The legal text is Terms on the archive.", "p", "small"), sid="using-the-images")
-            + m_text("Sponsor a collection", SPONSOR_TEXT, "c", contact=("Partnerships", EMAIL_PARTNERS), sid="sponsor",
+            + mod("doors", "c, the ways on", f'<div class="cols"><div class="c7-12 c-offset"><p class="doors">{"".join(use_links)}</p>{draft(USE_COMPANY, "p", "small")}</div></div>', tight=True)
+            + m_text("Build a collection", BUILD_TEXT, "c", contact=("Talk to us about a collection", EMAIL_PARTNERS), sid="build",
                      links=[button(base + "collections/waste-to-value/", "See the Waste to Value Collection →", quiet=True)])
-            + m_text("Craft a collection", CRAFT_TEXT, "c", sid="craft",
-                     links=[button(base + "about/#network", "The African Photography Network →", quiet=True)])
-            # 5 who already uses the archive: partners by name and examples of use, once there are any (rule 27). The counts by
-            # type and by country are not in the page priorities and are out (Thomas, 11 November 2026).
+            + m_items("Make something with us", [part(x) for x in MAKE_ITEMS], "d", lead=draft(MAKE_LEAD), sid="make", cols=2, credit=False)
+            + m_doors("d", kicker=MAKE_CONTACT[0], address=EMAIL_PARTNERS, line=MAKE_CONTACT[1], tight=True)
+            + m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base)
+            + m_doors("a", doors=step_doors, sid="step")
+            # who already uses the archive: partners by name and examples of use, once there are any (rule 27).
             + m_partners(10, "Partners by name") + m_use("b", "In use", tight=True))
 
 
@@ -3316,7 +3351,7 @@ def tpl_form(p, base):
               ("use", "How you will use the images", dict(kind="textarea", required=True)),
               ("looking_for", "What imagery you are looking for", dict(kind="textarea"))]
     aside = heading("What happens next", 3) + '<ol class="next-steps">' + "".join(f"<li><strong>{e(a)}</strong> <span class=\"draft\">{e(b)}</span></li>" for a, b in REQUEST_NEXT) + "</ol>" + draft(REQUEST_FOOT, "p", "small")
-    after = f'<p class="small">Read <a href="{base}partners/#using-the-images">the rules for using the images</a> first.</p>'
+    after = f'<p class="small">Read <a href="{base}partner-portal/#rights">what the licence covers</a> first.</p>'
     form = intake_form("request", "Request access", fields, "Send the request",
                        "Your request is with us. We read every request ourselves, and you have our answer within a working day.",
                        checks=[("colleague", "I am asking for a colleague at an organisation that is already a partner."), ("consent", REQUEST_CONSENT)])
@@ -3685,7 +3720,7 @@ PAGES = [
          collection=WTV_COLLECTION,
          desc="Seven young companies in Kenya, Uganda and Rwanda turning waste into fuel, building materials, packaging and services, photographed for BESTSELLER FOUNDATION."),
     dict(path="partners/", title="Partnerships", slug="partners", tpl="partners", nav="partners",
-         desc="How organisations use the Africa Reframed archive, the rules for using the images, and how companies sponsor a collection."),
+         desc="How organisations take part in Africa Reframed: using the archive, building a collection, or making a workshop or an exhibition together."),
     dict(path="partner-portal/", title="Partner portal", slug="portal", tpl="portal", nav="portal",
          desc="Log in to the Africa Reframed archive, report a use, request imagery and see what is new for partners."),
     dict(path="request-access/", title="Request access", slug="request", tpl="form", nav=None,
@@ -4999,6 +5034,12 @@ span.chip{border:0;padding:0 16px 0 0;min-height:0}   /* not a link, so not a co
   .theme-pair{grid-template-columns:1fr;gap:24px}
 }
 .door-panels{display:grid;grid-template-columns:1fr 1fr;gap:var(--gutter);margin-top:32px}
+/* Partnerships, 16 November 2026: the two ways as two panels with an arrow each way in the gutter between them; under
+   them, on the right half, one line for what is made beside the archive. */
+.door-panels.cycle{position:relative}
+.cycle-arrows{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:var(--fs-text);line-height:1}
+.cycle-beside{margin-top:32px}.cycle-beside p{margin:0}.cycle-beside .doors{margin:8px 0 0}
+.part-photo{display:block}.part-photo img{display:block;width:100%;height:auto;aspect-ratio:3 / 2;object-fit:cover}
 @media (min-width:768px){.door-panels.three{grid-template-columns:repeat(3,1fr)}}
 /* The doors: two lines of type under a rule, the largest thing on their page; no box (rule 6). The door into the archive
    stands on the yellow. */
@@ -5256,6 +5297,7 @@ body.show-grid .grid-overlay{display:block}
   .numbers.by-kind{grid-template-columns:repeat(2,minmax(0,1fr))}
   .opening-img{aspect-ratio:3/2}  /* 3:2 on phones so the core line sits in the first screen (4:5 pushed it below) */
   .grid-2,.split,.door-panels,.steps,.theme-nav,.cards-2,.cards-3{grid-template-columns:1fr}
+  .cycle-arrows{display:none}
   .grid-2{gap:32px}
   .split{gap:24px}
   .contact-box{margin-top:0}

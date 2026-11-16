@@ -66,7 +66,7 @@ EMAIL_MAIN, EMAIL_PRESS, EMAIL_PARTNERS = ("hello@africareframed.com", "press@af
 # empty, or when the script cannot be reached, the form offers the same text as an email, so nothing is lost.
 # Nothing is asked of Google before the reader presses Send (Quality rules, rule 28).
 # ---------------------------------------------------------------------------------------------
-INTAKE_URL = ""
+INTAKE_URL = "https://script.google.com/macros/s/AKfycbzO0N9cHGMHVPJEbiD81bvHEJONVnKIFZ_JSMRQHqpHAqWjDYDyIl5ypry-gmZZ3yLe/exec"   # the web app, deployed 16 November 2026, 11:52 (version 1)
 INTAKE_KEY = "ar-intake-2026"   # not a secret: it tells our own forms from stray posts
 ORG_TYPES = ["NGO", "Media", "Educational institution", "Embassy or ministry", "Development finance institution", "Company", "Other"]
 MESSAGE_KINDS = [("made", "Show us what you made"), ("missing", "Tell us what is missing"), ("feedback", "Feedback"),

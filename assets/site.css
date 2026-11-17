@@ -385,12 +385,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .cut-narrow{display:none}
 /* Home's first section on the plain pale ground: the photograph, then the line and its text block as one statement. */
 .mod.premise{background:var(--wash)}
-/* Home, opening with words (on trial at /dev/home-text/, 17 November 2026): the line across the whole width, the archive on warm grey */
-.opening.words-only{padding-top:64px;padding-bottom:0}
-.opening.words-only h1{font-size:var(--fs-display);line-height:1;letter-spacing:-.005em;margin:0;max-width:none}
-.opening.words-only .opening-words{padding-top:0}
-.mod.warm{background:#eeebe5;margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
-.mod.supported-plain.under-partners{margin-top:var(--section-head)}
+/* Home with the two cards in the archive (on trial at /dev/home-text/, 17 November 2026, 22:02) */
+.archive-cards{margin-top:var(--section-head)}
 
 #intro.premise{padding-bottom:var(--section)}
 #intro{padding-top:var(--section-tight)}

@@ -2410,26 +2410,21 @@ def tpl_home(p, base, record="square", supporters="white"):
 
 
 def tpl_home_text(p, base):
-    # Home in a quieter tone, on trial at /dev/home-text/ (Thomas, 17 November 2026, 14:15): the site does not sell, so the
-    # page opens with words, not a photograph, and the two cards (Use it, Build it) go: they were too much of a call to
-    # action. Partnerships keeps its text and its way on to the Partnerships page; in place of the cards stand who has
-    # supported the work, and under them the workshop photograph. Grounds: the opening on white, the line as wide as the
-    # menu; the archive on warm grey; Partnerships, the supporters and the photograph on white. No new wording.
-    title, line, detail = HOME_CHAPTERS["partnerships"]
-    opening = mod("opening", "the words alone, as wide as the menu",
-                  f'<div class="cols"><div class="opening-words c1-12"><h1>{e(limit("headline", HOME_LINE))}</h1></div></div>',
-                  cls="opening words-only")
-    intro = nb(m_text(None, INTRO_HOME, "d", sid="intro", links=[way_on(base + "about/", "About Africa Reframed")])
-               .replace('<div class="c1-8">', '<div class="c7-12">', 1))
-    archive = front_archive_square(base).replace('<section class="mod ', '<section class="mod warm ', 1)
-    partners = mod("items", "Partnerships, the text and its way on, without the cards",
-                   f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
-                   f'<div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}'
-                   f'<p class="doors">{way_on(base + "partners/", "How partners take part")}</p></div></div>',
-                   sid="partnerships", cls="quiet-partners")
-    supported = m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base, plain=True, ground="white", link=base + "partners/#supported")
-    supported = supported.replace('class="mod mod-partners supported-plain clean', 'class="mod mod-partners supported-plain clean under-partners', 1)
-    return opening + intro + archive + partners + supported + m_document(base, HOME_DOCUMENT)
+    # Home with the two cards in the archive's part, on trial at /dev/home-text/ (Thomas, 17 November 2026, 22:02): the
+    # page opening with words did not work, so Home is as it was, except that the two cards (Use it, Build it) stand right
+    # after the square of keywords, where the reader has just seen what the archive holds. Partnerships keeps its text,
+    # its way on and the workshop photograph on the pale ground. No new wording.
+    page = tpl_home(p, base)
+    part = home_partnerships(base)
+    k = part.index('<ul class="panels'); m = part.index('</ul>', k) + len('</ul>')
+    n = part.index('<script>', m); q = part.index('</script>', n) + len('</script>')
+    cards, flip = part[k:m], part[n:q]
+    assert page.count(part) == 1
+    page = page.replace(part, part[:k] + part[m:n] + part[q:], 1)
+    square = front_archive_square(base)
+    assert page.count(square) == 1
+    return page.replace(square, square.replace('</div></section>', f'<div class="archive-cards">{cards}</div>{flip}</div></section>', 1)
+                        if square.endswith('</div></section>') else square, 1)
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -4771,12 +4766,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .cut-narrow{display:none}
 /* Home's first section on the plain pale ground: the photograph, then the line and its text block as one statement. */
 .mod.premise{background:var(--wash)}
-/* Home, opening with words (on trial at /dev/home-text/, 17 November 2026): the line across the whole width, the archive on warm grey */
-.opening.words-only{padding-top:64px;padding-bottom:0}
-.opening.words-only h1{font-size:var(--fs-display);line-height:1;letter-spacing:-.005em;margin:0;max-width:none}
-.opening.words-only .opening-words{padding-top:0}
-.mod.warm{background:#eeebe5;margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
-.mod.supported-plain.under-partners{margin-top:var(--section-head)}
+/* Home with the two cards in the archive (on trial at /dev/home-text/, 17 November 2026, 22:02) */
+.archive-cards{margin-top:var(--section-head)}
 
 #intro.premise{padding-bottom:var(--section)}
 #intro{padding-top:var(--section-tight)}
@@ -5689,8 +5680,8 @@ def build():
         CUR.update(slug=None, n=0)
         (dev_dir / "home-field").mkdir(exist_ok=True)
         (dev_dir / "home-field" / "index.html").write_text(render(hmf, tpl_home(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../", record="field"), "../../"))
-        hmx = dict(path="dev/home-text/", title="Home, opening with words, on trial", slug=None, tpl="front", nav=None,
-                   desc="A copy of Home that opens with words, without the two cards, on trial; generated by the build, removed at launch.")
+        hmx = dict(path="dev/home-text/", title="Home, with the two cards in the archive, on trial", slug=None, tpl="front", nav=None,
+                   desc="A copy of Home with the two cards after the square of keywords, on trial; generated by the build, removed at launch.")
         CUR.update(slug=None, n=0)
         (dev_dir / "home-text").mkdir(exist_ok=True)
         (dev_dir / "home-text" / "index.html").write_text(render(hmx, tpl_home_text(dict(path="", title="Africa Reframed", slug="home", tpl="home", nav=None), "../../"), "../../"))

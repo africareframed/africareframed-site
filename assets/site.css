@@ -387,6 +387,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mod.premise{background:var(--wash)}
 /* Home with the two cards in the archive (on trial at /dev/home-text/, 17 November 2026, 22:02) */
 .archive-cards{margin-top:var(--section-head)}
+.archive-cards.grey .panels.sun.flips .flip{background:var(--wash)}   /* the cards on the pale warm grey (on trial at /dev/home-grey/, 17 November 2026, 22:38) */
 
 #intro.premise{padding-bottom:var(--section)}
 #intro{padding-top:var(--section-tight)}

@@ -2419,6 +2419,9 @@ def tpl_home_text(p, base):
     k = part.index('<ul class="panels'); m = part.index('</ul>', k) + len('</ul>')
     n = part.index('<script>', m); q = part.index('</script>', n) + len('</script>')
     cards, flip = part[k:m], part[n:q]
+    # 22:11 (Thomas): the small text on the cards becomes "Take part by sharing" and "Take part by production". Draft.
+    for terms in ("By sharing", "By production"):
+        cards = cards.replace(f'<p class="kicker">{terms}</p>', f'<p class="kicker"><span class="draft">Take part {terms[3:]}</span></p>')
     assert page.count(part) == 1
     page = page.replace(part, part[:k] + part[m:n] + part[q:], 1)
     square = front_archive_square(base)

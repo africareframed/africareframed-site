@@ -2479,8 +2479,10 @@ def tpl_home_next(p, base):
     # one white section: who has supported the work, then the workshop photograph. The bold line across the whole width.
     # The stripes on the opening photograph move with the scroll, as on /dev/home-motion/. No new wording.
     title, line, detail = HOME_CHAPTERS["partnerships"]
-    opening = premise(m_opening(HOME_LINE, base=base)).replace('opening-words c1-9', 'opening-words c1-12 wide-line', 1)
-    intro = on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[way_on(base + "about/", "About Africa Reframed")]))
+    # The first section on white (not the pale ground), so that the page runs white, warm grey, white, and two greys
+    # never stand side by side.
+    opening = m_opening(HOME_LINE, base=base).replace('opening-words c1-9', 'opening-words c1-12 wide-line', 1)
+    intro = on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[way_on(base + "about/", "About Africa Reframed")])).replace('<section class="mod premise ', '<section class="mod ', 1)
     trial = tpl_home_text(p, base)                    # for the cards with "Archive" on its own row, and their flip script
     k = trial.index('<div class="archive-cards">'); q = trial.index('</script>', k) + len('</script>')
     cards = trial[k:q]

@@ -2523,8 +2523,8 @@ HOME_NEXT_PARTNERS_0900 = ("Partnerships", "Collaboration between Africa and the
                       "The archive, the exhibitions and the workshops are made with partners from all of them: public institutions, foundations, media, cultural organisations and civil society.")
 # 09:31 (Thomas): every partnership builds something specific, partners from very different sectors find a reason of their
 # own to take part, and the text should be a little more inspiring while staying grounded and quiet. Draft (R1 of three).
-# 09:38 (Thomas's own wording, from R2 and R3).
-HOME_NEXT_PARTNERS = ("Partnerships", "Partnerships across sectors, one piece of work at a time.",
+# 09:38 (Thomas's own wording, from R2 and R3); the lead changed at 12:42 (Thomas chose version 3 of three).
+HOME_NEXT_PARTNERS = ("Partnerships", "Across sectors and formats, one piece of work at a time.",
                       "Public institutions, foundations, media and cultural organisations, in Africa and in the Nordic countries, have each found a reason to take part.")
 # The small line under "Our work has been supported by" that invites the reader to turn the cards (09:31). Draft.
 HOME_NEXT_HINT = "Turn a card to see what each one made possible."

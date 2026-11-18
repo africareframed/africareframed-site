@@ -2477,7 +2477,7 @@ def tpl_home_next(p, base):
     # about the archive: the square of keywords, then the small text on collaboration across sectors with its way on, then
     # the two cards (Archive / Take part by sharing, Archive / Take part by production). That section on warm grey. Then
     # one white section: who has supported the work, then the workshop photograph. The bold line across the whole width.
-    # The stripes on the opening photograph move with the scroll, as on /dev/home-motion/. No new wording.
+    # The stripes on the opening photograph stand still (the motion was tried and dropped, 18 November 2026, 07:54). No new wording.
     title, line, detail = HOME_CHAPTERS["partnerships"]
     # The first section on white (not the pale ground), so that the page runs white, warm grey, white, and two greys
     # never stand side by side.
@@ -2498,7 +2498,7 @@ def tpl_home_next(p, base):
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            + supported + m_document(base, HOME_DOCUMENT) + STRIPES_ON_SCROLL)
+            + supported + m_document(base, HOME_DOCUMENT))   # the stripes stand still again (Thomas, 18 November 2026, 07:54)
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page

@@ -2471,34 +2471,45 @@ def tpl_home_motion(p, base):
     return tpl_home(p, base) + STRIPES_ON_SCROLL
 
 
+# Home in one archive section, the texts of 18 November 2026 (Thomas, 08:43: "go ahead with your recommended versions";
+# Website – copy, third round, B1 and Q1). Drafts.
+HOME_NEXT_ARCHIVE = ("The archive is shared by its partners.",
+                     "Organisations use the photographs in their own work. When a partner makes a new collection possible, it is added to the archive for all partners to use.")
+HOME_NEXT_PARTNERS = ("Partnerships", "Collaboration between Africa and the Nordic countries involves many sectors.",
+                      "The archive, the exhibitions and the workshops are made with partners from all of them: public institutions, foundations, media and civil society.")
+
+
 def tpl_home_next(p, base):
-    # Home in one archive section, on trial at /dev/home-next/ (Thomas, 18 November 2026, 07:41). The page had two chapter
-    # titles, The archive and Partnerships; Partnerships' title goes, and its text joins the archive, so the section is all
-    # about the archive: the square of keywords, then the small text on collaboration across sectors with its way on, then
-    # the two cards (Archive / Take part by sharing, Archive / Take part by production). That section on warm grey. Then
-    # one white section: who has supported the work, then the workshop photograph. The bold line across the whole width.
-    # The stripes on the opening photograph stand still (the motion was tried and dropped, 18 November 2026, 07:54). No new wording.
-    title, line, detail = HOME_CHAPTERS["partnerships"]
-    # The first section on white (not the pale ground), so that the page runs white, warm grey, white, and two greys
-    # never stand side by side.
+    # Home in one archive section, on trial at /dev/home-next/ (Thomas, 18 November 2026, 07:41 and 08:37). The archive
+    # section, on warm grey: the square of keywords, then a short text on how the archive is shared, with its way on, then
+    # the two cards (Archive / Take part by sharing, Archive / Take part by production): all about the archive. Then a
+    # white Partnerships section on partnership in general: its title, a short text and a way on, then the supporters as
+    # the flip cards of the Partnerships page, each turning to say what it supported. Then the workshop photograph, on
+    # white. The bold line across the whole width; the first section on white, so that the page runs white, warm grey,
+    # white. The stripes on the opening photograph stand still (the motion was tried and dropped, 07:54).
     opening = m_opening(HOME_LINE, base=base).replace('opening-words c1-9', 'opening-words c1-12 wide-line', 1)
     intro = on_the_line(m_text(None, INTRO_HOME, "d", sid="intro", links=[way_on(base + "about/", "About Africa Reframed")])).replace('<section class="mod premise ', '<section class="mod ', 1)
     trial = tpl_home_text(p, base)                    # for the cards with "Archive" on its own row, and their flip script
     k = trial.index('<div class="archive-cards">'); q = trial.index('</script>', k) + len('</script>')
     cards = trial[k:q]
+    line, detail = HOME_NEXT_ARCHIVE
     words = (f'<div class="archive-partners cols"><div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}'
              f'<p class="doors">{way_on(base + "partners/", "How partners take part")}</p></div></div>')
     square = front_archive_square(base)
     assert square.endswith('</div></section>')
     archive = square[:-len('</div></section>')] + words + cards + '</div></section>'
     archive = archive.replace('<section class="mod ', '<section class="mod warm ', 1)
-    supported = m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base, plain=True, ground="white", link=base + "partners/#supported")
-    supported = supported.replace('class="mod mod-partners supported-plain clean', 'class="mod mod-partners supported-plain clean first-white', 1)
+    title, pline, pdetail = HOME_NEXT_PARTNERS
+    head = (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
+            f'<div class="c7-12">{draft(pline, "p", "lead")}{draft(pdetail)}'
+            f'<p class="doors">{way_on(base + "partners/", "More about partnerships")}</p></div></div>')
+    partners = mod("items", "Partnerships, partnership in general", head, sid="partnerships", cls="first-white")
+    supported = m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base)     # the flip cards, as on the Partnerships page
     return (opening + intro + archive
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            + supported + m_document(base, HOME_DOCUMENT))   # the stripes stand still again (Thomas, 18 November 2026, 07:54)
+            + partners + supported + m_document(base, HOME_DOCUMENT))
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -4846,7 +4857,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .opening-words.wide-line h1{max-width:none}
 .archive-partners{margin-top:var(--section)}
 .mod.warm{background:#eeebe5;margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
-.mod.supported-plain.first-white{margin-top:var(--section)}
+.mod.first-white{margin-top:var(--section)}
 .archive-cards.grey .panels.sun.flips .flip{background:var(--wash)}   /* the cards on the pale warm grey (on trial at /dev/home-grey/, 17 November 2026, 22:38) */
 
 #intro.premise{padding-bottom:var(--section)}

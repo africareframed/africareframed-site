@@ -2518,7 +2518,12 @@ def linked_supporters(grid, base):
 HOME_NEXT_ARCHIVE = ("The archive is shared by its partners.",
                      "Organisations use the photographs in their own work. When a partner makes a new collection possible, it is added to the archive for all partners to use.")
 HOME_NEXT_PARTNERS = ("Partnerships", "Collaboration between Africa and the Nordic countries involves many sectors.",
-                      "The archive, the exhibitions and the workshops are made with partners from all of them: public institutions, foundations, media and civil society.")
+                      # 09:16 (Thomas): name the kinds of partner, as the cards show them: a ministry and a national fund, two
+                      # foundations, a film institute, a broadcaster, a trade union agency and an arts collective in Nairobi.
+                      "The archive, the exhibitions and the workshops are made with partners from all of them: public institutions, foundations, media, cultural organisations and civil society.")
+# The quiet line under the supporters: the door to a conversation about a project of one's own (Thomas, 09:16). It leads
+# to Make something with us on the Partnerships page, where that form stands. Centred, since it ends the page's text. Draft.
+HOME_NEXT_DOOR = ("Talk to us about a project", "partners/#make")
 
 
 def tpl_home_next(p, base):
@@ -2551,7 +2556,9 @@ def tpl_home_next(p, base):
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
             + m_partners(title=None, tight=True) + m_use("a", title=None, tight=True)
-            + partners + supported + m_document(base, HOME_DOCUMENT))
+            + partners + supported
+            + mod("doors", "the quiet line to a project of one's own", f'<p class="quiet-door">{way_on(base + HOME_NEXT_DOOR[1], HOME_NEXT_DOOR[0])}</p>', cls="quiet-door-mod")
+            + m_document(base, HOME_DOCUMENT))
 
 
 def tpl_home_cards(p, base):   # Home as it stood until 12 November 2026, 13:45: kept for the collection card's test page
@@ -4901,8 +4908,10 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .opening-words.wide-line h1{max-width:none}
 .archive-partners{margin-top:var(--section)}
 .mod.warm{background:#eeebe5;margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
-.mod.first-white{margin-top:var(--section)}
-.mod.under-head{margin-top:0;padding-top:48px}   /* the supporters right under Partnerships' text, as one part (Thomas, 18 November 2026, 08:56) */
+.mod.first-white{margin-top:0}   /* one section's distance after the grey, not two */
+.mod.quiet-door-mod{margin-top:0;padding-top:48px}
+.mod.under-head{margin-top:0;padding-top:0}   /* the supporters right under Partnerships' text, as one part (Thomas, 18 November 2026, 08:56) */
+.mod.quiet-door-mod .quiet-door{text-align:center;margin:0 auto;max-width:none}   /* centred under the grid, since it ends the page's text */
 .archive-cards.grey .panels.sun.flips .flip{background:var(--wash)}   /* the cards on the pale warm grey (on trial at /dev/home-grey/, 17 November 2026, 22:38) */
 
 #intro.premise{padding-bottom:var(--section)}

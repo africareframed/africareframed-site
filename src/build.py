@@ -2471,6 +2471,44 @@ def tpl_home_motion(p, base):
     return tpl_home(p, base) + STRIPES_ON_SCROLL
 
 
+# Where each supporter's card leads on Home (on trial at /dev/home-next/; Thomas, 18 November 2026, 08:56): to the part of
+# About, or the collection, that shows what it supported. Innovation Fund Denmark leads nowhere: what it supported, the
+# online platform for collaboration and learning, is not laid out on the site, and the investment of 2020 must never be
+# read as backing today's model. A supporter of two things goes to the first its line names.
+SUPPORTER_LINKS = {
+    "Ministry of Foreign Affairs of Denmark (Danida)": "about/#workshops",
+    "BESTSELLER FOUNDATION": "collections/waste-to-value/",
+    "Augustinus Fonden": "about/#exhibitions",
+    "Al Jazeera": "about/#exhibitions",
+    "Danish Film Institute": "about/#exhibitions",
+    "DTDA, the Danish Trade Union Development Agency": "about/#workshops",
+    "PAWA254": "about/#workshops",
+}
+
+
+def linked_supporters(grid, base):
+    """The supporters' cells on Home as links: pointing shows what each supported, as on Partners, and a click goes there.
+    On a touch screen the first tap turns the card and a second follows the link. A cell with no link stays a button."""
+    for x in SUPPORTERS:
+        href = SUPPORTER_LINKS.get(x["name"])
+        if not href:
+            continue
+        cell = grid.index(f'alt="{e(x["name"])}"')
+        start = grid.rindex('<li><button type="button" aria-expanded="false">', 0, cell)
+        end = grid.index('</button></li>', cell)
+        inner = grid[start + len('<li><button type="button" aria-expanded="false">'):end]
+        inner = inner.replace('</span></span><span class="plus"', '<span class="arr" aria-hidden="true">→</span></span></span><span class="plus"', 1)
+        grid = grid[:start] + f'<li><a class="logo-link" href="{base}{href}" aria-expanded="false">' + inner + '</a></li>' + grid[end + len('</button></li>'):]
+    old_js = "var bs=[].slice.call(g.querySelectorAll('button'));"
+    assert old_js in grid
+    grid = grid.replace(old_js, "var bs=[].slice.call(g.querySelectorAll('button,a.logo-link'));", 1)
+    grid = grid.replace("bs.forEach(function(b){b.addEventListener('click',function(){",
+                        "bs.forEach(function(b){b.addEventListener('click',function(ev){", 1)
+    grid = grid.replace("var o=!b.classList.contains('open');",
+                        "var o=!b.classList.contains('open');if(b.tagName==='A'){if(!o)return;ev.preventDefault();}", 1)
+    return grid
+
+
 # Home in one archive section, the texts of 18 November 2026 (Thomas, 08:43: "go ahead with your recommended versions";
 # Website – copy, third round, B1 and Q1). Drafts.
 HOME_NEXT_ARCHIVE = ("The archive is shared by its partners.",
@@ -2501,10 +2539,9 @@ def tpl_home_next(p, base):
     archive = archive.replace('<section class="mod ', '<section class="mod warm ', 1)
     title, pline, pdetail = HOME_NEXT_PARTNERS
     head = (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
-            f'<div class="c7-12">{draft(pline, "p", "lead")}{draft(pdetail)}'
-            f'<p class="doors">{way_on(base + "partners/", "More about partnerships")}</p></div></div>')
+            f'<div class="c7-12">{draft(pline, "p", "lead")}{draft(pdetail)}</div></div>')   # no link: the logos explain (Thomas, 08:56)
     partners = mod("items", "Partnerships, partnership in general", head, sid="partnerships", cls="first-white")
-    supported = m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base)     # the flip cards, as on the Partnerships page
+    supported = linked_supporters(m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base), base)   # the flip cards, each turning to what it supported, and leading there
     supported = supported.replace('<section class="mod ', '<section class="mod under-head ', 1)   # it stands under Partnerships' text, not a section away
     return (opening + intro + archive
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
@@ -4687,7 +4724,7 @@ body.clean .mod::before{display:none}
 .sector-switch:not(.switching) .sector-tabs{display:none}
 .reg-names li{display:flex;align-items:center;min-height:96px;padding:16px 0;font-size:var(--fs-head);font-weight:600;line-height:1.15;letter-spacing:.013em}
 .logo-grid{margin-top:32px;border-top:1px solid var(--line)}
-.logo-grid button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;min-height:192px;
+.logo-grid button,.logo-grid a.logo-link{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;min-height:192px;
   padding:32px 24px;font:inherit;color:var(--ink);background:none;border:0;border-radius:0;cursor:default;text-align:center}
 .logo-grid img{display:block;max-width:100%;height:auto}   /* the files are one-tone themselves since 14 November 2026, 22:52: no filter */
 .logo-grid.plain .logo-cell{display:flex;align-items:center;justify-content:center;min-height:144px;padding:24px}   /* the boxes without their second side: lower, since no text has to fit */
@@ -4707,33 +4744,35 @@ body.clean .mod::before{display:none}
    reader points at the cell or taps it, and a plus in the corner says that there is more. A cut, never a fade. */
 .logo-what{display:block;font-size:var(--fs-small);line-height:1.45;color:var(--ink-soft)}
 .logo-what strong{display:block;color:var(--ink)}
+.logo-link{text-decoration:none}
+.logo-link .logo-what .arr{margin-left:4px}
 .logo-grid .plus{display:none;position:absolute;top:16px;right:0;width:12px;height:12px}
 .logo-grid .plus::before,.logo-grid .plus::after{content:"";position:absolute;background:var(--ink);left:0;top:5px;width:12px;height:2px}
 .logo-grid .plus::after{transform:rotate(90deg)}
-.logo-grid.reveals button{cursor:pointer}
+.logo-grid.reveals button,.logo-grid.reveals a.logo-link{cursor:pointer}
 .logo-grid.reveals .plus{display:block}
 .logo-grid.reveals .logo-what{display:none;font-size:var(--fs-text);line-height:1.45;color:var(--ink)}
 .logo-grid.reveals .logo-what strong{font-weight:600;margin:0 0 4px}
-.logo-grid.reveals button.open,.logo-grid.reveals button:focus-visible{align-items:flex-start;text-align:left;padding-left:0;padding-right:16px}
-.logo-grid.reveals button.open img,.logo-grid.reveals button:focus-visible img{display:none}
-.logo-grid.reveals button.open .logo-what,.logo-grid.reveals button:focus-visible .logo-what{display:block}
-.logo-grid.reveals button.open .plus::after{display:none}
+.logo-grid.reveals button.open,.logo-grid.reveals button:focus-visible,.logo-grid.reveals a.logo-link.open,.logo-grid.reveals a.logo-link:focus-visible{align-items:flex-start;text-align:left;padding-left:0;padding-right:16px}
+.logo-grid.reveals button.open img,.logo-grid.reveals button:focus-visible img,.logo-grid.reveals a.logo-link.open img,.logo-grid.reveals a.logo-link:focus-visible img{display:none}
+.logo-grid.reveals button.open .logo-what,.logo-grid.reveals button:focus-visible .logo-what,.logo-grid.reveals a.logo-link.open .logo-what,.logo-grid.reveals a.logo-link:focus-visible .logo-what{display:block}
+.logo-grid.reveals button.open .plus::after,.logo-grid.reveals a.logo-link.open .plus::after{display:none}
 @media (hover:hover){
-  .logo-grid.reveals button:hover{align-items:flex-start;text-align:left;padding-left:0;padding-right:16px}
-  .logo-grid.reveals button:hover img{display:none}
-  .logo-grid.reveals button:hover .logo-what{display:block}
-  .logo-grid.reveals button:hover .plus::after{display:none}
+  .logo-grid.reveals button:hover,  .logo-grid.reveals a.logo-link:hover{align-items:flex-start;text-align:left;padding-left:0;padding-right:16px}
+  .logo-grid.reveals button:hover img,  .logo-grid.reveals a.logo-link:hover img{display:none}
+  .logo-grid.reveals button:hover .logo-what,  .logo-grid.reveals a.logo-link:hover .logo-what{display:block}
+  .logo-grid.reveals button:hover .plus::after,  .logo-grid.reveals a.logo-link:hover .plus::after{display:none}
 }
 @media (max-width:1023px){
   .reg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .logo-grid button{min-height:160px}
+  .logo-grid button,  .logo-grid a.logo-link{min-height:160px}
   .theme-tabs.sector-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
   .theme-tabs.sector-tabs li{grid-column:auto}
 }
 @media (max-width:767px){
   .reg-names li{font-size:var(--fs-text);min-height:72px}
   .reg-nums{margin:16px 0 24px}
-  .logo-grid button{padding:24px 16px;min-height:176px}   /* high enough for the longest line, so a tap moves nothing */
+  .logo-grid button,  .logo-grid a.logo-link{padding:24px 16px;min-height:176px}   /* high enough for the longest line, so a tap moves nothing */
   .logo-grid.reveals .logo-what{font-size:var(--fs-small)}
   .theme-tabs.sector-tabs{grid-template-columns:1fr}
   .sector-tabs button{box-shadow:inset 0 1px 0 var(--ink-soft);padding:12px 0}

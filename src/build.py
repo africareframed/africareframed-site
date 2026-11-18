@@ -2505,6 +2505,7 @@ def tpl_home_next(p, base):
             f'<p class="doors">{way_on(base + "partners/", "More about partnerships")}</p></div></div>')
     partners = mod("items", "Partnerships, partnership in general", head, sid="partnerships", cls="first-white")
     supported = m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base)     # the flip cards, as on the Partnerships page
+    supported = supported.replace('<section class="mod ', '<section class="mod under-head ', 1)   # it stands under Partnerships' text, not a section away
     return (opening + intro + archive
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
                         note_text="The momentum numbers (Thomas, 8 November 2026): partners, and uses, one per download, each with its stated kind (PhotoDeck’s orders).")
@@ -4858,6 +4859,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .archive-partners{margin-top:var(--section)}
 .mod.warm{background:#eeebe5;margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
 .mod.first-white{margin-top:var(--section)}
+.mod.under-head{margin-top:var(--section-head)}
 .archive-cards.grey .panels.sun.flips .flip{background:var(--wash)}   /* the cards on the pale warm grey (on trial at /dev/home-grey/, 17 November 2026, 22:38) */
 
 #intro.premise{padding-bottom:var(--section)}

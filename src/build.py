@@ -2517,10 +2517,16 @@ def linked_supporters(grid, base):
 # Website – copy, third round, B1 and Q1). Drafts.
 HOME_NEXT_ARCHIVE = ("The archive is shared by its partners.",
                      "Organisations use the photographs in their own work. When a partner makes a new collection possible, it is added to the archive for all partners to use.")
-HOME_NEXT_PARTNERS = ("Partnerships", "Collaboration between Africa and the Nordic countries involves many sectors.",
+HOME_NEXT_PARTNERS_0900 = ("Partnerships", "Collaboration between Africa and the Nordic countries involves many sectors.",
                       # 09:16 (Thomas): name the kinds of partner, as the cards show them: a ministry and a national fund, two
                       # foundations, a film institute, a broadcaster, a trade union agency and an arts collective in Nairobi.
                       "The archive, the exhibitions and the workshops are made with partners from all of them: public institutions, foundations, media, cultural organisations and civil society.")
+# 09:31 (Thomas): every partnership builds something specific, partners from very different sectors find a reason of their
+# own to take part, and the text should be a little more inspiring while staying grounded and quiet. Draft (R1 of three).
+HOME_NEXT_PARTNERS = ("Partnerships", "Every partnership leads to something that can be seen.",
+                      "A workshop, an exhibition, a collection. Ministries and foundations, broadcasters and film institutes, trade unions and artists have each found a reason of their own to take part.")
+# The small line under "Our work has been supported by" that invites the reader to turn the cards (09:31). Draft.
+HOME_NEXT_HINT = "Turn a card to see what each one made possible."
 # The quiet line under the supporters: the door to a conversation about a project of one's own (Thomas, 09:16). It leads
 # to Make something with us on the Partnerships page, where that form stands. Centred, since it ends the page's text. Draft.
 HOME_NEXT_DOOR = ("Talk to us about a project", "partners/#make")
@@ -2540,8 +2546,11 @@ def tpl_home_next(p, base):
     k = trial.index('<div class="archive-cards">'); q = trial.index('</script>', k) + len('</script>')
     cards = trial[k:q]
     line, detail = HOME_NEXT_ARCHIVE
-    words = (f'<div class="archive-partners cols"><div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}'
-             f'<p class="doors">{way_on(base + "partners/", "How partners take part")}</p></div></div>')
+    # no link under it (Thomas, 09:31): the two cards right beneath carry the ways on
+    words = f'<div class="archive-partners cols"><div class="c7-12">{draft(line, "p", "lead")}{draft(detail)}</div></div>'
+    # the cards stay turned, their white side showing, and do not flip (Thomas, 09:26 and 09:31): the flip is kept for the
+    # supporters. Without its script the module shows the back of each card, as it does for a reader without scripts.
+    cards = cards[:cards.index('<script>')].replace('<div class="archive-cards">', '<div class="archive-cards open">', 1)
     square = front_archive_square(base)
     assert square.endswith('</div></section>')
     archive = square[:-len('</div></section>')] + words + cards + '</div></section>'
@@ -2550,7 +2559,9 @@ def tpl_home_next(p, base):
     head = (f'<div class="chapter-head cols"><div class="c1-4"><h2 class="chapter-title">{e(title)}</h2></div>'
             f'<div class="c7-12">{draft(pline, "p", "lead")}{draft(pdetail)}</div></div>')   # no link: the logos explain (Thomas, 08:56)
     partners = mod("items", "Partnerships, partnership in general", head, sid="partnerships", cls="first-white")
-    supported = linked_supporters(m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base), base)   # the flip cards, each turning to what it supported, and leading there
+    supported = linked_supporters(m_supporter_grid(SUPPORTERS, SUPPORTERS_TITLE, base), base)
+    t = supported.index('</h2>', supported.index('Our work has been supported by')) + len('</h2>')
+    supported = supported[:t] + f'<p class="grid-hint">{draft(HOME_NEXT_HINT, "span")}</p>' + supported[t:]   # the flip cards, each turning to what it supported, and leading there
     supported = supported.replace('<section class="mod ', '<section class="mod under-head ', 1)   # it stands under Partnerships' text, not a section away
     return (opening + intro + archive
             + m_numbers(MOMENTUM, "from the archive’s records; updated monthly", title="In use",
@@ -4910,6 +4921,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mod.warm{background:#eeebe5;margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
 .mod.first-white{margin-top:0}   /* one section's distance after the grey, not two */
 .mod.quiet-door-mod{margin-top:0;padding-top:48px}
+.archive-cards.open .panels .flip{background:var(--paper)}   /* the cards turned, white on the warm grey (18 November 2026, 09:31) */
+.grid-hint{margin:8px 0 0;font-size:var(--fs-small);color:var(--ink-soft)}
 .mod.under-head{margin-top:0;padding-top:0}   /* the supporters right under Partnerships' text, as one part (Thomas, 18 November 2026, 08:56) */
 .mod.quiet-door-mod .quiet-door{text-align:center;margin:0 auto;max-width:none}   /* centred under the grid, since it ends the page's text */
 .archive-cards.grey .panels.sun.flips .flip{background:var(--wash)}   /* the cards on the pale warm grey (on trial at /dev/home-grey/, 17 November 2026, 22:38) */

@@ -395,6 +395,8 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .mod.warm{background:#eeebe5;margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
 .mod.first-white{margin-top:0}   /* one section's distance after the grey, not two */
 .mod.quiet-door-mod{margin-top:0;padding-top:48px}
+.archive-cards.open .panels .flip{background:var(--paper)}   /* the cards turned, white on the warm grey (18 November 2026, 09:31) */
+.grid-hint{margin:8px 0 0;font-size:var(--fs-small);color:var(--ink-soft)}
 .mod.under-head{margin-top:0;padding-top:0}   /* the supporters right under Partnerships' text, as one part (Thomas, 18 November 2026, 08:56) */
 .mod.quiet-door-mod .quiet-door{text-align:center;margin:0 auto;max-width:none}   /* centred under the grid, since it ends the page's text */
 .archive-cards.grey .panels.sun.flips .flip{background:var(--wash)}   /* the cards on the pale warm grey (on trial at /dev/home-grey/, 17 November 2026, 22:38) */

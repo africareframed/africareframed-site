@@ -2499,6 +2499,10 @@ def linked_supporters(grid, base):
         inner = grid[start + len('<li><button type="button" aria-expanded="false">'):end]
         inner = inner.replace('</span></span><span class="plus"', '<span class="arr" aria-hidden="true">→</span></span></span><span class="plus"', 1)
         grid = grid[:start] + f'<li><a class="logo-link" href="{base}{href}" aria-expanded="false">' + inner + '</a></li>' + grid[end + len('</button></li>'):]
+    # Innovation Fund Denmark has no page to lead to, so its card carries what came of it (Thomas, 18 November 2026, 09:06;
+    # source: Thomas Damgaard – CV, master, October 2026: "SDG Tech Awards Denmark, finalist, Education, 2020"). Draft.
+    ifd = next(x for x in SUPPORTERS if x["name"] == "Innovation Fund Denmark")
+    grid = grid.replace(e(ifd["line"]), e("The development of our online platform for collaboration and learning, a finalist at the SDG Tech Awards Denmark 2020."), 1)
     old_js = "var bs=[].slice.call(g.querySelectorAll('button'));"
     assert old_js in grid
     grid = grid.replace(old_js, "var bs=[].slice.call(g.querySelectorAll('button,a.logo-link'));", 1)

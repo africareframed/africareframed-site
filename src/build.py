@@ -4898,7 +4898,7 @@ main p a:hover,main li a:hover,.site-footer a:hover{text-decoration-thickness:2p
 .archive-partners{margin-top:var(--section)}
 .mod.warm{background:#eeebe5;margin-top:var(--section);padding-top:var(--section);padding-bottom:var(--section)}
 .mod.first-white{margin-top:var(--section)}
-.mod.under-head{margin-top:var(--section-head)}
+.mod.under-head{margin-top:0;padding-top:48px}   /* the supporters right under Partnerships' text, as one part (Thomas, 18 November 2026, 08:56) */
 .archive-cards.grey .panels.sun.flips .flip{background:var(--wash)}   /* the cards on the pale warm grey (on trial at /dev/home-grey/, 17 November 2026, 22:38) */
 
 #intro.premise{padding-bottom:var(--section)}
